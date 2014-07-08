@@ -10,7 +10,12 @@
 		<th>#</th>
 		<th>Username</th>
 		<th>Email</th>
-		<th></th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Name</th>
+        <th>Email Confirmed</th>
+        <th>Deleted</th>
+        <th></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -18,7 +23,12 @@
 		<td th:text="${userStats.count}"></td>
 		<td th:text="${user.username}"></td>
 		<td th:text="${user.email}"></td>
-		<td><a th:href="@{${@adminWeb.path('/users/') + user.id}}">edit</a></td>
+        <td th:text="${user.firstname}"></td>
+        <td th:text="${user.lastname}"></td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.emailConfirmed}"></td>
+        <td th:text="${user.deleted}"></td>
+        <td><a th:href="@{${@adminWeb.path('/users/') + user.id}}">edit</a></td>
 	</tr>
 	</tbody>
 </table>

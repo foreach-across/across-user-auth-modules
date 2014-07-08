@@ -2,6 +2,7 @@ package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.user.TestDatabaseConfig;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserStatus;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.PermissionServiceImpl;
 import com.foreach.across.modules.user.services.RoleService;
@@ -58,6 +59,11 @@ public class TestUserRepository
 		user.setUsername( "fred" );
 		user.setEmail( "fred@gmail.com" );
 		user.setPassword( "temp1234" );
+        user.setFirstname( "Freddy" );
+        user.setLastname( "Alvis" );
+        user.setName( "Fréddy & Màc " );
+        user.setEmailConfirmed( false );
+        user.setDeleted( false );
 
 		userRepository.save( user );
 
@@ -67,9 +73,38 @@ public class TestUserRepository
 
 		assertEquals( user.getId(), existing.getId() );
 		assertEquals( user.getUsername(), existing.getUsername() );
+        assertEquals( user.getFirstname(), existing.getFirstname() );
+        assertEquals( user.getLastname(), existing.getLastname() );
+        assertEquals( user.getName(), existing.getName() );
 		assertEquals( user.getEmail(), existing.getEmail() );
 		assertEquals( user.getPassword(), existing.getPassword() );
+        assertEquals( user.getDeleted(), existing.getDeleted() );
+        assertEquals( user.getEmailConfirmed(), existing.getEmailConfirmed()  );
+        assertEquals( user.getStatus(), existing.getStatus()  );
+
+        assertEquals( false, user.isCredentialsNonExpired() );
+        assertEquals( false, user.isAccountNonLocked() );
+        assertEquals( false, user.isAccountNonExpired() );
+        assertEquals( false, user.isEnabled() );
 	}
+
+    @Test
+    public void userDelete() {
+        User user = new User();
+        user.setUsername( "deleteme" );
+        user.getRoles().add( roleService.getRole( "role one" ) );
+        user.setEmailConfirmed( false );
+        user.setDeleted( false );
+        user.setStatus( UserStatus.DEFAULT_USER_STATUS );
+
+        userRepository.save( user );
+        assertTrue( user.getId() > 0 );
+
+        userRepository.delete( user );
+        User deleted = userRepository.getUserById( user.getId() );
+        assertNotNull( "user should still exist in database (soft deleted)", deleted );
+        assertEquals( true, deleted.getDeleted() );
+    }
 
 	@Test
 	public void userWithRoles() {

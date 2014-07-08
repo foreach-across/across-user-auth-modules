@@ -2,6 +2,7 @@ package com.foreach.across.modules.user.dto;
 
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserStatus;
 import org.springframework.beans.BeanUtils;
 
 import java.util.Set;
@@ -11,9 +12,15 @@ public class UserDto
 {
 	private long id;
 	private String username;
+    private String firstname;
+    private String lastname;
+    private String name;
 	private String email;
-
 	private String password;
+
+    private boolean emailConfirmed;
+    private boolean deleted;
+    private Set<UserStatus> status;
 
 	private Set<Role> roles = new TreeSet<>();
 
@@ -40,7 +47,31 @@ public class UserDto
 		this.username = username;
 	}
 
-	public String getEmail() {
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname( String firstname ) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname( String lastname ) {
+        this.lastname = lastname;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName( String name ) {
+        this.name = name;
+    }
+
+    public String getEmail() {
 		return email;
 	}
 
@@ -56,7 +87,31 @@ public class UserDto
 		this.password = password;
 	}
 
-	public Set<Role> getRoles() {
+    public boolean getEmailConfirmed() {
+        return emailConfirmed;
+    }
+
+    public void setEmailConfirmed( boolean emailConfirmed ) {
+        this.emailConfirmed = emailConfirmed;
+    }
+
+    public boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted( boolean deleted ) {
+        this.deleted = deleted;
+    }
+
+    public Set<UserStatus> getStatus() {
+        return status;
+    }
+
+    public void setStatus( Set<UserStatus> status ) {
+        this.status = status;
+    }
+
+    public Set<Role> getRoles() {
 		return roles;
 	}
 

@@ -2,16 +2,15 @@ package com.foreach.across.modules.user.business;
 
 import com.foreach.across.core.database.AcrossSchemaConfiguration;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
+import com.foreach.across.modules.user.converters.HibernateUserStatus;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_USER)
@@ -28,11 +27,30 @@ public class User implements UserDetails
 	@Column(nullable = false, name = "username")
 	private String username;
 
+    @Column( name = "firstname")
+    private String firstname;
+
+    @Column( name = "lastname")
+    private String lastname;
+
+    @Column( name = "name")
+    private String name;
+
 	@Column
 	private String email;
 
 	@Column
 	private String password;
+
+    @Column( nullable = false )
+    private boolean emailConfirmed;
+
+    @Column( nullable = false )
+    private boolean deleted;
+
+    @Column( nullable = true )
+    @Type( type= HibernateUserStatus.CLASS_NAME )
+    private Set<UserStatus> status = EnumSet.noneOf( UserStatus.class );
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@BatchSize(size = 50)
@@ -58,7 +76,31 @@ public class User implements UserDetails
 		this.username = username;
 	}
 
-	public String getEmail() {
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname( String firstname ) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname( String lastname ) {
+        this.lastname = lastname;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName( String name ) {
+        this.name = name;
+    }
+
+    public String getEmail() {
 		return email;
 	}
 
@@ -74,7 +116,31 @@ public class User implements UserDetails
 		this.password = password;
 	}
 
-	public Set<Role> getRoles() {
+    public boolean getEmailConfirmed() {
+        return emailConfirmed;
+    }
+
+    public void setEmailConfirmed( boolean emailConfirmed ) {
+        this.emailConfirmed = emailConfirmed;
+    }
+
+    public boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted( boolean deleted ) {
+        this.deleted = deleted;
+    }
+
+    public Set<UserStatus> getStatus() {
+        return status;
+    }
+
+    public void setStatus( Set<UserStatus> status ) {
+        this.status = status;
+    }
+
+    public Set<Role> getRoles() {
 		return roles;
 	}
 
@@ -119,21 +185,21 @@ public class User implements UserDetails
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return true;
+		return status.contains( UserStatus.NON_EXPIRED );
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return true;
+		return status.contains( UserStatus.NON_LOCKED );
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return true;
+        return status.contains( UserStatus.CREDENTIALS_NON_EXPIRED );
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return status.contains( UserStatus.ACTIVE );
 	}
 }

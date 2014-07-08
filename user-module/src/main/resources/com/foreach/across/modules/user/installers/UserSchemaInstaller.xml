@@ -161,4 +161,32 @@
 		                         referencedTableName="${table.role}"
 		                         referencedColumnNames="id"/>
 	</changeSet>
+
+    <changeSet id="201407071223" author="marc">
+        <comment>Add some core columns to the user table</comment>
+        <addColumn tableName="${table.user}">
+            <column name="firstname" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="lastname" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="name" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="emailConfirmed" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deleted" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="java.sql.Types.BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="201407071620" author="marc">
+        <comment>Make sure that any existing admin users get the default values for the new columns in changeset 201407071223</comment>
+        <update tableName="${table.user}">
+            <column name="emailConfirmed" type="java.sql.Types.BOOLEAN" valueBoolean="true" />
+            <column name="deleted" type="java.sql.Types.BOOLEAN" valueBoolean="false" />
+            <column name="status" type="java.sql.Types.BIGINT" valueNumeric="15" />
+            <where>username='admin'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>

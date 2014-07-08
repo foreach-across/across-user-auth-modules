@@ -3,6 +3,8 @@ package com.foreach.across.modules.user.it;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserStatus;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossTestContextConfigurer;
@@ -14,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,7 +30,17 @@ public class ITUserModule
 	@Test
 	public void verifyBootstrapped() {
 		assertNotNull( userService );
-		assertNotNull( userService.getUserByUsername( "admin" ) );
+        User admin = userService.getUserByUsername( "admin" );
+		assertNotNull( admin );
+        assertEquals( "admin", admin.getUsername() );
+        assertEquals( UserStatus.DEFAULT_USER_STATUS, admin.getStatus() );
+        assertEquals( false, admin.getDeleted() );
+        assertEquals( true, admin.getEmailConfirmed() );
+
+        assertEquals( true, admin.isEnabled() );
+        assertEquals( true, admin.isAccountNonExpired() );
+        assertEquals( true, admin.isAccountNonLocked() );
+        assertEquals( true, admin.isCredentialsNonExpired() );
 	}
 
 	@Configuration

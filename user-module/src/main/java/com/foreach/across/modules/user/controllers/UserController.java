@@ -2,6 +2,7 @@ package com.foreach.across.modules.user.controllers;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
+import com.foreach.across.modules.user.business.UserStatus;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
@@ -13,54 +14,57 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.EnumSet;
+
 @AdminWebController
 @RequestMapping(UserController.PATH)
-public class UserController
-{
-	public static final String PATH = "/users";
+public class UserController {
+    public static final String PATH = "/users";
 
-	@Autowired
-	private AdminWeb adminWeb;
+    @Autowired
+    private AdminWeb adminWeb;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private RoleService roleService;
+    @Autowired
+    private RoleService roleService;
 
-	@RequestMapping
-	public String listUsers( Model model ) {
-		model.addAttribute( "users", userService.getUsers() );
+    @RequestMapping
+    public String listUsers( Model model ) {
+        model.addAttribute( "users", userService.getUsers() );
 
-		return "th/user/users/list";
-	}
+        return "th/user/users/list";
+    }
 
-	@RequestMapping("/create")
-	public String createUser( Model model ) {
-		model.addAttribute( "existing", false );
-		model.addAttribute( "user", new UserDto() );
-		model.addAttribute( "roles", roleService.getRoles() );
+    @RequestMapping("/create")
+    public String createUser( Model model ) {
+        model.addAttribute( "existing", false );
+        model.addAttribute( "user", new UserDto() );
+        model.addAttribute( "roles", roleService.getRoles() );
+        model.addAttribute( "userStatuses", EnumSet.allOf( UserStatus.class ) );
 
-		return "th/user/users/edit";
-	}
+        return "th/user/users/edit";
+    }
 
-	@RequestMapping("/{id}")
-	public String editUser( @PathVariable("id") long id, Model model ) {
-		UserDto user = userService.createUserDto( userService.getUserById( id ) );
+    @RequestMapping("/{id}")
+    public String editUser( @PathVariable("id") long id, Model model ) {
+        UserDto user = userService.createUserDto( userService.getUserById( id ) );
 
-		model.addAttribute( "existing", true );
-		model.addAttribute( "user", user );
-		model.addAttribute( "roles", roleService.getRoles() );
+        model.addAttribute( "existing", true );
+        model.addAttribute( "user", user );
+        model.addAttribute( "roles", roleService.getRoles() );
+        model.addAttribute( "userStatuses", EnumSet.allOf( UserStatus.class ) );
 
-		return "th/user/users/edit";
-	}
+        return "th/user/users/edit";
+    }
 
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String saveUser( @ModelAttribute("user") UserDto user, RedirectAttributes re ) {
-		userService.save( user );
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public String saveUser( @ModelAttribute("user") UserDto user, RedirectAttributes re ) {
+        userService.save( user );
 
-		re.addAttribute( "userId", user.getId() );
+        re.addAttribute( "userId", user.getId() );
 
-		return adminWeb.redirect( "/users/{userId}" );
-	}
+        return adminWeb.redirect( "/users/{userId}" );
+    }
 }

@@ -7,6 +7,7 @@ import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.PermissionGroup;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserStatus;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
@@ -16,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.HashSet;
 
-@Installer(description = "Installs the default permissions, roles and user", version = 1,
+@Installer(description = "Installs the default permissions, roles and user", version = 2,
            phase = InstallerPhase.AfterModuleBootstrap)
 public class DefaultUserInstaller
 {
@@ -70,6 +71,9 @@ public class DefaultUserInstaller
 			user.setUsername( "admin" );
 			user.setPassword( "admin" );
 			user.setEmail( "-" );
+            user.setDeleted( false );
+            user.setEmailConfirmed( true );
+            user.setStatus( UserStatus.DEFAULT_USER_STATUS );
 
 			HashSet<Role> roles = new HashSet<>();
 			roles.add( roleService.getRole( "ROLE_ADMIN" ) );

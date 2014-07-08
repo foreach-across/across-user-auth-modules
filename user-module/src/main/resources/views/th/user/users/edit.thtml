@@ -24,14 +24,54 @@
 		<input type="text" th:field="*{email}"/>
 	</div>
 
-	<ul>
-		<li th:each="role:${roles}">
-			<input type="checkbox"
-			       th:field="*{roles}"
-			       th:value="${role.name}"/>
-			<label th:text="${role.description}"></label>
-		</li>
-	</ul>
+    <div>
+        <label>First name</label>
+        <input type="text" th:field="*{firstname}"/>
+    </div>
+
+    <div>
+        <label>Last name</label>
+        <input type="text" th:field="*{lastname}"/>
+    </div>
+
+    <div>
+        <label>Name</label>
+        <input type="text" th:field="*{name}"/>
+    </div>
+
+    <div>
+        <label>Status</label>
+        <ul>
+            <li th:each="statusItem:${userStatuses}">
+                <input type="checkbox"
+                       th:field="*{status}"
+                       th:value="${statusItem.name}"/>
+                <label th:text="${statusItem.name}"></label>
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        <label>Email Confirmed?</label>
+        <input type="checkbox" th:field="*{emailConfirmed}" th:value="${emailConfirmed}"/><label th:text="Yes"></label>
+    </div>
+
+    <div>
+        <label>Deleted?</label>
+        <input type="checkbox" th:field="*{deleted}" th:value="${deleted}"/><label th:text="Yes"></label>
+    </div>
+
+    <div>
+        <ul>
+            <li th:each="role:${roles}">
+                <input type="checkbox"
+                       th:field="*{roles}"
+                       th:value="${role.name}"/>
+                <label th:text="${role.description}"></label>
+            </li>
+        </ul>
+    </div>
+
 
 	<input type="submit" value="Save"/>
 
