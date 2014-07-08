@@ -67,4 +67,10 @@ public class UserServiceImpl implements UserService
 
 		userDto.setFromUser( user );
 	}
+
+    @Override
+    public void delete( long id ) {
+        User user = userRepository.getUserById( id );
+        userRepository.delete( user );
+    }
 }
