@@ -189,4 +189,13 @@
             <where>username='admin'</where>
         </update>
     </changeSet>
+
+
+    <changeSet id="201407090958" author="marc">
+        <comment>Rename name column to displayname column</comment>
+        <renameColumn columnDataType="java.sql.Types.VARCHAR(255)"
+                      newColumnName="displayname"
+                      oldColumnName="name"
+                      tableName="${table.user}"/>
+    </changeSet>
 </databaseChangeLog>

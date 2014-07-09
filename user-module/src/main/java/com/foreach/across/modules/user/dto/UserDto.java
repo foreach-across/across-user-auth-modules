@@ -12,9 +12,9 @@ public class UserDto
 {
 	private long id;
 	private String username;
-    private String firstname;
-    private String lastname;
-    private String name;
+    private String firstName;
+    private String lastName;
+    private String displayName;
 	private String email;
 	private String password;
 
@@ -47,28 +47,28 @@ public class UserDto
 		this.username = username;
 	}
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstname( String firstname ) {
-        this.firstname = firstname;
+    public void setFirstName( String firstName ) {
+        this.firstName = firstName;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastname( String lastname ) {
-        this.lastname = lastname;
+    public void setLastname( String lastName ) {
+        this.lastName = lastName;
     }
 
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setName( String name ) {
-        this.name = name;
+    public void setDisplayName( String displayName ) {
+        this.displayName = displayName;
     }
 
     public String getEmail() {

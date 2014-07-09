@@ -59,9 +59,9 @@ public class TestUserRepository
 		user.setUsername( "fred" );
 		user.setEmail( "fred@gmail.com" );
 		user.setPassword( "temp1234" );
-        user.setFirstname( "Freddy" );
-        user.setLastname( "Alvis" );
-        user.setName( "Fréddy & Màc " );
+        user.setFirstName( "Freddy" );
+        user.setLastName( "Alvis" );
+        user.setDisplayName( "Fréddy & Màc " );
         user.setEmailConfirmed( false );
         user.setDeleted( false );
 
@@ -73,9 +73,9 @@ public class TestUserRepository
 
 		assertEquals( user.getId(), existing.getId() );
 		assertEquals( user.getUsername(), existing.getUsername() );
-        assertEquals( user.getFirstname(), existing.getFirstname() );
-        assertEquals( user.getLastname(), existing.getLastname() );
-        assertEquals( user.getName(), existing.getName() );
+        assertEquals( user.getFirstName(), existing.getFirstName() );
+        assertEquals( user.getLastName(), existing.getLastName() );
+        assertEquals( user.getDisplayName(), existing.getDisplayName() );
 		assertEquals( user.getEmail(), existing.getEmail() );
 		assertEquals( user.getPassword(), existing.getPassword() );
         assertEquals( user.getDeleted(), existing.getDeleted() );
