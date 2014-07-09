@@ -59,7 +59,7 @@ public class UserDto
         return lastName;
     }
 
-    public void setLastname( String lastName ) {
+    public void setLastName( String lastName ) {
         this.lastName = lastName;
     }
 
