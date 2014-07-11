@@ -5,6 +5,7 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserStatus;
 import org.springframework.beans.BeanUtils;
 
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -20,7 +21,7 @@ public class UserDto
 
     private boolean emailConfirmed;
     private boolean deleted;
-    private Set<UserStatus> status;
+    private Set<UserStatus> status = EnumSet.noneOf( UserStatus.class );
 
 	private Set<Role> roles = new TreeSet<>();
 
