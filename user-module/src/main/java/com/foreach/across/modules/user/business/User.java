@@ -1,5 +1,6 @@
 package com.foreach.across.modules.user.business;
 
+import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserStatus;
 import org.hibernate.annotations.BatchSize;
@@ -18,10 +19,10 @@ import java.util.*;
 public class User implements UserDetails
 {
 	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_um_user_id")
+	@GeneratedValue(generator = "seq_um_user_id")
 	@GenericGenerator(
 			name = "seq_um_user_id",
-			strategy = "com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator",
+			strategy = AcrossSequenceGenerator.STRATEGY,
 			parameters = {
 					@Parameter(name = "sequenceName", value = "seq_um_user_id"),
 					@Parameter(name = "allocationSize", value = "10")

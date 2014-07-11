@@ -1,9 +1,10 @@
 package com.foreach.across.modules.user.business;
 
-import com.foreach.across.core.database.AcrossSchemaConfiguration;
+import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,11 +16,15 @@ import java.util.TreeSet;
 public class Role implements Comparable<Role>, Serializable
 {
 	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_um_role_id")
-	@TableGenerator(name = "seq_um_role_id", table = AcrossSchemaConfiguration.TABLE_SEQUENCES,
-	                pkColumnName = AcrossSchemaConfiguration.SEQUENCE_NAME,
-	                valueColumnName = AcrossSchemaConfiguration.SEQUENCE_VALUE, pkColumnValue = "seq_um_role_id",
-	                allocationSize = 5)
+	@GeneratedValue(generator = "seq_um_role_id")
+	@GenericGenerator(
+			name = "seq_um_role_id",
+			strategy = AcrossSequenceGenerator.STRATEGY,
+			parameters = {
+					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_um_role_id"),
+					@org.hibernate.annotations.Parameter(name = "allocationSize", value = "5")
+			}
+	)
 	private long id;
 
 	@Column(nullable = false, unique = true)
