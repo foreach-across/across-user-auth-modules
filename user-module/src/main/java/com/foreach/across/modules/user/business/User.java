@@ -1,9 +1,10 @@
 package com.foreach.across.modules.user.business;
 
-import com.foreach.across.core.database.AcrossSchemaConfiguration;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserStatus;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,23 +19,27 @@ public class User implements UserDetails
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_um_user_id")
-	@TableGenerator(name = "seq_um_user_id", table = AcrossSchemaConfiguration.TABLE_SEQUENCES,
-	                pkColumnName = AcrossSchemaConfiguration.SEQUENCE_NAME,
-	                valueColumnName = AcrossSchemaConfiguration.SEQUENCE_VALUE, pkColumnValue = "seq_um_user_id",
-	                allocationSize = 10)
+	@GenericGenerator(
+			name = "seq_um_user_id",
+			strategy = "com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator",
+			parameters = {
+					@Parameter(name = "sequenceName", value = "seq_um_user_id"),
+					@Parameter(name = "allocationSize", value = "10")
+			}
+	)
 	private long id;
 
 	@Column(nullable = false, name = "username")
 	private String username;
 
-    @Column( name = "firstname")
-    private String firstName;
+	@Column(name = "firstname")
+	private String firstName;
 
-    @Column( name = "lastname")
-    private String lastName;
+	@Column(name = "lastname")
+	private String lastName;
 
-    @Column( name = "displayname")
-    private String displayName;
+	@Column(name = "displayname")
+	private String displayName;
 
 	@Column
 	private String email;
@@ -42,15 +47,15 @@ public class User implements UserDetails
 	@Column
 	private String password;
 
-    @Column( nullable = false )
-    private boolean emailConfirmed;
+	@Column(nullable = false)
+	private boolean emailConfirmed;
 
-    @Column( nullable = false )
-    private boolean deleted;
+	@Column(nullable = false)
+	private boolean deleted;
 
-    @Column( nullable = true )
-    @Type( type= HibernateUserStatus.CLASS_NAME )
-    private Set<UserStatus> status = EnumSet.noneOf( UserStatus.class );
+	@Column(nullable = true)
+	@Type(type = HibernateUserStatus.CLASS_NAME)
+	private Set<UserStatus> status = EnumSet.noneOf( UserStatus.class );
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@BatchSize(size = 50)
@@ -76,31 +81,31 @@ public class User implements UserDetails
 		this.username = username;
 	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setFirstName( String firstName ) {
-        this.firstName = firstName;
-    }
+	public void setFirstName( String firstName ) {
+		this.firstName = firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setLastName( String lastName ) {
-        this.lastName = lastName;
-    }
+	public void setLastName( String lastName ) {
+		this.lastName = lastName;
+	}
 
-    public String getDisplayName() {
-        return displayName;
-    }
+	public String getDisplayName() {
+		return displayName;
+	}
 
-    public void setDisplayName( String displayName ) {
-        this.displayName = displayName;
-    }
+	public void setDisplayName( String displayName ) {
+		this.displayName = displayName;
+	}
 
-    public String getEmail() {
+	public String getEmail() {
 		return email;
 	}
 
@@ -116,31 +121,31 @@ public class User implements UserDetails
 		this.password = password;
 	}
 
-    public boolean getEmailConfirmed() {
-        return emailConfirmed;
-    }
+	public boolean getEmailConfirmed() {
+		return emailConfirmed;
+	}
 
-    public void setEmailConfirmed( boolean emailConfirmed ) {
-        this.emailConfirmed = emailConfirmed;
-    }
+	public void setEmailConfirmed( boolean emailConfirmed ) {
+		this.emailConfirmed = emailConfirmed;
+	}
 
-    public boolean getDeleted() {
-        return deleted;
-    }
+	public boolean getDeleted() {
+		return deleted;
+	}
 
-    public void setDeleted( boolean deleted ) {
-        this.deleted = deleted;
-    }
+	public void setDeleted( boolean deleted ) {
+		this.deleted = deleted;
+	}
 
-    public Set<UserStatus> getStatus() {
-        return status;
-    }
+	public Set<UserStatus> getStatus() {
+		return status;
+	}
 
-    public void setStatus( Set<UserStatus> status ) {
-        this.status = status;
-    }
+	public void setStatus( Set<UserStatus> status ) {
+		this.status = status;
+	}
 
-    public Set<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return roles;
 	}
 
@@ -195,7 +200,7 @@ public class User implements UserDetails
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-        return status.contains( UserStatus.CREDENTIALS_NON_EXPIRED );
+		return status.contains( UserStatus.CREDENTIALS_NON_EXPIRED );
 	}
 
 	@Override

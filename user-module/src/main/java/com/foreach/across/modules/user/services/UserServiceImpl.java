@@ -51,9 +51,25 @@ public class UserServiceImpl implements UserService
 
 		if ( userDto.isNewUser() ) {
 			user = new User();
+
+			if ( StringUtils.isBlank( userDto.getPassword() ) ) {
+				throw new UserModuleException( "A new user always requires a non-blank password to be set." );
+			}
 		}
 		else {
-			user = getUserById( userDto.getId() );
+			long existingUserId = userDto.getId();
+
+			if ( existingUserId == 0 ) {
+				throw new UserModuleException(
+						"Impossible to update a user with id 0, 0 is a special id that should never be used for persisted entities." );
+			}
+
+			user = getUserById( existingUserId );
+
+			if ( user == null ) {
+				throw new UserModuleException(
+						"Attempt to update user with id " + existingUserId + " but that user does not exist" );
+			}
 		}
 
 		BeanUtils.copyProperties( userDto, user, "password" );
@@ -63,14 +79,23 @@ public class UserServiceImpl implements UserService
 			user.setPassword( passwordEncoder.encode( userDto.getPassword() ) );
 		}
 
-		userRepository.save( user );
+		if ( StringUtils.isBlank( user.getDisplayName() ) ) {
+			user.setDisplayName( String.format( "%s %s", user.getFirstName(), user.getLastName() ).trim() );
+		}
+
+		if ( userDto.isNewUser() ) {
+			userRepository.create( user );
+		}
+		else {
+			userRepository.update( user );
+		}
 
 		userDto.setFromUser( user );
 	}
 
-    @Override
-    public void delete( long id ) {
-        User user = userRepository.getUserById( id );
-        userRepository.delete( user );
-    }
+	@Override
+	public void delete( long id ) {
+		User user = userRepository.getUserById( id );
+		userRepository.delete( user );
+	}
 }

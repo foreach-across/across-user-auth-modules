@@ -1,6 +1,7 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.services.UserModuleException;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -41,9 +42,16 @@ public class UserRepositoryImpl implements UserRepository
 
 	@Transactional
 	@Override
-	public void save( User user ) {
+	public void update( User user ) {
         validateUserStatus( user );
-		sessionFactory.getCurrentSession().saveOrUpdate( user );
+		sessionFactory.getCurrentSession().update( user );
+	}
+
+	@Transactional
+	@Override
+	public void create( User user ) {
+		validateUserStatus( user );
+		sessionFactory.getCurrentSession().save( user );
 	}
 
 	@Transactional
@@ -60,7 +68,7 @@ public class UserRepositoryImpl implements UserRepository
 //        }
     }
 
-    public static class InvalidUserStatusFieldException extends RuntimeException {
+    public static class InvalidUserStatusFieldException extends UserModuleException {
         public InvalidUserStatusFieldException( String message ) {
             super( message );
         }

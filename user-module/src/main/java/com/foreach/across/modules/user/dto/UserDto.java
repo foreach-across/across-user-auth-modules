@@ -13,17 +13,19 @@ public class UserDto
 {
 	private long id;
 	private String username;
-    private String firstName;
-    private String lastName;
-    private String displayName;
+	private String firstName;
+	private String lastName;
+	private String displayName;
 	private String email;
 	private String password;
 
-    private boolean emailConfirmed;
-    private boolean deleted;
-    private Set<UserStatus> status = EnumSet.noneOf( UserStatus.class );
+	private boolean emailConfirmed;
+	private boolean deleted;
+	private Set<UserStatus> status;
 
 	private Set<Role> roles = new TreeSet<>();
+
+	private Boolean newUser;
 
 	public UserDto() {
 	}
@@ -48,31 +50,31 @@ public class UserDto
 		this.username = username;
 	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setFirstName( String firstName ) {
-        this.firstName = firstName;
-    }
+	public void setFirstName( String firstName ) {
+		this.firstName = firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setLastName( String lastName ) {
-        this.lastName = lastName;
-    }
+	public void setLastName( String lastName ) {
+		this.lastName = lastName;
+	}
 
-    public String getDisplayName() {
-        return displayName;
-    }
+	public String getDisplayName() {
+		return displayName;
+	}
 
-    public void setDisplayName( String displayName ) {
-        this.displayName = displayName;
-    }
+	public void setDisplayName( String displayName ) {
+		this.displayName = displayName;
+	}
 
-    public String getEmail() {
+	public String getEmail() {
 		return email;
 	}
 
@@ -88,31 +90,31 @@ public class UserDto
 		this.password = password;
 	}
 
-    public boolean getEmailConfirmed() {
-        return emailConfirmed;
-    }
+	public boolean getEmailConfirmed() {
+		return emailConfirmed;
+	}
 
-    public void setEmailConfirmed( boolean emailConfirmed ) {
-        this.emailConfirmed = emailConfirmed;
-    }
+	public void setEmailConfirmed( boolean emailConfirmed ) {
+		this.emailConfirmed = emailConfirmed;
+	}
 
-    public boolean getDeleted() {
-        return deleted;
-    }
+	public boolean getDeleted() {
+		return deleted;
+	}
 
-    public void setDeleted( boolean deleted ) {
-        this.deleted = deleted;
-    }
+	public void setDeleted( boolean deleted ) {
+		this.deleted = deleted;
+	}
 
-    public Set<UserStatus> getStatus() {
-        return status;
-    }
+	public Set<UserStatus> getStatus() {
+		return status;
+	}
 
-    public void setStatus( Set<UserStatus> status ) {
-        this.status = status;
-    }
+	public void setStatus( Set<UserStatus> status ) {
+		this.status = status;
+	}
 
-    public Set<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return roles;
 	}
 
@@ -120,8 +122,12 @@ public class UserDto
 		this.roles = roles;
 	}
 
+	public void setNewUser( boolean newUser ) {
+		this.newUser = newUser;
+	}
+
 	public boolean isNewUser() {
-		return getId() == 0;
+		return newUser != null ? newUser : getId() == 0;
 	}
 
 	public void setFromUser( User user ) {

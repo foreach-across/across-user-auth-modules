@@ -65,7 +65,7 @@ public class TestUserRepository
         user.setEmailConfirmed( false );
         user.setDeleted( false );
 
-		userRepository.save( user );
+		userRepository.create( user );
 
 		assertTrue( user.getId() > 0 );
 
@@ -97,7 +97,7 @@ public class TestUserRepository
         user.setDeleted( false );
         user.setStatus( UserStatus.DEFAULT_USER_STATUS );
 
-        userRepository.save( user );
+        userRepository.create( user );
         assertTrue( user.getId() > 0 );
 
         userRepository.delete( user );
@@ -113,7 +113,7 @@ public class TestUserRepository
 		user.getRoles().add( roleService.getRole( "role one" ) );
 		user.getRoles().add( roleService.getRole( "role two" ) );
 
-		userRepository.save( user );
+		userRepository.create( user );
 
 		User existing = userRepository.getUserById( user.getId() );
 

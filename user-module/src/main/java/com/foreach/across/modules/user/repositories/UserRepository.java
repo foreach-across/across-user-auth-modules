@@ -14,7 +14,9 @@ public interface UserRepository
 
 	User getUserById( long id );
 
-	void save( User user );
+	void update( User user );
+
+	void create( User user );
 
 	void delete( User user );
 }
