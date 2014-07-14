@@ -2,7 +2,7 @@ package com.foreach.across.modules.user.controllers;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.user.business.UserStatus;
+import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
@@ -42,7 +42,7 @@ public class UserController {
         model.addAttribute( "existing", false );
         model.addAttribute( "user", new UserDto() );
         model.addAttribute( "roles", roleService.getRoles() );
-        model.addAttribute( "userStatuses", EnumSet.allOf( UserStatus.class ) );
+        model.addAttribute( "userRestrictions", EnumSet.allOf( UserRestriction.class ) );
 
         return "th/user/users/edit";
     }
@@ -54,7 +54,7 @@ public class UserController {
         model.addAttribute( "existing", true );
         model.addAttribute( "user", user );
         model.addAttribute( "roles", roleService.getRoles() );
-        model.addAttribute( "userStatuses", EnumSet.allOf( UserStatus.class ) );
+        model.addAttribute( "userRestrictions", EnumSet.allOf( UserRestriction.class ) );
 
         return "th/user/users/edit";
     }

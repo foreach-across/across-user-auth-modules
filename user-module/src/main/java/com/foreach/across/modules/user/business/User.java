@@ -2,7 +2,7 @@ package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
-import com.foreach.across.modules.user.converters.HibernateUserStatus;
+import com.foreach.across.modules.user.converters.HibernateUserRestriction;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -55,8 +55,8 @@ public class User implements UserDetails
 	private boolean deleted;
 
 	@Column(nullable = true)
-	@Type(type = HibernateUserStatus.CLASS_NAME)
-	private Set<UserStatus> status = EnumSet.noneOf( UserStatus.class );
+	@Type(type = HibernateUserRestriction.CLASS_NAME)
+	private Set<UserRestriction> restrictions = EnumSet.noneOf( UserRestriction.class );
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@BatchSize(size = 50)
@@ -138,12 +138,12 @@ public class User implements UserDetails
 		this.deleted = deleted;
 	}
 
-	public Set<UserStatus> getStatus() {
-		return status;
+	public Set<UserRestriction> getRestrictions() {
+		return restrictions;
 	}
 
-	public void setStatus( Set<UserStatus> status ) {
-		this.status = status;
+	public void setRestrictions( Set<UserRestriction> restrictions ) {
+		this.restrictions = restrictions;
 	}
 
 	public Set<Role> getRoles() {
@@ -191,21 +191,21 @@ public class User implements UserDetails
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return status.contains( UserStatus.NON_EXPIRED );
+		return !restrictions.contains( UserRestriction.EXPIRED );
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return status.contains( UserStatus.NON_LOCKED );
+		return !restrictions.contains( UserRestriction.LOCKED );
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return status.contains( UserStatus.CREDENTIALS_NON_EXPIRED );
+		return !restrictions.contains( UserRestriction.CREDENTIALS_EXPIRED );
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return status.contains( UserStatus.ACTIVE );
+		return !restrictions.contains( UserRestriction.DISABLED );
 	}
 }

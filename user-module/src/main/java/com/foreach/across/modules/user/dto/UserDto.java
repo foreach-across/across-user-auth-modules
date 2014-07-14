@@ -2,10 +2,10 @@ package com.foreach.across.modules.user.dto;
 
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.business.UserStatus;
+import com.foreach.across.modules.user.business.UserRestriction;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.CollectionUtils;
 
-import java.util.EnumSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -21,7 +21,7 @@ public class UserDto
 
 	private boolean emailConfirmed;
 	private boolean deleted;
-	private Set<UserStatus> status;
+	private Set<UserRestriction> restrictions;
 
 	private Set<Role> roles = new TreeSet<>();
 
@@ -106,12 +106,16 @@ public class UserDto
 		this.deleted = deleted;
 	}
 
-	public Set<UserStatus> getStatus() {
-		return status;
+	public Set<UserRestriction> getRestrictions() {
+		return restrictions;
 	}
 
-	public void setStatus( Set<UserStatus> status ) {
-		this.status = status;
+	public void setRestrictions( Set<UserRestriction> restrictions ) {
+		this.restrictions = restrictions;
+	}
+
+	public boolean hasRestrictions() {
+		return !CollectionUtils.isEmpty( restrictions );
 	}
 
 	public Set<Role> getRoles() {
