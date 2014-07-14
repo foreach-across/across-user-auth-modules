@@ -67,7 +67,7 @@ public class ITUserModule
 
 	@Test
 	public void usersCanHaveNegativeIds() {
-		User existing=null;/* = userService.getUserById( -100 );*/
+		User existing = userService.getUserById( -100 );
 		assertNull( existing );
 
 		UserDto user = new UserDto();

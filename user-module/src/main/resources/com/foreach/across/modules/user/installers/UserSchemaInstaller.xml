@@ -190,7 +190,6 @@
         </update>
     </changeSet>
 
-
     <changeSet id="201407090958" author="marc">
         <comment>Rename name column to displayname column</comment>
         <renameColumn columnDataType="java.sql.Types.VARCHAR(255)"
@@ -198,4 +197,11 @@
                       oldColumnName="name"
                       tableName="${table.user}"/>
     </changeSet>
+	
+	<changeSet id="201407140926" author="arne">
+		<comment>Make the name columns unicode</comment>
+		<modifyDataType tableName="${table.user}" columnName="firstname" newDataType="java.sql.Types.NVARCHAR(255)" />
+		<modifyDataType tableName="${table.user}" columnName="lastname" newDataType="java.sql.Types.NVARCHAR(255)" />
+		<modifyDataType tableName="${table.user}" columnName="displayname" newDataType="java.sql.Types.NVARCHAR(255)" />
+	</changeSet>
 </databaseChangeLog>
