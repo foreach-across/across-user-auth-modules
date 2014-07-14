@@ -204,4 +204,5 @@
 		<modifyDataType tableName="${table.user}" columnName="lastname" newDataType="java.sql.Types.NVARCHAR(255)" />
 		<modifyDataType tableName="${table.user}" columnName="displayname" newDataType="java.sql.Types.NVARCHAR(255)" />
 	</changeSet>
+
 </databaseChangeLog>

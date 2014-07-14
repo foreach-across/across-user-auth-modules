@@ -9,6 +9,7 @@ import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossTestContextConfigurer;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +18,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -48,10 +51,10 @@ public class ITUserModule
 	public void newlyCreatedUsersHavePositiveIds() {
 		UserDto user = new UserDto();
 		user.setUsername( RandomStringUtils.randomAscii( 10 ) );
-		user.setPassword( RandomStringUtils.random( 30 ) );
-		user.setFirstName( RandomStringUtils.random( 25 ) );
-		user.setLastName( RandomStringUtils.random( 25 ) );
-		user.setDisplayName( RandomStringUtils.random( 50 ) );
+		user.setPassword( RandomStringUtils.randomAscii( 30 ) );
+		user.setFirstName( RandomStringUtils.randomAscii( 25 ) + "明美" );
+		user.setLastName( RandomStringUtils.randomAscii( 25 ) + "明美" );
+		user.setDisplayName( RandomStringUtils.randomAscii( 50 ) + "明美" );
 
 		userService.save( user );
 
