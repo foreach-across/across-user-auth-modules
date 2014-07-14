@@ -2,7 +2,6 @@ package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.user.TestDatabaseConfig;
 import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.business.UserStatus;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.PermissionServiceImpl;
 import com.foreach.across.modules.user.services.RoleService;
@@ -80,12 +79,12 @@ public class TestUserRepository
 		assertEquals( user.getPassword(), existing.getPassword() );
         assertEquals( user.getDeleted(), existing.getDeleted() );
         assertEquals( user.getEmailConfirmed(), existing.getEmailConfirmed()  );
-        assertEquals( user.getStatus(), existing.getStatus()  );
+        assertEquals( user.getRestrictions(), existing.getRestrictions()  );
 
-        assertEquals( false, user.isCredentialsNonExpired() );
-        assertEquals( false, user.isAccountNonLocked() );
-        assertEquals( false, user.isAccountNonExpired() );
-        assertEquals( false, user.isEnabled() );
+        assertEquals( true, user.isCredentialsNonExpired() );
+        assertEquals( true, user.isAccountNonLocked() );
+        assertEquals( true, user.isAccountNonExpired() );
+        assertEquals( true, user.isEnabled() );
 	}
 
     @Test
@@ -95,7 +94,6 @@ public class TestUserRepository
         user.getRoles().add( roleService.getRole( "role one" ) );
         user.setEmailConfirmed( false );
         user.setDeleted( false );
-        user.setStatus( UserStatus.DEFAULT_USER_STATUS );
 
         userRepository.create( user );
         assertTrue( user.getId() > 0 );

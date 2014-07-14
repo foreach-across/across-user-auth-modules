@@ -205,4 +205,19 @@
 		<modifyDataType tableName="${table.user}" columnName="displayname" newDataType="java.sql.Types.NVARCHAR(255)" />
 	</changeSet>
 
+	<changeSet id="201407141556" author="marc">
+		<comment>Rename status column to restrictions column</comment>
+		<renameColumn columnDataType="java.sql.Types.BIGINT"
+		              newColumnName="restrictions"
+		              oldColumnName="status"
+		              tableName="${table.user}"/>
+	</changeSet>
+
+	<changeSet id="201407141557" author="marc">
+		<comment>Rename status column to restrictions column</comment>
+		<update tableName="${table.user}">
+			<column name="restrictions" type="java.sql.Types.BIGINT" valueNumeric="0" />
+		</update>
+	</changeSet>
+
 </databaseChangeLog>

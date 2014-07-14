@@ -1,7 +1,7 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.business.UserStatus;
+import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +58,7 @@ public class TestUserService
 
 		user.setDeleted( true );
 		user.setEmailConfirmed( true );
-		user.setStatus( EnumSet.of( UserStatus.CREDENTIALS_NON_EXPIRED ) );
+		user.setRestrictions( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ) );
 
 		UserDto userDto = userService.createUserDto( user );
 
@@ -72,7 +72,8 @@ public class TestUserService
 
 		assertEquals( true, userDto.getDeleted() );
 		assertEquals( true, userDto.getEmailConfirmed() );
-		assertEquals( EnumSet.of( UserStatus.CREDENTIALS_NON_EXPIRED ), userDto.getStatus() );
+		assertEquals( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ), userDto.getRestrictions() );
+		assertEquals( true, userDto.hasRestrictions() );
 	}
 
 	@Test

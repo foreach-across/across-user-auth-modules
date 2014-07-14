@@ -43,34 +43,20 @@ public class UserRepositoryImpl implements UserRepository
 	@Transactional
 	@Override
 	public void update( User user ) {
-        validateUserStatus( user );
 		sessionFactory.getCurrentSession().update( user );
 	}
 
 	@Transactional
 	@Override
 	public void create( User user ) {
-		validateUserStatus( user );
 		sessionFactory.getCurrentSession().save( user );
 	}
 
 	@Transactional
 	@Override
 	public void delete( User user ) {
-        validateUserStatus( user );
         user.setDeleted( true );
         sessionFactory.getCurrentSession().saveOrUpdate( user );
 	}
 
-    private void validateUserStatus( User user ) {
-//        if( user.getStatus() > UserStatus.DEFAULT_USERSTATUS ) {
-//            throw new InvalidUserStatusFieldException( "Modifying the status field is not allowed" );
-//        }
-    }
-
-    public static class InvalidUserStatusFieldException extends UserModuleException {
-        public InvalidUserStatusFieldException( String message ) {
-            super( message );
-        }
-    }
 }

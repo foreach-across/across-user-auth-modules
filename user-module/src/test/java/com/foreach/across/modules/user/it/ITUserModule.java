@@ -4,12 +4,11 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.business.UserStatus;
+import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossTestContextConfigurer;
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Arrays;
+import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
@@ -37,7 +36,7 @@ public class ITUserModule
 		User admin = userService.getUserByUsername( "admin" );
 		assertNotNull( admin );
 		assertEquals( "admin", admin.getUsername() );
-		assertEquals( UserStatus.DEFAULT_USER_STATUS, admin.getStatus() );
+		assertEquals( EnumSet.noneOf( UserRestriction.class ), admin.getRestrictions() );
 		assertEquals( false, admin.getDeleted() );
 		assertEquals( true, admin.getEmailConfirmed() );
 

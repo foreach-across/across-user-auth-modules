@@ -40,13 +40,13 @@
     </div>
 
     <div>
-        <label>Status</label>
+        <label>Restrictions</label>
         <ul>
-            <li th:each="statusItem:${userStatuses}">
+            <li th:each="restriction:${userRestrictions}">
                 <input type="checkbox"
-                       th:field="*{status}"
-                       th:value="${statusItem.name}"/>
-                <label th:text="${statusItem.name}"></label>
+                       th:field="*{restrictions}"
+                       th:value="${restriction.name}"/>
+                <label th:text="${restriction.name}"></label>
             </li>
         </ul>
     </div>
