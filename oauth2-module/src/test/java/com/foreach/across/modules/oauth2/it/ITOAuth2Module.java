@@ -1,6 +1,7 @@
 package com.foreach.across.modules.oauth2.it;
 
 import com.foreach.across.core.AcrossContext;
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.oauth2.OAuth2Module;
 import com.foreach.across.modules.oauth2.services.OAuth2Service;
@@ -12,8 +13,12 @@ import com.foreach.across.test.AcrossTestContextConfigurer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -68,5 +73,22 @@ public class ITOAuth2Module {
         private SpringSecurityModule springSecurityModule() {
             return new SpringSecurityModule();
         }
+
+	    @Bean
+	    @Exposed
+	    public ResourceServerConfigurerAdapter dummyResourceServerConfigurerAdapter() {
+		    return  new ResourceServerConfigurerAdapter() {
+			    @Override
+			    public void configure( ResourceServerSecurityConfigurer resources ) throws Exception {
+				    resources.resourceId( "dummyResourceId" );
+			    }
+
+			    @Override
+			    public void configure( HttpSecurity http ) throws Exception {
+				    http.requestMatchers().antMatchers( "/users/**","/user/**", "/oauth/user_token" );
+				    http.authorizeRequests().anyRequest().authenticated();
+			    }
+		    };
+	    }
     }
 }
