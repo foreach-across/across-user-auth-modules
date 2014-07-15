@@ -33,13 +33,13 @@ public class User implements UserDetails
 	@Column(nullable = false, name = "username")
 	private String username;
 
-	@Column(name = "firstname")
+	@Column(name = "first_name")
 	private String firstName;
 
-	@Column(name = "lastname")
+	@Column(name = "last_name")
 	private String lastName;
 
-	@Column(name = "displayname")
+	@Column(name = "display_name")
 	private String displayName;
 
 	@Column(name = "email")

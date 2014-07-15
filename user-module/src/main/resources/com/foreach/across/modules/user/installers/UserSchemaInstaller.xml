@@ -220,4 +220,24 @@
 		</update>
 	</changeSet>
 
+	<changeSet id="201407151203" author="marc">
+		<comment>Rename camelcased fields</comment>
+		<renameColumn columnDataType="java.sql.Types.NVARCHAR(255)"
+		              newColumnName="display_name"
+		              oldColumnName="displayname"
+		              tableName="${table.user}"/>
+		<renameColumn columnDataType="java.sql.Types.NVARCHAR(255)"
+		              newColumnName="last_name"
+		              oldColumnName="lastname"
+		              tableName="${table.user}"/>
+		<renameColumn columnDataType="java.sql.Types.NVARCHAR(255)"
+		              newColumnName="first_name"
+		              oldColumnName="firstname"
+		              tableName="${table.user}"/>
+		<renameColumn columnDataType="java.sql.Types.BOOLEAN"
+		              newColumnName="email_confirmed"
+		              oldColumnName="emailConfirmed"
+		              tableName="${table.user}"/>
+	</changeSet>
+
 </databaseChangeLog>

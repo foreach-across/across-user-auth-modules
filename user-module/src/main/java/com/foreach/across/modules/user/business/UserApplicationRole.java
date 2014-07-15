@@ -7,15 +7,15 @@ import javax.persistence.Id;
 public class UserApplicationRole
 {
 	@Id
-	@Column(nullable = false)
+	@Column( name = "user_id", nullable = false)
 	private User user;
 
 	@Id
-	@Column(nullable = false)
+	@Column( name = "user_application_id", nullable = false)
 	private UserApplication userApplication;
 
 	@Id
-	@Column(nullable = false)
+	@Column( name = "role_id", nullable = false)
 	private Role role;
 
 	public User getUser() {

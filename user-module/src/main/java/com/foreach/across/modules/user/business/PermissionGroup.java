@@ -26,13 +26,13 @@ public class PermissionGroup
 	)
 	private long id;
 
-	@Column(nullable = false, unique = true)
+	@Column( name = "name", nullable = false, unique = true)
 	private String name;
 
-	@Column
+	@Column( name = "title" )
 	private String title;
 
-	@Column
+	@Column( name = "description" )
 	private String description;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "group")
