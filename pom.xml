@@ -78,6 +78,7 @@
 		<module>admin-web</module>
 		<module>spring-security</module>
 		<module>user-module</module>
+		<module>oauth2-module</module>
 	</modules>
 
 	<distributionManagement>
