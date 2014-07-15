@@ -42,19 +42,19 @@ public class User implements UserDetails
 	@Column(name = "displayname")
 	private String displayName;
 
-	@Column
+	@Column(name = "email")
 	private String email;
 
-	@Column
+	@Column(name = "password")
 	private String password;
 
-	@Column(nullable = false)
+	@Column(name = "email_confirmed", nullable = false)
 	private boolean emailConfirmed;
 
-	@Column(nullable = false)
+	@Column(name = "deleted", nullable = false)
 	private boolean deleted;
 
-	@Column(nullable = true)
+	@Column(name = "restrictions", nullable = true)
 	@Type(type = HibernateUserRestriction.CLASS_NAME)
 	private Set<UserRestriction> restrictions = EnumSet.noneOf( UserRestriction.class );
 
