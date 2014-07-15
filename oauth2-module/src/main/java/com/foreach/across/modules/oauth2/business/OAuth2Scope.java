@@ -19,7 +19,7 @@ public class OAuth2Scope {
             allocationSize = 10 )
     private long id;
 
-    @Column
+    @Column( name = "name" )
     private String name;
 
     @OneToMany( fetch = FetchType.EAGER, mappedBy = "pk.oAuth2Scope" )
