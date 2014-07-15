@@ -240,4 +240,11 @@
 		              tableName="${table.user}"/>
 	</changeSet>
 
+	<changeSet id="201407151402" author="marc">
+		<addNotNullConstraint tableName="${table.user}" columnName="email_confirmed"
+		                      columnDataType="java.sql.Types.BOOLEAN"/>
+		<addNotNullConstraint tableName="${table.user}" columnName="restrictions"
+		                      columnDataType="java.sql.Types.BIGINT"/>
+	</changeSet>
+
 </databaseChangeLog>
