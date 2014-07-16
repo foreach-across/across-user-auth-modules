@@ -2,6 +2,9 @@ package com.foreach.across.modules.oauth2.config;
 
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.oauth2.services.ClientOAuth2AuthenticationSerializer;
+import com.foreach.across.modules.oauth2.services.OAuth2StatelessJdbcTokenStore;
+import com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +18,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 import javax.sql.DataSource;
 
@@ -33,11 +35,21 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Qualifier("oAuth2ClientDetailsService")
     private ClientDetailsService clientDetailsService;
 
+	@Bean
+	public ClientOAuth2AuthenticationSerializer clientOAuth2AuthenticationSerializer() {
+		return new ClientOAuth2AuthenticationSerializer();
+	}
+
+	@Bean
+	public UserOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
+		return new UserOAuth2AuthenticationSerializer();
+	}
+
     @Bean
     @Exposed
     public TokenStore tokenStore() {
-//        return new JdbcTokenStore( dataSource );
-        return new InMemoryTokenStore();
+        return new OAuth2StatelessJdbcTokenStore( dataSource );
+        //return new InMemoryTokenStore();
     }
 
     @Override
