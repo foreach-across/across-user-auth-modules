@@ -1,5 +1,6 @@
 package com.foreach.across.modules.user.it;
 
+import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.user.UserModule;
@@ -8,7 +9,6 @@ import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.test.AcrossTestConfiguration;
-import com.foreach.across.test.AcrossTestContextConfigurer;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,7 +94,7 @@ public class ITUserModule
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config implements AcrossTestContextConfigurer
+	static class Config implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {

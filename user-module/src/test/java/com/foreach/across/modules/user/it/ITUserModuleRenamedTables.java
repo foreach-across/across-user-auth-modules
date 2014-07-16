@@ -1,5 +1,6 @@
 package com.foreach.across.modules.user.it;
 
+import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
@@ -9,7 +10,6 @@ import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.test.AcrossTestConfiguration;
-import com.foreach.across.test.AcrossTestContextConfigurer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class ITUserModuleRenamedTables
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config implements AcrossTestContextConfigurer
+	static class Config implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {
