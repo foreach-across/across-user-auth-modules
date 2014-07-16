@@ -4,7 +4,7 @@ package com.foreach.across.modules.oauth2;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.PackagesToScanProvider;
-import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;

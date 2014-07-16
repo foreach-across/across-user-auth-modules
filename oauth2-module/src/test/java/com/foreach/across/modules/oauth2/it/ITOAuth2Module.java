@@ -1,5 +1,6 @@
 package com.foreach.across.modules.oauth2.it;
 
+import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
@@ -9,7 +10,6 @@ import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.test.AcrossTestContextConfiguration;
-import com.foreach.across.test.AcrossTestContextConfigurer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,64 +31,66 @@ import static org.junit.Assert.assertNotNull;
 @DirtiesContext
 @WebAppConfiguration
 @ContextConfiguration(loader = AnnotationConfigWebContextLoader.class, classes = ITOAuth2Module.Config.class)
-public class ITOAuth2Module {
+public class ITOAuth2Module
+{
 
-    @Autowired
-    private OAuth2Service oauth2Service;
+	@Autowired
+	private OAuth2Service oauth2Service;
 
-    @Test
-    public void verifyBootstrapped() {
-        assertNotNull( oauth2Service );
-    }
+	@Test
+	public void verifyBootstrapped() {
+		assertNotNull( oauth2Service );
+	}
 
-    @Configuration
-    @Import(AcrossTestContextConfiguration.class)
-    static class Config implements AcrossTestContextConfigurer {
+	@Configuration
+	@Import(AcrossTestContextConfiguration.class)
+	static class Config implements AcrossContextConfigurer
+	{
+		@Override
+		public void configure( AcrossContext context ) {
+			context.addModule( acrossHibernateModule() );
+			context.addModule( userModule() );
+			context.addModule( springSecurityModule() );
+			context.addModule( oauth2Module() );
+			context.addModule( acrossWebModule() );
+		}
 
-        @Override
-        public void configure( AcrossContext context ) {
-            context.addModule( acrossHibernateModule() );
-            context.addModule( userModule() );
-            context.addModule( springSecurityModule() );
-            context.addModule( oauth2Module() );
-            context.addModule( acrossWebModule() );
-        }
+		private AcrossWebModule acrossWebModule() {
+			return new AcrossWebModule();
+		}
 
-        private AcrossWebModule acrossWebModule() {
-            return new AcrossWebModule();
-        }
+		private AcrossHibernateModule acrossHibernateModule() {
+			return new AcrossHibernateModule();
+		}
 
-        private AcrossHibernateModule acrossHibernateModule() {
-            return new AcrossHibernateModule();
-        }
+		private UserModule userModule() {
+			return new UserModule();
+		}
 
-        private UserModule userModule() {
-            return new UserModule();
-        }
+		private OAuth2Module oauth2Module() {
+			return new OAuth2Module();
+		}
 
-        private OAuth2Module oauth2Module() {
-            return new OAuth2Module();
-        }
+		private SpringSecurityModule springSecurityModule() {
+			return new SpringSecurityModule();
+		}
 
-        private SpringSecurityModule springSecurityModule() {
-            return new SpringSecurityModule();
-        }
+		@Bean
+		@Exposed
+		public ResourceServerConfigurerAdapter dummyResourceServerConfigurerAdapter() {
+			return new ResourceServerConfigurerAdapter()
+			{
+				@Override
+				public void configure( ResourceServerSecurityConfigurer resources ) throws Exception {
+					resources.resourceId( "dummyResourceId" );
+				}
 
-	    @Bean
-	    @Exposed
-	    public ResourceServerConfigurerAdapter dummyResourceServerConfigurerAdapter() {
-		    return  new ResourceServerConfigurerAdapter() {
-			    @Override
-			    public void configure( ResourceServerSecurityConfigurer resources ) throws Exception {
-				    resources.resourceId( "dummyResourceId" );
-			    }
-
-			    @Override
-			    public void configure( HttpSecurity http ) throws Exception {
-				    http.requestMatchers().antMatchers( "/users/**","/user/**", "/oauth/user_token" );
-				    http.authorizeRequests().anyRequest().authenticated();
-			    }
-		    };
-	    }
-    }
+				@Override
+				public void configure( HttpSecurity http ) throws Exception {
+					http.requestMatchers().antMatchers( "/users/**", "/user/**", "/oauth/user_token" );
+					http.authorizeRequests().anyRequest().authenticated();
+				}
+			};
+		}
+	}
 }
