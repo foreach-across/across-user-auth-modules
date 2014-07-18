@@ -8,6 +8,8 @@ import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.database.HasSchemaConfiguration;
 import com.foreach.across.core.database.SchemaConfiguration;
+import com.foreach.across.core.filters.BeanFilterComposite;
+import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.*;
@@ -22,6 +24,7 @@ import com.foreach.across.modules.oauth2.installers.TokenStoreSchemaInstaller;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.user.UserModule;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
 
 import java.util.Set;
 
@@ -41,6 +44,15 @@ public class OAuth2Module extends AcrossModule implements HasHibernatePackagePro
 	@Override
 	public String getDescription() {
 		return "Provides Oauth 2 security";
+	}
+
+	public OAuth2Module() {
+		setExposeFilter(
+				new BeanFilterComposite(
+						defaultExposeFilter(),
+						new ClassBeanFilter( FrameworkEndpointHandlerMapping.class )
+				)
+		);
 	}
 
 	@Override
@@ -84,21 +96,5 @@ public class OAuth2Module extends AcrossModule implements HasHibernatePackagePro
 	@Override
 	public SchemaConfiguration getSchemaConfiguration() {
 		return schemaConfiguration;
-	}
-
-	@Override
-	public void prepareForBootstrap( ModuleBootstrapConfig currentModule,
-	                                 AcrossBootstrapConfig contextConfig ) {
-
-		/*contextConfig.extendModule( "SpringSecurityModule",
-		                            new AnnotatedClassConfigurer(
-				                            AltResourceServerConfiguration.class,
-				                            AuthorizationServerConfiguration.class
-		                            )
-		);
-
-		contextConfig.extendModule( "SpringSecurityModule",
-		                            new ClassBeanFilter( FrameworkEndpointHandlerMapping.class )
-		);*/
 	}
 }

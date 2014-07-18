@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,9 +34,13 @@ public class ITOAuth2Module
 	@Autowired
 	private OAuth2Service oauth2Service;
 
+	@Autowired
+	private FrameworkEndpointHandlerMapping frameworkEndpointHandlerMapping;
+
 	@Test
 	public void verifyBootstrapped() {
 		assertNotNull( oauth2Service );
+		assertNotNull( frameworkEndpointHandlerMapping );
 	}
 
 	@Configuration
