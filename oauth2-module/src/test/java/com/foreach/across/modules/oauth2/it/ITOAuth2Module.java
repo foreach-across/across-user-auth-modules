@@ -8,21 +8,18 @@ import com.foreach.across.modules.oauth2.OAuth2Module;
 import com.foreach.across.modules.oauth2.services.OAuth2Service;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.user.UserModule;
-import com.foreach.across.modules.web.AcrossWebModule;
-import com.foreach.across.test.AcrossTestContextConfiguration;
+import com.foreach.across.test.AcrossTestWebConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.AnnotationConfigWebContextLoader;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertNotNull;
@@ -30,10 +27,9 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @WebAppConfiguration
-@ContextConfiguration(loader = AnnotationConfigWebContextLoader.class, classes = ITOAuth2Module.Config.class)
+@ContextConfiguration(classes = ITOAuth2Module.Config.class)
 public class ITOAuth2Module
 {
-
 	@Autowired
 	private OAuth2Service oauth2Service;
 
@@ -43,7 +39,7 @@ public class ITOAuth2Module
 	}
 
 	@Configuration
-	@Import(AcrossTestContextConfiguration.class)
+	@AcrossTestWebConfiguration
 	static class Config implements AcrossContextConfigurer
 	{
 		@Override
@@ -52,11 +48,6 @@ public class ITOAuth2Module
 			context.addModule( userModule() );
 			context.addModule( springSecurityModule() );
 			context.addModule( oauth2Module() );
-			context.addModule( acrossWebModule() );
-		}
-
-		private AcrossWebModule acrossWebModule() {
-			return new AcrossWebModule();
 		}
 
 		private AcrossHibernateModule acrossHibernateModule() {

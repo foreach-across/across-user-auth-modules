@@ -8,18 +8,20 @@ import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.database.HasSchemaConfiguration;
 import com.foreach.across.core.database.SchemaConfiguration;
-import com.foreach.across.core.filters.BeanFilterComposite;
-import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.*;
-import com.foreach.across.modules.oauth2.config.*;
+import com.foreach.across.modules.oauth2.config.OAuth2ControllersConfiguration;
+import com.foreach.across.modules.oauth2.config.OAuth2RepositoriesConfiguration;
+import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
+import com.foreach.across.modules.oauth2.config.OAuth2ServicesConfiguration;
+import com.foreach.across.modules.oauth2.config.security.AuthorizationServerSecurityConfiguration;
+import com.foreach.across.modules.oauth2.config.security.ResourceServerSecurityConfiguration;
 import com.foreach.across.modules.oauth2.installers.OAuth2SchemaInstaller;
 import com.foreach.across.modules.oauth2.installers.TokenStoreSchemaInstaller;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.user.UserModule;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
 
 import java.util.Set;
 
@@ -52,9 +54,15 @@ public class OAuth2Module extends AcrossModule implements HasHibernatePackagePro
 
 	@Override
 	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
-		contextConfigurers.add( new AnnotatedClassConfigurer( OAuth2RepositoriesConfiguration.class,
-		                                                      OAuth2ServicesConfiguration.class,
-		                                                      OAuth2ControllersConfiguration.class ) );
+		contextConfigurers.add(
+				new AnnotatedClassConfigurer(
+						OAuth2RepositoriesConfiguration.class,
+						OAuth2ServicesConfiguration.class,
+						OAuth2ControllersConfiguration.class,
+						AuthorizationServerSecurityConfiguration.class,
+						ResourceServerSecurityConfiguration.class
+				)
+		);
 	}
 
 	/**
@@ -81,29 +89,16 @@ public class OAuth2Module extends AcrossModule implements HasHibernatePackagePro
 	@Override
 	public void prepareForBootstrap( ModuleBootstrapConfig currentModule,
 	                                 AcrossBootstrapConfig contextConfig ) {
-		contextConfig.extendModule( "SpringSecurityModule",
+
+		/*contextConfig.extendModule( "SpringSecurityModule",
 		                            new AnnotatedClassConfigurer(
-				                            ResourceServerConfiguration.class,
-				                            AuthorizationServerConfiguration.class,
-				                            BasicSecurityConfig.class
+				                            AltResourceServerConfiguration.class,
+				                            AuthorizationServerConfiguration.class
 		                            )
 		);
-		ModuleBootstrapConfig config = contextConfig.getModule( "SpringSecurityModule" );
-		if ( config != null ) {
-			config.addApplicationContextConfigurer(
-					new AnnotatedClassConfigurer(
-							ResourceServerConfiguration.class,
-							AuthorizationServerConfiguration.class,
-							BasicSecurityConfig.class
-					)
-			);
-			// Expose OAuth handler mapping
-			config.setExposeFilter(
-					new BeanFilterComposite(
-							config.getExposeFilter(),
-							new ClassBeanFilter( FrameworkEndpointHandlerMapping.class )
-					)
-			);
-		}
+
+		contextConfig.extendModule( "SpringSecurityModule",
+		                            new ClassBeanFilter( FrameworkEndpointHandlerMapping.class )
+		);*/
 	}
 }
