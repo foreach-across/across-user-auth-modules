@@ -69,6 +69,9 @@ public class DefaultUserInstaller
 			UserDto user = new UserDto();
 			user.setUsername( "admin" );
 			user.setPassword( "admin" );
+			user.setFirstName( "" );
+			user.setLastName( "" );
+			user.setDisplayName( "Root administrator" );
 			user.setEmail( "-" );
             user.setDeleted( false );
             user.setEmailConfirmed( true );

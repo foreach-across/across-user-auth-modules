@@ -1,6 +1,7 @@
 package com.foreach.across.modules.user.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.AcrossContextUtils;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.user.UserModule;
@@ -39,7 +40,7 @@ public class UserSpringSecurityConfiguration
 	public static class UserDetailsServiceConfiguration
 	{
 		@Autowired
-		@Qualifier(UserModule.NAME)
+		@Module(UserModule.NAME)
 		private AcrossModuleInfo moduleInfo;
 
 		@Autowired
