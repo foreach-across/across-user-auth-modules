@@ -24,7 +24,7 @@ public class RoleServiceImpl implements RoleService
 	private RoleRepository roleRepository;
 
 	@Override
-	public void defineRole( String name, String description, Collection<String> permissionNames ) {
+	public Role defineRole( String name, String description, Collection<String> permissionNames ) {
 		Role role = new Role( name, description );
 
 		Set<Permission> permissions = new TreeSet<>();
@@ -39,6 +39,8 @@ public class RoleServiceImpl implements RoleService
 		role.setPermissions( permissions );
 
 		defineRole( role );
+
+		return role;
 	}
 
 	@Override

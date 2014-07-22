@@ -17,7 +17,7 @@ public class PermissionServiceImpl implements PermissionService
 	private PermissionRepository permissionRepository;
 
 	@Override
-	public void definePermission( String name, String description, String groupName ) {
+	public Permission definePermission( String name, String description, String groupName ) {
 		PermissionGroup group = permissionRepository.getPermissionGroup( groupName );
 
 		if ( group == null ) {
@@ -27,15 +27,17 @@ public class PermissionServiceImpl implements PermissionService
 			permissionRepository.save( group );
 		}
 
-		definePermission( name, description, group );
+		return definePermission( name, description, group );
 	}
 
 	@Override
-	public void definePermission( String name, String description, PermissionGroup group ) {
+	public Permission definePermission( String name, String description, PermissionGroup group ) {
 		Permission permission = new Permission( name, description );
 		permission.setGroup( group );
 
 		definePermission( permission );
+
+		return permission;
 	}
 
 	@Transactional

@@ -12,8 +12,9 @@ public interface RoleService
 	 * @param name        Name of the Role entity.
 	 * @param description Description of the Role.
 	 * @param permissions Permission names to apply to the role.
+	 * @return Role instance that was created or updated.
 	 */
-	void defineRole( String name, String description, Collection<String> permissions );
+	Role defineRole( String name, String description, Collection<String> permissions );
 
 	/**
 	 * Ensures the given Role exists based on the unique name.

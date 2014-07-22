@@ -14,8 +14,9 @@ public interface PermissionService
 	 * @param name        Unique name of the permission.
 	 * @param description Description of the permission.
 	 * @param group       Group for the permission.
+	 * @return Permission instance that was created or updated.
 	 */
-	void definePermission( String name, String description, PermissionGroup group );
+	Permission definePermission( String name, String description, PermissionGroup group );
 
 	/**
 	 * Ensures a permission with the given name and description exists.  The name
@@ -24,8 +25,9 @@ public interface PermissionService
 	 * @param name        Unique name of the permission.
 	 * @param description Description of the permission.
 	 * @param groupName   Name of the permission group the permission should be linked to.
+	 * @return Permission instance that was created or update
 	 */
-	void definePermission( String name, String description, String groupName );
+	Permission definePermission( String name, String description, String groupName );
 
 	/**
 	 * Ensures the given permission exists based on the unique name.
