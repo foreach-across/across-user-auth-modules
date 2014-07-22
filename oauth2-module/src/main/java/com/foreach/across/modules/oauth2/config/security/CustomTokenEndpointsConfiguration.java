@@ -6,29 +6,27 @@ import com.foreach.across.core.context.AcrossContextUtils;
 import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**
+ * Configure additional token endpoints.  These require OAuth2 authentication so behave like a resource,
+ * but they are not handled by the default resource server configuration.
+ *
  * @author Arne Vandamme
  */
 @Configuration
-@Import(ResourceServerConfiguration.class)
-@OrderInModule( 3 )
-public class ResourceServerSecurityConfiguration extends SpringSecurityWebConfigurerAdapter
+@OrderInModule(2)
+public class CustomTokenEndpointsConfiguration extends SpringSecurityWebConfigurerAdapter
 {
 	@Autowired(required = false)
 	private TokenStore tokenStore;
@@ -38,72 +36,29 @@ public class ResourceServerSecurityConfiguration extends SpringSecurityWebConfig
 
 	private AccessDeniedHandler accessDeniedHandler = new OAuth2AccessDeniedHandler();
 
-	@Autowired(required = false)
+	@Autowired
 	private AuthorizationServerEndpointsConfiguration endpoints;
 
 	@Autowired
 	private AcrossContext context;
 
-	private static class NotOAuthRequestMatcher implements RequestMatcher
-	{
-
-		private FrameworkEndpointHandlerMapping mapping;
-
-		public NotOAuthRequestMatcher( FrameworkEndpointHandlerMapping mapping ) {
-			this.mapping = mapping;
-		}
-
-		@Override
-		public boolean matches( HttpServletRequest request ) {
-			String requestPath = getRequestPath( request );
-			for ( String path : mapping.getPaths() ) {
-				if ( requestPath.startsWith( path ) ) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-		private String getRequestPath( HttpServletRequest request ) {
-			String url = request.getServletPath();
-
-			if ( request.getPathInfo() != null ) {
-				url += request.getPathInfo();
-			}
-
-			return url;
-		}
-
-	}
-
 	@Override
 	public void configure( HttpSecurity http ) throws Exception {
 		HttpSecurity.RequestMatcherConfigurer requests = http.requestMatchers();
-		if ( endpoints != null ) {
-			// Assume we are in an Authorization Server
-			requests.requestMatchers( new NotOAuthRequestMatcher( endpoints.oauth2EndpointHandlerMapping() ) );
-		}
-		// @formatter:off
+
+		String userTokenPath = endpoints.oauth2EndpointHandlerMapping().getPath( "/oauth/user_token" );
+		String invalidateTokenPath = endpoints.oauth2EndpointHandlerMapping().getPath( "/oauth/invalidate" );
+		requests.antMatchers( userTokenPath, invalidateTokenPath );
+
 		http
 				.exceptionHandling().accessDeniedHandler( accessDeniedHandler )
 				.and()
 				.anonymous().disable()
-				.csrf().disable();
-		// @formatter:on
+				.csrf().disable()
+				.authorizeRequests()
+				.antMatchers( userTokenPath ).hasAuthority( "manage users" )
+				.antMatchers( invalidateTokenPath ).authenticated();
 
-		Collection<ResourceServerConfigurer> configurers = AcrossContextUtils.getBeansOfType( context,
-		                                                                                      ResourceServerConfigurer.class,
-		                                                                                      true );
-
-		for ( ResourceServerConfigurer configurer : configurers ) {
-			// Delegates can add authorizeRequests() here
-			configurer.configure( http );
-		}
-		if ( configurers.isEmpty() ) {
-			// Add anyRequest() last as a fall back. Spring Security would replace an existing anyRequest() matcher
-			// with this one, so to avoid that we only add it if the user hasn't configured anything.
-			http.authorizeRequests().anyRequest().authenticated();
-		}
 		// And set the default expression handler in case one isn't explicit elsewhere
 		http.authorizeRequests().expressionHandler( new OAuth2WebSecurityExpressionHandler() );
 		ResourceServerSecurityConfigurer resources = new ResourceServerSecurityConfigurer();
@@ -116,6 +71,11 @@ public class ResourceServerSecurityConfiguration extends SpringSecurityWebConfig
 				resources.tokenStore( tokenStore );
 			}
 		}
+
+		// Resource ids are required to be configured to support the same access tokens as the others
+		Collection<ResourceServerConfigurer> configurers = AcrossContextUtils.getBeansOfType( context,
+		                                                                                      ResourceServerConfigurer.class,
+		                                                                                      true );
 		for ( ResourceServerConfigurer configurer : configurers ) {
 			configurer.configure( resources );
 		}

@@ -2,8 +2,6 @@ package com.foreach.across.modules.oauth2;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
-import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.database.HasSchemaConfiguration;
@@ -13,11 +11,12 @@ import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.*;
-import com.foreach.across.modules.oauth2.config.OAuth2ControllersConfiguration;
+import com.foreach.across.modules.oauth2.config.OAuth2EndpointsConfiguration;
 import com.foreach.across.modules.oauth2.config.OAuth2RepositoriesConfiguration;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import com.foreach.across.modules.oauth2.config.OAuth2ServicesConfiguration;
 import com.foreach.across.modules.oauth2.config.security.AuthorizationServerSecurityConfiguration;
+import com.foreach.across.modules.oauth2.config.security.CustomTokenEndpointsConfiguration;
 import com.foreach.across.modules.oauth2.config.security.ResourceServerSecurityConfiguration;
 import com.foreach.across.modules.oauth2.installers.OAuth2SchemaInstaller;
 import com.foreach.across.modules.oauth2.installers.TokenStoreSchemaInstaller;
@@ -70,8 +69,9 @@ public class OAuth2Module extends AcrossModule implements HasHibernatePackagePro
 				new AnnotatedClassConfigurer(
 						OAuth2RepositoriesConfiguration.class,
 						OAuth2ServicesConfiguration.class,
-						OAuth2ControllersConfiguration.class,
+						OAuth2EndpointsConfiguration.class,
 						AuthorizationServerSecurityConfiguration.class,
+						CustomTokenEndpointsConfiguration.class,
 						ResourceServerSecurityConfiguration.class
 				)
 		);

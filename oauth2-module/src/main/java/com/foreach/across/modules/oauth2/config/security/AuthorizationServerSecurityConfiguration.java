@@ -41,6 +41,7 @@ public class AuthorizationServerSecurityConfiguration extends SpringSecurityWebC
 		String tokenEndpointPath = handlerMapping.getPath( "/oauth/token" );
 		String tokenKeyPath = handlerMapping.getPath( "/oauth/token_key" );
 		String checkTokenPath = handlerMapping.getPath( "/oauth/check_token" );
+
 		// @formatter:off
 		http
 				.authorizeRequests()

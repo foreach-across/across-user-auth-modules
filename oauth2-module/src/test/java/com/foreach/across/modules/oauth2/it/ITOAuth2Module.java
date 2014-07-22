@@ -23,7 +23,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.util.Set;
+
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
@@ -41,6 +44,14 @@ public class ITOAuth2Module
 	public void verifyBootstrapped() {
 		assertNotNull( oauth2Service );
 		assertNotNull( frameworkEndpointHandlerMapping );
+	}
+
+	@Test
+	public void verifyEndpointsDetected() {
+		Set<String> endpoints = frameworkEndpointHandlerMapping.getPaths();
+
+		assertTrue( endpoints.contains( "/oauth/invalidate" ) );
+		assertTrue( endpoints.contains( "/oauth/user_token" ) );
 	}
 
 	@Configuration
