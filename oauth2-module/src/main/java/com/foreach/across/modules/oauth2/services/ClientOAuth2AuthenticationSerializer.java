@@ -6,18 +6,15 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
-import java.io.Serializable;
-import java.util.Collections;
-
 public class ClientOAuth2AuthenticationSerializer extends OAuth2AuthenticationSerializer<String>
 {
 	@Autowired
 	private ClientDetailsService clientDetailsService;
 
 	@Override
-	protected byte[] serializePrincipal( Object object ) {
+	protected byte[] serializePrincipal( Object object, OAuth2Request oAuth2Request ) {
 		String clientId = (String) object;
-		return super.serializeObject( clientId );
+		return super.serializeObject( clientId, oAuth2Request );
 	}
 
 	@Override
@@ -25,13 +22,7 @@ public class ClientOAuth2AuthenticationSerializer extends OAuth2AuthenticationSe
 		String clientId = serializerObject.getObject();
 		ClientDetails clientDetails = clientDetailsService.loadClientByClientId( clientId );
 
-		OAuth2Request clientRequest = new OAuth2Request( Collections.<String, String>emptyMap(),
-		                                                 clientId, clientDetails.getAuthorities(), true,
-		                                                 clientDetails.getScope(),
-		                                                 clientDetails.getResourceIds(), "",
-		                                                 Collections.<String>emptySet(), Collections.<String, Serializable>emptyMap()
-		);
-
+		OAuth2Request clientRequest = serializerObject.getOAuth2Request( clientDetails.getAuthorities() );
 		return new OAuth2Authentication( clientRequest, null );
 	}
 

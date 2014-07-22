@@ -2,37 +2,33 @@ package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.user.business.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.provider.ClientDetails;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-
-import java.io.Serializable;
-import java.util.Collections;
 
 public class UserOAuth2AuthenticationSerializer extends OAuth2AuthenticationSerializer<String>
 {
 	@Autowired
 	private UserDetailsService userDetailsService;
+	@Autowired
+	private ClientDetailsService clientDetailsService;
 
 	@Override
-	protected byte[] serializePrincipal( Object object ) {
+	protected byte[] serializePrincipal( Object object, OAuth2Request oAuth2Request ) {
 		User user = (User) object;
-		return super.serializeObject( user.getUsername() );
+		return super.serializeObject( user.getUsername(), oAuth2Request );
 	}
 
 	@Override
 	public OAuth2Authentication deserialize( AuthenticationSerializerObject<String> serializerObject ) {
 		UserDetails user = userDetailsService.loadUserByUsername( serializerObject.getObject() );
 
-		OAuth2Request userRequest = new OAuth2Request( Collections.<String, String>emptyMap(),
-		                                               "foobar", Collections.<GrantedAuthority>emptyList(), true,
-		                                               Collections.singleton( "full" ),
-		                                               Collections.singleton( "knooppunt" ), "",
-		                                               Collections.<String>emptySet(), Collections.<String, Serializable>emptyMap()
-		);
+		ClientDetails clientDetails =  clientDetailsService.loadClientByClientId( serializerObject.getClientId() );
+		OAuth2Request userRequest = serializerObject.getOAuth2Request( clientDetails.getAuthorities() );
 
 		return new OAuth2Authentication( userRequest, new PreAuthenticatedAuthenticationToken( user, null, user.getAuthorities() ) );
 	}
