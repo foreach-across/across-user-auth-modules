@@ -7,6 +7,7 @@ import com.foreach.across.modules.spring.security.configuration.SpringSecurityWe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -51,6 +52,7 @@ public class CustomTokenEndpointsConfiguration extends SpringSecurityWebConfigur
 		requests.antMatchers( userTokenPath, invalidateTokenPath );
 
 		http
+				.sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
 				.exceptionHandling().accessDeniedHandler( accessDeniedHandler )
 				.and()
 				.anonymous().disable()
