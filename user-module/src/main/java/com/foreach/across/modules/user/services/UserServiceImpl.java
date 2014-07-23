@@ -1,5 +1,6 @@
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
@@ -9,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 
+import javax.annotation.PostConstruct;
 import java.util.Collection;
 
 @Service
@@ -17,12 +21,33 @@ public class UserServiceImpl implements UserService
 {
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private UserValidator userValidator;
 
 	private final PasswordEncoder passwordEncoder;
+	private final boolean useEmailAsUsername;
+	private final boolean requireEmailUnique;
 
-	public UserServiceImpl( PasswordEncoder passwordEncoder ) {
+	public UserServiceImpl( PasswordEncoder passwordEncoder, boolean useEmailAsUsername, boolean requireEmailUnique ) {
 		Assert.notNull( passwordEncoder, "A UserService must be configured with a valid PasswordEncoder" );
 		this.passwordEncoder = passwordEncoder;
+		this.useEmailAsUsername = useEmailAsUsername;
+		this.requireEmailUnique = requireEmailUnique;
+	}
+
+	@PostConstruct
+	public void validateProperties() {
+		if( useEmailAsUsername && !requireEmailUnique ) {
+			throw new RuntimeException( UserModuleSettings.REQUIRE_EMAIL_UNIQUE + " must be TRUE if " + UserModuleSettings.USE_EMAIL_AS_USERNAME + " is TRUE" );
+		}
+	}
+
+	public boolean isUseEmailAsUsername() {
+		return useEmailAsUsername;
+	}
+
+	public boolean isRequireEmailUnique() {
+		return requireEmailUnique;
 	}
 
 	@Override
@@ -33,6 +58,11 @@ public class UserServiceImpl implements UserService
 	@Override
 	public User getUserById( long id ) {
 		return userRepository.getUserById( id );
+	}
+
+	@Override
+	public User getUserByEmail( String email ) {
+		return userRepository.getUserByEmail( email );
 	}
 
 	@Override
@@ -72,7 +102,16 @@ public class UserServiceImpl implements UserService
 			}
 		}
 
+		Errors errors = new BeanPropertyBindingResult( userDto, "user" );
+		userValidator.validate( userDto, errors );
+		if( errors.hasErrors() ) {
+			throw new UserValidationException( "Failed to validate User, [" + errors.getErrorCount() + "] validation errors", errors.getAllErrors() );
+		}
+
 		BeanUtils.copyProperties( userDto, user, "password" );
+		if( useEmailAsUsername ) {
+			user.setUsername( userDto.getEmail() );
+		}
 
 		// Only modify password if password on the dto is not blank
 		if ( !StringUtils.isBlank( userDto.getPassword() ) ) {

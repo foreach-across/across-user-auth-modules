@@ -10,9 +10,9 @@ public interface UserRepository
 
 	User getUserByUsername( String userName );
 
-	//User getUserByEmail( String email );
-
 	User getUserById( long id );
+
+	User getUserByEmail( String email );
 
 	void update( User user );
 

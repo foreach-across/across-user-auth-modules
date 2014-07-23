@@ -50,6 +50,7 @@ public class ITUserModule
 	public void newlyCreatedUsersHavePositiveIds() {
 		UserDto user = new UserDto();
 		user.setUsername( RandomStringUtils.randomAscii( 10 ) );
+		user.setEmail( RandomStringUtils.randomAscii( 200 ) );
 		user.setPassword( RandomStringUtils.randomAscii( 30 ) );
 		user.setFirstName( RandomStringUtils.randomAscii( 25 ) + "明美" );
 		user.setLastName( RandomStringUtils.randomAscii( 25 ) + "明美" );
@@ -76,6 +77,7 @@ public class ITUserModule
 		user.setNewUser( true );
 		user.setId( -100 );
 		user.setUsername( "test-user:-100" );
+		user.setEmail( "negemail@test.com" );
 		user.setPassword( "test password" );
 		user.setFirstName( "Test" );
 		user.setLastName( "User" );

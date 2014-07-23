@@ -1,5 +1,6 @@
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
@@ -9,16 +10,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.internal.util.collections.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -60,6 +66,11 @@ public class TestUserService
 		user.setEmailConfirmed( true );
 		user.setRestrictions( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ) );
 
+		Role role_1 = new Role( "role 1" );
+		role_1.addPermission( "permission 1", "permission 2" );
+
+		user.setRoles( Sets.newSet( role_1 ) );
+
 		UserDto userDto = userService.createUserDto( user );
 
 		assertEquals( 1561, user.getId() );
@@ -74,6 +85,7 @@ public class TestUserService
 		assertEquals( true, userDto.getEmailConfirmed() );
 		assertEquals( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ), userDto.getRestrictions() );
 		assertEquals( true, userDto.hasRestrictions() );
+		assertEquals( Sets.newSet( new SimpleGrantedAuthority( "permission 1" ), new SimpleGrantedAuthority( "permission 2" ), new SimpleGrantedAuthority( "role 1" ) ), user.getAuthorities() );
 	}
 
 	@Test
@@ -81,7 +93,8 @@ public class TestUserService
 		UserDto dto = new UserDto();
 		dto.setFirstName( "first" );
 		dto.setLastName( "last" );
-		dto.setUsername( "email" );
+		dto.setUsername( "user" );
+		dto.setEmail( "email" );
 		dto.setPassword( "my-password" );
 
 		userService.save( dto );
@@ -100,7 +113,8 @@ public class TestUserService
 		UserDto dto = new UserDto();
 		dto.setFirstName( "first" );
 		dto.setLastName( "last" );
-		dto.setUsername( "email" );
+		dto.setUsername( "username" );
+		dto.setEmail( "email" );
 		dto.setPassword( "my-password" );
 
 		userService.save( dto );
@@ -111,6 +125,29 @@ public class TestUserService
 		User savedUser = argument.getValue();
 		assertNotEquals( dto.getPassword(), savedUser.getPassword() );
 		assertFalse( StringUtils.isBlank( savedUser.getPassword() ) );
+	}
+
+	@Test
+	public void usernameIsRequired() {
+		UserDto dto = new UserDto();
+		dto.setPassword( "my-password" );
+
+		try {
+			userService.save( dto );
+		} catch ( UserValidationException uve ) {
+			List<ObjectError> errors = uve.getErrors();
+			assertEquals( 2, errors.size() );
+			FieldError usernameError = (FieldError) errors.get( 0 );
+			assertEquals( "user", usernameError.getObjectName() );
+			assertEquals( "username", usernameError.getField() );
+			assertEquals( "username cannot be empty", usernameError.getDefaultMessage() );
+
+			FieldError emailError = (FieldError) errors.get( 1 );
+			assertEquals( "user", emailError.getObjectName() );
+			assertEquals( "email", emailError.getField() );
+			assertEquals( "email cannot be empty", emailError.getDefaultMessage() );
+		}
+
 	}
 
 	@Test(expected = UserModuleException.class)
@@ -128,11 +165,13 @@ public class TestUserService
 		User existing = new User();
 		existing.setId( 321 );
 		existing.setUsername( "uname" );
+		existing.setEmail( "uname@test.com" );
 		existing.setPassword( "my-existing-password" );
 
 		UserDto update = new UserDto();
 		update.setId( existing.getId() );
 		update.setUsername( "other" );
+		update.setEmail( "other@email.com" );
 
 		when( userRepository.getUserById( 321 ) ).thenReturn( existing );
 
@@ -144,6 +183,7 @@ public class TestUserService
 		User savedUser = argument.getValue();
 		assertSame( existing, savedUser );
 		assertEquals( "other", savedUser.getUsername() );
+		assertEquals( "other@email.com", savedUser.getEmail() );
 		assertEquals( "my-existing-password", savedUser.getPassword() );
 	}
 
@@ -189,7 +229,7 @@ public class TestUserService
 	{
 		@Bean
 		public UserService userService() {
-			return new UserServiceImpl( passwordEncoder() );
+			return new UserServiceImpl( passwordEncoder(), false, false );
 		}
 
 		@Bean
@@ -200,6 +240,11 @@ public class TestUserService
 		@Bean
 		public UserRepository userRepository() {
 			return mock( UserRepository.class );
+		}
+
+		@Bean
+		public UserValidator userValidator() {
+			return new UserValidator();
 		}
 	}
 }

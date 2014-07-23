@@ -67,7 +67,14 @@ public class UserServicesConfiguration
 	}
 
 	@Bean
+	public UserValidator userValidator() {
+		return new UserValidator();
+	}
+
+	@Bean
 	public UserService userService() {
-		return new UserServiceImpl( userPasswordEncoder() );
+		boolean useEmailAsUsername = environment.getProperty( UserModuleSettings.USE_EMAIL_AS_USERNAME, Boolean.class, false );
+		boolean requireEmailUnique = environment.getProperty( UserModuleSettings.REQUIRE_EMAIL_UNIQUE, Boolean.class, false );
+		return new UserServiceImpl( userPasswordEncoder(), useEmailAsUsername, requireEmailUnique );
 	}
 }

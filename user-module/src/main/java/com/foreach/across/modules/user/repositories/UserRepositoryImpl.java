@@ -1,7 +1,7 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.services.UserModuleException;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -29,6 +29,18 @@ public class UserRepositoryImpl implements UserRepository
 	@Override
 	public User getUserById( long id ) {
 		return (User) sessionFactory.getCurrentSession().get( User.class, id );
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public User getUserByEmail( String email ) {
+		if( StringUtils.isNotBlank( email ) ) {
+			email = StringUtils.lowerCase( email );
+			email = StringUtils.trimToEmpty( email );
+		}
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria( User.class );
+		criteria.add( Restrictions.eq( "email", email ) );
+		return (User) criteria.uniqueResult();
 	}
 
 	@Transactional(readOnly = true)
