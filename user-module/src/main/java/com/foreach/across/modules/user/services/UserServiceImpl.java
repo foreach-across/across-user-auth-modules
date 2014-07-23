@@ -102,15 +102,15 @@ public class UserServiceImpl implements UserService
 			}
 		}
 
+		if( useEmailAsUsername ) {
+			userDto.setUsername( userDto.getEmail() );
+		}
+		BeanUtils.copyProperties( userDto, user, "password" );
+
 		Errors errors = new BeanPropertyBindingResult( userDto, "user" );
 		userValidator.validate( userDto, errors );
 		if( errors.hasErrors() ) {
 			throw new UserValidationException( "Failed to validate User, [" + errors.getErrorCount() + "] validation errors", errors.getAllErrors() );
-		}
-
-		BeanUtils.copyProperties( userDto, user, "password" );
-		if( useEmailAsUsername ) {
-			user.setUsername( userDto.getEmail() );
 		}
 
 		// Only modify password if password on the dto is not blank

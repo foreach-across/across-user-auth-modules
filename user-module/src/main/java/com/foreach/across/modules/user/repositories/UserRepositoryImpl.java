@@ -35,6 +35,7 @@ public class UserRepositoryImpl implements UserRepository
 	@Override
 	public User getUserByEmail( String email ) {
 		if( StringUtils.isNotBlank( email ) ) {
+			//TODO #6 don't do this here, use a @Type(type=TypeTrimmedLowerCase) ?
 			email = StringUtils.lowerCase( email );
 			email = StringUtils.trimToEmpty( email );
 		}
