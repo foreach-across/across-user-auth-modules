@@ -37,8 +37,9 @@ public class UserServiceImpl implements UserService
 
 	@PostConstruct
 	public void validateProperties() {
-		if( useEmailAsUsername && !requireEmailUnique ) {
-			throw new RuntimeException( UserModuleSettings.REQUIRE_EMAIL_UNIQUE + " must be TRUE if " + UserModuleSettings.USE_EMAIL_AS_USERNAME + " is TRUE" );
+		if ( useEmailAsUsername && !requireEmailUnique ) {
+			throw new RuntimeException(
+					UserModuleSettings.REQUIRE_EMAIL_UNIQUE + " must be TRUE if " + UserModuleSettings.USE_EMAIL_AS_USERNAME + " is TRUE" );
 		}
 	}
 
@@ -102,15 +103,17 @@ public class UserServiceImpl implements UserService
 			}
 		}
 
-		if( useEmailAsUsername ) {
+		if ( useEmailAsUsername ) {
 			userDto.setUsername( userDto.getEmail() );
 		}
 		BeanUtils.copyProperties( userDto, user, "password" );
 
 		Errors errors = new BeanPropertyBindingResult( userDto, "user" );
 		userValidator.validate( userDto, errors );
-		if( errors.hasErrors() ) {
-			throw new UserValidationException( "Failed to validate User, [" + errors.getErrorCount() + "] validation errors", errors.getAllErrors() );
+		if ( errors.hasErrors() ) {
+			throw new UserValidationException(
+					"Failed to validate User, [" + errors.getErrorCount() + "] validation errors",
+					errors.getAllErrors() );
 		}
 
 		// Only modify password if password on the dto is not blank
