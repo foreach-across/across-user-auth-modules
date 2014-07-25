@@ -6,14 +6,15 @@ import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
+import com.foreach.across.modules.user.services.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.EnumSet;
 
 @AdminWebController
@@ -29,6 +30,14 @@ public class UserController {
 
     @Autowired
     private RoleService roleService;
+
+	@Autowired
+	private UserValidator userValidator;
+
+	@InitBinder("user")
+	protected void initBinder( WebDataBinder binder ) {
+		binder.setValidator( userValidator );
+	}
 
     @RequestMapping
     public String listUsers( Model model ) {
@@ -60,11 +69,22 @@ public class UserController {
     }
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public String saveUser( @ModelAttribute("user") UserDto user, RedirectAttributes re ) {
-        userService.save( user );
+    public String saveUser( @ModelAttribute("user") @Valid UserDto user, BindingResult bindingResult, RedirectAttributes re, Model model ) {
+	    if( !bindingResult.hasErrors() ) {
+		    userService.save( user );
 
-        re.addAttribute( "userId", user.getId() );
+		    re.addAttribute( "userId", user.getId() );
 
-        return adminWeb.redirect( "/users/{userId}" );
+		    return adminWeb.redirect( "/users/{userId}" );
+	    } else {
+		    model.addAttribute( "errors", bindingResult.getAllErrors() );
+
+		    model.addAttribute( "existing", true );
+		    model.addAttribute( "user", user );
+		    model.addAttribute( "roles", roleService.getRoles() );
+		    model.addAttribute( "userRestrictions", EnumSet.allOf( UserRestriction.class ) );
+
+		    return "th/user/users/edit";
+	    }
     }
 }

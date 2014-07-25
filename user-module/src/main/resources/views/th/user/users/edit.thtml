@@ -4,6 +4,10 @@
 </head>
 <body th:fragment="content">
 
+<ul th:if="${#fields.hasErrors('${user.*}')}">
+  <li th:each="err : ${#fields.errors('${user.*}')}" th:text="${err}" />
+</ul>
+
 <form method="post" th:action="@{${@adminWeb.path('/users/save')}}" th:object="${user}">
 	<input type="hidden" th:field="*{id}"/>
 

@@ -6,9 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.Validator;
 
-public class UserValidator extends LocalValidatorFactoryBean
+public class UserValidator implements Validator
 {
 	@Autowired
 	private UserService userService;
@@ -17,8 +17,6 @@ public class UserValidator extends LocalValidatorFactoryBean
 
 	@Override
 	public void validate( Object target, Errors errors ) {
-		super.validate( target, errors );
-
 		if( supports( target.getClass() ) ) {
 			UserDto userDto = (UserDto) target;
 			if( userService.isRequireEmailUnique() ) {
@@ -29,7 +27,7 @@ public class UserValidator extends LocalValidatorFactoryBean
 			}
 			if( userService.isUseEmailAsUsername() ) {
 				if( StringUtils.isNotBlank( userDto.getUsername() ) && !StringUtils.equalsIgnoreCase( userDto.getUsername(), userDto.getEmail() ) ) {
-					errors.rejectValue( "username", null, "username cannot be specified when useEmailAsUsername is set" );
+					errors.rejectValue( "username", null, "username cannot be specified when useEmailAsUsername is set or must be equal to the email" );
 				}
 			} else {
 				if( StringUtils.isBlank( userDto.getUsername() ) ) {
