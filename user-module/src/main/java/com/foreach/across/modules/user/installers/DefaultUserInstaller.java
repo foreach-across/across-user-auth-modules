@@ -72,7 +72,7 @@ public class DefaultUserInstaller
 			user.setFirstName( "" );
 			user.setLastName( "" );
 			user.setDisplayName( "Root administrator" );
-			user.setEmail( "-" );
+			user.setEmail( "admin@localhost" );
             user.setDeleted( false );
             user.setEmailConfirmed( true );
 

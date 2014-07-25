@@ -3,6 +3,7 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.UserDto;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -11,10 +12,13 @@ public class UserValidator extends LocalValidatorFactoryBean
 {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private EmailValidator emailValidator;
 
 	@Override
 	public void validate( Object target, Errors errors ) {
 		super.validate( target, errors );
+
 		if( supports( target.getClass() ) ) {
 			UserDto userDto = (UserDto) target;
 			if( userService.isRequireEmailUnique() ) {
@@ -32,8 +36,16 @@ public class UserValidator extends LocalValidatorFactoryBean
 					errors.rejectValue( "username", null, "username cannot be empty" );
 				}
 			}
+
+			if( StringUtils.contains( userDto.getUsername(), ' ' ) ) {
+				errors.rejectValue( "username", null, "username cannot contain whitespaces" );
+			}
 			if( StringUtils.isBlank( userDto.getEmail() ) ) {
 				errors.rejectValue( "email", null, "email cannot be empty" );
+			} else {
+				if( !emailValidator.isValid( userDto.getEmail(), null ) ) {
+					errors.rejectValue( "email", null, "invalid email" );
+				}
 			}
 		}
 	}

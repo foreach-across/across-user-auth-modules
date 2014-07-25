@@ -3,6 +3,7 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
+import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,7 +88,7 @@ public class TestUserServiceWithEmailAsUserName
 	public void creatingUserFailsWhenUsernameIsSpecified() throws Exception {
 
 		UserDto userDto = new UserDto();
-		userDto.setUsername( "some username" );
+		userDto.setUsername( "someusername" );
 		userDto.setPassword( "password" );
 		userDto.setEmail( "test@email.com" );
 
@@ -135,6 +136,11 @@ public class TestUserServiceWithEmailAsUserName
 		@Bean
 		public UserValidator userValidator() {
 			return new UserValidator();
+		}
+
+		@Bean
+		public EmailValidator emailValidator() {
+			return new EmailValidator();
 		}
 	}
 }

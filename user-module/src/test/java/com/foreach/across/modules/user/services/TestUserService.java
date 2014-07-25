@@ -6,6 +6,7 @@ import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,7 +95,7 @@ public class TestUserService
 		dto.setFirstName( "first" );
 		dto.setLastName( "last" );
 		dto.setUsername( "user" );
-		dto.setEmail( "email" );
+		dto.setEmail( "email@valid.com" );
 		dto.setPassword( "my-password" );
 
 		userService.save( dto );
@@ -114,7 +115,7 @@ public class TestUserService
 		dto.setFirstName( "first" );
 		dto.setLastName( "last" );
 		dto.setUsername( "username" );
-		dto.setEmail( "email" );
+		dto.setEmail( "email@foo.bar" );
 		dto.setPassword( "my-password" );
 
 		userService.save( dto );
@@ -158,6 +159,57 @@ public class TestUserService
 		dto.setUsername( "email" );
 
 		userService.save( dto );
+	}
+
+	@Test
+	public void emailAndUserNameAreConvertedToLowerCase() {
+		UserDto userDto = new UserDto();
+		userDto.setUsername( "AdMiN" );
+		userDto.setEmail( "oThEr@EmAiL.EDU" );
+		userDto.setPassword( "198(1!è!(§!ç(§ç" );
+
+		userService.save( userDto );
+
+		ArgumentCaptor<User> argument = ArgumentCaptor.forClass( User.class );
+		verify( userRepository ).create( argument.capture() );
+
+		User createdUser = argument.getValue();
+		assertEquals( "admin", createdUser.getUsername() );
+		assertEquals( "other@email.edu", createdUser.getEmail() );
+	}
+
+	@Test
+	public void emailWithSpacesThrowsValidationError() {
+		UserDto userDto = new UserDto();
+		userDto.setUsername( "admin" );
+		userDto.setEmail( " oT hEr@EmA iL.EDU  " );
+		userDto.setPassword( "198(1!è!(§!ç(§ç" );
+
+		try {
+			userService.save( userDto );
+		} catch ( UserValidationException uve ) {
+			List<ObjectError> errors = uve.getErrors();
+			assertEquals( 1, errors.size() );
+			FieldError fieldError = (FieldError) errors.get( 0 );
+			assertEquals( "email", fieldError.getField() );
+		}
+	}
+
+	@Test
+	public void userNameWithSpacesThrowsValidationError() {
+		UserDto userDto = new UserDto();
+		userDto.setUsername( "  A dM iN" );
+		userDto.setEmail( "other@email.edu" );
+		userDto.setPassword( "198(1!è!(§!ç(§ç" );
+
+		try {
+			userService.save( userDto );
+		} catch ( UserValidationException uve ) {
+			List<ObjectError> errors = uve.getErrors();
+			assertEquals( 1, errors.size() );
+			FieldError fieldError = (FieldError) errors.get( 0 );
+			assertEquals( "username", fieldError.getField() );
+		}
 	}
 
 	@Test
@@ -245,6 +297,11 @@ public class TestUserService
 		@Bean
 		public UserValidator userValidator() {
 			return new UserValidator();
+		}
+
+		@Bean
+		public EmailValidator emailValidator() {
+			return new EmailValidator();
 		}
 	}
 }

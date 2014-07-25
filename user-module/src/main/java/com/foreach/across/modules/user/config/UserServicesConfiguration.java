@@ -5,6 +5,7 @@ import com.foreach.across.modules.user.converters.ObjectToPermissionConverter;
 import com.foreach.across.modules.user.converters.ObjectToRoleConverter;
 import com.foreach.across.modules.user.converters.ObjectToUserConverter;
 import com.foreach.across.modules.user.services.*;
+import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,11 @@ public class UserServicesConfiguration
 	@Bean
 	public UserValidator userValidator() {
 		return new UserValidator();
+	}
+
+	@Bean
+	public EmailValidator emailValidator() {
+		return new EmailValidator();
 	}
 
 	@Bean

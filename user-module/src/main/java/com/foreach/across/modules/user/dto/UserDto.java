@@ -3,6 +3,7 @@ package com.foreach.across.modules.user.dto;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
+import com.foreach.across.modules.user.converters.FieldUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -47,7 +48,7 @@ public class UserDto
 	}
 
 	public void setUsername( String username ) {
-		this.username = username;
+		this.username = FieldUtils.lowerCase( username );
 	}
 
 	public String getFirstName() {
@@ -79,7 +80,7 @@ public class UserDto
 	}
 
 	public void setEmail( String email ) {
-		this.email = email;
+		this.email = FieldUtils.lowerCase( email );
 	}
 
 	public String getPassword() {

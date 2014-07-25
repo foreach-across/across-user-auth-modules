@@ -1,7 +1,7 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.user.business.User;
-import org.apache.commons.lang3.StringUtils;
+import com.foreach.across.modules.user.converters.FieldUtils;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -34,13 +34,8 @@ public class UserRepositoryImpl implements UserRepository
 	@Transactional(readOnly = true)
 	@Override
 	public User getUserByEmail( String email ) {
-		if( StringUtils.isNotBlank( email ) ) {
-			//TODO #6 don't do this here, use a @Type(type=TypeTrimmedLowerCase) ?
-			email = StringUtils.lowerCase( email );
-			email = StringUtils.trimToEmpty( email );
-		}
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria( User.class );
-		criteria.add( Restrictions.eq( "email", email ) );
+		criteria.add( Restrictions.eq( "email", FieldUtils.lowerCase( email ) ) );
 		return (User) criteria.uniqueResult();
 	}
 
@@ -48,7 +43,7 @@ public class UserRepositoryImpl implements UserRepository
 	@Override
 	public User getUserByUsername( String userName ) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria( User.class );
-		criteria.add( Restrictions.eq( "username", userName ) );
+		criteria.add( Restrictions.eq( "username", FieldUtils.lowerCase( userName ) ) );
 
 		return (User) criteria.uniqueResult();
 	}
