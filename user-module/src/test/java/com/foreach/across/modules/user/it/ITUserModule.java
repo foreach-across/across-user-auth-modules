@@ -3,6 +3,7 @@ package com.foreach.across.modules.user.it;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
+import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
@@ -50,7 +51,8 @@ public class ITUserModule
 	public void newlyCreatedUsersHavePositiveIds() {
 		UserDto user = new UserDto();
 		user.setUsername( RandomStringUtils.randomAscii( 10 ) );
-		user.setEmail( RandomStringUtils.randomAlphanumeric( 63 ) + "@" + RandomStringUtils.randomAlphanumeric( 63 ) + ".com" );
+		user.setEmail( RandomStringUtils.randomAlphanumeric( 63 ) + "@" + RandomStringUtils.randomAlphanumeric(
+				63 ) + ".com" );
 		user.setPassword( RandomStringUtils.randomAscii( 30 ) );
 		user.setFirstName( RandomStringUtils.randomAscii( 25 ) + "明美" );
 		user.setLastName( RandomStringUtils.randomAscii( 25 ) + "明美" );
@@ -102,6 +104,11 @@ public class ITUserModule
 		public void configure( AcrossContext context ) {
 			context.addModule( acrossHibernateModule() );
 			context.addModule( userModule() );
+			context.addModule( propertiesModule() );
+		}
+
+		private PropertiesModule propertiesModule() {
+			return new PropertiesModule();
 		}
 
 		private AcrossHibernateModule acrossHibernateModule() {
