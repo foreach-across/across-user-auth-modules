@@ -1,4 +1,4 @@
-package com.foreach.across.modules.oauth2.it;
+package com.foreach.across.modules.it.oauth2;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
@@ -6,6 +6,7 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.oauth2.OAuth2Module;
 import com.foreach.across.modules.oauth2.services.OAuth2Service;
+import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.test.AcrossTestWebConfiguration;
@@ -64,6 +65,11 @@ public class ITOAuth2Module
 			context.addModule( userModule() );
 			context.addModule( springSecurityModule() );
 			context.addModule( oauth2Module() );
+			context.addModule( propertiesModule() );
+		}
+
+		private PropertiesModule propertiesModule() {
+			return new PropertiesModule();
 		}
 
 		private AcrossHibernateModule acrossHibernateModule() {
