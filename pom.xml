@@ -10,6 +10,7 @@
 	<properties>
 		<across.version>1.0.3-SNAPSHOT</across.version>
 		<spring.version>4.0.6.RELEASE</spring.version>
+		<foreach.common.version>0.8-SNAPSHOT</foreach.common.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -79,6 +80,7 @@
 		<module>spring-security</module>
 		<module>user-module</module>
 		<module>oauth2-module</module>
+		<module>properties-module</module>
 	</modules>
 
 	<distributionManagement>
@@ -120,6 +122,11 @@
 				<artifactId>javax.el</artifactId>
 				<version>2.2.4</version>
 			</dependency>
+			<dependency>
+				<groupId>com.foreach.libs</groupId>
+				<artifactId>common-spring</artifactId>
+				<version>${foreach.common.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -144,7 +151,7 @@
 		<dependency>
 			<groupId>com.foreach.libs</groupId>
 			<artifactId>common-test</artifactId>
-			<version>0.7</version>
+			<version>${foreach.common.version}</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
