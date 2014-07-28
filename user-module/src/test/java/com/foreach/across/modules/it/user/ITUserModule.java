@@ -1,4 +1,4 @@
-package com.foreach.across.modules.user.it;
+package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
@@ -50,7 +50,7 @@ public class ITUserModule
 	@Test
 	public void newlyCreatedUsersHavePositiveIds() {
 		UserDto user = new UserDto();
-		user.setUsername( RandomStringUtils.random(10, 33, 127, false, false) );
+		user.setUsername( RandomStringUtils.random( 10, 33, 127, false, false ) );
 		user.setEmail( RandomStringUtils.randomAlphanumeric( 63 ) + "@" + RandomStringUtils.randomAlphanumeric(
 				63 ) + ".com" );
 		user.setPassword( RandomStringUtils.randomAscii( 30 ) );

@@ -1,4 +1,4 @@
-package com.foreach.across.modules.user.it;
+package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
