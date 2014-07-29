@@ -1,18 +1,13 @@
 package com.foreach.across.modules.user.config;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.annotations.Module;
 import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.repositories.UserPropertiesRepository;
 import com.foreach.across.modules.user.services.UserPropertiesRegistry;
 import com.foreach.across.modules.user.services.UserPropertiesService;
 import com.foreach.across.modules.user.services.UserPropertiesServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.sql.DataSource;
 
 /**
  * @author Arne Vandamme
@@ -20,12 +15,22 @@ import javax.sql.DataSource;
 @Configuration
 public class UserPropertiesConfiguration extends AbstractEntityPropertiesConfiguration
 {
-	@Autowired
-	private DataSource dataSource;
+	public static final String ID = UserModule.NAME + ".UserProperties";
 
-	@Autowired
-	@Module(AcrossModule.CURRENT_MODULE)
-	private UserModule userModule;
+	@Override
+	public String propertiesId() {
+		return ID;
+	}
+
+	@Override
+	protected String originalTableName() {
+		return UserSchemaConfiguration.TABLE_USER_PROPERTIES;
+	}
+
+	@Override
+	public String keyColumnName() {
+		return UserSchemaConfiguration.COLUMN_USER_ID;
+	}
 
 	@Bean
 	public UserPropertiesService userPropertiesService() {
@@ -34,14 +39,11 @@ public class UserPropertiesConfiguration extends AbstractEntityPropertiesConfigu
 
 	@Bean
 	public UserPropertiesRegistry userPropertiesRegistry() {
-		return new UserPropertiesRegistry( userPropertiesRepository(), conversionService() );
+		return new UserPropertiesRegistry( this );
 	}
 
 	@Bean
 	public UserPropertiesRepository userPropertiesRepository() {
-		String userPropertiesTableName = userModule.getSchemaConfiguration()
-		                                           .getCurrentTableName(
-				                                           UserSchemaConfiguration.TABLE_USER_PROPERTIES );
-		return new UserPropertiesRepository( dataSource, userPropertiesTableName );
+		return new UserPropertiesRepository( this );
 	}
 }
