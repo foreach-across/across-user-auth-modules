@@ -3,6 +3,7 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
+import com.foreach.test.MockedLoader;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestUserServiceWithEmailAsUserName.Config.class)
+@ContextConfiguration(loader = MockedLoader.class, classes = TestUserServiceWithEmailAsUserName.Config.class)
 @DirtiesContext
 public class TestUserServiceWithEmailAsUserName
 {
@@ -57,7 +58,8 @@ public class TestUserServiceWithEmailAsUserName
 
 		try {
 			userService.save( userDto );
-		} catch ( UserValidationException uve ) {
+		}
+		catch ( UserValidationException uve ) {
 			List<ObjectError> errors = uve.getErrors();
 			assertEquals( 1, errors.size() );
 			ObjectError fieldError = errors.get( 0 );
@@ -74,7 +76,8 @@ public class TestUserServiceWithEmailAsUserName
 		userDto.setPassword( "password" );
 		try {
 			userService.save( userDto );
-		} catch ( UserValidationException uve ) {
+		}
+		catch ( UserValidationException uve ) {
 			List<ObjectError> errors = uve.getErrors();
 			assertEquals( 1, errors.size() );
 			FieldError fieldError = (FieldError) errors.get( 0 );
@@ -94,14 +97,16 @@ public class TestUserServiceWithEmailAsUserName
 
 		try {
 			userService.save( userDto );
-		} catch ( UserValidationException uve ) {
+		}
+		catch ( UserValidationException uve ) {
 			List<ObjectError> errors = uve.getErrors();
 			assertEquals( 1, errors.size() );
 			FieldError fieldError = (FieldError) errors.get( 0 );
 			assertEquals( "user", fieldError.getObjectName() );
 			assertEquals( "username", fieldError.getField() );
 			assertEquals( "some username", fieldError.getRejectedValue() );
-			assertEquals( "username cannot be specified when useEmailAsUsername is set", fieldError.getDefaultMessage() );
+			assertEquals( "username cannot be specified when useEmailAsUsername is set",
+			              fieldError.getDefaultMessage() );
 		}
 	}
 
@@ -115,7 +120,7 @@ public class TestUserServiceWithEmailAsUserName
 		assertEquals( "test@there.com", userDto.getUsername() );
 	}
 
-		@Configuration
+	@Configuration
 	static class Config
 	{
 		@Bean
@@ -126,11 +131,6 @@ public class TestUserServiceWithEmailAsUserName
 		@Bean
 		public PasswordEncoder passwordEncoder() {
 			return new BCryptPasswordEncoder();
-		}
-
-		@Bean
-		public UserRepository userRepository() {
-			return mock( UserRepository.class );
 		}
 
 		@Bean

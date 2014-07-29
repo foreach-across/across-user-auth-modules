@@ -5,6 +5,7 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
+import com.foreach.test.MockedLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.junit.Before;
@@ -32,7 +33,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestUserService.Config.class)
+@ContextConfiguration(loader = MockedLoader.class, classes = TestUserService.Config.class)
 @DirtiesContext
 public class TestUserService
 {
@@ -86,7 +87,8 @@ public class TestUserService
 		assertEquals( true, userDto.getEmailConfirmed() );
 		assertEquals( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ), userDto.getRestrictions() );
 		assertEquals( true, userDto.hasRestrictions() );
-		assertEquals( Sets.newSet( new SimpleGrantedAuthority( "permission 1" ), new SimpleGrantedAuthority( "permission 2" ), new SimpleGrantedAuthority( "role 1" ) ), user.getAuthorities() );
+		assertEquals( Sets.newSet( new SimpleGrantedAuthority( "permission 1" ), new SimpleGrantedAuthority(
+				"permission 2" ), new SimpleGrantedAuthority( "role 1" ) ), user.getAuthorities() );
 	}
 
 	@Test
@@ -135,7 +137,8 @@ public class TestUserService
 
 		try {
 			userService.save( dto );
-		} catch ( UserValidationException uve ) {
+		}
+		catch ( UserValidationException uve ) {
 			List<ObjectError> errors = uve.getErrors();
 			assertEquals( 2, errors.size() );
 			FieldError usernameError = (FieldError) errors.get( 0 );
@@ -187,7 +190,8 @@ public class TestUserService
 
 		try {
 			userService.save( userDto );
-		} catch ( UserValidationException uve ) {
+		}
+		catch ( UserValidationException uve ) {
 			List<ObjectError> errors = uve.getErrors();
 			assertEquals( 1, errors.size() );
 			FieldError fieldError = (FieldError) errors.get( 0 );
@@ -204,7 +208,8 @@ public class TestUserService
 
 		try {
 			userService.save( userDto );
-		} catch ( UserValidationException uve ) {
+		}
+		catch ( UserValidationException uve ) {
 			List<ObjectError> errors = uve.getErrors();
 			assertEquals( 1, errors.size() );
 			FieldError fieldError = (FieldError) errors.get( 0 );
@@ -287,11 +292,6 @@ public class TestUserService
 		@Bean
 		public PasswordEncoder passwordEncoder() {
 			return new BCryptPasswordEncoder();
-		}
-
-		@Bean
-		public UserRepository userRepository() {
-			return mock( UserRepository.class );
 		}
 
 		@Bean

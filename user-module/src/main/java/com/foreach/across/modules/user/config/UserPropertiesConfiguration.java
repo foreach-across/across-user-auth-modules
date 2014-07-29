@@ -2,6 +2,7 @@ package com.foreach.across.modules.user.config;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Module;
+import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.repositories.UserPropertiesRepository;
 import com.foreach.across.modules.user.services.UserPropertiesRegistry;
@@ -10,7 +11,6 @@ import com.foreach.across.modules.user.services.UserPropertiesServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
 
 import javax.sql.DataSource;
 
@@ -18,7 +18,7 @@ import javax.sql.DataSource;
  * @author Arne Vandamme
  */
 @Configuration
-public class UserPropertiesConfiguration
+public class UserPropertiesConfiguration extends AbstractEntityPropertiesConfiguration
 {
 	@Autowired
 	private DataSource dataSource;
@@ -27,9 +27,6 @@ public class UserPropertiesConfiguration
 	@Module(AcrossModule.CURRENT_MODULE)
 	private UserModule userModule;
 
-	@Autowired
-	private ConversionService conversionService;
-
 	@Bean
 	public UserPropertiesService userPropertiesService() {
 		return new UserPropertiesServiceImpl( userPropertiesRegistry(), userPropertiesRepository() );
@@ -37,7 +34,7 @@ public class UserPropertiesConfiguration
 
 	@Bean
 	public UserPropertiesRegistry userPropertiesRegistry() {
-		return new UserPropertiesRegistry( conversionService );
+		return new UserPropertiesRegistry( conversionService() );
 	}
 
 	@Bean
