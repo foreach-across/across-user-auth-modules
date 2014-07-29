@@ -5,7 +5,7 @@ import com.foreach.across.modules.user.dto.UserDto;
 
 import java.util.Collection;
 
-public interface UserService
+public interface UserService extends UserPropertiesService
 {
 	boolean isUseEmailAsUsername();
 

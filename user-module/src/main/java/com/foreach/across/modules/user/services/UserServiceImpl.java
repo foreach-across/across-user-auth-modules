@@ -2,6 +2,7 @@ package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -9,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -25,6 +27,9 @@ public class UserServiceImpl implements UserService
 	@Autowired
 	private UserValidator userValidator;
 
+	@Autowired
+	private UserPropertiesService userPropertiesService;
+
 	private final PasswordEncoder passwordEncoder;
 	private final boolean useEmailAsUsername;
 	private final boolean requireEmailUnique;
@@ -37,7 +42,7 @@ public class UserServiceImpl implements UserService
 	}
 
 	@PostConstruct
-	public void validateProperties() {
+	protected void validateServiceConfiguration() {
 		if ( useEmailAsUsername && !requireEmailUnique ) {
 			throw new RuntimeException(
 					UserModuleSettings.REQUIRE_EMAIL_UNIQUE + " must be TRUE if " + UserModuleSettings.USE_EMAIL_AS_USERNAME + " is TRUE" );
@@ -78,6 +83,7 @@ public class UserServiceImpl implements UserService
 	}
 
 	@Override
+	@Transactional
 	public void save( UserDto userDto ) {
 		User user;
 
@@ -137,8 +143,33 @@ public class UserServiceImpl implements UserService
 	}
 
 	@Override
-	public void delete( long id ) {
-		User user = userRepository.getUserById( id );
+	@Transactional
+	public void delete( long userId ) {
+		User user = userRepository.getUserById( userId );
+		deleteProperties( userId );
 		userRepository.delete( user );
+	}
+
+	@Override
+	public void deleteProperties( Long userId ) {
+		userPropertiesService.deleteProperties( userId );
+	}
+
+	public UserProperties getProperties( User user ) {
+		return getProperties( user.getId() );
+	}
+
+	public UserProperties getProperties( UserDto userDto ) {
+		return getProperties( userDto.getId() );
+	}
+
+	@Override
+	public UserProperties getProperties( Long userId ) {
+		return userPropertiesService.getProperties( userId );
+	}
+
+	@Override
+	public void saveProperties( UserProperties userProperties ) {
+		userPropertiesService.saveProperties( userProperties );
 	}
 }

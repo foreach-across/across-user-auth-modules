@@ -12,6 +12,7 @@ import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.*;
 import com.foreach.across.modules.properties.PropertiesModule;
+import com.foreach.across.modules.user.config.UserPropertiesConfiguration;
 import com.foreach.across.modules.user.config.UserRepositoriesConfiguration;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.config.UserServicesConfiguration;
@@ -50,6 +51,7 @@ public class UserModule extends AcrossModule implements HasHibernatePackageProvi
 				new AnnotatedClassConfigurer(
 						UserRepositoriesConfiguration.class,
 						UserServicesConfiguration.class,
+						UserPropertiesConfiguration.class,
 						UserAdminWebConfiguration.class,
 						UserSpringSecurityConfiguration.class
 				)
