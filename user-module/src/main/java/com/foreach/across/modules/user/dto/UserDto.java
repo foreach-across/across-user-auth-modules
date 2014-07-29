@@ -5,8 +5,10 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.converters.FieldUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -22,7 +24,7 @@ public class UserDto
 
 	private boolean emailConfirmed;
 	private boolean deleted;
-	private Set<UserRestriction> restrictions;
+	private Set<UserRestriction> restrictions = new HashSet<>();
 
 	private Set<Role> roles = new TreeSet<>();
 
@@ -112,7 +114,12 @@ public class UserDto
 	}
 
 	public void setRestrictions( Set<UserRestriction> restrictions ) {
-		this.restrictions = restrictions;
+		Assert.notNull( restrictions );
+		this.restrictions = new HashSet<>( restrictions );
+	}
+
+	public boolean hasRestriction( UserRestriction restriction ) {
+		return restrictions.contains( restriction );
 	}
 
 	public boolean hasRestrictions() {

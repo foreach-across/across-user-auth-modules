@@ -146,6 +146,10 @@ public class User implements UserDetails
 		this.restrictions = restrictions;
 	}
 
+	public boolean hasRestriction( UserRestriction restriction ) {
+		return getRestrictions().contains( restriction );
+	}
+
 	public Set<Role> getRoles() {
 		return roles;
 	}
@@ -206,6 +210,7 @@ public class User implements UserDetails
 
 	@Override
 	public boolean isEnabled() {
-		return !restrictions.contains( UserRestriction.DISABLED ) && !restrictions.contains( UserRestriction.REQUIRES_CONFIRMATION );
+		return !restrictions.contains( UserRestriction.DISABLED ) && !restrictions.contains(
+				UserRestriction.REQUIRES_CONFIRMATION );
 	}
 }
