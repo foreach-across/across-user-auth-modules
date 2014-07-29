@@ -206,6 +206,6 @@ public class User implements UserDetails
 
 	@Override
 	public boolean isEnabled() {
-		return !restrictions.contains( UserRestriction.DISABLED );
+		return !restrictions.contains( UserRestriction.DISABLED ) && !restrictions.contains( UserRestriction.REQUIRES_CONFIRMATION );
 	}
 }
