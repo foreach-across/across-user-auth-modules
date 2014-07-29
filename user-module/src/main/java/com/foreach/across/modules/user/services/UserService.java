@@ -1,6 +1,7 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.dto.UserDto;
 
 import java.util.Collection;
@@ -23,5 +24,9 @@ public interface UserService extends UserPropertiesService
 
 	void save( UserDto user );
 
-    void delete( long id );
+	void delete( long id );
+
+	UserProperties getProperties( User user );
+
+	UserProperties getProperties( UserDto userDto );
 }
