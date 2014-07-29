@@ -34,7 +34,7 @@ public class UserPropertiesConfiguration extends AbstractEntityPropertiesConfigu
 
 	@Bean
 	public UserPropertiesRegistry userPropertiesRegistry() {
-		return new UserPropertiesRegistry( conversionService() );
+		return new UserPropertiesRegistry( userPropertiesRepository(), conversionService() );
 	}
 
 	@Bean
