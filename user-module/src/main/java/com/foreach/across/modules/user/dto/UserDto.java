@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -24,7 +25,7 @@ public class UserDto
 
 	private boolean emailConfirmed;
 	private boolean deleted;
-	private Set<UserRestriction> restrictions = new HashSet<>();
+	private Set<UserRestriction> restrictions = EnumSet.noneOf( UserRestriction.class );
 
 	private Set<Role> roles = new TreeSet<>();
 
