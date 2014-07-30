@@ -6,6 +6,7 @@ import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.UserService;
@@ -94,6 +95,32 @@ public class ITUserModule
 		assertEquals( "Test", existing.getFirstName() );
 		assertEquals( "User", existing.getLastName() );
 		assertEquals( "Display name for test user", existing.getDisplayName() );
+	}
+
+	@Test
+	public void propertiesCanOnlyBeSavedForExistingUser() {
+		UserProperties userProperties = userService.getProperties( -9999L );
+		userProperties.put( "test", "test" );
+
+		boolean failed = false;
+
+		try {
+			userService.saveProperties( userProperties );
+		}
+		catch ( Exception e ) {
+			failed = true;
+		}
+
+		assertTrue( failed );
+
+		User admin = userService.getUserByUsername( "admin" );
+		UserProperties adminProperties = userService.getProperties( admin.getId() );
+		adminProperties.put( "admin", "test" );
+
+		userService.saveProperties( adminProperties );
+
+		UserProperties fetched = userService.getProperties( admin );
+		assertEquals( "test", fetched.getValue( "admin" ) );
 	}
 
 	@Configuration

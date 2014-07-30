@@ -12,6 +12,7 @@
 	<property name="table.role_permission" value="um_role_permission"/>
 	<property name="table.user" value="um_user"/>
 	<property name="table.user_role" value="um_user_role"/>
+	<property name="table.user_properties" value="um_user_properties"/>
 
 	<changeSet id="201406141719" author="arne" runAlways="true" dbms="oracle">
 		<sql>
@@ -162,47 +163,49 @@
 		                         referencedColumnNames="id"/>
 	</changeSet>
 
-    <changeSet id="201407071223" author="marc">
-        <comment>Add some core columns to the user table</comment>
-        <addColumn tableName="${table.user}">
-            <column name="firstname" type="java.sql.Types.VARCHAR(255)"/>
-            <column name="lastname" type="java.sql.Types.VARCHAR(255)"/>
-            <column name="name" type="java.sql.Types.VARCHAR(255)"/>
-            <column name="emailConfirmed" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false"/>
-            </column>
-            <column name="deleted" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="java.sql.Types.BIGINT" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-    </changeSet>
+	<changeSet id="201407071223" author="marc">
+		<comment>Add some core columns to the user table</comment>
+		<addColumn tableName="${table.user}">
+			<column name="firstname" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="lastname" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="name" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="emailConfirmed" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="deleted" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="status" type="java.sql.Types.BIGINT" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
 
-    <changeSet id="201407071620" author="marc">
-        <comment>Make sure that any existing admin users get the default values for the new columns in changeset 201407071223</comment>
-        <update tableName="${table.user}">
-            <column name="emailConfirmed" type="java.sql.Types.BOOLEAN" valueBoolean="true" />
-            <column name="deleted" type="java.sql.Types.BOOLEAN" valueBoolean="false" />
-            <column name="status" type="java.sql.Types.BIGINT" valueNumeric="15" />
-            <where>username='admin'</where>
-        </update>
-    </changeSet>
+	<changeSet id="201407071620" author="marc">
+		<comment>Make sure that any existing admin users get the default values for the new columns in changeset
+			201407071223
+		</comment>
+		<update tableName="${table.user}">
+			<column name="emailConfirmed" type="java.sql.Types.BOOLEAN" valueBoolean="true"/>
+			<column name="deleted" type="java.sql.Types.BOOLEAN" valueBoolean="false"/>
+			<column name="status" type="java.sql.Types.BIGINT" valueNumeric="15"/>
+			<where>username='admin'</where>
+		</update>
+	</changeSet>
 
-    <changeSet id="201407090958" author="marc">
-        <comment>Rename name column to displayname column</comment>
-        <renameColumn columnDataType="java.sql.Types.VARCHAR(255)"
-                      newColumnName="displayname"
-                      oldColumnName="name"
-                      tableName="${table.user}"/>
-    </changeSet>
-	
+	<changeSet id="201407090958" author="marc">
+		<comment>Rename name column to displayname column</comment>
+		<renameColumn columnDataType="java.sql.Types.VARCHAR(255)"
+		              newColumnName="displayname"
+		              oldColumnName="name"
+		              tableName="${table.user}"/>
+	</changeSet>
+
 	<changeSet id="201407140926" author="arne">
 		<comment>Make the name columns unicode</comment>
-		<modifyDataType tableName="${table.user}" columnName="firstname" newDataType="java.sql.Types.NVARCHAR(255)" />
-		<modifyDataType tableName="${table.user}" columnName="lastname" newDataType="java.sql.Types.NVARCHAR(255)" />
-		<modifyDataType tableName="${table.user}" columnName="displayname" newDataType="java.sql.Types.NVARCHAR(255)" />
+		<modifyDataType tableName="${table.user}" columnName="firstname" newDataType="java.sql.Types.NVARCHAR(255)"/>
+		<modifyDataType tableName="${table.user}" columnName="lastname" newDataType="java.sql.Types.NVARCHAR(255)"/>
+		<modifyDataType tableName="${table.user}" columnName="displayname" newDataType="java.sql.Types.NVARCHAR(255)"/>
 	</changeSet>
 
 	<changeSet id="201407141556" author="marc">
@@ -216,7 +219,7 @@
 	<changeSet id="201407141557" author="marc">
 		<comment>Rename status column to restrictions column</comment>
 		<update tableName="${table.user}">
-			<column name="restrictions" type="java.sql.Types.BIGINT" valueNumeric="0" />
+			<column name="restrictions" type="java.sql.Types.BIGINT" valueNumeric="0"/>
 		</update>
 	</changeSet>
 
@@ -242,9 +245,9 @@
 
 	<changeSet id="201407151402" author="marc">
 		<dropNotNullConstraint tableName="${table.user}" columnName="email_confirmed"
-		                      columnDataType="java.sql.Types.BOOLEAN"/>
+		                       columnDataType="java.sql.Types.BOOLEAN"/>
 		<dropNotNullConstraint tableName="${table.user}" columnName="restrictions"
-		                      columnDataType="java.sql.Types.BIGINT"/>
+		                       columnDataType="java.sql.Types.BIGINT"/>
 		<addNotNullConstraint tableName="${table.user}" columnName="email_confirmed"
 		                      columnDataType="java.sql.Types.BOOLEAN"/>
 		<addNotNullConstraint tableName="${table.user}" columnName="restrictions"
@@ -254,9 +257,17 @@
 	<changeSet id="201407251127" author="marc">
 		<comment>Update email on admin user</comment>
 		<update tableName="${table.user}">
-			<column name="email" type="java.sql.Types.VARCHAR(255)" value="admin@localhost" />
+			<column name="email" type="java.sql.Types.VARCHAR(255)" value="admin@localhost"/>
 			<where>username='admin'</where>
 		</update>
+	</changeSet>
+
+	<changeSet id="201407301347" author="arne">
+		<comment>Add referential key between user properties and user table</comment>
+		<addForeignKeyConstraint baseTableName="${table.user_properties}" baseColumnNames="user_id"
+		                         constraintName="fk_um_up_u"
+		                         referencedTableName="${table.user}"
+		                         referencedColumnNames="id"/>
 	</changeSet>
 
 </databaseChangeLog>
