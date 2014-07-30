@@ -3,6 +3,7 @@ package com.foreach.across.modules.oauth2.config.security;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.oauth2.services.ClientOAuth2AuthenticationSerializer;
+import com.foreach.across.modules.oauth2.services.CustomTokenServices;
 import com.foreach.across.modules.oauth2.services.OAuth2StatelessJdbcTokenStore;
 import com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Bean
 	@Primary
 	public DefaultTokenServices tokenServices() {
-		DefaultTokenServices tokenServices = new DefaultTokenServices();
+		DefaultTokenServices tokenServices = new CustomTokenServices();
 		tokenServices.setTokenStore( tokenStore() );
 		tokenServices.setSupportRefreshToken( true );
 		tokenServices.setClientDetailsService( clientDetailsService );

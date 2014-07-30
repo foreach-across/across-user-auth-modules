@@ -4,6 +4,7 @@ import com.foreach.across.modules.user.business.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -25,7 +26,12 @@ public class UserOAuth2AuthenticationSerializer extends OAuth2AuthenticationSeri
 
 	@Override
 	public OAuth2Authentication deserialize( AuthenticationSerializerObject<String> serializerObject ) {
-		UserDetails user = userDetailsService.loadUserByUsername( serializerObject.getObject() );
+		UserDetails user;
+		try {
+			user = userDetailsService.loadUserByUsername( serializerObject.getObject() );
+		} catch ( UsernameNotFoundException usernameNotFoundException ) {
+			throw new RemoveTokenException();
+		}
 
 		ClientDetails clientDetails =  clientDetailsService.loadClientByClientId( serializerObject.getClientId() );
 		OAuth2Request userRequest = serializerObject.getOAuth2Request( clientDetails.getAuthorities() );

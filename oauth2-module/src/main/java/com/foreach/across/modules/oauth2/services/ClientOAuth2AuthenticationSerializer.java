@@ -1,10 +1,7 @@
 package com.foreach.across.modules.oauth2.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.*;
 
 public class ClientOAuth2AuthenticationSerializer extends OAuth2AuthenticationSerializer<String>
 {
@@ -20,7 +17,12 @@ public class ClientOAuth2AuthenticationSerializer extends OAuth2AuthenticationSe
 	@Override
 	public OAuth2Authentication deserialize( AuthenticationSerializerObject<String> serializerObject ) {
 		String clientId = serializerObject.getObject();
-		ClientDetails clientDetails = clientDetailsService.loadClientByClientId( clientId );
+		ClientDetails clientDetails;
+		try {
+			clientDetails = clientDetailsService.loadClientByClientId( clientId );
+		} catch ( NoSuchClientException noSuchClientException ) {
+			throw new RemoveTokenException();
+		}
 
 		OAuth2Request clientRequest = serializerObject.getOAuth2Request( clientDetails.getAuthorities() );
 		return new OAuth2Authentication( clientRequest, null );
