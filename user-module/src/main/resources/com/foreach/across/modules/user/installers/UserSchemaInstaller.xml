@@ -270,4 +270,34 @@
 		                         referencedColumnNames="id"/>
 	</changeSet>
 
+	<changeSet id="201407301415" author="arne">
+		<comment>Update existing sequences to work with new generator</comment>
+		<sql>
+			update across_sequences
+			set seq_number = (select max(id) + 1 from ${table.role})
+			where seq_name = 'seq_um_role_id'
+		</sql>
+		<sql>
+			update across_sequences
+			set seq_number = (select max(id) + 1 from ${table.permission})
+			where seq_name = 'seq_um_permission_id'
+		</sql>
+		<sql>
+			update across_sequences
+			set seq_number = (select max(id) + 1 from ${table.user})
+			where seq_name = 'seq_um_user_id'
+		</sql>
+		<sql>
+			update across_sequences
+			set seq_number = (select max(id) + 1 from ${table.permission_group})
+			where seq_name = 'seq_um_permission_group_id'
+		</sql>
+
+		<sql>
+			update across_sequences
+			set seq_number = 1
+			where seq_number is null
+		</sql>
+	</changeSet>
+
 </databaseChangeLog>
