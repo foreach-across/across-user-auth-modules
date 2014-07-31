@@ -11,7 +11,7 @@
         </sql>
     </changeSet>
 
-    <changeSet id="201406251114" author="arne">
+    <changeSet id="201406251114B" author="arne">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="oauth_access_token"/>
@@ -21,7 +21,7 @@
         <comment>Creates oauth_access_token table</comment>
 
         <createTable tableName="oauth_access_token">
-            <column name="token_id" type="java.sql.Types.VARCHAR(255)">
+            <column name="token_id" type="java.sql.Types.VARCHAR(150)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_at"/>
             </column>
             <column name="token" type="java.sql.Types.BLOB"/>
@@ -33,7 +33,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="201406251122" author="arne">
+    <changeSet id="201406251122B" author="arne">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="oauth_refresh_token"/>
@@ -43,7 +43,7 @@
         <comment>Creates oauth_refresh_token table</comment>
 
         <createTable tableName="oauth_refresh_token">
-            <column name="token_id" type="java.sql.Types.VARCHAR(255)">
+            <column name="token_id" type="java.sql.Types.VARCHAR(150)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_rt"/>
             </column>
             <column name="token" type="java.sql.Types.BLOB"/>

@@ -7,7 +7,7 @@
 
 	<!-- Default table names -->
 	<property name="table.client" value="oauth_client"/>
-    <property name="table.role" value="um_role"/>
+	<property name="table.role" value="um_role"/>
 	<property name="table.client_role" value="oauth_client_role"/>
 	<property name="table.client_scope" value="oauth_client_scope"/>
 	<property name="table.scope" value="oauth_scope"/>
@@ -50,48 +50,65 @@
 
 		<comment>Creates OAuth client-role link table</comment>
 
-        <createTable tableName="${table.client_role}">
-            <column name="client_id" type="java.sql.Types.BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_role"/>
-            </column>
-            <column name="role_id" type="java.sql.Types.BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_role"/>
-            </column>
-        </createTable>
+		<createTable tableName="${table.client_role}">
+			<column name="client_id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_role"/>
+			</column>
+			<column name="role_id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_role"/>
+			</column>
+		</createTable>
 
-        <addForeignKeyConstraint baseTableName="${table.client_role}" baseColumnNames="client_id"
-                                 constraintName="fk_oauth_cr_clnt_id"
-                                 referencedTableName="${table.client}"
-                                 referencedColumnNames="id"/>
-        <addForeignKeyConstraint baseTableName="${table.client_role}" baseColumnNames="role_id"
-                                 constraintName="fk_oauth_cr_role_id"
-                                 referencedTableName="${table.role}"
-                                 referencedColumnNames="id"/>
+		<addForeignKeyConstraint baseTableName="${table.client_role}" baseColumnNames="client_id"
+		                         constraintName="fk_oauth_cr_clnt_id"
+		                         referencedTableName="${table.client}"
+		                         referencedColumnNames="id"/>
+		<addForeignKeyConstraint baseTableName="${table.client_role}" baseColumnNames="role_id"
+		                         constraintName="fk_oauth_cr_role_id"
+		                         referencedTableName="${table.role}"
+		                         referencedColumnNames="id"/>
 	</changeSet>
 
-    <changeSet id="201406251607" author="asm">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="${table.scope}"/>
-            </not>
-        </preConditions>
+	<changeSet id="201406251607B" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.scope}"/>
+			</not>
+		</preConditions>
 
-        <comment>Create OAuth2 scope table</comment>
+		<comment>Create OAuth2 scope table</comment>
 
-        <createTable tableName="${table.scope}">
-            <column name="id" type="java.sql.Types.BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_scope"/>
-            </column>
-            <column name="name" type="java.sql.Types.VARCHAR(255)"/>
-        </createTable>
+		<createTable tableName="${table.scope}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_scope"/>
+			</column>
+			<column name="name" type="java.sql.Types.VARCHAR(255)"/>
+		</createTable>
 
-        <addNotNullConstraint tableName="${table.scope}" columnName="name"
-                              columnDataType="java.sql.Types.VARCHAR(255)"/>
+		<addNotNullConstraint tableName="${table.scope}" columnName="name"
+		                      columnDataType="java.sql.Types.VARCHAR(255)"/>
+	</changeSet>
 
-        <createIndex tableName="${table.scope}" indexName="ix_oauth_scope_name" unique="true">
-            <column name="name"/>
-        </createIndex>
-    </changeSet>
+	<changeSet id="201407311028" author="arne" dbms="mysql">
+			<comment>Set character set for scope name in mysql</comment>
+			<sql>
+				ALTER TABLE ${table.scope}
+				MODIFY name VARCHAR(255)
+				CHARACTER SET utf8
+				COLLATE utf8_unicode_ci
+			</sql>
+		</changeSet>
+
+	<changeSet id="201407311029" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.scope}" columnNames="name"/>
+			</not>
+		</preConditions>
+		<createIndex tableName="${table.scope}" indexName="ix_oauth_scope_name" unique="true">
+			<column name="name"/>
+		</createIndex>
+	</changeSet>
 
 	<changeSet id="201406251609B" author="asm">
 		<preConditions onFail="MARK_RAN">
@@ -100,26 +117,26 @@
 			</not>
 		</preConditions>
 
-        <comment>Creates OAuth client-scope link table</comment>
+		<comment>Creates OAuth client-scope link table</comment>
 
-        <createTable tableName="${table.client_scope}">
-            <column name="client_id" type="java.sql.Types.BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_scope"/>
-            </column>
-            <column name="scope_id" type="java.sql.Types.BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_scope"/>
-            </column>
-            <column name="auto_approve" type="java.sql.Types.BOOLEAN"/>
-        </createTable>
+		<createTable tableName="${table.client_scope}">
+			<column name="client_id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_scope"/>
+			</column>
+			<column name="scope_id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_scope"/>
+			</column>
+			<column name="auto_approve" type="java.sql.Types.BOOLEAN"/>
+		</createTable>
 
-        <addForeignKeyConstraint baseTableName="${table.client_scope}" baseColumnNames="client_id"
-                                 constraintName="fk_oauth_cs_clnt_id"
-                                 referencedTableName="${table.client}"
-                                 referencedColumnNames="id"/>
-        <addForeignKeyConstraint baseTableName="${table.client_scope}" baseColumnNames="scope_id"
-                                 constraintName="fk_oauth_cs_scope_id"
-                                 referencedTableName="${table.scope}"
-                                 referencedColumnNames="id"/>
+		<addForeignKeyConstraint baseTableName="${table.client_scope}" baseColumnNames="client_id"
+		                         constraintName="fk_oauth_cs_clnt_id"
+		                         referencedTableName="${table.client}"
+		                         referencedColumnNames="id"/>
+		<addForeignKeyConstraint baseTableName="${table.client_scope}" baseColumnNames="scope_id"
+		                         constraintName="fk_oauth_cs_scope_id"
+		                         referencedTableName="${table.scope}"
+		                         referencedColumnNames="id"/>
 	</changeSet>
 
 	<changeSet id="201406251612" author="asm">
@@ -132,11 +149,11 @@
 		<comment>Create OAuth2 resource ID table</comment>
 
 		<createTable tableName="${table.resource}">
-            <column name="id" type="java.sql.Types.BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_rsrcid"/>
-            </column>
-            <column name="resource_id" type="java.sql.Types.VARCHAR(255)" />
-			<column name="client_id" type="java.sql.Types.BIGINT" />
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_rsrcid"/>
+			</column>
+			<column name="resource_id" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="client_id" type="java.sql.Types.BIGINT"/>
 		</createTable>
 
 		<addForeignKeyConstraint baseTableName="${table.resource}" baseColumnNames="client_id"
@@ -155,11 +172,11 @@
 		<comment>Create OAuth2 granttype table</comment>
 
 		<createTable tableName="${table.grant_type}">
-            <column name="id" type="java.sql.Types.BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_grnt_tp"/>
-            </column>
-            <column name="grant_type" type="java.sql.Types.VARCHAR(255)" />
-			<column name="client_id" type="java.sql.Types.BIGINT" />
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_grnt_tp"/>
+			</column>
+			<column name="grant_type" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="client_id" type="java.sql.Types.BIGINT"/>
 		</createTable>
 
 		<addForeignKeyConstraint baseTableName="${table.grant_type}" baseColumnNames="client_id"
@@ -178,11 +195,11 @@
 		<comment>Create OAuth2 redirect uri table</comment>
 
 		<createTable tableName="${table.redirect_uri}">
-            <column name="id" type="java.sql.Types.BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_redir_uri"/>
-            </column>
-            <column name="redirect_uri" type="java.sql.Types.VARCHAR(255)" />
-			<column name="client_id" type="java.sql.Types.BIGINT" />
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_redir_uri"/>
+			</column>
+			<column name="redirect_uri" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="client_id" type="java.sql.Types.BIGINT"/>
 		</createTable>
 
 		<addForeignKeyConstraint baseTableName="${table.redirect_uri}" baseColumnNames="client_id"
@@ -191,22 +208,22 @@
 		                         referencedColumnNames="id"/>
 	</changeSet>
 
-    <changeSet id="201407071447" author="asm">
-        <addColumn tableName="${table.client}">
-            <column name="client_id" type="java.sql.Types.VARCHAR(255)" />
-        </addColumn>
+	<changeSet id="201407071447" author="asm">
+		<addColumn tableName="${table.client}">
+			<column name="client_id" type="java.sql.Types.VARCHAR(255)"/>
+		</addColumn>
 
-        <addNotNullConstraint tableName="${table.client}" columnName="client_id"
-                              columnDataType="java.sql.Types.VARCHAR(255)"/>
+		<addNotNullConstraint tableName="${table.client}" columnName="client_id"
+		                      columnDataType="java.sql.Types.VARCHAR(255)"/>
 
-    </changeSet>
-    
-    <changeSet id="201407080837" author="asm">
-        <dropPrimaryKey tableName="${table.redirect_uri}"/>
-        <dropPrimaryKey tableName="${table.grant_type}"/>
-        <dropPrimaryKey tableName="${table.resource}"/>
-        <dropColumn tableName="${table.redirect_uri}" columnName="id" />
-        <dropColumn tableName="${table.grant_type}" columnName="id" />
-        <dropColumn tableName="${table.resource}" columnName="id" />
-    </changeSet>
+	</changeSet>
+
+	<changeSet id="201407080837" author="asm">
+		<dropPrimaryKey tableName="${table.redirect_uri}"/>
+		<dropPrimaryKey tableName="${table.grant_type}"/>
+		<dropPrimaryKey tableName="${table.resource}"/>
+		<dropColumn tableName="${table.redirect_uri}" columnName="id"/>
+		<dropColumn tableName="${table.grant_type}" columnName="id"/>
+		<dropColumn tableName="${table.resource}" columnName="id"/>
+	</changeSet>
 </databaseChangeLog>
