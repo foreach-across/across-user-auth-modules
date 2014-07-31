@@ -20,7 +20,7 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="201406141557B" author="arne">
+	<changeSet id="201406141557C" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="${table.permission_group}"/>
@@ -37,13 +37,31 @@
 			<column name="title" type="java.sql.Types.NVARCHAR(255)"/>
 			<column name="description" type="java.sql.Types.NVARCHAR(2000)"/>
 		</createTable>
+	</changeSet>
 
+	<changeSet id="201407310854" author="arne" dbms="mysql">
+		<comment>Set character set for mysql</comment>
+		<sql>
+			ALTER TABLE ${table.permission_group}
+			MODIFY name VARCHAR(255)
+			CHARACTER SET utf8
+			COLLATE utf8_unicode_ci
+		</sql>
+	</changeSet>
+
+	<changeSet id="201407310855" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.permission_group}" columnNames="name"/>
+			</not>
+		</preConditions>
+		<comment>Create name index on permission group table</comment>
 		<createIndex tableName="${table.permission_group}" indexName="ix_um_perm_grp_name" unique="true">
 			<column name="name"/>
 		</createIndex>
 	</changeSet>
 
-	<changeSet id="201406141558B" author="arne">
+	<changeSet id="201406141558C" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="${table.permission}"/>
@@ -63,13 +81,31 @@
 				             foreignKeyName="fk_um_p_pg"/>
 			</column>
 		</createTable>
+	</changeSet>
 
+	<changeSet id="201407310856" author="arne" dbms="mysql">
+		<comment>Set character set on permission name for mysql</comment>
+		<sql>
+			ALTER TABLE ${table.permission}
+			MODIFY name VARCHAR(255)
+			CHARACTER SET utf8
+			COLLATE utf8_unicode_ci
+		</sql>
+	</changeSet>
+
+	<changeSet id="201407310857" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.permission}" columnNames="name"/>
+			</not>
+		</preConditions>
+		<comment>Create name index on permission table</comment>
 		<createIndex tableName="${table.permission}" indexName="ix_um_perm_name" unique="true">
 			<column name="name"/>
 		</createIndex>
 	</changeSet>
 
-	<changeSet id="201406141559B" author="arne">
+	<changeSet id="201406141559C" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="${table.role}"/>
@@ -85,10 +121,6 @@
 			<column name="name" type="java.sql.Types.VARCHAR(255)"/>
 			<column name="description" type="java.sql.Types.NVARCHAR(2000)"/>
 		</createTable>
-
-		<createIndex tableName="${table.role}" indexName="ix_um_role_name" unique="true">
-			<column name="name"/>
-		</createIndex>
 
 		<createTable tableName="${table.role_permission}">
 			<column name="role_id" type="java.sql.Types.BIGINT">
@@ -109,7 +141,29 @@
 		                         referencedColumnNames="id"/>
 	</changeSet>
 
-	<changeSet id="201406141600B" author="arne">
+	<changeSet id="201407310858" author="arne" dbms="mysql">
+		<comment>Set character set on role name for mysql</comment>
+		<sql>
+			ALTER TABLE ${table.role}
+			MODIFY name VARCHAR(255)
+			CHARACTER SET utf8
+			COLLATE utf8_unicode_ci
+		</sql>
+	</changeSet>
+
+	<changeSet id="201407310859" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.role}" columnNames="name"/>
+			</not>
+		</preConditions>
+		<comment>Create name index on role table</comment>
+		<createIndex tableName="${table.role}" indexName="ix_um_role_name" unique="true">
+			<column name="name"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="201406141600C" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="${table.user}"/>
@@ -129,9 +183,45 @@
 
 		<addNotNullConstraint tableName="${table.user}" columnName="username"
 		                      columnDataType="java.sql.Types.VARCHAR(255)"/>
+	</changeSet>
 
+	<changeSet id="201407310860" author="arne" dbms="mysql">
+		<comment>Set character set on username and email for mysql</comment>
+		<sql>
+			ALTER TABLE ${table.user}
+			MODIFY username VARCHAR(255)
+			CHARACTER SET utf8
+			COLLATE utf8_unicode_ci
+		</sql>
+		<sql>
+			ALTER TABLE ${table.user}
+			MODIFY email VARCHAR(255)
+			CHARACTER SET utf8
+			COLLATE utf8_unicode_ci
+		</sql>
+	</changeSet>
+
+	<changeSet id="201407310861" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.user}" columnNames="username"/>
+			</not>
+		</preConditions>
+		<comment>Create name index on user table</comment>
 		<createIndex tableName="${table.user}" indexName="ix_um_user_username" unique="true">
 			<column name="username"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="201407310862" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.user}" columnNames="email"/>
+			</not>
+		</preConditions>
+		<comment>Create email index on user table</comment>
+		<createIndex tableName="${table.user}" indexName="ix_um_user_email">
+			<column name="email"/>
 		</createIndex>
 	</changeSet>
 
@@ -163,95 +253,27 @@
 		                         referencedColumnNames="id"/>
 	</changeSet>
 
-	<changeSet id="201407071223" author="marc">
+	<changeSet id="201407071223C" author="marc">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="${table.user}" columnName="first_name"/>
+			</not>
+		</preConditions>
 		<comment>Add some core columns to the user table</comment>
 		<addColumn tableName="${table.user}">
-			<column name="firstname" type="java.sql.Types.VARCHAR(255)"/>
-			<column name="lastname" type="java.sql.Types.VARCHAR(255)"/>
-			<column name="name" type="java.sql.Types.VARCHAR(255)"/>
-			<column name="emailConfirmed" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
+			<column name="first_name" type="java.sql.Types.NVARCHAR(255)"/>
+			<column name="last_name" type="java.sql.Types.NVARCHAR(255)"/>
+			<column name="display_name" type="java.sql.Types.NVARCHAR(255)"/>
+			<column name="email_confirmed" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
 				<constraints nullable="false"/>
 			</column>
 			<column name="deleted" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
 				<constraints nullable="false"/>
 			</column>
-			<column name="status" type="java.sql.Types.BIGINT" defaultValueNumeric="0">
+			<column name="restrictions" type="java.sql.Types.BIGINT" defaultValueNumeric="0">
 				<constraints nullable="false"/>
 			</column>
 		</addColumn>
-	</changeSet>
-
-	<changeSet id="201407071620" author="marc">
-		<comment>Make sure that any existing admin users get the default values for the new columns in changeset
-			201407071223
-		</comment>
-		<update tableName="${table.user}">
-			<column name="emailConfirmed" type="java.sql.Types.BOOLEAN" valueBoolean="true"/>
-			<column name="deleted" type="java.sql.Types.BOOLEAN" valueBoolean="false"/>
-			<column name="status" type="java.sql.Types.BIGINT" valueNumeric="15"/>
-			<where>username='admin'</where>
-		</update>
-	</changeSet>
-
-	<changeSet id="201407090958" author="marc">
-		<comment>Rename name column to displayname column</comment>
-		<renameColumn columnDataType="java.sql.Types.VARCHAR(255)"
-		              newColumnName="displayname"
-		              oldColumnName="name"
-		              tableName="${table.user}"/>
-	</changeSet>
-
-	<changeSet id="201407140926" author="arne">
-		<comment>Make the name columns unicode</comment>
-		<modifyDataType tableName="${table.user}" columnName="firstname" newDataType="java.sql.Types.NVARCHAR(255)"/>
-		<modifyDataType tableName="${table.user}" columnName="lastname" newDataType="java.sql.Types.NVARCHAR(255)"/>
-		<modifyDataType tableName="${table.user}" columnName="displayname" newDataType="java.sql.Types.NVARCHAR(255)"/>
-	</changeSet>
-
-	<changeSet id="201407141556" author="marc">
-		<comment>Rename status column to restrictions column</comment>
-		<renameColumn columnDataType="java.sql.Types.BIGINT"
-		              newColumnName="restrictions"
-		              oldColumnName="status"
-		              tableName="${table.user}"/>
-	</changeSet>
-
-	<changeSet id="201407141557" author="marc">
-		<comment>Rename status column to restrictions column</comment>
-		<update tableName="${table.user}">
-			<column name="restrictions" type="java.sql.Types.BIGINT" valueNumeric="0"/>
-		</update>
-	</changeSet>
-
-	<changeSet id="201407151203" author="marc">
-		<comment>Rename camelcased fields</comment>
-		<renameColumn columnDataType="java.sql.Types.NVARCHAR(255)"
-		              newColumnName="display_name"
-		              oldColumnName="displayname"
-		              tableName="${table.user}"/>
-		<renameColumn columnDataType="java.sql.Types.NVARCHAR(255)"
-		              newColumnName="last_name"
-		              oldColumnName="lastname"
-		              tableName="${table.user}"/>
-		<renameColumn columnDataType="java.sql.Types.NVARCHAR(255)"
-		              newColumnName="first_name"
-		              oldColumnName="firstname"
-		              tableName="${table.user}"/>
-		<renameColumn columnDataType="java.sql.Types.BOOLEAN"
-		              newColumnName="email_confirmed"
-		              oldColumnName="emailConfirmed"
-		              tableName="${table.user}"/>
-	</changeSet>
-
-	<changeSet id="201407151402" author="marc">
-		<dropNotNullConstraint tableName="${table.user}" columnName="email_confirmed"
-		                       columnDataType="java.sql.Types.BOOLEAN"/>
-		<dropNotNullConstraint tableName="${table.user}" columnName="restrictions"
-		                       columnDataType="java.sql.Types.BIGINT"/>
-		<addNotNullConstraint tableName="${table.user}" columnName="email_confirmed"
-		                      columnDataType="java.sql.Types.BOOLEAN"/>
-		<addNotNullConstraint tableName="${table.user}" columnName="restrictions"
-		                      columnDataType="java.sql.Types.BIGINT"/>
 	</changeSet>
 
 	<changeSet id="201407251127" author="marc">
