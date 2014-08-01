@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService
 			userRepository.update( user );
 		}
 
-		userDto.setFromUser( user );
+		userDto.copyFrom( user );
 	}
 
 	@Override

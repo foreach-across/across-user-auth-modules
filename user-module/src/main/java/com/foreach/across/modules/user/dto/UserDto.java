@@ -35,7 +35,7 @@ public class UserDto
 	}
 
 	public UserDto( User user ) {
-		setFromUser( user );
+		copyFrom( user );
 	}
 
 	public long getId() {
@@ -143,7 +143,7 @@ public class UserDto
 		return newUser != null ? newUser : getId() == 0;
 	}
 
-	public void setFromUser( User user ) {
+	public void copyFrom( User user ) {
 		BeanUtils.copyProperties( user, this, "password" );
 	}
 }
