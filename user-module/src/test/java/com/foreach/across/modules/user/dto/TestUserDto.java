@@ -25,6 +25,9 @@ public class TestUserDto
 		assertNotNull( "restriction cannot be null", retrievedUserRestrictions );
 		assertEquals( 3, restrictions.size() );
 		assertEquals( restrictions, dto2.getRestrictions() );
+
+		assertFalse( dto.hasRestriction( null ) );
+		assertTrue( dto2.hasRestriction( UserRestriction.LOCKED ) );
 	}
 
 	@Test
