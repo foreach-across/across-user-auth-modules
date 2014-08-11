@@ -5,11 +5,10 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.converters.FieldUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -115,8 +114,11 @@ public class UserDto
 	}
 
 	public void setRestrictions( Set<UserRestriction> restrictions ) {
-		Assert.notNull( restrictions );
-		this.restrictions = new HashSet<>( restrictions );
+		if( restrictions == null ) {
+			this.restrictions = Collections.emptySet();
+		} else {
+			this.restrictions = EnumSet.copyOf( restrictions );
+		}
 	}
 
 	public boolean hasRestriction( UserRestriction restriction ) {
