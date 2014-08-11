@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -26,8 +27,18 @@ public class TestUserDto
 		assertEquals( 3, restrictions.size() );
 		assertEquals( restrictions, dto2.getRestrictions() );
 
+
+
 		assertFalse( dto.hasRestriction( null ) );
 		assertTrue( dto2.hasRestriction( UserRestriction.LOCKED ) );
+
+		UserDto dto3 = new UserDto();
+		dto3.setRestrictions( new HashSet<UserRestriction>() );
+
+		Set<UserRestriction> retrievedUserRestrictions3 = dto3.getRestrictions();
+		assertNotNull( "restriction cannot be null", retrievedUserRestrictions3 );
+		assertEquals( 0, retrievedUserRestrictions3.size() );
+		assertEquals( Collections.<UserRestriction>emptySet(), retrievedUserRestrictions3 );
 	}
 
 	@Test
