@@ -2,6 +2,7 @@ package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.user.TestDatabaseConfig;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.PermissionServiceImpl;
 import com.foreach.across.modules.user.services.RoleService;
@@ -79,7 +80,11 @@ public class TestUserRepository
 		assertEquals( user.getPassword(), existing.getPassword() );
         assertEquals( user.getDeleted(), existing.getDeleted() );
         assertEquals( user.getEmailConfirmed(), existing.getEmailConfirmed()  );
+		assertNotNull( existing.getRestrictions() );
         assertEquals( user.getRestrictions(), existing.getRestrictions()  );
+		for( UserRestriction userRestriction : UserRestriction.values() ) {
+			assertEquals( false, existing.hasRestriction( userRestriction ) );
+		}
 
         assertEquals( true, user.isCredentialsNonExpired() );
         assertEquals( true, user.isAccountNonLocked() );
