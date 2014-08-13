@@ -51,14 +51,14 @@ public class AuthenticationSerializerObject<T> implements Serializable
 
 	public OAuth2Request getOAuth2Request( Collection<GrantedAuthority> authorities ) {
 		return new OAuth2Request( requestParameters,
-		                   clientId,
-		                   authorities,
-		                   approved,
-		                   scope,
-		                   resourceIds,
-		                   redirectUri,
-		                   responseTypes,
-		                   extensionProperties
+		                          clientId,
+		                          authorities,
+		                          approved,
+		                          scope,
+		                          resourceIds,
+		                          redirectUri,
+		                          responseTypes,
+		                          extensionProperties
 		);
 	}
 }

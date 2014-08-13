@@ -1,6 +1,5 @@
 package com.foreach.across.modules.oauth2;
 
-
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.PackagesToScanProvider;
@@ -15,36 +14,38 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-public class TestDatabaseConfig {
-    @Bean
-    public AcrossContext acrossContext( ConfigurableApplicationContext applicationContext ) throws Exception {
-        AcrossContext acrossContext = new AcrossContext( applicationContext );
-        acrossContext.setDataSource( dataSource() );
-        acrossContext.addModule( acrossHibernateModule() );
+public class TestDatabaseConfig
+{
+	@Bean
+	public AcrossContext acrossContext( ConfigurableApplicationContext applicationContext ) throws Exception {
+		AcrossContext acrossContext = new AcrossContext( applicationContext );
+		acrossContext.setDataSource( dataSource() );
+		acrossContext.addModule( acrossHibernateModule() );
 
-        return acrossContext;
-    }
+		return acrossContext;
+	}
 
-    @Bean
-    public AcrossHibernateModule acrossHibernateModule() {
-        AcrossHibernateModule acrossHibernateModule = new AcrossHibernateModule();
-        acrossHibernateModule.addHibernatePackageProvider(
-                new PackagesToScanProvider( "com.foreach.across.modules.oauth2.business", "com.foreach.across.modules.user.business" ) );
+	@Bean
+	public AcrossHibernateModule acrossHibernateModule() {
+		AcrossHibernateModule acrossHibernateModule = new AcrossHibernateModule();
+		acrossHibernateModule.addHibernatePackageProvider(
+				new PackagesToScanProvider( "com.foreach.across.modules.oauth2.business",
+				                            "com.foreach.across.modules.user.business" ) );
 
-        acrossHibernateModule.setHibernateProperty( AvailableSettings.AUTOCOMMIT, "false" );
-        acrossHibernateModule.setHibernateProperty( AvailableSettings.HBM2DDL_AUTO, "create-drop" );
+		acrossHibernateModule.setHibernateProperty( AvailableSettings.AUTOCOMMIT, "false" );
+		acrossHibernateModule.setHibernateProperty( AvailableSettings.HBM2DDL_AUTO, "create-drop" );
 
-        return acrossHibernateModule;
-    }
+		return acrossHibernateModule;
+	}
 
-    @Bean
-    public DataSource dataSource() throws Exception {
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName( "org.hsqldb.jdbc.JDBCDriver" );
-        dataSource.setUrl( "jdbc:hsqldb:mem:/hsql/user-module" );
-        dataSource.setUsername( "sa" );
-        dataSource.setPassword( "" );
+	@Bean
+	public DataSource dataSource() throws Exception {
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setDriverClassName( "org.hsqldb.jdbc.JDBCDriver" );
+		dataSource.setUrl( "jdbc:hsqldb:mem:/hsql/user-module" );
+		dataSource.setUsername( "sa" );
+		dataSource.setPassword( "" );
 
-        return dataSource;
-    }
+		return dataSource;
+	}
 }

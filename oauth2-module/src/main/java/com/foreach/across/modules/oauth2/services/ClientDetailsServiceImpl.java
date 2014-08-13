@@ -9,17 +9,18 @@ import org.springframework.security.oauth2.provider.NoSuchClientException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClientDetailsServiceImpl implements ClientDetailsService {
+public class ClientDetailsServiceImpl implements ClientDetailsService
+{
 
-    @Autowired
-    private OAuth2Service oAuth2Service;
+	@Autowired
+	private OAuth2Service oAuth2Service;
 
-    @Override
-    public ClientDetails loadClientByClientId( String clientId ) throws ClientRegistrationException {
-        OAuth2Client clientById = oAuth2Service.getClientById( clientId );
-        if ( clientById == null ) {
-            throw new NoSuchClientException( "No client found with clientId: " + clientId );
-        }
-        return clientById;
-    }
+	@Override
+	public ClientDetails loadClientByClientId( String clientId ) throws ClientRegistrationException {
+		OAuth2Client clientById = oAuth2Service.getClientById( clientId );
+		if ( clientById == null ) {
+			throw new NoSuchClientException( "No client found with clientId: " + clientId );
+		}
+		return clientById;
+	}
 }

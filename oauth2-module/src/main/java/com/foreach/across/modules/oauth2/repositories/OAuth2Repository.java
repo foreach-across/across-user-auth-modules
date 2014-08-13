@@ -5,16 +5,17 @@ import com.foreach.across.modules.oauth2.business.OAuth2Scope;
 
 import java.util.Collection;
 
-public interface OAuth2Repository {
-    Collection<OAuth2Client> getOAuth2Clients();
+public interface OAuth2Repository
+{
+	Collection<OAuth2Client> getOAuth2Clients();
 
-    Collection<OAuth2Scope> getOAuth2Scopes();
+	Collection<OAuth2Scope> getOAuth2Scopes();
 
-    void save( OAuth2Scope oAuth2Scope );
+	void save( OAuth2Scope oAuth2Scope );
 
-    OAuth2Scope getScopeById( long id );
+	OAuth2Scope getScopeById( long id );
 
-    void save( OAuth2Client oAuth2Client );
+	void save( OAuth2Client oAuth2Client );
 
-    OAuth2Client getClientById( String clientId );
+	OAuth2Client getClientById( String clientId );
 }

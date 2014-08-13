@@ -90,14 +90,14 @@
 	</changeSet>
 
 	<changeSet id="201407311028" author="arne" dbms="mysql">
-			<comment>Set character set for scope name in mysql</comment>
-			<sql>
-				ALTER TABLE ${table.scope}
-				MODIFY name VARCHAR(255)
-				CHARACTER SET utf8
-				COLLATE utf8_unicode_ci
-			</sql>
-		</changeSet>
+		<comment>Set character set for scope name in mysql</comment>
+		<sql>
+			ALTER TABLE ${table.scope}
+			MODIFY name VARCHAR(255)
+			CHARACTER SET utf8
+			COLLATE utf8_unicode_ci
+		</sql>
+	</changeSet>
 
 	<changeSet id="201407311029" author="arne">
 		<preConditions onFail="MARK_RAN">

@@ -50,7 +50,7 @@ public class TestOAuth2JdbcTokenStore
 
 	@Before
 	public void resetMocks() {
-		for( OAuth2AuthenticationSerializer serializer : serializers ) {
+		for ( OAuth2AuthenticationSerializer serializer : serializers ) {
 			reset( serializer );
 		}
 		reset( dataSource, userDetailsService, clientDetailsService, oAuth2StatelessJdbcTokenStore );
@@ -59,10 +59,13 @@ public class TestOAuth2JdbcTokenStore
 	@Test
 	public void testClientSerialization() {
 		OAuth2Request request = new OAuth2Request( Collections.singletonMap( "keyParam", "keyValue" ),
-		                                           "testClientId", Collections.singleton( mock( GrantedAuthority.class ) ), true,
+		                                           "testClientId", Collections.singleton( mock(
+				GrantedAuthority.class ) ), true,
 		                                           Collections.singleton( "fullScope" ),
 		                                           Collections.singleton( "resourceId" ), "redirectUrl",
-		                                           Collections.singleton( "responseTypes" ), Collections.<String, Serializable>singletonMap( "extensionKey", new ArrayList() ) );
+		                                           Collections.singleton( "responseTypes" ),
+		                                           Collections.<String, Serializable>singletonMap( "extensionKey",
+		                                                                                           new ArrayList() ) );
 
 		OAuth2Client clientDetails = new OAuth2Client();
 
@@ -91,7 +94,8 @@ public class TestOAuth2JdbcTokenStore
 
 		Object o = SerializationUtils.deserialize( bytes );
 		assertNotNull( o );
-		assertTrue( "Serializer should be of type ClientOAuth2AuthenticationSerializer", o instanceof AuthenticationSerializerObject );
+		assertTrue( "Serializer should be of type ClientOAuth2AuthenticationSerializer",
+		            o instanceof AuthenticationSerializerObject );
 
 		OAuth2Authentication storedAuthentication = oAuth2StatelessJdbcTokenStore.deserializeAuthentication( bytes );
 
@@ -102,16 +106,20 @@ public class TestOAuth2JdbcTokenStore
 		verify( userDetailsService, never() ).loadUserByUsername( anyString() );
 		verify( clientDetailsService ).loadClientByClientId( "testClientId" );
 
-		assertEquals( Collections.singletonMap( "keyParam", "keyValue" ), storedAuthentication.getOAuth2Request().getRequestParameters() );
+		assertEquals( Collections.singletonMap( "keyParam", "keyValue" ),
+		              storedAuthentication.getOAuth2Request().getRequestParameters() );
 		assertEquals( Collections.singleton( "fullScope" ), storedAuthentication.getOAuth2Request().getScope() );
 		assertEquals( true, storedAuthentication.getOAuth2Request().isApproved() );
 		assertEquals( Collections.singleton( "resourceId" ), storedAuthentication.getOAuth2Request().getResourceIds() );
 		assertEquals( "redirectUrl", storedAuthentication.getOAuth2Request().getRedirectUri() );
-		assertEquals( Collections.singleton( "responseTypes" ), storedAuthentication.getOAuth2Request().getResponseTypes() );
-		assertEquals( Collections.<String, Serializable>singletonMap( "extensionKey", new ArrayList() ), storedAuthentication.getOAuth2Request().getExtensions() );
+		assertEquals( Collections.singleton( "responseTypes" ),
+		              storedAuthentication.getOAuth2Request().getResponseTypes() );
+		assertEquals( Collections.<String, Serializable>singletonMap( "extensionKey", new ArrayList() ),
+		              storedAuthentication.getOAuth2Request().getExtensions() );
 
 		assertEquals( 4, storedAuthentication.getOAuth2Request().getAuthorities().size() );
-		Iterator<? extends GrantedAuthority> storedAuthorities = storedAuthentication.getOAuth2Request().getAuthorities().iterator();
+		Iterator<? extends GrantedAuthority> storedAuthorities =
+				storedAuthentication.getOAuth2Request().getAuthorities().iterator();
 		assertEquals( "role three", storedAuthorities.next().getAuthority() );
 		assertEquals( "role one", storedAuthorities.next().getAuthority() );
 		assertEquals( "authority two", storedAuthorities.next().getAuthority() );
@@ -128,8 +136,9 @@ public class TestOAuth2JdbcTokenStore
 		                                           Collections.singleton( "fullScopeUser" ),
 		                                           Collections.singleton( "resourceIdUser" ), "redirectUrlUser",
 		                                           Collections.singleton(
-				                                           "responseTypesForUser" ), Collections.<String, Serializable>singletonMap(
-				"extensionKeysForUser", new ArrayList() )
+				                                           "responseTypesForUser" ),
+		                                           Collections.<String, Serializable>singletonMap(
+				                                           "extensionKeysForUser", new ArrayList() )
 		);
 
 		User user = new User();
@@ -138,12 +147,12 @@ public class TestOAuth2JdbcTokenStore
 		Set<Role> roles = new HashSet<>();
 		Role userRole = new Role( "role three" );
 
-		Set<Permission> permissions = new HashSet<>(  );
+		Set<Permission> permissions = new HashSet<>();
 		permissions.add( new Permission( "permission 1" ) );
 		permissions.add( new Permission( "permission 2" ) );
 		userRole.setPermissions( permissions );
 
-		roles.add(userRole);
+		roles.add( userRole );
 		user.setRoles( roles );
 
 		user.setId( 777 );
@@ -151,7 +160,7 @@ public class TestOAuth2JdbcTokenStore
 		when( userDetailsService.loadUserByUsername( "testusername" ) ).thenReturn( user );
 		when( clientDetailsService.loadClientByClientId( "testClientId" ) ).thenReturn( client );
 
-		Authentication userAuthentication = mock(Authentication.class );
+		Authentication userAuthentication = mock( Authentication.class );
 		when( userAuthentication.getPrincipal() ).thenReturn( user );
 		OAuth2Authentication oAuth2Authentication = new OAuth2Authentication( request, userAuthentication );
 		byte[] bytes = oAuth2StatelessJdbcTokenStore.serializeAuthentication( oAuth2Authentication );
@@ -161,7 +170,8 @@ public class TestOAuth2JdbcTokenStore
 
 		Object o = SerializationUtils.deserialize( bytes );
 		assertNotNull( o );
-		assertTrue( "Serializer should be of type UserOAuth2AuthenticationSerializer", o instanceof AuthenticationSerializerObject );
+		assertTrue( "Serializer should be of type UserOAuth2AuthenticationSerializer",
+		            o instanceof AuthenticationSerializerObject );
 
 		OAuth2Authentication storedAuthentication = oAuth2StatelessJdbcTokenStore.deserializeAuthentication( bytes );
 
@@ -175,10 +185,13 @@ public class TestOAuth2JdbcTokenStore
 		              storedAuthentication.getOAuth2Request().getRequestParameters() );
 		assertEquals( Collections.singleton( "fullScopeUser" ), storedAuthentication.getOAuth2Request().getScope() );
 		assertEquals( true, storedAuthentication.getOAuth2Request().isApproved() );
-		assertEquals( Collections.singleton( "resourceIdUser" ), storedAuthentication.getOAuth2Request().getResourceIds() );
+		assertEquals( Collections.singleton( "resourceIdUser" ),
+		              storedAuthentication.getOAuth2Request().getResourceIds() );
 		assertEquals( "redirectUrlUser", storedAuthentication.getOAuth2Request().getRedirectUri() );
-		assertEquals( Collections.singleton( "responseTypesForUser" ), storedAuthentication.getOAuth2Request().getResponseTypes() );
-		assertEquals( Collections.<String, Serializable>singletonMap( "extensionKeysForUser", new ArrayList() ), storedAuthentication.getOAuth2Request().getExtensions() );
+		assertEquals( Collections.singleton( "responseTypesForUser" ),
+		              storedAuthentication.getOAuth2Request().getResponseTypes() );
+		assertEquals( Collections.<String, Serializable>singletonMap( "extensionKeysForUser", new ArrayList() ),
+		              storedAuthentication.getOAuth2Request().getExtensions() );
 
 		assertEquals( 3, storedAuthentication.getAuthorities().size() );
 		Iterator<GrantedAuthority> storedAuthorities = storedAuthentication.getAuthorities().iterator();
@@ -187,7 +200,8 @@ public class TestOAuth2JdbcTokenStore
 		assertEquals( "permission 2", storedAuthorities.next().getAuthority() );
 
 		assertEquals( 2, storedAuthentication.getOAuth2Request().getAuthorities().size() );
-		Iterator<? extends GrantedAuthority> storedOauthRequestAuthorities = storedAuthentication.getOAuth2Request().getAuthorities().iterator();
+		Iterator<? extends GrantedAuthority> storedOauthRequestAuthorities =
+				storedAuthentication.getOAuth2Request().getAuthorities().iterator();
 		assertEquals( "manager client", storedOauthRequestAuthorities.next().getAuthority() );
 		assertEquals( "adminClient", storedOauthRequestAuthorities.next().getAuthority() );
 
@@ -199,7 +213,8 @@ public class TestOAuth2JdbcTokenStore
 		                                           null, Collections.<GrantedAuthority>emptyList(), true,
 		                                           Collections.singleton( "fullScope" ),
 		                                           Collections.singleton( "resourceId" ), "",
-		                                           Collections.<String>emptySet(), Collections.<String, Serializable>emptyMap() );
+		                                           Collections.<String>emptySet(),
+		                                           Collections.<String, Serializable>emptyMap() );
 
 		OAuth2Authentication oAuth2Authentication = new OAuth2Authentication( request, null );
 		byte[] bytes = oAuth2StatelessJdbcTokenStore.serializeAuthentication( oAuth2Authentication );
@@ -218,9 +233,10 @@ public class TestOAuth2JdbcTokenStore
 		                                           null, Collections.<GrantedAuthority>emptyList(), true,
 		                                           Collections.singleton( "fullScope" ),
 		                                           Collections.singleton( "resourceId" ), "",
-		                                           Collections.<String>emptySet(), Collections.<String, Serializable>emptyMap() );
+		                                           Collections.<String>emptySet(),
+		                                           Collections.<String, Serializable>emptyMap() );
 
-		String[] principal = new String[] { "weird", "principal", "object"};
+		String[] principal = new String[] { "weird", "principal", "object" };
 		Authentication userAuthentication = new PreAuthenticatedAuthenticationToken( principal, null );
 		OAuth2Authentication oAuth2Authentication = new OAuth2Authentication( request, userAuthentication );
 		byte[] bytes = oAuth2StatelessJdbcTokenStore.serializeAuthentication( oAuth2Authentication );
@@ -235,34 +251,39 @@ public class TestOAuth2JdbcTokenStore
 		assertEquals( "fullScope", storedAuthentication.getOAuth2Request().getScope().iterator().next() );
 
 		assertEquals( 3, serializers.size() );
-		for( OAuth2AuthenticationSerializer serializer : serializers ) {
+		for ( OAuth2AuthenticationSerializer serializer : serializers ) {
 			verify( serializer, never() ).serialize( any( OAuth2Authentication.class ) );
 		}
 	}
 
-	@Test( expected = OAuth2AuthenticationSerializer.SerializationException.class )
+	@Test(expected = OAuth2AuthenticationSerializer.SerializationException.class)
 	public void testInvalidSerializedObject() {
 		byte[] unknownObject = SerializationUtils.serialize( new ArrayList<>() );
-		OAuth2Authentication invalidByteArray = oAuth2StatelessJdbcTokenStore.deserializeAuthentication( unknownObject );
+		OAuth2Authentication invalidByteArray = oAuth2StatelessJdbcTokenStore.deserializeAuthentication(
+				unknownObject );
 		assertNull( invalidByteArray );
 	}
 
-	@Test( expected = OAuth2AuthenticationSerializer.SerializationException.class )
+	@Test(expected = OAuth2AuthenticationSerializer.SerializationException.class)
 	public void testCustomSerializerThrowsErrorWhenDeserializingUnknownObject() {
-		AuthenticationSerializerObject<ArrayList<Object>> authenticationSerializerObject = new AuthenticationSerializerObject<>( DummyOAuth2AuthenticationSerializer.class.getCanonicalName(), new ArrayList<>( ),
-		                                                                                                                         mock( OAuth2Request.class ) );
+		AuthenticationSerializerObject<ArrayList<Object>> authenticationSerializerObject =
+				new AuthenticationSerializerObject<>( DummyOAuth2AuthenticationSerializer.class.getCanonicalName(),
+				                                      new ArrayList<>(),
+				                                      mock( OAuth2Request.class ) );
 		byte[] serializedDummyObject = SerializationUtils.serialize( authenticationSerializerObject );
-		OAuth2Authentication invalidByteArray = oAuth2StatelessJdbcTokenStore.deserializeAuthentication( serializedDummyObject );
+		OAuth2Authentication invalidByteArray = oAuth2StatelessJdbcTokenStore.deserializeAuthentication(
+				serializedDummyObject );
 		assertNull( invalidByteArray );
 	}
 
-	@Test( expected = OAuth2AuthenticationSerializer.SerializationException.class )
+	@Test(expected = OAuth2AuthenticationSerializer.SerializationException.class)
 	public void testCustomSerializerThrowsErrorWhenSerializingUnknownObject() {
 		OAuth2Request request = new OAuth2Request( Collections.<String, String>emptyMap(),
 		                                           null, Collections.<GrantedAuthority>emptyList(), true,
 		                                           Collections.singleton( "fullScope" ),
 		                                           Collections.singleton( "resourceId" ), "",
-		                                           Collections.<String>emptySet(), Collections.<String, Serializable>emptyMap() );
+		                                           Collections.<String>emptySet(),
+		                                           Collections.<String, Serializable>emptyMap() );
 
 		Authentication userAuthentication = mock( Authentication.class );
 		OAuth2Authentication oAuth2Authentication = new OAuth2Authentication( request, userAuthentication );
@@ -270,7 +291,6 @@ public class TestOAuth2JdbcTokenStore
 
 		assertNull( bytes );
 	}
-
 
 	@Configuration
 	static class Config
@@ -311,7 +331,8 @@ public class TestOAuth2JdbcTokenStore
 		}
 	}
 
-	private static class DummyOAuth2AuthenticationSerializer extends OAuth2AuthenticationSerializer {
+	private static class DummyOAuth2AuthenticationSerializer extends OAuth2AuthenticationSerializer
+	{
 
 		@Override
 		protected byte[] serializePrincipal( Object object, OAuth2Request oAuth2Request ) {

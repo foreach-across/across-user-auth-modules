@@ -7,16 +7,18 @@ import org.springframework.util.SerializationUtils;
 public abstract class OAuth2AuthenticationSerializer<T>
 {
 	public byte[] serializeObject( T object, OAuth2Request oAuth2Request ) {
-		AuthenticationSerializerObject<T> authenticationSerializerObject = new AuthenticationSerializerObject<>( getClass().getCanonicalName(), object,
-		                                                                                                         oAuth2Request );
+		AuthenticationSerializerObject<T> authenticationSerializerObject = new AuthenticationSerializerObject<>(
+				getClass().getCanonicalName(), object,
+				oAuth2Request );
 		return SerializationUtils.serialize( authenticationSerializerObject );
 	}
 
 	public byte[] serialize( OAuth2Authentication authentication ) {
 		Object principal = authentication.getPrincipal();
-		if( canSerialize( authentication ) ) {
+		if ( canSerialize( authentication ) ) {
 			return serializePrincipal( principal, authentication.getOAuth2Request() );
-		} else {
+		}
+		else {
 			throw new SerializationException( principal );
 		}
 	}
@@ -31,7 +33,8 @@ public abstract class OAuth2AuthenticationSerializer<T>
 		return serializerObject.getClassName().equals( getClass().getCanonicalName() );
 	}
 
-	public static class SerializationException extends RuntimeException {
+	public static class SerializationException extends RuntimeException
+	{
 		public SerializationException( Object object ) {
 			super( "Cannot (de)serialize object of type: " + object );
 		}

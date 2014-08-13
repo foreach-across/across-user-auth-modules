@@ -20,7 +20,8 @@ public class ClientOAuth2AuthenticationSerializer extends OAuth2AuthenticationSe
 		ClientDetails clientDetails;
 		try {
 			clientDetails = clientDetailsService.loadClientByClientId( clientId );
-		} catch ( NoSuchClientException noSuchClientException ) {
+		}
+		catch ( NoSuchClientException noSuchClientException ) {
 			throw new RemoveTokenException();
 		}
 

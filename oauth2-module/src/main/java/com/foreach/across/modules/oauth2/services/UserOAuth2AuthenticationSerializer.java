@@ -29,14 +29,16 @@ public class UserOAuth2AuthenticationSerializer extends OAuth2AuthenticationSeri
 		UserDetails user;
 		try {
 			user = userDetailsService.loadUserByUsername( serializerObject.getObject() );
-		} catch ( UsernameNotFoundException usernameNotFoundException ) {
+		}
+		catch ( UsernameNotFoundException usernameNotFoundException ) {
 			throw new RemoveTokenException();
 		}
 
-		ClientDetails clientDetails =  clientDetailsService.loadClientByClientId( serializerObject.getClientId() );
+		ClientDetails clientDetails = clientDetailsService.loadClientByClientId( serializerObject.getClientId() );
 		OAuth2Request userRequest = serializerObject.getOAuth2Request( clientDetails.getAuthorities() );
 
-		return new OAuth2Authentication( userRequest, new PreAuthenticatedAuthenticationToken( user, null, user.getAuthorities() ) );
+		return new OAuth2Authentication( userRequest, new PreAuthenticatedAuthenticationToken( user, null,
+		                                                                                       user.getAuthorities() ) );
 	}
 
 	@Override

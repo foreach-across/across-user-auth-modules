@@ -1,8 +1,7 @@
 package com.foreach.across.modules.oauth2.config.security;
 
-import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.OrderInModule;
-import com.foreach.across.core.context.AcrossContextUtils;
+import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +26,7 @@ import java.util.Collection;
  */
 @Configuration
 @Import(ResourceServerConfiguration.class)
-@OrderInModule( 3 )
+@OrderInModule(3)
 public class ResourceServerSecurityConfiguration extends SpringSecurityWebConfigurerAdapter
 {
 	@Autowired(required = false)
@@ -42,7 +41,7 @@ public class ResourceServerSecurityConfiguration extends SpringSecurityWebConfig
 	private AuthorizationServerEndpointsConfiguration endpoints;
 
 	@Autowired
-	private AcrossContext context;
+	private AcrossContextBeanRegistry contextBeanRegistry;
 
 	private static class NotOAuthRequestMatcher implements RequestMatcher
 	{
@@ -91,9 +90,9 @@ public class ResourceServerSecurityConfiguration extends SpringSecurityWebConfig
 				.csrf().disable();
 		// @formatter:on
 
-		Collection<ResourceServerConfigurer> configurers = AcrossContextUtils.getBeansOfType( context,
-		                                                                                      ResourceServerConfigurer.class,
-		                                                                                      true );
+		Collection<ResourceServerConfigurer> configurers = contextBeanRegistry.getBeansOfType(
+				ResourceServerConfigurer.class,
+				true );
 
 		for ( ResourceServerConfigurer configurer : configurers ) {
 			// Delegates can add authorizeRequests() here

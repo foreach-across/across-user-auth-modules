@@ -20,10 +20,11 @@ public class CustomTokenServices extends DefaultTokenServices
 	public OAuth2Authentication loadAuthentication( String accessTokenValue ) throws AuthenticationException {
 		try {
 			return super.loadAuthentication( accessTokenValue );
-		} catch ( RemoveTokenException removeTokenException ) {
+		}
+		catch ( RemoveTokenException removeTokenException ) {
 			// When the username is changed or the clientId is changed, we remove the access token so we get an invalid token exception later on
 			OAuth2AccessToken oAuth2AccessToken = tokenStore.readAccessToken( accessTokenValue );
-			if( oAuth2AccessToken != null ) {
+			if ( oAuth2AccessToken != null ) {
 				tokenStore.removeAccessToken( oAuth2AccessToken );
 			}
 		}

@@ -5,9 +5,10 @@ import com.foreach.across.core.installers.AcrossLiquibaseInstaller;
 import com.foreach.across.core.installers.InstallerPhase;
 
 @Installer(
-        description = "Creates the database schema for all token stores.",
-        phase = InstallerPhase.BeforeContextBootstrap,
-        version = 1
+		description = "Creates the database schema for all token stores.",
+		phase = InstallerPhase.BeforeContextBootstrap,
+		version = 1
 )
-public class TokenStoreSchemaInstaller extends AcrossLiquibaseInstaller {
+public class TokenStoreSchemaInstaller extends AcrossLiquibaseInstaller
+{
 }

@@ -8,15 +8,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 @Configuration
-public class OAuth2ServicesConfiguration {
+public class OAuth2ServicesConfiguration
+{
 
-    @Bean
-    public OAuth2Service oAuth2Service() {
-        return new OAuth2ServiceImpl();
-    }
+	@Bean
+	public OAuth2Service oAuth2Service() {
+		return new OAuth2ServiceImpl();
+	}
 
-    @Bean( name = "oAuth2ClientDetailsService" )
-    public ClientDetailsService clientDetailsService() {
-        return new ClientDetailsServiceImpl();
-    }
+	@Bean(name = "oAuth2ClientDetailsService")
+	public ClientDetailsService clientDetailsService() {
+		return new ClientDetailsServiceImpl();
+	}
 }

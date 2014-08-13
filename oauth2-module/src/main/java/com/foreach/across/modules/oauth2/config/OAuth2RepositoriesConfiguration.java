@@ -6,9 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class OAuth2RepositoriesConfiguration {
-    @Bean
-    public OAuth2Repository oAuth2Repository() {
-        return new OAuth2RepositoryImpl();
-    }
+public class OAuth2RepositoriesConfiguration
+{
+	@Bean
+	public OAuth2Repository oAuth2Repository() {
+		return new OAuth2RepositoryImpl();
+	}
 }

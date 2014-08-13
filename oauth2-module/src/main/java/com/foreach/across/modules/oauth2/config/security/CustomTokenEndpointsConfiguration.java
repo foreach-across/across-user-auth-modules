@@ -1,8 +1,7 @@
 package com.foreach.across.modules.oauth2.config.security;
 
-import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.OrderInModule;
-import com.foreach.across.core.context.AcrossContextUtils;
+import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +40,7 @@ public class CustomTokenEndpointsConfiguration extends SpringSecurityWebConfigur
 	private AuthorizationServerEndpointsConfiguration endpoints;
 
 	@Autowired
-	private AcrossContext context;
+	private AcrossContextBeanRegistry contextBeanRegistry;
 
 	@Override
 	public void configure( HttpSecurity http ) throws Exception {
@@ -75,9 +74,10 @@ public class CustomTokenEndpointsConfiguration extends SpringSecurityWebConfigur
 		}
 
 		// Resource ids are required to be configured to support the same access tokens as the others
-		Collection<ResourceServerConfigurer> configurers = AcrossContextUtils.getBeansOfType( context,
-		                                                                                      ResourceServerConfigurer.class,
-		                                                                                      true );
+		Collection<ResourceServerConfigurer> configurers = contextBeanRegistry.getBeansOfType(
+				ResourceServerConfigurer.class,
+				true );
+
 		for ( ResourceServerConfigurer configurer : configurers ) {
 			configurer.configure( resources );
 		}
