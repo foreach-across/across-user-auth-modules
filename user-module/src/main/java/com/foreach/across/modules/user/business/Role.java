@@ -27,10 +27,10 @@ public class Role implements Comparable<Role>, Serializable
 	)
 	private long id;
 
-	@Column( name = "name", nullable = false, unique = true)
+	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 
-	@Column( name = "description" )
+	@Column(name = "description")
 	private String description;
 
 	@ManyToMany(fetch = FetchType.EAGER)

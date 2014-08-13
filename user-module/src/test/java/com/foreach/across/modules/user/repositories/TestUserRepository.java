@@ -59,11 +59,11 @@ public class TestUserRepository
 		user.setUsername( "fred" );
 		user.setEmail( "fred@gmail.com" );
 		user.setPassword( "temp1234" );
-        user.setFirstName( "Freddy" );
-        user.setLastName( "Alvis" );
-        user.setDisplayName( "Fréddy & Màc " );
-        user.setEmailConfirmed( false );
-        user.setDeleted( false );
+		user.setFirstName( "Freddy" );
+		user.setLastName( "Alvis" );
+		user.setDisplayName( "Fréddy & Màc " );
+		user.setEmailConfirmed( false );
+		user.setDeleted( false );
 
 		userRepository.create( user );
 
@@ -73,9 +73,9 @@ public class TestUserRepository
 
 		assertEquals( user.getId(), existing.getId() );
 		assertEquals( user.getUsername(), existing.getUsername() );
-        assertEquals( user.getFirstName(), existing.getFirstName() );
-        assertEquals( user.getLastName(), existing.getLastName() );
-        assertEquals( user.getDisplayName(), existing.getDisplayName() );
+		assertEquals( user.getFirstName(), existing.getFirstName() );
+		assertEquals( user.getLastName(), existing.getLastName() );
+		assertEquals( user.getDisplayName(), existing.getDisplayName() );
 		assertEquals( user.getEmail(), existing.getEmail() );
 		assertEquals( user.getPassword(), existing.getPassword() );
         assertEquals( user.getDeleted(), existing.getDeleted() );
@@ -86,28 +86,28 @@ public class TestUserRepository
 			assertEquals( false, existing.hasRestriction( userRestriction ) );
 		}
 
-        assertEquals( true, user.isCredentialsNonExpired() );
-        assertEquals( true, user.isAccountNonLocked() );
-        assertEquals( true, user.isAccountNonExpired() );
-        assertEquals( true, user.isEnabled() );
+		assertEquals( true, user.isCredentialsNonExpired() );
+		assertEquals( true, user.isAccountNonLocked() );
+		assertEquals( true, user.isAccountNonExpired() );
+		assertEquals( true, user.isEnabled() );
 	}
 
-    @Test
-    public void userDelete() {
-        User user = new User();
-        user.setUsername( "deleteme" );
-        user.getRoles().add( roleService.getRole( "role one" ) );
-        user.setEmailConfirmed( false );
-        user.setDeleted( false );
+	@Test
+	public void userDelete() {
+		User user = new User();
+		user.setUsername( "deleteme" );
+		user.getRoles().add( roleService.getRole( "role one" ) );
+		user.setEmailConfirmed( false );
+		user.setDeleted( false );
 
-        userRepository.create( user );
-        assertTrue( user.getId() > 0 );
+		userRepository.create( user );
+		assertTrue( user.getId() > 0 );
 
-        userRepository.delete( user );
-        User deleted = userRepository.getUserById( user.getId() );
-        assertNotNull( "user should still exist in database (soft deleted)", deleted );
-        assertEquals( true, deleted.getDeleted() );
-    }
+		userRepository.delete( user );
+		User deleted = userRepository.getUserById( user.getId() );
+		assertNotNull( "user should still exist in database (soft deleted)", deleted );
+		assertEquals( true, deleted.getDeleted() );
+	}
 
 	@Test
 	public void userWithRoles() {

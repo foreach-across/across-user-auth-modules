@@ -119,7 +119,8 @@ public class UserServiceImpl implements UserService
 		userValidator.validate( userDto, errors );
 		if ( errors.hasErrors() ) {
 			throw new UserValidationException(
-					"Failed to validate User, [" + errors.getErrorCount() + "] validation errors: " + StringUtils.join( errors.getAllErrors(), System.lineSeparator() ),
+					"Failed to validate User, [" + errors.getErrorCount() + "] validation errors: " + StringUtils.join(
+							errors.getAllErrors(), System.lineSeparator() ),
 					errors.getAllErrors() );
 		}
 

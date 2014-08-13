@@ -30,10 +30,10 @@ public class Permission implements Comparable<Permission>, Serializable
 	)
 	private long id;
 
-	@Column( name = "name", nullable = false, unique = true )
+	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 
-	@Column( name = "description" )
+	@Column(name = "description")
 	private String description;
 
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)

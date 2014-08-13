@@ -58,6 +58,7 @@ public class CurrentUserProxyImpl implements CurrentUserProxy
 	@Override
 	public boolean isAuthenticated() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof User;
+		return authentication != null && authentication.isAuthenticated() && authentication
+				.getPrincipal() instanceof User;
 	}
 }

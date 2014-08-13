@@ -73,8 +73,8 @@ public class DefaultUserInstaller
 			user.setLastName( "" );
 			user.setDisplayName( "Root administrator" );
 			user.setEmail( "admin@localhost" );
-            user.setDeleted( false );
-            user.setEmailConfirmed( true );
+			user.setDeleted( false );
+			user.setEmailConfirmed( true );
 
 			HashSet<Role> roles = new HashSet<>();
 			roles.add( roleService.getRole( "ROLE_ADMIN" ) );

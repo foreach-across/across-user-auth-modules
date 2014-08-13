@@ -17,31 +17,35 @@ public class UserValidator implements Validator
 
 	@Override
 	public void validate( Object target, Errors errors ) {
-		if( supports( target.getClass() ) ) {
+		if ( supports( target.getClass() ) ) {
 			UserDto userDto = (UserDto) target;
-			if( userService.isRequireEmailUnique() ) {
+			if ( userService.isRequireEmailUnique() ) {
 				User userByEmail = userService.getUserByEmail( userDto.getEmail() );
-				if( userByEmail != null && userByEmail.getId() != userDto.getId() ) {
+				if ( userByEmail != null && userByEmail.getId() != userDto.getId() ) {
 					errors.reject( null, "email already exists" );
 				}
 			}
-			if( userService.isUseEmailAsUsername() ) {
-				if( StringUtils.isNotBlank( userDto.getUsername() ) && !StringUtils.equalsIgnoreCase( userDto.getUsername(), userDto.getEmail() ) ) {
-					errors.rejectValue( "username", null, "username cannot be specified when useEmailAsUsername is set or must be equal to the email" );
+			if ( userService.isUseEmailAsUsername() ) {
+				if ( StringUtils.isNotBlank( userDto.getUsername() ) && !StringUtils.equalsIgnoreCase(
+						userDto.getUsername(), userDto.getEmail() ) ) {
+					errors.rejectValue( "username", null,
+					                    "username cannot be specified when useEmailAsUsername is set or must be equal to the email" );
 				}
-			} else {
-				if( StringUtils.isBlank( userDto.getUsername() ) ) {
+			}
+			else {
+				if ( StringUtils.isBlank( userDto.getUsername() ) ) {
 					errors.rejectValue( "username", null, "username cannot be empty" );
 				}
 			}
 
-			if( StringUtils.contains( userDto.getUsername(), ' ' ) ) {
+			if ( StringUtils.contains( userDto.getUsername(), ' ' ) ) {
 				errors.rejectValue( "username", null, "username cannot contain whitespaces" );
 			}
-			if( StringUtils.isBlank( userDto.getEmail() ) ) {
+			if ( StringUtils.isBlank( userDto.getEmail() ) ) {
 				errors.rejectValue( "email", null, "email cannot be empty" );
-			} else {
-				if( !emailValidator.isValid( userDto.getEmail(), null ) ) {
+			}
+			else {
+				if ( !emailValidator.isValid( userDto.getEmail(), null ) ) {
 					errors.rejectValue( "email", null, "invalid email" );
 				}
 			}

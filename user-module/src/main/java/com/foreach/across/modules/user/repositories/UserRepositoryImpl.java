@@ -63,8 +63,8 @@ public class UserRepositoryImpl implements UserRepository
 	@Transactional
 	@Override
 	public void delete( User user ) {
-        user.setDeleted( true );
-        sessionFactory.getCurrentSession().saveOrUpdate( user );
+		user.setDeleted( true );
+		sessionFactory.getCurrentSession().saveOrUpdate( user );
 	}
 
 }

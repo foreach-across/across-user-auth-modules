@@ -5,7 +5,7 @@
 <body th:fragment="content">
 
 <ul th:if="${#fields.hasErrors('${user.*}')}">
-  <li th:each="err : ${#fields.errors('${user.*}')}" th:text="${err}" />
+	<li th:each="err : ${#fields.errors('${user.*}')}" th:text="${err}"/>
 </ul>
 
 <form method="post" th:action="@{${@adminWeb.path('/users/save')}}" th:object="${user}">
@@ -28,53 +28,53 @@
 		<input type="text" th:field="*{email}"/>
 	</div>
 
-    <div>
-        <label>First Name</label>
-        <input type="text" th:field="*{firstName}"/>
-    </div>
+	<div>
+		<label>First Name</label>
+		<input type="text" th:field="*{firstName}"/>
+	</div>
 
-    <div>
-        <label>Last Name</label>
-        <input type="text" th:field="*{lastName}"/>
-    </div>
+	<div>
+		<label>Last Name</label>
+		<input type="text" th:field="*{lastName}"/>
+	</div>
 
-    <div>
-        <label>Display Name</label>
-        <input type="text" th:field="*{displayName}"/>
-    </div>
+	<div>
+		<label>Display Name</label>
+		<input type="text" th:field="*{displayName}"/>
+	</div>
 
-    <div>
-        <label>Restrictions</label>
-        <ul>
-            <li th:each="restriction:${userRestrictions}">
-                <input type="checkbox"
-                       th:field="*{restrictions}"
-                       th:value="${restriction.name}"/>
-                <label th:text="${restriction.name}"></label>
-            </li>
-        </ul>
-    </div>
+	<div>
+		<label>Restrictions</label>
+		<ul>
+			<li th:each="restriction:${userRestrictions}">
+				<input type="checkbox"
+				       th:field="*{restrictions}"
+				       th:value="${restriction.name}"/>
+				<label th:text="${restriction.name}"></label>
+			</li>
+		</ul>
+	</div>
 
-    <div>
-        <label>Email Confirmed?</label>
-        <input type="checkbox" th:field="*{emailConfirmed}" th:value="${emailConfirmed}"/><label th:text="Yes"></label>
-    </div>
+	<div>
+		<label>Email Confirmed?</label>
+		<input type="checkbox" th:field="*{emailConfirmed}" th:value="${emailConfirmed}"/><label th:text="Yes"></label>
+	</div>
 
-    <div>
-        <label>Deleted?</label>
-        <input type="checkbox" th:field="*{deleted}" th:value="${deleted}"/><label th:text="Yes"></label>
-    </div>
+	<div>
+		<label>Deleted?</label>
+		<input type="checkbox" th:field="*{deleted}" th:value="${deleted}"/><label th:text="Yes"></label>
+	</div>
 
-    <div>
-        <ul>
-            <li th:each="role:${roles}">
-                <input type="checkbox"
-                       th:field="*{roles}"
-                       th:value="${role.name}"/>
-                <label th:text="${role.description}"></label>
-            </li>
-        </ul>
-    </div>
+	<div>
+		<ul>
+			<li th:each="role:${roles}">
+				<input type="checkbox"
+				       th:field="*{roles}"
+				       th:value="${role.name}"/>
+				<label th:text="${role.description}"></label>
+			</li>
+		</ul>
+	</div>
 
 
 	<input type="submit" value="Save"/>
