@@ -3,6 +3,7 @@ package com.foreach.across.modules.oauth2.business;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT_SCOPE)
@@ -52,6 +53,25 @@ public class OAuth2ClientScope implements Comparable
 
 	public void setAutoApprove( boolean autoApprove ) {
 		this.autoApprove = autoApprove;
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( o == null || getClass() != o.getClass() ) {
+			return false;
+		}
+
+		OAuth2ClientScope that = (OAuth2ClientScope) o;
+
+		return Objects.equals( pk, that.pk );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( pk );
 	}
 
 	@Override
