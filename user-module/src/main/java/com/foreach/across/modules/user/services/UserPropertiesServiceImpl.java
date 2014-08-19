@@ -5,7 +5,7 @@ import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry
 import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 import com.foreach.across.modules.properties.services.AbstractEntityPropertiesService;
 import com.foreach.across.modules.user.business.UserProperties;
-import com.foreach.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.util.PropertyTypeRegistry;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 

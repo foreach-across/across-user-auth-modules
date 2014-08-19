@@ -3,7 +3,7 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
-import com.foreach.test.MockedLoader;
+import com.foreach.common.test.MockedLoader;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.junit.Before;
 import org.junit.Test;
