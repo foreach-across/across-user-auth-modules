@@ -1,6 +1,6 @@
 package com.foreach.across.modules.oauth2.controllers;
 
-import com.foreach.test.MockedLoader;
+import com.foreach.common.test.MockedLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
