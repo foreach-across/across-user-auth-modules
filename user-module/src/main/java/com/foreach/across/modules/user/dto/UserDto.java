@@ -136,6 +136,10 @@ public class UserDto
 		this.roles = roles;
 	}
 
+	public void addRole( Role role ) {
+		roles.add( role );
+	}
+
 	public void setNewUser( boolean newUser ) {
 		this.newUser = newUser;
 	}

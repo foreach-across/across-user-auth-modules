@@ -22,7 +22,7 @@ public interface UserService extends UserPropertiesService
 
 	UserDto createUserDto( User user );
 
-	void save( UserDto user );
+	User save( UserDto user );
 
 	void delete( long id );
 

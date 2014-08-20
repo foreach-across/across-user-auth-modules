@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService
 
 	@Override
 	@Transactional
-	public void save( UserDto userDto ) {
+	public User save( UserDto userDto ) {
 		User user;
 
 		if ( userDto.isNewUser() ) {
@@ -141,6 +141,8 @@ public class UserServiceImpl implements UserService
 		}
 
 		userDto.copyFrom( user );
+
+		return user;
 	}
 
 	@Override
