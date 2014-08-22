@@ -10,7 +10,7 @@ import javax.persistence.Table;
 @Entity
 @DiscriminatorValue("group")
 @Table(name = UserSchemaConfiguration.TABLE_GROUP)
-public class Group extends NonGroupedPrincipal
+public class Group extends NonGroupedPrincipal implements Comparable<Group>
 {
 	@Column(name = "name")
 	private String name;
@@ -21,5 +21,10 @@ public class Group extends NonGroupedPrincipal
 
 	public void setName( String name ) {
 		this.name = name;
+	}
+
+	@Override
+	public int compareTo( Group other ) {
+		return getName().compareTo( other.getName() );
 	}
 }

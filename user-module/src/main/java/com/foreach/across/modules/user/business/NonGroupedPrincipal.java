@@ -1,11 +1,14 @@
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
+import com.foreach.across.modules.spring.security.business.SecurityPrincipal;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.util.ClassUtils;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -25,8 +28,12 @@ import java.util.TreeSet;
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
 )
-public abstract class NonGroupedPrincipal
+public abstract class NonGroupedPrincipal implements SecurityPrincipal
 {
+	@Transient
+	private final String idPrefix = StringUtils.lowerCase(
+			ClassUtils.getUserClass( getClass() ).getSimpleName() ) + ":";
+
 	@Id
 	@GeneratedValue(generator = "seq_um_principal_id")
 	@GenericGenerator(
@@ -99,6 +106,11 @@ public abstract class NonGroupedPrincipal
 	}
 
 	@Override
+	public final String getPrincipalId() {
+		return idPrefix + getId();
+	}
+
+	@Override
 	public boolean equals( Object o ) {
 		if ( this == o ) {
 			return true;
@@ -120,4 +132,5 @@ public abstract class NonGroupedPrincipal
 	public int hashCode() {
 		return (int) ( id ^ ( id >>> 32 ) );
 	}
+
 }

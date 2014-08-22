@@ -1,5 +1,7 @@
 package com.foreach.across.modules.user.business;
 
+import com.foreach.across.modules.spring.security.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.business.SecurityPrincipalHierarchy;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.hibernate.annotations.BatchSize;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,10 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Extension to {@link NonGroupedPrincipal}
@@ -20,7 +19,7 @@ import java.util.TreeSet;
  *
  * @author Arne Vandamme
  */
-public abstract class GroupedPrincipal extends NonGroupedPrincipal
+public abstract class GroupedPrincipal extends NonGroupedPrincipal implements SecurityPrincipalHierarchy
 {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@BatchSize(size = 50)
@@ -62,5 +61,12 @@ public abstract class GroupedPrincipal extends NonGroupedPrincipal
 		}
 
 		return authorities;
+	}
+
+	@Override
+	public Collection<SecurityPrincipal> getParentPrincipals() {
+		return groups == null || groups.isEmpty()
+				? Collections.<SecurityPrincipal>emptyList()
+				: new ArrayList<SecurityPrincipal>( groups );
 	}
 }

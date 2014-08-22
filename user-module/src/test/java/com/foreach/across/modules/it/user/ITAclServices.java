@@ -8,8 +8,13 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Refreshable;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.spring.security.business.AclPermission;
+import com.foreach.across.modules.spring.security.business.SecurityPrincipal;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.dto.GroupDto;
 import com.foreach.across.modules.user.dto.UserDto;
+import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
@@ -23,7 +28,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -37,6 +41,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -66,21 +72,47 @@ public class ITAclServices
 	private UserService userService;
 
 	@Autowired
+	private GroupService groupService;
+
+	@Autowired
 	private SecuredBean securedBean;
 
 	@Autowired
 	private AclConfigurer acl;
 
-	private User userOne, userTwo, userThree;
+	private Group group;
+	private User userOne, userTwo, userThree, userFour;
 
 	@Before
 	public void createUsers() {
 		permissionService.definePermission( "manage files", "Manage all files and folders", "unit-test" );
 		roleService.defineRole( "ROLE_FILE_MANAGER", "", Arrays.asList( "manage files" ) );
 
-		userOne = createRandomUser();
-		userTwo = createRandomUser( "ROLE_ADMIN" );
-		userThree = createRandomUser( "ROLE_FILE_MANAGER" );
+		group = createGroup();
+
+		userOne = createRandomUser( Collections.<Group>emptyList(), Collections.<String>emptyList() );
+		userTwo = createRandomUser( Collections.<Group>emptyList(), Collections.singleton( "ROLE_ADMIN" ) );
+		userThree = createRandomUser( Collections.<Group>emptyList(), Collections.singleton( "ROLE_FILE_MANAGER" ) );
+		userFour = createRandomUser( Collections.singleton( group ), Collections.<String>emptyList() );
+	}
+
+	private Group createGroup( String... roles ) {
+		Group group = groupService.getGroupById( -999 );
+
+		if ( group == null ) {
+			GroupDto dto = new GroupDto();
+			dto.setName( RandomStringUtils.randomAscii( 20 ) );
+			dto.setId( -999 );
+			dto.setNewEntity( true );
+
+			for ( String role : roles ) {
+				dto.addRole( roleService.getRole( role ) );
+			}
+
+			group = groupService.save( dto );
+		}
+
+		return group;
 	}
 
 	@After
@@ -88,7 +120,7 @@ public class ITAclServices
 		acl.delete( repository, folderOne, fileInFolderOne, folderTwo, fileInFolderTwo );
 	}
 
-	private User createRandomUser( String... roles ) {
+	private User createRandomUser( Collection<Group> groups, Collection<String> roles ) {
 		UserDto user = new UserDto();
 		user.setUsername( UUID.randomUUID().toString() );
 		user.setEmail( UUID.randomUUID().toString() + "@test.com" );
@@ -96,6 +128,10 @@ public class ITAclServices
 		user.setFirstName( RandomStringUtils.randomAscii( 25 ) );
 		user.setLastName( RandomStringUtils.randomAscii( 25 ) );
 		user.setDisplayName( RandomStringUtils.randomAscii( 50 ) );
+
+		for ( Group group : groups ) {
+			user.addGroup( group );
+		}
 
 		for ( String role : roles ) {
 			user.addRole( roleService.getRole( role ) );
@@ -117,7 +153,7 @@ public class ITAclServices
 		assertFalse( canRead( folderOne ) );
 		assertFalse( canRead( fileInFolderOne ) );
 
-		acl.allow( userOne, folderOne, BasePermission.READ );
+		acl.allow( userOne, folderOne, AclPermission.READ );
 
 		assertTrue( canRead( folderOne ) );
 		assertTrue( canRead( fileInFolderOne ) );
@@ -130,7 +166,7 @@ public class ITAclServices
 	}
 
 	@Test
-	public void permissionsThroughAuthority() {
+	public void permissionsThroughAuthorityAndGroup() {
 		logon( userOne );
 
 		acl.create( repository, null );
@@ -139,12 +175,14 @@ public class ITAclServices
 		acl.create( folderTwo, repository );
 		acl.create( fileInFolderTwo, folderTwo );
 
-		acl.allow( "manage files", repository, BasePermission.WRITE );
-		acl.allow( "manage files", repository, BasePermission.READ );
+		acl.allow( "manage files", repository, AclPermission.WRITE );
+		acl.allow( "manage files", repository, AclPermission.READ );
 
-		acl.allow( userTwo, folderTwo, BasePermission.READ );
-		acl.allow( userOne, fileInFolderOne, BasePermission.WRITE );
-		acl.allow( userOne, fileInFolderTwo, BasePermission.WRITE );
+		acl.allow( userTwo, folderTwo, AclPermission.READ );
+		acl.allow( userOne, fileInFolderOne, AclPermission.WRITE );
+		acl.allow( userOne, fileInFolderTwo, AclPermission.WRITE );
+
+		acl.allow( group, repository, AclPermission.WRITE );
 
 		logon( userOne );
 		assertFalse( canRead( folderOne ) || canWrite( folderOne ) );
@@ -163,6 +201,12 @@ public class ITAclServices
 		assertTrue( canRead( folderTwo ) && canWrite( folderTwo ) );
 		assertTrue( canRead( fileInFolderOne ) && canWrite( fileInFolderOne ) );
 		assertTrue( canRead( fileInFolderTwo ) && canWrite( fileInFolderTwo ) );
+
+		logon( userFour );
+		assertTrue( !canRead( folderOne ) && canWrite( folderOne ) );
+		assertTrue( !canRead( folderTwo ) && canWrite( folderTwo ) );
+		assertTrue( !canRead( fileInFolderOne ) && canWrite( fileInFolderOne ) );
+		assertTrue( !canRead( fileInFolderTwo ) && canWrite( fileInFolderTwo ) );
 	}
 
 	private boolean canRead( Object object ) {
@@ -285,10 +329,10 @@ public class ITAclServices
 		}
 
 		@Transactional(propagation = Propagation.REQUIRES_NEW)
-		public void allow( User user, Object fileOrFolder, Permission perm ) {
+		public void allow( SecurityPrincipal principal, Object fileOrFolder, Permission perm ) {
 			MutableAclService aclService = contextBeanRegistry.getBeanOfType( MutableAclService.class );
 
-			Sid sid = new PrincipalSid( user.getUsername() );
+			Sid sid = new PrincipalSid( principal.getPrincipalId() );
 			ObjectIdentity oi = id( fileOrFolder );
 
 			MutableAcl acl = null;
