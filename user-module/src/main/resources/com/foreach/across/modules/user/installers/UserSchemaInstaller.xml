@@ -11,8 +11,9 @@
 	<property name="table.role" value="um_role"/>
 	<property name="table.role_permission" value="um_role_permission"/>
 	<property name="table.user" value="um_user"/>
-	<property name="table.user_role" value="um_user_role"/>
 	<property name="table.user_properties" value="um_user_properties"/>
+	<property name="table.principal" value="um_principal"/>
+	<property name="table.principal_role" value="um_principal_role"/>
 
 	<changeSet id="201406141719" author="arne" runAlways="true" dbms="oracle">
 		<sql>
@@ -163,6 +164,58 @@
 		</createIndex>
 	</changeSet>
 
+	<changeSet id="201408221210" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.principal}"/>
+			</not>
+		</preConditions>
+
+		<comment>Create principal table</comment>
+
+		<createTable tableName="${table.principal}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_um_principal"/>
+			</column>
+			<column name="principal_type" type="java.sql.Types.VARCHAR(100)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+
+	</changeSet>
+
+	<changeSet id="201408221214" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="${table.user}"/>
+		</preConditions>
+
+		<comment>Migrating old user records</comment>
+
+		<sql>
+			INSERT INTO ${table.principal}
+			SELECT id, 'user'
+			FROM ${table.user}
+		</sql>
+
+		<addForeignKeyConstraint baseTableName="${table.user}" baseColumnNames="id" constraintName="fk_um_uid_pid"
+		                         referencedTableName="${table.principal}"
+		                         referencedColumnNames="id"/>
+	</changeSet>
+
+	<changeSet id="201408221216" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="${table.user}"/>
+		</preConditions>
+
+		<comment>Migrating old user records</comment>
+
+		<sql>
+			UPDATE across_sequences
+			SET seq_name = 'seq_um_principal_id'
+			WHERE seq_name = 'seq_um_user_id'
+		</sql>
+	</changeSet>
+
 	<changeSet id="201406141600C" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -183,6 +236,9 @@
 
 		<addNotNullConstraint tableName="${table.user}" columnName="username"
 		                      columnDataType="java.sql.Types.VARCHAR(255)"/>
+		<addForeignKeyConstraint baseTableName="${table.user}" baseColumnNames="id" constraintName="fk_um_uid_pid"
+		                         referencedTableName="${table.principal}"
+		                         referencedColumnNames="id"/>
 	</changeSet>
 
 	<changeSet id="201407310860" author="arne" dbms="mysql">
@@ -225,30 +281,47 @@
 		</createIndex>
 	</changeSet>
 
-	<changeSet id="201406141517B" author="arne">
+	<changeSet id="201408221203" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="um_user_role"/>
+		</preConditions>
+
+		<comment>Rename old user role table</comment>
+
+		<dropForeignKeyConstraint baseTableName="um_user_role" constraintName="fk_um_ur_user_id"/>
+		<renameColumn tableName="um_user_role" oldColumnName="user_id" newColumnName="principal_id"/>
+		<renameTable oldTableName="um_user_role" newTableName="${table.principal_role}"/>
+
+		<addForeignKeyConstraint baseTableName="${table.principal_role}" baseColumnNames="principal_id"
+		                         constraintName="fk_um_pr_principal_id"
+		                         referencedTableName="${table.principal}"
+		                         referencedColumnNames="id"/>
+	</changeSet>
+
+	<changeSet id="201408221204" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<tableExists tableName="${table.user_role}"/>
+				<tableExists tableName="${table.principal_role}"/>
 			</not>
 		</preConditions>
 
-		<comment>Create user role table</comment>
+		<comment>Create principal role table</comment>
 
-		<createTable tableName="${table.user_role}">
-			<column name="user_id" type="java.sql.Types.BIGINT">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_um_user_role"/>
+		<createTable tableName="${table.principal_role}">
+			<column name="principal_id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_um_principal_role"/>
 			</column>
 			<column name="role_id" type="java.sql.Types.BIGINT">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_um_user_role"/>
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_um_principal_role"/>
 			</column>
 		</createTable>
 
-		<addForeignKeyConstraint baseTableName="${table.user_role}" baseColumnNames="user_id"
-		                         constraintName="fk_um_ur_user_id"
-		                         referencedTableName="${table.user}"
+		<addForeignKeyConstraint baseTableName="${table.principal_role}" baseColumnNames="principal_id"
+		                         constraintName="fk_um_pr_principal_id"
+		                         referencedTableName="${table.principal}"
 		                         referencedColumnNames="id"/>
-		<addForeignKeyConstraint baseTableName="${table.user_role}" baseColumnNames="role_id"
-		                         constraintName="fk_um_ur_role_id"
+		<addForeignKeyConstraint baseTableName="${table.principal_role}" baseColumnNames="role_id"
+		                         constraintName="fk_um_pr_role_id"
 		                         referencedTableName="${table.role}"
 		                         referencedColumnNames="id"/>
 	</changeSet>

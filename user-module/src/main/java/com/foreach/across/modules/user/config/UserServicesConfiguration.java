@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.env.Environment;
-import org.springframework.format.support.FormattingConversionService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -24,7 +24,7 @@ public class UserServicesConfiguration
 	private static final Logger LOG = LoggerFactory.getLogger( UserServicesConfiguration.class );
 
 	@Autowired(required = false)
-	private FormattingConversionService conversionService;
+	private ConfigurableConversionService conversionService;
 
 	@Autowired
 	private Environment environment;
@@ -32,14 +32,14 @@ public class UserServicesConfiguration
 	@PostConstruct
 	void registerConverters() {
 		if ( conversionService != null ) {
-			LOG.debug( "FormattingConversionService found - auto-registering user converters " );
+			LOG.debug( "ConfigurableConversionService found - auto-registering user converters " );
 
 			conversionService.addConverter( new ObjectToRoleConverter( conversionService, roleService() ) );
 			conversionService.addConverter( new ObjectToPermissionConverter( conversionService, permissionService() ) );
 			conversionService.addConverter( new ObjectToUserConverter( conversionService, userService() ) );
 		}
 		else {
-			LOG.debug( "No FormattingConversionService found - unable to auto-register user converters" );
+			LOG.debug( "No ConfigurableConversionService found - unable to auto-register user converters" );
 		}
 	}
 

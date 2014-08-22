@@ -1,35 +1,24 @@
 package com.foreach.across.modules.user.business;
 
-import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserRestriction;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Entity
+@DiscriminatorValue("user")
 @Table(name = UserSchemaConfiguration.TABLE_USER)
-public class User implements UserDetails
+public class User extends AbstractPrincipal implements UserDetails
 {
-	@Id
-	@GeneratedValue(generator = "seq_um_user_id")
-	@GenericGenerator(
-			name = "seq_um_user_id",
-			strategy = AcrossSequenceGenerator.STRATEGY,
-			parameters = {
-					@Parameter(name = "sequenceName", value = "seq_um_user_id"),
-					@Parameter(name = "allocationSize", value = "10")
-			}
-	)
-	private long id;
-
 	@Column(nullable = false, name = "username")
 	private String username;
 
@@ -57,22 +46,6 @@ public class User implements UserDetails
 	@Column(name = "restrictions", nullable = true)
 	@Type(type = HibernateUserRestriction.CLASS_NAME)
 	private Set<UserRestriction> restrictions = EnumSet.noneOf( UserRestriction.class );
-
-	@ManyToMany(fetch = FetchType.EAGER)
-	@BatchSize(size = 50)
-	@JoinTable(
-			name = UserSchemaConfiguration.TABLE_USER_ROLE,
-			joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles = new TreeSet<>();
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId( long id ) {
-		this.id = id;
-	}
 
 	public String getUsername() {
 		return username;
@@ -150,47 +123,9 @@ public class User implements UserDetails
 		return getRestrictions().contains( restriction );
 	}
 
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles( Set<Role> roles ) {
-		this.roles = roles;
-	}
-
-	public boolean hasRole( String name ) {
-		return hasRole( new Role( name ) );
-	}
-
-	public boolean hasRole( Role role ) {
-		return getRoles().contains( role );
-	}
-
-	public boolean hasPermission( String name ) {
-		return hasPermission( new Permission( name ) );
-	}
-
-	public boolean hasPermission( Permission permission ) {
-		for ( Role role : getRoles() ) {
-			if ( role.hasPermission( permission ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> authorities = new HashSet<>();
-
-		for ( Role role : getRoles() ) {
-			authorities.add( new SimpleGrantedAuthority( role.getName() ) );
-			for ( Permission permission : role.getPermissions() ) {
-				authorities.add( new SimpleGrantedAuthority( permission.getName() ) );
-			}
-		}
-		return authorities;
+	public Collection<GrantedAuthority> getAuthorities() {
+		return super.getAuthorities();
 	}
 
 	@Override
@@ -210,7 +145,7 @@ public class User implements UserDetails
 
 	@Override
 	public boolean isEnabled() {
-		return !restrictions.contains( UserRestriction.DISABLED ) && !restrictions.contains(
-				UserRestriction.REQUIRES_CONFIRMATION );
+		return !restrictions.contains( UserRestriction.DISABLED )
+				&& !restrictions.contains( UserRestriction.REQUIRES_CONFIRMATION );
 	}
 }

@@ -76,7 +76,7 @@ public class ITUserModuleRenamedTables
 			schema.renameTable( UserSchemaConfiguration.TABLE_PERMISSION_GROUP, "permissie_groepen" );
 			schema.renameTable( UserSchemaConfiguration.TABLE_ROLE, "rollen" );
 			schema.renameTable( UserSchemaConfiguration.TABLE_ROLE_PERMISSION, "rol_permissie" );
-			schema.renameTable( UserSchemaConfiguration.TABLE_USER_ROLE, "gebruiker_rol" );
+			schema.renameTable( UserSchemaConfiguration.TABLE_PRINCIPAL_ROLE, "gebruiker_rol" );
 			schema.renameTable( UserSchemaConfiguration.TABLE_USER_PROPERTIES, "gebruiker_eigenschappen" );
 
 			return userModule;
