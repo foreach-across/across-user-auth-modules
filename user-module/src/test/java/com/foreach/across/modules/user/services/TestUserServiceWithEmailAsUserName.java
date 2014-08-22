@@ -53,8 +53,8 @@ public class TestUserServiceWithEmailAsUserName
 
 		User otherUser = new User();
 
-		when( userRepository.getUserById( firstUserId ) ).thenReturn( user );
-		when( userRepository.getUserByEmail( "498@email.com" ) ).thenReturn( otherUser );
+		when( userRepository.getById( firstUserId ) ).thenReturn( user );
+		when( userRepository.getByEmail( "498@email.com" ) ).thenReturn( otherUser );
 
 		try {
 			userService.save( userDto );

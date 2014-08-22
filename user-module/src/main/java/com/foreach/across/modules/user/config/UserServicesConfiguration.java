@@ -53,6 +53,11 @@ public class UserServicesConfiguration
 		return new RoleServiceImpl();
 	}
 
+	@Bean
+	public GroupService groupService() {
+		return new GroupServiceImpl();
+	}
+
 	@Bean(name = "userPasswordEncoder")
 	public PasswordEncoder userPasswordEncoder() {
 		PasswordEncoder encoder = environment.getProperty( UserModuleSettings.PASSWORD_ENCODER, PasswordEncoder.class );

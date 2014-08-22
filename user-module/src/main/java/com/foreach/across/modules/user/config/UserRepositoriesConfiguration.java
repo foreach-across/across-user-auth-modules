@@ -8,6 +8,11 @@ import org.springframework.context.annotation.Configuration;
 public class UserRepositoriesConfiguration
 {
 	@Bean
+	public GroupRepository groupRepository() {
+		return new GroupRepositoryImpl();
+	}
+
+	@Bean
 	public PermissionRepository permissionRepository() {
 		return new PermissionRepositoryImpl();
 	}

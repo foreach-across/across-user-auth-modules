@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -25,7 +25,7 @@ import java.util.TreeSet;
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
 )
-public abstract class AbstractPrincipal
+public abstract class NonGroupedPrincipal
 {
 	@Id
 	@GeneratedValue(generator = "seq_um_principal_id")
@@ -86,7 +86,7 @@ public abstract class AbstractPrincipal
 	}
 
 	public Collection<GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> authorities = new HashSet<>();
+		Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
 
 		for ( Role role : getRoles() ) {
 			authorities.add( new SimpleGrantedAuthority( role.getName() ) );
@@ -96,5 +96,28 @@ public abstract class AbstractPrincipal
 		}
 
 		return authorities;
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( !( o instanceof NonGroupedPrincipal ) ) {
+			return false;
+		}
+
+		NonGroupedPrincipal that = (NonGroupedPrincipal) o;
+
+		if ( id != that.id ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int) ( id ^ ( id >>> 32 ) );
 	}
 }

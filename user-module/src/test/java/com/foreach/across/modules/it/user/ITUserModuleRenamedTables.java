@@ -39,7 +39,7 @@ public class ITUserModuleRenamedTables
 		assertNotNull( admin );
 		assertEquals( "admin", admin.getUsername() );
 		assertEquals( EnumSet.noneOf( UserRestriction.class ), admin.getRestrictions() );
-		assertEquals( false, admin.getDeleted() );
+		assertEquals( false, admin.isDeleted() );
 		assertEquals( true, admin.getEmailConfirmed() );
 
 		assertEquals( true, admin.isEnabled() );

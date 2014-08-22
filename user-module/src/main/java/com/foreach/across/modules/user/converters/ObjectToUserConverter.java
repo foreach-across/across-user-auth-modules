@@ -26,7 +26,7 @@ public class ObjectToUserConverter implements Converter<Object, User>
 		if ( source instanceof UserDto ) {
 			UserDto dto = (UserDto) source;
 
-			if ( !dto.isNewUser() ) {
+			if ( !dto.isNewEntity() ) {
 				return userService.getUserById( dto.getId() );
 			}
 		}

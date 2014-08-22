@@ -59,22 +59,22 @@ public class UserServiceImpl implements UserService
 
 	@Override
 	public Collection<User> getUsers() {
-		return userRepository.getUsers();
+		return userRepository.getAll();
 	}
 
 	@Override
 	public User getUserById( long id ) {
-		return userRepository.getUserById( id );
+		return userRepository.getById( id );
 	}
 
 	@Override
 	public User getUserByEmail( String email ) {
-		return userRepository.getUserByEmail( email );
+		return userRepository.getByEmail( email );
 	}
 
 	@Override
 	public User getUserByUsername( String username ) {
-		return userRepository.getUserByUsername( username );
+		return userRepository.getByUsername( username );
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService
 	public User save( UserDto userDto ) {
 		User user;
 
-		if ( userDto.isNewUser() ) {
+		if ( userDto.isNewEntity() ) {
 			user = new User();
 
 			if ( StringUtils.isBlank( userDto.getPassword() ) ) {
@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService
 			user.setDisplayName( String.format( "%s %s", user.getFirstName(), user.getLastName() ).trim() );
 		}
 
-		if ( userDto.isNewUser() ) {
+		if ( userDto.isNewEntity() ) {
 			userRepository.create( user );
 		}
 		else {
@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService
 	@Override
 	@Transactional
 	public void delete( long userId ) {
-		User user = userRepository.getUserById( userId );
+		User user = userRepository.getById( userId );
 		deleteProperties( userId );
 		userRepository.delete( user );
 	}

@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface RoleRepository
 {
-	Collection<Role> getRoles();
+	Collection<Role> getAll();
 
 	Role getRole( String name );
 

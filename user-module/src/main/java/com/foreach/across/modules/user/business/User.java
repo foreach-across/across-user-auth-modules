@@ -1,15 +1,13 @@
 package com.foreach.across.modules.user.business;
 
+import com.foreach.across.modules.hibernate.repositories.Undeletable;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserRestriction;
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
@@ -17,7 +15,7 @@ import java.util.Set;
 @Entity
 @DiscriminatorValue("user")
 @Table(name = UserSchemaConfiguration.TABLE_USER)
-public class User extends AbstractPrincipal implements UserDetails
+public class User extends GroupedPrincipal implements UserDetails, Undeletable
 {
 	@Column(nullable = false, name = "username")
 	private String username;
@@ -103,7 +101,7 @@ public class User extends AbstractPrincipal implements UserDetails
 		this.emailConfirmed = emailConfirmed;
 	}
 
-	public boolean getDeleted() {
+	public boolean isDeleted() {
 		return deleted;
 	}
 
@@ -121,11 +119,6 @@ public class User extends AbstractPrincipal implements UserDetails
 
 	public boolean hasRestriction( UserRestriction restriction ) {
 		return getRestrictions().contains( restriction );
-	}
-
-	@Override
-	public Collection<GrantedAuthority> getAuthorities() {
-		return super.getAuthorities();
 	}
 
 	@Override

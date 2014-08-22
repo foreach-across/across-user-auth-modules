@@ -48,7 +48,7 @@ public class TestUserRepository
 
 	@Test
 	public void userNotFound() {
-		User user = userRepository.getUserById( -123 );
+		User user = userRepository.getById( -123 );
 
 		assertNull( user );
 	}
@@ -69,7 +69,7 @@ public class TestUserRepository
 
 		assertTrue( user.getId() > 0 );
 
-		User existing = userRepository.getUserById( user.getId() );
+		User existing = userRepository.getById( user.getId() );
 
 		assertEquals( user.getId(), existing.getId() );
 		assertEquals( user.getUsername(), existing.getUsername() );
@@ -78,7 +78,7 @@ public class TestUserRepository
 		assertEquals( user.getDisplayName(), existing.getDisplayName() );
 		assertEquals( user.getEmail(), existing.getEmail() );
 		assertEquals( user.getPassword(), existing.getPassword() );
-        assertEquals( user.getDeleted(), existing.getDeleted() );
+        assertEquals( user.isDeleted(), existing.isDeleted() );
         assertEquals( user.getEmailConfirmed(), existing.getEmailConfirmed()  );
 		assertNotNull( existing.getRestrictions() );
         assertEquals( user.getRestrictions(), existing.getRestrictions()  );
@@ -104,9 +104,9 @@ public class TestUserRepository
 		assertTrue( user.getId() > 0 );
 
 		userRepository.delete( user );
-		User deleted = userRepository.getUserById( user.getId() );
+		User deleted = userRepository.getById( user.getId() );
 		assertNotNull( "user should still exist in database (soft deleted)", deleted );
-		assertEquals( true, deleted.getDeleted() );
+		assertEquals( true, deleted.isDeleted() );
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class TestUserRepository
 
 		userRepository.create( user );
 
-		User existing = userRepository.getUserById( user.getId() );
+		User existing = userRepository.getById( user.getId() );
 
 		assertEquals( user.getRoles(), existing.getRoles() );
 	}

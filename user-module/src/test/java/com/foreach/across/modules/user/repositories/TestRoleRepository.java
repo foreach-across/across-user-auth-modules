@@ -66,7 +66,7 @@ public class TestRoleRepository
 		assertEquals( admin.getId(), existing.getId() );
 		assertEquals( admin.getPermissions(), existing.getPermissions() );
 
-		Collection<Role> roles = roleRepository.getRoles();
+		Collection<Role> roles = roleRepository.getAll();
 		assertEquals( 1, roles.size() );
 		assertTrue( roles.contains( admin ) );
 

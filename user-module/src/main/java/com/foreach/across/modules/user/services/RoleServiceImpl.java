@@ -63,7 +63,7 @@ public class RoleServiceImpl implements RoleService
 
 	@Override
 	public Collection<Role> getRoles() {
-		return roleRepository.getRoles();
+		return roleRepository.getAll();
 	}
 
 	@Override

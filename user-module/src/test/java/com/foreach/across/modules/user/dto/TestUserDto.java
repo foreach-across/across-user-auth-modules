@@ -44,36 +44,36 @@ public class TestUserDto
 	@Test
 	public void createNewUserIsCalculatedOnIdIfNotSetExplicitly() {
 		UserDto dto = new UserDto();
-		assertTrue( dto.isNewUser() );
+		assertTrue( dto.isNewEntity() );
 
 		dto.setId( -1 );
-		assertFalse( dto.isNewUser() );
+		assertFalse( dto.isNewEntity() );
 
 		dto.setId( 123 );
-		assertFalse( dto.isNewUser() );
+		assertFalse( dto.isNewEntity() );
 
 		dto.setId( 0 );
-		assertTrue( dto.isNewUser() );
+		assertTrue( dto.isNewEntity() );
 	}
 
 	@Test
 	public void createNewUserCanBeSetExplicitly() {
 		UserDto dto = new UserDto();
-		dto.setNewUser( false );
+		dto.setNewEntity( false );
 
-		assertFalse( dto.isNewUser() );
+		assertFalse( dto.isNewEntity() );
 		assertEquals( 0, dto.getId() );
 
 		dto.setId( 0 );
-		assertFalse( dto.isNewUser() );
+		assertFalse( dto.isNewEntity() );
 
 		dto.setId( 132 );
-		assertFalse( dto.isNewUser() );
+		assertFalse( dto.isNewEntity() );
 
-		dto.setNewUser( true );
-		assertTrue( dto.isNewUser() );
+		dto.setNewEntity( true );
+		assertTrue( dto.isNewEntity() );
 
 		dto.setId( 333 );
-		assertTrue( dto.isNewUser() );
+		assertTrue( dto.isNewEntity() );
 	}
 }

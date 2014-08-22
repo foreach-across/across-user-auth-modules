@@ -5,7 +5,6 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
-
 import com.foreach.common.test.MockedLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
@@ -231,7 +230,7 @@ public class TestUserService
 		update.setUsername( "other" );
 		update.setEmail( "other@email.com" );
 
-		when( userRepository.getUserById( 321 ) ).thenReturn( existing );
+		when( userRepository.getById( 321 ) ).thenReturn( existing );
 
 		userService.save( update );
 
@@ -249,7 +248,7 @@ public class TestUserService
 	public void updatingUserWithZeroIdIsNotAllowed() {
 		UserDto dto = new UserDto();
 		dto.setId( 0 );
-		dto.setNewUser( false );
+		dto.setNewEntity( false );
 
 		boolean failed = false;
 
@@ -261,7 +260,7 @@ public class TestUserService
 		}
 
 		assertTrue( failed );
-		verify( userRepository, never() ).getUserById( any( Long.class ) );
+		verify( userRepository, never() ).getById( any( Long.class ) );
 	}
 
 	@Test
@@ -279,7 +278,7 @@ public class TestUserService
 		}
 
 		assertTrue( failed );
-		verify( userRepository ).getUserById( 132 );
+		verify( userRepository ).getById( 132 );
 	}
 
 	@Configuration

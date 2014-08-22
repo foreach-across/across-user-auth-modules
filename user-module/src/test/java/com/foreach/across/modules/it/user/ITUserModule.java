@@ -39,7 +39,7 @@ public class ITUserModule
 		assertNotNull( admin );
 		assertEquals( "admin", admin.getUsername() );
 		assertEquals( EnumSet.noneOf( UserRestriction.class ), admin.getRestrictions() );
-		assertEquals( false, admin.getDeleted() );
+		assertEquals( false, admin.isDeleted() );
 		assertEquals( true, admin.getEmailConfirmed() );
 
 		assertEquals( true, admin.isEnabled() );
@@ -77,7 +77,7 @@ public class ITUserModule
 		assertNull( existing );
 
 		UserDto user = new UserDto();
-		user.setNewUser( true );
+		user.setNewEntity( true );
 		user.setId( -100 );
 		user.setUsername( "test-user:-100" );
 		user.setEmail( "negemail@test.com" );

@@ -7,7 +7,7 @@ import java.util.Collection;
 public interface RoleService
 {
 	/**
-	 * Ensures a Role with the specified properties exists.  The name is the unique key of the role.
+	 * Ensures a Role with the specified permissions exists.  The name is the unique key of the role.
 	 *
 	 * @param name        Name of the Role entity.
 	 * @param description Description of the Role.

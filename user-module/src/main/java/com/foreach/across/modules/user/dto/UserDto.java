@@ -1,6 +1,5 @@
 package com.foreach.across.modules.user.dto;
 
-import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.converters.FieldUtils;
@@ -9,11 +8,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.TreeSet;
 
-public class UserDto
+public class UserDto extends GroupedPrincipalDto<User>
 {
-	private long id;
 	private String username;
 	private String firstName;
 	private String lastName;
@@ -25,23 +22,11 @@ public class UserDto
 	private boolean deleted;
 	private Set<UserRestriction> restrictions = EnumSet.noneOf( UserRestriction.class );
 
-	private Set<Role> roles = new TreeSet<>();
-
-	private Boolean newUser;
-
 	public UserDto() {
 	}
 
 	public UserDto( User user ) {
 		copyFrom( user );
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId( long id ) {
-		this.id = id;
 	}
 
 	public String getUsername() {
@@ -113,9 +98,10 @@ public class UserDto
 	}
 
 	public void setRestrictions( Set<UserRestriction> restrictions ) {
-		if( CollectionUtils.isEmpty( restrictions ) ) {
+		if ( CollectionUtils.isEmpty( restrictions ) ) {
 			this.restrictions = EnumSet.noneOf( UserRestriction.class );
-		} else {
+		}
+		else {
 			this.restrictions = EnumSet.copyOf( restrictions );
 		}
 	}
@@ -126,26 +112,6 @@ public class UserDto
 
 	public boolean hasRestrictions() {
 		return !CollectionUtils.isEmpty( restrictions );
-	}
-
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles( Set<Role> roles ) {
-		this.roles = roles;
-	}
-
-	public void addRole( Role role ) {
-		roles.add( role );
-	}
-
-	public void setNewUser( boolean newUser ) {
-		this.newUser = newUser;
-	}
-
-	public boolean isNewUser() {
-		return newUser != null ? newUser : getId() == 0;
 	}
 
 	public void copyFrom( User user ) {

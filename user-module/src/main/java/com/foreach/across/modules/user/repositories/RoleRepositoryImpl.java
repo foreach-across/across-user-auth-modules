@@ -19,7 +19,7 @@ public class RoleRepositoryImpl implements RoleRepository
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	@Override
-	public Collection<Role> getRoles() {
+	public Collection<Role> getAll() {
 		return (Collection<Role>) sessionFactory.getCurrentSession().createCriteria( Role.class ).setResultTransformer(
 				Criteria.DISTINCT_ROOT_ENTITY ).list();
 	}
