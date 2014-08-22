@@ -122,8 +122,9 @@ public class TestOAuth2JdbcTokenStore
 				storedAuthentication.getOAuth2Request().getAuthorities().iterator();
 		assertEquals( "role three", storedAuthorities.next().getAuthority() );
 		assertEquals( "role one", storedAuthorities.next().getAuthority() );
-		assertEquals( "authority two", storedAuthorities.next().getAuthority() );
 		assertEquals( "role two", storedAuthorities.next().getAuthority() );
+		assertEquals( "authority two", storedAuthorities.next().getAuthority() );
+
 	}
 
 	@Test
