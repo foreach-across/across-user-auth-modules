@@ -7,8 +7,7 @@
 
 	<!-- Default table names -->
 	<property name="table.client" value="oauth_client"/>
-	<property name="table.role" value="um_role"/>
-	<property name="table.client_role" value="oauth_client_role"/>
+	<property name="table.principal" value="um_principal"/>
 	<property name="table.client_scope" value="oauth_client_scope"/>
 	<property name="table.scope" value="oauth_scope"/>
 	<property name="table.resource" value="oauth_resource_id"/>
@@ -41,31 +40,16 @@
 		</createTable>
 	</changeSet>
 
-	<changeSet id="201406251558" author="asm">
-		<preConditions onFail="MARK_RAN">
+	<changeSet id="201408221234" author="arne">
+		<preConditions>
 			<not>
-				<tableExists tableName="${table.client_role}"/>
+				<foreignKeyConstraintExists foreignKeyTableName="${table.client}" foreignKeyName="fk_oauth_id_pid"/>
 			</not>
 		</preConditions>
-
-		<comment>Creates OAuth client-role link table</comment>
-
-		<createTable tableName="${table.client_role}">
-			<column name="client_id" type="java.sql.Types.BIGINT">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_role"/>
-			</column>
-			<column name="role_id" type="java.sql.Types.BIGINT">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_role"/>
-			</column>
-		</createTable>
-
-		<addForeignKeyConstraint baseTableName="${table.client_role}" baseColumnNames="client_id"
-		                         constraintName="fk_oauth_cr_clnt_id"
-		                         referencedTableName="${table.client}"
-		                         referencedColumnNames="id"/>
-		<addForeignKeyConstraint baseTableName="${table.client_role}" baseColumnNames="role_id"
-		                         constraintName="fk_oauth_cr_role_id"
-		                         referencedTableName="${table.role}"
+		<addForeignKeyConstraint baseTableName="${table.client}"
+		                         baseColumnNames="id"
+		                         constraintName="fk_oauth_id_pid"
+		                         referencedTableName="${table.principal}"
 		                         referencedColumnNames="id"/>
 	</changeSet>
 

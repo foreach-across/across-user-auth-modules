@@ -1,40 +1,19 @@
 package com.foreach.across.modules.oauth2.business;
 
-import com.foreach.across.core.database.AcrossSchemaConfiguration;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
-import com.foreach.across.modules.user.business.Permission;
-import com.foreach.across.modules.user.business.Role;
+import com.foreach.across.modules.user.business.AbstractPrincipal;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
+@DiscriminatorValue("oauth2_client")
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT)
-public class OAuth2Client implements ClientDetails
+public class OAuth2Client extends AbstractPrincipal implements ClientDetails
 {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_oauth_client_id")
-	@TableGenerator(name = "seq_oauth_client_id", table = AcrossSchemaConfiguration.TABLE_SEQUENCES,
-	                pkColumnName = AcrossSchemaConfiguration.SEQUENCE_NAME,
-	                valueColumnName = AcrossSchemaConfiguration.SEQUENCE_VALUE, pkColumnValue = "seq_oauth_client_id",
-	                allocationSize = 10)
-	private long id;
-
-	@ManyToMany(fetch = FetchType.EAGER)
-	@BatchSize(size = 50)
-	@JoinTable(
-			name = OAuth2SchemaConfiguration.TABLE_CLIENT_ROLE,
-			joinColumns = @JoinColumn(name = "client_id"),
-			inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles = new TreeSet<Role>();
-
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.oAuth2Client", cascade = CascadeType.ALL)
 	private Set<OAuth2ClientScope> oAuth2ClientScopes = new TreeSet<OAuth2ClientScope>();
 
@@ -87,14 +66,6 @@ public class OAuth2Client implements ClientDetails
 
 	public void setClientId( String clientId ) {
 		this.clientId = clientId;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId( long id ) {
-		this.id = id;
 	}
 
 	@Override
@@ -157,19 +128,6 @@ public class OAuth2Client implements ClientDetails
 	}
 
 	@Override
-	public Collection<GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-
-		for ( Role role : getRoles() ) {
-			authorities.add( new SimpleGrantedAuthority( role.getName() ) );
-			for ( Permission permission : role.getPermissions() ) {
-				authorities.add( new SimpleGrantedAuthority( permission.getName() ) );
-			}
-		}
-		return authorities;
-	}
-
-	@Override
 	public Integer getAccessTokenValiditySeconds() {
 		return accessTokenValiditySeconds;
 	}
@@ -200,14 +158,6 @@ public class OAuth2Client implements ClientDetails
 	@Override
 	public Map<String, Object> getAdditionalInformation() {
 		return new LinkedHashMap<String, Object>();
-	}
-
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles( Set<Role> roles ) {
-		this.roles = roles;
 	}
 
 	public Set<OAuth2ClientScope> getOAuth2ClientScopes() {
