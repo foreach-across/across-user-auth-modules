@@ -1,5 +1,6 @@
 package com.foreach.across.modules.user.business;
 
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.hibernate.repositories.Undeletable;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserRestriction;
@@ -15,7 +16,7 @@ import java.util.Set;
 @Entity
 @DiscriminatorValue("user")
 @Table(name = UserSchemaConfiguration.TABLE_USER)
-public class User extends GroupedPrincipal implements UserDetails, Undeletable
+public class User extends GroupedPrincipal implements IdBasedEntity, UserDetails, Undeletable
 {
 	@Column(nullable = false, name = "username")
 	private String username;

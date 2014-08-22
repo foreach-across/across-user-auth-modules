@@ -1,5 +1,6 @@
 package com.foreach.across.modules.user.business;
 
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.spring.security.business.SecurityPrincipal;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
@@ -28,7 +29,7 @@ import java.util.TreeSet;
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
 )
-public abstract class NonGroupedPrincipal implements SecurityPrincipal
+public abstract class NonGroupedPrincipal implements SecurityPrincipal, IdBasedEntity
 {
 	@Transient
 	private final String idPrefix = StringUtils.lowerCase(
@@ -133,4 +134,8 @@ public abstract class NonGroupedPrincipal implements SecurityPrincipal
 		return (int) ( id ^ ( id >>> 32 ) );
 	}
 
+	@Override
+	public final String toString() {
+		return getPrincipalId();
+	}
 }

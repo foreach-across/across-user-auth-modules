@@ -6,10 +6,9 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.EmptyAcrossModule;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Refreshable;
-import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.business.AclPermission;
-import com.foreach.across.modules.spring.security.business.SecurityPrincipal;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.GroupDto;
@@ -18,6 +17,7 @@ import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
+import com.foreach.across.modules.user.services.security.AclSecurityService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -28,17 +28,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.GrantedAuthoritySid;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +50,7 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(classes = { ITUserModule.Config.class, ITAclServices.SecurityConfig.class })
 public class ITAclServices
 {
-	private final ObjectIdentity repository = new ObjectIdentityImpl( "repository", 1L );
+	private final TestRepository repository = new TestRepository( 1L );
 	private final TestFolder folderOne = new TestFolder( 123 );
 	private final TestFile fileInFolderOne = new TestFile( 888 );
 	private final TestFolder folderTwo = new TestFolder( 456 );
@@ -78,7 +72,7 @@ public class ITAclServices
 	private SecuredBean securedBean;
 
 	@Autowired
-	private AclConfigurer acl;
+	private AclSecurityService acl;
 
 	private Group group;
 	private User userOne, userTwo, userThree, userFour;
@@ -117,7 +111,7 @@ public class ITAclServices
 
 	@After
 	public void clearAcls() {
-		acl.delete( repository, folderOne, fileInFolderOne, folderTwo, fileInFolderTwo );
+		acl.deleteAcl( repository, true );
 	}
 
 	private User createRandomUser( Collection<Group> groups, Collection<String> roles ) {
@@ -144,11 +138,11 @@ public class ITAclServices
 	public void userWithDirectApprovalOnFolder() {
 		logon( userOne );
 
-		acl.create( repository, null );
-		acl.create( folderOne, repository );
-		acl.create( fileInFolderOne, folderOne );
-		acl.create( folderTwo, repository );
-		acl.create( fileInFolderTwo, folderTwo );
+		acl.createAcl( repository );
+		acl.createAclWithParent( folderOne, repository );
+		acl.createAclWithParent( fileInFolderOne, folderOne );
+		acl.createAclWithParent( folderTwo, repository );
+		acl.createAclWithParent( fileInFolderTwo, folderTwo );
 
 		assertFalse( canRead( folderOne ) );
 		assertFalse( canRead( fileInFolderOne ) );
@@ -169,11 +163,11 @@ public class ITAclServices
 	public void permissionsThroughAuthorityAndGroup() {
 		logon( userOne );
 
-		acl.create( repository, null );
-		acl.create( folderOne, repository );
-		acl.create( fileInFolderOne, folderOne );
-		acl.create( folderTwo, repository );
-		acl.create( fileInFolderTwo, folderTwo );
+		acl.createAcl( repository );
+		acl.createAclWithParent( folderOne, repository );
+		acl.createAclWithParent( fileInFolderOne, folderOne );
+		acl.createAclWithParent( folderTwo, repository );
+		acl.createAclWithParent( fileInFolderTwo, folderTwo );
 
 		acl.allow( "manage files", repository, AclPermission.WRITE );
 		acl.allow( "manage files", repository, AclPermission.READ );
@@ -258,15 +252,9 @@ public class ITAclServices
 		public SecuredBean securedBean() {
 			return new SecuredBean();
 		}
-
-		@Bean
-		@Exposed
-		public AclConfigurer aclConfigurer() {
-			return new AclConfigurer();
-		}
 	}
 
-	protected static class TestFile
+	protected static class TestFile implements IdBasedEntity
 	{
 		private final long id;
 
@@ -286,6 +274,13 @@ public class ITAclServices
 		}
 	}
 
+	public static class TestRepository extends TestFile
+	{
+		public TestRepository( long id ) {
+			super( id );
+		}
+	}
+
 	@Refreshable
 	public static class SecuredBean
 	{
@@ -297,94 +292,6 @@ public class ITAclServices
 		@PreAuthorize("hasPermission(#fileOrFolder, 'WRITE')")
 		public boolean canWrite( Object fileOrFolder ) {
 			return true;
-		}
-	}
-
-	@Refreshable
-	public static class AclConfigurer
-	{
-		@Autowired
-		private AcrossContextBeanRegistry contextBeanRegistry;
-
-		@Transactional(propagation = Propagation.REQUIRES_NEW)
-		public void create( Object object, Object parent ) {
-			MutableAclService aclService = contextBeanRegistry.getBeanOfType( MutableAclService.class );
-
-			ObjectIdentity oi = id( object );
-
-			MutableAcl acl = null;
-			try {
-				acl = (MutableAcl) aclService.readAclById( oi );
-			}
-			catch ( NotFoundException nfe ) {
-				acl = aclService.createAcl( oi );
-			}
-
-			if ( parent != null ) {
-				Acl parentAcl = aclService.readAclById( id( parent ) );
-				acl.setParent( parentAcl );
-			}
-
-			aclService.updateAcl( acl );
-		}
-
-		@Transactional(propagation = Propagation.REQUIRES_NEW)
-		public void allow( SecurityPrincipal principal, Object fileOrFolder, Permission perm ) {
-			MutableAclService aclService = contextBeanRegistry.getBeanOfType( MutableAclService.class );
-
-			Sid sid = new PrincipalSid( principal.getPrincipalId() );
-			ObjectIdentity oi = id( fileOrFolder );
-
-			MutableAcl acl = null;
-			try {
-				acl = (MutableAcl) aclService.readAclById( oi );
-			}
-			catch ( NotFoundException nfe ) {
-				acl = aclService.createAcl( oi );
-			}
-
-			acl.insertAce( acl.getEntries().size(), perm, sid, true );
-			aclService.updateAcl( acl );
-		}
-
-		@Transactional(propagation = Propagation.REQUIRES_NEW)
-		public void allow( String authority, Object entity, Permission perm ) {
-			MutableAclService aclService = contextBeanRegistry.getBeanOfType( MutableAclService.class );
-
-			Sid sid = new GrantedAuthoritySid( authority );
-			ObjectIdentity oi = id( entity );
-
-			MutableAcl acl = null;
-			try {
-				acl = (MutableAcl) aclService.readAclById( oi );
-			}
-			catch ( NotFoundException nfe ) {
-				acl = aclService.createAcl( oi );
-			}
-
-			acl.insertAce( acl.getEntries().size(), perm, sid, true );
-			aclService.updateAcl( acl );
-		}
-
-		@Transactional(propagation = Propagation.REQUIRES_NEW)
-		public void delete( Object... objects ) {
-			MutableAclService aclService = contextBeanRegistry.getBeanOfType( MutableAclService.class );
-
-			for ( Object object : objects ) {
-				try {
-					aclService.deleteAcl( id( object ), true );
-				}
-				catch ( NotFoundException nfe ) {
-				}
-			}
-		}
-
-		private ObjectIdentity id( Object object ) {
-			if ( object instanceof ObjectIdentity ) {
-				return (ObjectIdentity) object;
-			}
-
-			return new ObjectIdentityImpl( object );
 		}
 	}
 }

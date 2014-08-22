@@ -290,8 +290,12 @@
 
 		<comment>Rename old user role table</comment>
 
-		<dropForeignKeyConstraint baseTableName="um_user_role" constraintName="fk_um_ur_user_id"/>
-		<renameColumn tableName="um_user_role" oldColumnName="user_id" newColumnName="principal_id"/>
+		<dropForeignKeyConstraint baseTableName="um_user_role"
+		                          constraintName="fk_um_ur_user_id"/>
+		<renameColumn tableName="um_user_role"
+		              oldColumnName="user_id"
+		              newColumnName="principal_id"
+		              columnDataType="java.sql.Types.BIGINT"/>
 		<renameTable oldTableName="um_user_role" newTableName="${table.principal_role}"/>
 
 		<addForeignKeyConstraint baseTableName="${table.principal_role}" baseColumnNames="principal_id"
