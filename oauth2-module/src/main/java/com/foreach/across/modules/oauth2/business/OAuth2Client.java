@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@DiscriminatorValue("oauth2_client")
+@DiscriminatorValue("oauth2client")
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT)
 public class OAuth2Client extends NonGroupedPrincipal implements ClientDetails
 {
