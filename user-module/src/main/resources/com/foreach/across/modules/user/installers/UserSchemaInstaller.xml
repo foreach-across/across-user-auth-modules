@@ -218,7 +218,7 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="201406141600C" author="arne">
+	<changeSet id="201406141600CD" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="${table.user}"/>
