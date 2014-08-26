@@ -11,7 +11,6 @@ import java.util.Collection;
 @Service
 public class OAuth2ServiceImpl implements OAuth2Service
 {
-
 	@Autowired
 	private OAuth2Repository oAuth2Repository;
 
