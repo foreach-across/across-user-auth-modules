@@ -1,7 +1,10 @@
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.UserDto;
+import com.foreach.across.modules.user.services.security.SecurityPrincipalService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,9 @@ public class UserValidator implements Validator
 
 	@Autowired
 	private EmailValidator emailValidator;
+
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
 
 	@Override
 	public void validate( Object target, Errors errors ) {
@@ -48,6 +54,16 @@ public class UserValidator implements Validator
 			else {
 				if ( !emailValidator.isValid( userDto.getEmail(), null ) ) {
 					errors.rejectValue( "email", null, "invalid email" );
+				}
+			}
+
+			if ( !errors.hasErrors() ) {
+				IdBasedEntity principal = securityPrincipalService.getPrincipalByName(
+					userService.isUseEmailAsUsername() ? userDto.getEmail() : userDto.getUsername()
+				);
+
+				if ( principal != null && !ObjectUtils.equals( principal.getId(), userDto.getId() ) ) {
+					errors.rejectValue( "username", null, "username is not available" );
 				}
 			}
 		}

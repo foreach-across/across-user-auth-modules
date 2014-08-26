@@ -21,7 +21,7 @@ public class Group extends NonGroupedPrincipal implements Comparable<Group>
 
 	public void setName( String name ) {
 		this.name = name;
-		setPrincipalName( name );
+		setPrincipalName( "group:" + name );
 	}
 
 	@Override

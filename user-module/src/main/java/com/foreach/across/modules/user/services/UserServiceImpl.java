@@ -5,6 +5,7 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
+import com.foreach.across.modules.user.services.security.SecurityPrincipalService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class UserServiceImpl implements UserService
 
 	@Autowired
 	private UserPropertiesService userPropertiesService;
+
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
 
 	private final PasswordEncoder passwordEncoder;
 	private final boolean useEmailAsUsername;
@@ -87,6 +91,9 @@ public class UserServiceImpl implements UserService
 	public User save( UserDto userDto ) {
 		User user;
 
+		boolean isPrincipalRename = false;
+		String oldPrincipalName = null;
+
 		if ( userDto.isNewEntity() ) {
 			user = new User();
 
@@ -114,16 +121,22 @@ public class UserServiceImpl implements UserService
 			userDto.setUsername( userDto.getEmail() );
 		}
 
-		BeanUtils.copyProperties( userDto, user, "password" );
+		if ( !userDto.isNewEntity() && !StringUtils.equalsIgnoreCase( userDto.getUsername(), user.getUsername() ) ) {
+			isPrincipalRename = true;
+			oldPrincipalName = user.getPrincipalName();
+		}
 
 		Errors errors = new BeanPropertyBindingResult( userDto, "user" );
 		userValidator.validate( userDto, errors );
+
 		if ( errors.hasErrors() ) {
 			throw new UserValidationException(
 					"Failed to validate User, [" + errors.getErrorCount() + "] validation errors: " + StringUtils.join(
 							errors.getAllErrors(), System.lineSeparator() ),
 					errors.getAllErrors() );
 		}
+
+		BeanUtils.copyProperties( userDto, user, "password" );
 
 		// Only modify password if password on the dto is not blank
 		if ( !StringUtils.isBlank( userDto.getPassword() ) ) {
@@ -142,6 +155,10 @@ public class UserServiceImpl implements UserService
 		}
 
 		userDto.copyFrom( user );
+
+		if ( isPrincipalRename ) {
+			securityPrincipalService.publishRenameEvent( oldPrincipalName, user.getPrincipalName() );
+		}
 
 		return user;
 	}
