@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -201,6 +202,67 @@ public class ITAclServices
 		assertTrue( !canRead( folderTwo ) && canWrite( folderTwo ) );
 		assertTrue( !canRead( fileInFolderOne ) && canWrite( fileInFolderOne ) );
 		assertTrue( !canRead( fileInFolderTwo ) && canWrite( fileInFolderTwo ) );
+	}
+
+	@Test
+	public void manualTestingOfPermissions() {
+		logon( userOne );
+
+		acl.createAcl( repository );
+		acl.createAclWithParent( folderOne, repository );
+		acl.createAclWithParent( fileInFolderOne, folderOne );
+		acl.createAclWithParent( folderTwo, repository );
+		acl.createAclWithParent( fileInFolderTwo, folderTwo );
+
+		acl.allow( "manage files", repository, AclPermission.WRITE );
+		acl.allow( "manage files", repository, AclPermission.READ );
+
+		acl.allow( userTwo, folderTwo, AclPermission.READ );
+		acl.allow( userOne, fileInFolderOne, AclPermission.WRITE );
+		acl.allow( userOne, fileInFolderTwo, AclPermission.WRITE );
+
+		acl.allow( group, repository, AclPermission.WRITE );
+
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		assertFalse( acl.hasPermission( auth, folderOne, AclPermission.READ ) );
+		assertFalse( acl.hasPermission( auth, folderOne, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( auth, folderTwo, AclPermission.READ ) );
+		assertFalse( acl.hasPermission( auth, folderTwo, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( auth, fileInFolderOne, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( auth, fileInFolderOne, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( auth, fileInFolderTwo, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( auth, fileInFolderTwo, AclPermission.WRITE ) );
+
+		assertFalse( acl.hasPermission( userOne, folderOne, AclPermission.READ ) );
+		assertFalse( acl.hasPermission( userOne, folderOne, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( userOne, folderTwo, AclPermission.READ ) );
+		assertFalse( acl.hasPermission( userOne, folderTwo, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( userOne, fileInFolderOne, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( userOne, fileInFolderOne, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( userOne, fileInFolderTwo, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( userOne, fileInFolderTwo, AclPermission.WRITE ) );
+
+		logon( userFour );
+
+		auth = SecurityContextHolder.getContext().getAuthentication();
+		assertFalse( acl.hasPermission( auth, folderOne, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( auth, folderOne, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( auth, folderTwo, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( auth, folderTwo, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( auth, fileInFolderOne, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( auth, fileInFolderOne, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( auth, fileInFolderTwo, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( auth, fileInFolderTwo, AclPermission.WRITE ) );
+
+		assertFalse( acl.hasPermission( userFour, folderOne, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( userFour, folderOne, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( userFour, folderTwo, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( userFour, folderTwo, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( userFour, fileInFolderOne, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( userFour, fileInFolderOne, AclPermission.WRITE ) );
+		assertFalse( acl.hasPermission( userFour, fileInFolderTwo, AclPermission.READ ) );
+		assertTrue( acl.hasPermission( userFour, fileInFolderTwo, AclPermission.WRITE ) );
+
 	}
 
 	private boolean canRead( Object object ) {

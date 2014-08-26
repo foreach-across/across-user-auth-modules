@@ -5,21 +5,26 @@ import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.business.AclPermission;
 import com.foreach.across.modules.spring.security.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.business.SecurityPrincipalHierarchy;
 import com.foreach.across.modules.spring.security.business.SecurityPrincipalSid;
+import com.foreach.across.modules.user.business.NonGroupedPrincipal;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.PermissionEvaluator;
+import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.model.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Arne Vandamme
@@ -31,6 +36,7 @@ public class AclSecurityServiceImpl implements AclSecurityService
 	private AcrossContextBeanRegistry contextBeanRegistry;
 
 	private MutableAclService fetchedAclService;
+	private PermissionEvaluator fetchedAclPermissionEvaluator;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -207,13 +213,55 @@ public class AclSecurityServiceImpl implements AclSecurityService
 	@Transactional(readOnly = true)
 	@Override
 	public boolean hasPermission( Authentication authentication, IdBasedEntity entity, AclPermission permission ) {
-		return false;
+		return aclPermissionEvaluator().hasPermission( authentication, entity, permission );
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public boolean hasPermission( SecurityPrincipal principal, IdBasedEntity entity, AclPermission permission ) {
+		List<Sid> sids = buildSids( principal );
+		List<org.springframework.security.acls.model.Permission> aclPermissions =
+				Collections.<org.springframework.security.acls.model.Permission>singletonList( permission );
+
+		try {
+			// Lookup only ACLs for SIDs we're interested in
+			Acl acl = aclService().readAclById( identity( entity ), sids );
+
+			if ( acl.isGranted( aclPermissions, sids, false ) ) {
+				return true;
+			}
+		}
+		catch ( NotFoundException nfe ) {
+			return false;
+		}
+
 		return false;
+	}
+
+	private List<Sid> buildSids( SecurityPrincipal principal ) {
+		Collection<SecurityPrincipal> principals = new LinkedList<>();
+		principals.add( principal );
+
+		if ( principal instanceof SecurityPrincipalHierarchy ) {
+			principals.addAll( ( (SecurityPrincipalHierarchy) principal ).getParentPrincipals() );
+		}
+
+		List<Sid> sids = new ArrayList<>();
+		Collection<Sid> authoritySids = new LinkedHashSet<>();
+
+		for ( SecurityPrincipal candidate : principals ) {
+			sids.add( new SecurityPrincipalSid( candidate ) );
+
+			if ( candidate instanceof NonGroupedPrincipal ) {
+				for ( GrantedAuthority authority : ( (NonGroupedPrincipal) candidate ).getAuthorities() ) {
+					authoritySids.add( new GrantedAuthoritySid( authority ) );
+				}
+			}
+		}
+
+		sids.addAll( authoritySids );
+
+		return sids;
 	}
 
 	private Sid sid( Role role ) {
@@ -252,5 +300,23 @@ public class AclSecurityServiceImpl implements AclSecurityService
 		}
 
 		return fetchedAclService;
+	}
+
+	private PermissionEvaluator aclPermissionEvaluator() {
+		if ( fetchedAclPermissionEvaluator == null ) {
+			try {
+				fetchedAclPermissionEvaluator = contextBeanRegistry.getBeanOfTypeFromModule( SpringSecurityModule.NAME,
+				                                                                             AclPermissionEvaluator.class );
+			}
+			catch ( BeansException be ) {
+				throw new BeanInitializationException(
+						"No AclPermissionEvaluator is available.  The AclPermissionEvaluator is only available after the context " +
+								"is bootstrapped entirely, perhaps you are running from an installer " +
+								"in the wrong bootstrap phase?",
+						be );
+			}
+		}
+
+		return fetchedAclPermissionEvaluator;
 	}
 }
