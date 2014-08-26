@@ -113,6 +113,7 @@ public class UserServiceImpl implements UserService
 		if ( useEmailAsUsername ) {
 			userDto.setUsername( userDto.getEmail() );
 		}
+
 		BeanUtils.copyProperties( userDto, user, "password" );
 
 		Errors errors = new BeanPropertyBindingResult( userDto, "user" );

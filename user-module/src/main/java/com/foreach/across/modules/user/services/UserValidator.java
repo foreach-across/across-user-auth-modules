@@ -12,6 +12,7 @@ public class UserValidator implements Validator
 {
 	@Autowired
 	private UserService userService;
+
 	@Autowired
 	private EmailValidator emailValidator;
 

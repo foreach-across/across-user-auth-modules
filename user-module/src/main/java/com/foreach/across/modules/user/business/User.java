@@ -5,11 +5,12 @@ import com.foreach.across.modules.hibernate.repositories.Undeletable;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserRestriction;
 import org.hibernate.annotations.Type;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
-import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -52,6 +53,7 @@ public class User extends GroupedPrincipal implements IdBasedEntity, UserDetails
 
 	public void setUsername( String username ) {
 		this.username = username;
+		setPrincipalName( username );
 	}
 
 	public String getFirstName() {

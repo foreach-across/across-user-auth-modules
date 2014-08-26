@@ -237,7 +237,7 @@ public class ITAclServices
 		}
 
 		public AcrossModule testModule() {
-			EmptyAcrossModule emptyAcrossModule = new EmptyAcrossModule( "testModule" );
+			EmptyAcrossModule emptyAcrossModule = new EmptyAcrossModule( "TestModule" );
 			emptyAcrossModule.addApplicationContextConfigurer( TestModuleConfig.class );
 
 			return emptyAcrossModule;

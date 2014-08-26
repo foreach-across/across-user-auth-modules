@@ -26,4 +26,9 @@ public class UserRepositoriesConfiguration
 	public UserRepository userRepository() {
 		return new UserRepositoryImpl();
 	}
+
+	@Bean
+	public SecurityPrincipalRepository securityPrincipalRepository() {
+		return new SecurityPrincipalRepositoryImpl();
+	}
 }

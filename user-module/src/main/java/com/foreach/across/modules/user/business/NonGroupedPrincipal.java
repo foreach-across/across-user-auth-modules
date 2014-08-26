@@ -2,14 +2,13 @@ package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
-import com.foreach.across.modules.spring.security.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.business.AbstractSecurityPrincipal;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
-import org.apache.commons.lang3.StringUtils;
+import com.foreach.across.modules.user.converters.FieldUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.util.ClassUtils;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -29,12 +28,8 @@ import java.util.TreeSet;
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
 )
-public abstract class NonGroupedPrincipal implements SecurityPrincipal, IdBasedEntity
+public abstract class NonGroupedPrincipal extends AbstractSecurityPrincipal implements IdBasedEntity
 {
-	@Transient
-	private final String idPrefix = StringUtils.lowerCase(
-			ClassUtils.getUserClass( getClass() ).getSimpleName() ) + ":";
-
 	@Id
 	@GeneratedValue(generator = "seq_um_principal_id")
 	@GenericGenerator(
@@ -55,6 +50,19 @@ public abstract class NonGroupedPrincipal implements SecurityPrincipal, IdBasedE
 			inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new TreeSet<>();
 
+	@Column(name = "principal_name")
+	private String principalName;
+
+	@Override
+	public String getPrincipalName() {
+		return principalName;
+	}
+
+	protected final void setPrincipalName( String principalName ) {
+		this.principalName = FieldUtils.lowerCase( principalName );
+	}
+
+	@Override
 	public long getId() {
 		return id;
 	}
@@ -107,11 +115,6 @@ public abstract class NonGroupedPrincipal implements SecurityPrincipal, IdBasedE
 	}
 
 	@Override
-	public final String getPrincipalId() {
-		return idPrefix + getId();
-	}
-
-	@Override
 	public boolean equals( Object o ) {
 		if ( this == o ) {
 			return true;
@@ -132,10 +135,5 @@ public abstract class NonGroupedPrincipal implements SecurityPrincipal, IdBasedE
 	@Override
 	public int hashCode() {
 		return (int) ( id ^ ( id >>> 32 ) );
-	}
-
-	@Override
-	public final String toString() {
-		return getPrincipalId();
 	}
 }

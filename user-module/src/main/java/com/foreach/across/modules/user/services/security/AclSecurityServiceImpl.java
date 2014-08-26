@@ -178,7 +178,7 @@ public class AclSecurityServiceImpl implements AclSecurityService
 
 	private AccessControlEntry findAce( List<AccessControlEntry> aces, Sid sid, AclPermission permission ) {
 		for ( AccessControlEntry ace : aces ) {
-			if ( ace.getSid().equals( sid )  && ace.getPermission().equals( permission ) ) {
+			if ( ace.getSid().equals( sid ) && ace.getPermission().equals( permission ) ) {
 				return ace;
 			}
 		}

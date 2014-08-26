@@ -5,6 +5,8 @@ import com.foreach.across.modules.user.converters.ObjectToPermissionConverter;
 import com.foreach.across.modules.user.converters.ObjectToRoleConverter;
 import com.foreach.across.modules.user.converters.ObjectToUserConverter;
 import com.foreach.across.modules.user.services.*;
+import com.foreach.across.modules.user.services.security.SecurityPrincipalService;
+import com.foreach.across.modules.user.services.security.SecurityPrincipalServiceImpl;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,5 +91,10 @@ public class UserServicesConfiguration
 		boolean requireEmailUnique = environment.getProperty( UserModuleSettings.REQUIRE_EMAIL_UNIQUE, Boolean.class,
 		                                                      false );
 		return new UserServiceImpl( userPasswordEncoder(), useEmailAsUsername, requireEmailUnique );
+	}
+
+	@Bean
+	public SecurityPrincipalService securityPrincipalService() {
+		return new SecurityPrincipalServiceImpl();
 	}
 }

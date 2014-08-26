@@ -183,7 +183,6 @@
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
-
 	</changeSet>
 
 	<changeSet id="201408221214" author="arne">
@@ -280,6 +279,38 @@
 		<comment>Create email index on user table</comment>
 		<createIndex tableName="${table.user}" indexName="ix_um_user_email">
 			<column name="email"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="201408261116" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="${table.principal}" columnName="principal_name"/>
+			</not>
+		</preConditions>
+
+		<comment>Add unique name to principal table</comment>
+
+		<addColumn tableName="${table.principal}">
+			<column name="principal_name" type="java.sql.Types.VARCHAR(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+
+		<sql>
+			UPDATE ${table.principal}
+			SET principal_name = (SELECT username FROM ${table.user} WHERE id = ${table.principal}.id)
+		</sql>
+
+		<sql dbms="mysql">
+			ALTER TABLE ${table.principal}
+			MODIFY principal_name VARCHAR(255)
+			CHARACTER SET utf8
+			COLLATE utf8_unicode_ci
+		</sql>
+
+		<createIndex tableName="${table.principal}" indexName="ix_um_p_pname" unique="true">
+			<column name="principal_name"/>
 		</createIndex>
 	</changeSet>
 
