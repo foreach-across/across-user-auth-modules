@@ -66,6 +66,7 @@ public class OAuth2Client extends NonGroupedPrincipal implements ClientDetails
 
 	public void setClientId( String clientId ) {
 		this.clientId = clientId;
+		setPrincipalName( clientId );
 	}
 
 	@Override
@@ -157,7 +158,7 @@ public class OAuth2Client extends NonGroupedPrincipal implements ClientDetails
 
 	@Override
 	public Map<String, Object> getAdditionalInformation() {
-		return new LinkedHashMap<String, Object>();
+		return new LinkedHashMap<>();
 	}
 
 	public Set<OAuth2ClientScope> getOAuth2ClientScopes() {
