@@ -17,6 +17,7 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,7 +42,12 @@ public class AclSecurityServiceImpl implements AclSecurityService
 	@Transactional(readOnly = true)
 	@Override
 	public MutableAcl getAcl( IdBasedEntity entity ) {
-		return (MutableAcl) aclService().readAclById( identity( entity ) );
+		try {
+			return (MutableAcl) aclService().readAclById( identity( entity ) );
+		}
+		catch ( NotFoundException nfe ) {
+			return null;
+		}
 	}
 
 	@Transactional
@@ -59,19 +65,23 @@ public class AclSecurityServiceImpl implements AclSecurityService
 
 		MutableAcl acl;
 
+		boolean update = false;
+
 		try {
 			acl = (MutableAcl) aclService.readAclById( oi );
 		}
 		catch ( NotFoundException nfe ) {
 			acl = aclService.createAcl( oi );
+			update = true;
 		}
 
-		if ( parent != null ) {
+		if ( parent != null && !parent.equals( acl.getParentAcl() ) ) {
 			Acl parentAcl = aclService.readAclById( identity( parent ) );
 			acl.setParent( parentAcl );
+			update = true;
 		}
 
-		return aclService.updateAcl( acl );
+		return update ? aclService.updateAcl( acl ) : acl;
 	}
 
 	@Transactional
@@ -144,6 +154,24 @@ public class AclSecurityServiceImpl implements AclSecurityService
 	@Override
 	public void deny( String authority, IdBasedEntity entity, AclPermission... aclPermissions ) {
 		updateAces( sid( authority ), entity, false, aclPermissions );
+	}
+
+	@Transactional
+	@Override
+	public void allow( Authentication authentication, IdBasedEntity entity, AclPermission... aclPermissions ) {
+		updateAces( sid( authentication ), entity, true, aclPermissions );
+	}
+
+	@Transactional
+	@Override
+	public void revoke( Authentication authentication, IdBasedEntity entity, AclPermission... aclPermissions ) {
+		updateAces( sid( authentication ), entity, null, aclPermissions );
+	}
+
+	@Transactional
+	@Override
+	public void deny( Authentication authentication, IdBasedEntity entity, AclPermission... aclPermissions ) {
+		updateAces( sid( authentication ), entity, false, aclPermissions );
 	}
 
 	private void updateAces( Sid sid, IdBasedEntity entity, Boolean grantAction, AclPermission... aclPermissions ) {
@@ -266,6 +294,10 @@ public class AclSecurityServiceImpl implements AclSecurityService
 
 	private Sid sid( Role role ) {
 		return sid( role.getName() );
+	}
+
+	private Sid sid( Authentication authentication ) {
+		return new PrincipalSid( authentication );
 	}
 
 	private Sid sid( Permission permission ) {

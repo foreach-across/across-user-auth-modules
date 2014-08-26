@@ -29,6 +29,8 @@ public interface AclSecurityService
 
 	void allow( String authority, IdBasedEntity entity, AclPermission... aclPermissions );
 
+	void allow( Authentication authentication, IdBasedEntity entity, AclPermission... aclPermissions );
+
 	void revoke( SecurityPrincipal principal, IdBasedEntity entity, AclPermission... aclPermissions );
 
 	void revoke( Role role, IdBasedEntity entity, AclPermission... aclPermissions );
@@ -37,6 +39,8 @@ public interface AclSecurityService
 
 	void revoke( String authority, IdBasedEntity entity, AclPermission... aclPermissions );
 
+	void revoke( Authentication authentication, IdBasedEntity entity, AclPermission... aclPermissions );
+
 	void deny( SecurityPrincipal principal, IdBasedEntity entity, AclPermission... aclPermissions );
 
 	void deny( Role role, IdBasedEntity entity, AclPermission... aclPermissions );
@@ -44,6 +48,8 @@ public interface AclSecurityService
 	void deny( Permission permission, IdBasedEntity entity, AclPermission... aclPermissions );
 
 	void deny( String authority, IdBasedEntity entity, AclPermission... aclPermissions );
+
+	void deny( Authentication authentication, IdBasedEntity entity, AclPermission... aclPermissions );
 
 	void deleteAcl( IdBasedEntity entity, boolean deleteChildren );
 

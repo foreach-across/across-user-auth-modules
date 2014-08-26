@@ -18,6 +18,7 @@ import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.modules.user.services.security.AclSecurityService;
+import com.foreach.across.modules.user.services.security.SecurityPrincipalService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -28,7 +29,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
@@ -74,6 +74,9 @@ public class ITAclServices
 
 	@Autowired
 	private AclSecurityService acl;
+
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
 
 	private Group group;
 	private User userOne, userTwo, userThree, userFour;
@@ -262,7 +265,6 @@ public class ITAclServices
 		assertTrue( acl.hasPermission( userFour, fileInFolderOne, AclPermission.WRITE ) );
 		assertFalse( acl.hasPermission( userFour, fileInFolderTwo, AclPermission.READ ) );
 		assertTrue( acl.hasPermission( userFour, fileInFolderTwo, AclPermission.WRITE ) );
-
 	}
 
 	private boolean canRead( Object object ) {
@@ -284,9 +286,7 @@ public class ITAclServices
 	}
 
 	private void logon( User user ) {
-		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken( user, "test",
-		                                                                                           user.getAuthorities() );
-		SecurityContextHolder.getContext().setAuthentication( authRequest );
+		securityPrincipalService.authenticate( user );
 	}
 
 	@Configuration

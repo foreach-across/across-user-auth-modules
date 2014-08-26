@@ -5,6 +5,8 @@ import com.foreach.across.modules.user.business.NonGroupedPrincipal;
 import com.foreach.across.modules.user.events.SecurityPrincipalRenamedEvent;
 import com.foreach.across.modules.user.repositories.SecurityPrincipalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,20 @@ public class SecurityPrincipalServiceImpl implements SecurityPrincipalService
 
 	@Autowired
 	private AcrossEventPublisher eventPublisher;
+
+	@Override
+	public void authenticate( NonGroupedPrincipal principal ) {
+		PreAuthenticatedAuthenticationToken authRequest = new PreAuthenticatedAuthenticationToken(
+				principal, null, principal.getAuthorities()
+		);
+
+		SecurityContextHolder.getContext().setAuthentication( authRequest );
+	}
+
+	@Override
+	public void clearAuthentication() {
+		SecurityContextHolder.clearContext();
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
