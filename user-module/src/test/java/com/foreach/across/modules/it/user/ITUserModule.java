@@ -5,11 +5,14 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
+import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -33,6 +36,9 @@ public class ITUserModule
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private RoleService roleService;
+
 	@Test
 	public void verifyBootstrapped() {
 		assertNotNull( userService );
@@ -47,6 +53,16 @@ public class ITUserModule
 		assertEquals( true, admin.isAccountNonExpired() );
 		assertEquals( true, admin.isAccountNonLocked() );
 		assertEquals( true, admin.isCredentialsNonExpired() );
+	}
+
+	@Test
+	public void aclInstallerShouldNotHaveRun() {
+		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
+
+		assertNotNull( adminRole );
+		assertFalse( adminRole.hasPermission( AclAuthorities.AUDIT_ACL ) );
+		assertFalse( adminRole.hasPermission( AclAuthorities.MODIFY_ACL ) );
+		assertFalse( adminRole.hasPermission( AclAuthorities.TAKE_OWNERSHIP ) );
 	}
 
 	@Test

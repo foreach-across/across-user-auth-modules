@@ -19,6 +19,7 @@ import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.config.UserServicesConfiguration;
 import com.foreach.across.modules.user.config.modules.UserAdminWebConfiguration;
 import com.foreach.across.modules.user.config.modules.UserSpringSecurityConfiguration;
+import com.foreach.across.modules.user.installers.AclPermissionsInstaller;
 import com.foreach.across.modules.user.installers.DefaultUserInstaller;
 import com.foreach.across.modules.user.installers.UserPropertiesSchemaInstaller;
 import com.foreach.across.modules.user.installers.UserSchemaInstaller;
@@ -62,10 +63,11 @@ public class UserModule extends AcrossModule implements HasHibernatePackageProvi
 	@Override
 	public Object[] getInstallers() {
 		return new Object[] {
-				new AcrossSequencesInstaller(),
+				AcrossSequencesInstaller.class,
 				new UserPropertiesSchemaInstaller( schemaConfiguration ),
 				new UserSchemaInstaller( schemaConfiguration ),
-				new DefaultUserInstaller()
+				DefaultUserInstaller.class,
+				AclPermissionsInstaller.class
 		};
 	}
 

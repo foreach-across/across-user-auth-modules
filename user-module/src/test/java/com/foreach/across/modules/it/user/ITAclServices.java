@@ -8,8 +8,11 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Refreshable;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
+import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.GroupDto;
 import com.foreach.across.modules.user.dto.UserDto;
@@ -41,6 +44,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -136,6 +140,16 @@ public class ITAclServices
 		}
 
 		return userService.save( user );
+	}
+
+	@Test
+	public void aclPermissionsShouldHaveBeenInstaller() {
+		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
+
+		assertNotNull( adminRole );
+		assertTrue( adminRole.hasPermission( AclAuthorities.AUDIT_ACL ) );
+		assertTrue( adminRole.hasPermission( AclAuthorities.MODIFY_ACL ) );
+		assertTrue( adminRole.hasPermission( AclAuthorities.TAKE_OWNERSHIP ) );
 	}
 
 	@Test
@@ -294,6 +308,7 @@ public class ITAclServices
 	{
 		@Override
 		public void configure( AcrossContext context ) {
+			context.addModule( new SpringSecurityAclModule() );
 			context.addModule( testModule() );
 		}
 
