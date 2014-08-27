@@ -5,6 +5,7 @@ import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,7 +14,7 @@ import java.util.TreeSet;
 
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_ROLE)
-public class Role implements Comparable<Role>, Serializable
+public class Role implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable
 {
 	@Id
 	@GeneratedValue(generator = "seq_um_role_id")
@@ -110,37 +111,36 @@ public class Role implements Comparable<Role>, Serializable
 	}
 
 	@Override
+	public String getAuthority() {
+		return getName();
+	}
+
+	@Override
 	public boolean equals( Object o ) {
 		if ( this == o ) {
 			return true;
 		}
-		if ( o == null || getClass() != o.getClass() ) {
+		if ( o == null || !( o instanceof GrantedAuthority ) ) {
 			return false;
 		}
 
-		Role that = (Role) o;
+		GrantedAuthority that = (GrantedAuthority) o;
 
-		if ( !StringUtils.equalsIgnoreCase( getName(), that.getName() ) ) {
-			return false;
-		}
-
-		return true;
+		return StringUtils.equalsIgnoreCase( getAuthority(), that.getAuthority() );
 	}
 
 	@Override
-	public int compareTo( Role o ) {
-		return getName().compareTo( o.getName() );
+	public int compareTo( GrantedAuthority o ) {
+		return getAuthority().compareTo( o.getAuthority() );
 	}
 
 	@Override
 	public int hashCode() {
-		return getName() != null ? getName().hashCode() : 0;
+		return getAuthority() != null ? getAuthority().hashCode() : 0;
 	}
 
 	@Override
 	public String toString() {
-		return "Role{" +
-				"name='" + getName() + '\'' +
-				'}';
+		return getAuthority();
 	}
 }

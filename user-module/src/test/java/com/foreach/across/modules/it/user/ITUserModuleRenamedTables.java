@@ -5,6 +5,7 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.properties.PropertiesModule;
+import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
@@ -57,6 +58,7 @@ public class ITUserModuleRenamedTables
 			context.addModule( acrossHibernateModule() );
 			context.addModule( userModule() );
 			context.addModule( propertiesModule() );
+			context.addModule( new SpringSecurityInfrastructureModule() );
 		}
 
 		private PropertiesModule propertiesModule() {

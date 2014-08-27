@@ -1,6 +1,7 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.user.business.NonGroupedPrincipal;
 import com.foreach.across.modules.user.converters.FieldUtils;
 import org.hibernate.criterion.Restrictions;
@@ -15,7 +16,7 @@ public class SecurityPrincipalRepositoryImpl extends BasicRepositoryImpl<NonGrou
 {
 	@Override
 	@Transactional(readOnly = true)
-	public NonGroupedPrincipal getByPrincipalName( String principalName ) {
+	public SecurityPrincipal getPrincipalByName( String principalName ) {
 		return (NonGroupedPrincipal) distinct()
 				.add( Restrictions.eq( "principalName", FieldUtils.lowerCase( principalName ) ) )
 				.uniqueResult();

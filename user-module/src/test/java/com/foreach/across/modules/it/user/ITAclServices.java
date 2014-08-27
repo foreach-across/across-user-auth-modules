@@ -8,7 +8,7 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Refreshable;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.modules.spring.security.business.AclPermission;
+import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.GroupDto;
@@ -17,8 +17,8 @@ import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
-import com.foreach.across.modules.user.services.security.AclSecurityService;
-import com.foreach.across.modules.user.services.security.SecurityPrincipalService;
+import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -294,7 +294,6 @@ public class ITAclServices
 	{
 		@Override
 		public void configure( AcrossContext context ) {
-			context.addModule( new SpringSecurityModule() );
 			context.addModule( testModule() );
 		}
 

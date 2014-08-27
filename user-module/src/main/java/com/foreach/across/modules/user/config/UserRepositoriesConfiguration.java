@@ -27,6 +27,10 @@ public class UserRepositoriesConfiguration
 		return new UserRepositoryImpl();
 	}
 
+	/**
+	 * Will be picked up by the {@link com.foreach.across.modules.spring.security.infrastructure.config.SecurityPrincipalServiceConfiguration}
+	 * in the SpringSecurityInfrastructureModule.
+	 */
 	@Bean
 	public SecurityPrincipalRepository securityPrincipalRepository() {
 		return new SecurityPrincipalRepositoryImpl();

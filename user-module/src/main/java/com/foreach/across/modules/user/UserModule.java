@@ -12,6 +12,7 @@ import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.*;
 import com.foreach.across.modules.properties.PropertiesModule;
+import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.user.config.UserPropertiesConfiguration;
 import com.foreach.across.modules.user.config.UserRepositoriesConfiguration;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
@@ -26,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Set;
 
 @AcrossDepends(
-		required = { AcrossHibernateModule.NAME, PropertiesModule.NAME },
+		required = { AcrossHibernateModule.NAME, PropertiesModule.NAME, SpringSecurityInfrastructureModule.NAME },
 		optional = "AdminWebModule"
 )
 public class UserModule extends AcrossModule implements HasHibernatePackageProvider, HasSchemaConfiguration

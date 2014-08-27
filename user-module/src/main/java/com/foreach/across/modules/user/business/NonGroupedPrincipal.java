@@ -2,13 +2,12 @@ package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
-import com.foreach.across.modules.spring.security.business.AbstractSecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.AbstractSecurityPrincipal;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.FieldUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -105,9 +104,9 @@ public abstract class NonGroupedPrincipal extends AbstractSecurityPrincipal impl
 		Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
 
 		for ( Role role : getRoles() ) {
-			authorities.add( new SimpleGrantedAuthority( role.getName() ) );
+			authorities.add( role );
 			for ( Permission permission : role.getPermissions() ) {
-				authorities.add( new SimpleGrantedAuthority( permission.getName() ) );
+				authorities.add( permission );
 			}
 		}
 

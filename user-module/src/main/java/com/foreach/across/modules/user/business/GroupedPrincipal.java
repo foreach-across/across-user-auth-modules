@@ -1,11 +1,10 @@
 package com.foreach.across.modules.user.business;
 
-import com.foreach.across.modules.spring.security.business.SecurityPrincipal;
-import com.foreach.across.modules.spring.security.business.SecurityPrincipalHierarchy;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalHierarchy;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.hibernate.annotations.BatchSize;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -50,9 +49,9 @@ public abstract class GroupedPrincipal extends NonGroupedPrincipal implements Se
 		Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
 
 		for ( Role role : getRoles() ) {
-			authorities.add( new SimpleGrantedAuthority( role.getName() ) );
+			authorities.add( role );
 			for ( Permission permission : role.getPermissions() ) {
-				authorities.add( new SimpleGrantedAuthority( permission.getName() ) );
+				authorities.add( permission );
 			}
 		}
 

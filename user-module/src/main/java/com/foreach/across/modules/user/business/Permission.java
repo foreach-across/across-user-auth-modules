@@ -4,6 +4,7 @@ import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_PERMISSION)
-public class Permission implements Comparable<Permission>, Serializable
+public class Permission implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable
 {
 	@Id
 	@GeneratedValue(generator = "seq_um_permission_id")
@@ -68,6 +69,11 @@ public class Permission implements Comparable<Permission>, Serializable
 		this.name = StringUtils.lowerCase( name );
 	}
 
+	@Override
+	public String getAuthority() {
+		return getName();
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -89,22 +95,18 @@ public class Permission implements Comparable<Permission>, Serializable
 		if ( this == o ) {
 			return true;
 		}
-		if ( o == null || getClass() != o.getClass() ) {
+		if ( o == null || !( o instanceof GrantedAuthority ) ) {
 			return false;
 		}
 
-		Permission that = (Permission) o;
+		GrantedAuthority that = (GrantedAuthority) o;
 
-		if ( !StringUtils.equalsIgnoreCase( getName(), that.getName() ) ) {
-			return false;
-		}
-
-		return true;
+		return StringUtils.equalsIgnoreCase( getAuthority(), that.getAuthority() );
 	}
 
 	@Override
-	public int compareTo( Permission o ) {
-		return getName().compareTo( o.getName() );
+	public int compareTo( GrantedAuthority o ) {
+		return getAuthority().compareTo( o.getAuthority() );
 	}
 
 	@Override
@@ -114,9 +116,7 @@ public class Permission implements Comparable<Permission>, Serializable
 
 	@Override
 	public String toString() {
-		return "Permission{" +
-				"name='" + getName() + '\'' +
-				'}';
+		return getName();
 	}
 
 	private void writeObject( ObjectOutputStream oos ) throws IOException {

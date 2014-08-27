@@ -3,11 +3,11 @@ package com.foreach.across.modules.user.config.modules;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.repositories.SecurityPrincipalRepository;
+import com.foreach.across.modules.user.repositories.SecurityPrincipalRepositoryImpl;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
 import com.foreach.across.modules.user.security.CurrentUserProxyImpl;
 import com.foreach.across.modules.user.security.UserDetailsServiceImpl;
-import com.foreach.across.modules.user.services.security.AclSecurityService;
-import com.foreach.across.modules.user.services.security.AclSecurityServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,11 +30,6 @@ public class UserSpringSecurityConfiguration
 	@Bean
 	public CurrentUserProxy currentUserProxy() {
 		return new CurrentUserProxyImpl();
-	}
-
-	@Bean
-	public AclSecurityService aclSecurityService() {
-		return new AclSecurityServiceImpl();
 	}
 
 	/**

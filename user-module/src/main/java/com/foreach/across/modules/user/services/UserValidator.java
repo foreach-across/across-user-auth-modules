@@ -3,7 +3,7 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.UserDto;
-import com.foreach.across.modules.user.services.security.SecurityPrincipalService;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
