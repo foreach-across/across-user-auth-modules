@@ -6,8 +6,14 @@ import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
+import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
+import com.foreach.across.modules.spring.security.acl.dto.AclSecurityEntityDto;
+import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
+import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.PermissionGroup;
 import com.foreach.across.modules.user.business.Role;
+import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AcrossDepends(required = SpringSecurityAclModule.NAME)
 @Installer(
 		description = "Installs the ACL permissions if ACL module is enabled",
-		version = 1,
-        phase = InstallerPhase.AfterModuleBootstrap
+		version = 2,
+		phase = InstallerPhase.AfterModuleBootstrap
 )
 public class AclPermissionsInstaller
 {
@@ -29,7 +35,39 @@ public class AclPermissionsInstaller
 	@Autowired
 	private RoleService roleService;
 
+	@Autowired
+	private AclSecurityEntityService aclSecurityEntityService;
+
+	@Autowired
+	private AclSecurityService aclSecurityService;
+
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
+
+	@Autowired
+	private MachinePrincipalService machinePrincipalService;
+
 	@InstallerMethod
+	public void install() {
+		createPermissionsAndAddToAdminRole();
+		createSystemEntity();
+	}
+
+	public void createSystemEntity() {
+		securityPrincipalService.authenticate( machinePrincipalService.getMachinePrincipalByName( "system" ) );
+
+		AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" );
+
+		if ( systemAcl == null ) {
+			AclSecurityEntityDto dto = new AclSecurityEntityDto();
+			dto.setName( "system" );
+
+			systemAcl = aclSecurityEntityService.save( dto );
+		}
+
+		aclSecurityService.setDefaultParentAcl( systemAcl );
+	}
+
 	public void createPermissionsAndAddToAdminRole() {
 		// Create the individual permissions
 		permissionService.definePermission( AclAuthorities.TAKE_OWNERSHIP,
@@ -55,7 +93,8 @@ public class AclPermissionsInstaller
 		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
 
 		if ( adminRole != null ) {
-			adminRole.addPermission( AclAuthorities.TAKE_OWNERSHIP, AclAuthorities.MODIFY_ACL,
+			adminRole.addPermission( AclAuthorities.TAKE_OWNERSHIP,
+			                         AclAuthorities.MODIFY_ACL,
 			                         AclAuthorities.AUDIT_ACL );
 			roleService.save( adminRole );
 		}
