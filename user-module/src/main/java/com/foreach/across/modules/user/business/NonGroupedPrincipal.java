@@ -27,7 +27,7 @@ import java.util.TreeSet;
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
 )
-public abstract class NonGroupedPrincipal extends AbstractSecurityPrincipal implements IdBasedEntity
+public abstract class NonGroupedPrincipal extends AbstractSecurityPrincipal implements IdBasedSecurityPrincipal
 {
 	@Id
 	@GeneratedValue(generator = "seq_um_principal_id")
