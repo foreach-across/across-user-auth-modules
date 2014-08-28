@@ -1,6 +1,7 @@
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -26,6 +27,6 @@ public class Group extends NonGroupedPrincipal implements Comparable<Group>
 
 	@Override
 	public int compareTo( Group other ) {
-		return getName().compareTo( other.getName() );
+		return StringUtils.defaultString( getName() ).compareTo( StringUtils.defaultString( other.getName() ) );
 	}
 }

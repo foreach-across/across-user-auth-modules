@@ -7,11 +7,9 @@ import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.user.UserModule;
-import com.foreach.across.modules.user.business.Role;
-import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.business.UserProperties;
-import com.foreach.across.modules.user.business.UserRestriction;
+import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.dto.UserDto;
+import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.test.AcrossTestConfiguration;
@@ -39,6 +37,9 @@ public class ITUserModule
 	@Autowired
 	private RoleService roleService;
 
+	@Autowired
+	private MachinePrincipalService machinePrincipalService;
+
 	@Test
 	public void verifyBootstrapped() {
 		assertNotNull( userService );
@@ -53,6 +54,9 @@ public class ITUserModule
 		assertEquals( true, admin.isAccountNonExpired() );
 		assertEquals( true, admin.isAccountNonLocked() );
 		assertEquals( true, admin.isCredentialsNonExpired() );
+
+		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" );
+		assertNotNull( machine );
 	}
 
 	@Test

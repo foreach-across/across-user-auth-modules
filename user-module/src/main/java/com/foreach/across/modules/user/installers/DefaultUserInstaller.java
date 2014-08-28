@@ -4,10 +4,13 @@ import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.PermissionGroup;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.dto.MachinePrincipalDto;
 import com.foreach.across.modules.user.dto.UserDto;
+import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
@@ -16,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.HashSet;
 
-@Installer(description = "Installs the default permissions, roles and user", version = 2,
+@Installer(description = "Installs the default permissions, roles and user", version = 3,
            phase = InstallerPhase.AfterModuleBootstrap)
 public class DefaultUserInstaller
 {
@@ -29,11 +32,26 @@ public class DefaultUserInstaller
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private MachinePrincipalService machinePrincipalService;
+
 	@InstallerMethod
 	public void install() {
 		createPermissionGroups();
 		createPermissionsAndRoles();
 		createUser();
+		createSystemAccount();
+	}
+
+	private void createSystemAccount() {
+		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" );
+
+		if ( machine == null ) {
+			MachinePrincipalDto dto = new MachinePrincipalDto();
+			dto.setName( "system" );
+
+			machinePrincipalService.save( dto );
+		}
 	}
 
 	private void createPermissionGroups() {

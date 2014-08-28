@@ -16,6 +16,7 @@
 	<property name="table.principal_role" value="um_principal_role"/>
 	<property name="table.group" value="um_group"/>
 	<property name="table.principal_group" value="um_principal_group"/>
+	<property name="table.machine" value="um_machine"/>
 
 	<changeSet id="201406141719" author="arne" runAlways="true" dbms="oracle">
 		<sql>
@@ -438,7 +439,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="201407251127" author="marc">
+	<changeSet id="201407251127B" author="marc">
 		<comment>Update email on admin user</comment>
 		<update tableName="${table.user}">
 			<column name="email" type="java.sql.Types.VARCHAR(255)" value="admin@localhost"/>
@@ -482,6 +483,30 @@
 			set seq_number = 1
 			where seq_number is null
 		</sql>
+	</changeSet>
+
+	<changeSet id="201408281110" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.machine}"/>
+			</not>
+		</preConditions>
+
+		<comment>Create machine principal table</comment>
+
+		<createTable tableName="${table.machine}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_um_machine"/>
+			</column>
+			<column name="name" type="java.sql.Types.VARCHAR(100)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint baseTableName="${table.machine}" baseColumnNames="id"
+		                         constraintName="fk_um_machine_pid"
+		                         referencedTableName="${table.principal}"
+		                         referencedColumnNames="id"/>
 	</changeSet>
 
 </databaseChangeLog>
