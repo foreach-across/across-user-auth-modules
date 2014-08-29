@@ -34,11 +34,20 @@ public class UserOAuth2AuthenticationSerializer extends OAuth2AuthenticationSeri
 			throw new RemoveTokenException();
 		}
 
+		if ( !isAllowedToLogon( user ) ) {
+			throw new RemoveTokenException();
+		}
+
 		ClientDetails clientDetails = clientDetailsService.loadClientByClientId( serializerObject.getClientId() );
 		OAuth2Request userRequest = serializerObject.getOAuth2Request( clientDetails.getAuthorities() );
 
 		return new OAuth2Authentication( userRequest, new PreAuthenticatedAuthenticationToken( user, null,
 		                                                                                       user.getAuthorities() ) );
+	}
+
+	private boolean isAllowedToLogon( UserDetails user ) {
+		return user.isEnabled() && user.isAccountNonExpired() && user.isAccountNonLocked() && user
+				.isCredentialsNonExpired();
 	}
 
 	@Override
