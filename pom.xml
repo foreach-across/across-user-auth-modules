@@ -8,7 +8,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<across.version>1.0.3-SNAPSHOT</across.version>
+		<across.version>1.0.3</across.version>
 		<spring.version>4.0.6.RELEASE</spring.version>
 		<foreach.common.version>0.9</foreach.common.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
