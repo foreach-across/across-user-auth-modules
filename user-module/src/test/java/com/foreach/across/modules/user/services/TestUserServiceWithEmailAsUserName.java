@@ -71,7 +71,6 @@ public class TestUserServiceWithEmailAsUserName
 
 	@Test
 	public void creatingUserFailsWhenEmailIsNotSpecified() throws Exception {
-
 		UserDto userDto = new UserDto();
 		userDto.setPassword( "password" );
 		try {
@@ -88,26 +87,13 @@ public class TestUserServiceWithEmailAsUserName
 	}
 
 	@Test
-	public void creatingUserFailsWhenUsernameIsSpecified() throws Exception {
-
+	public void creatingUserWithUsernameIsStillAllowed() throws Exception {
 		UserDto userDto = new UserDto();
 		userDto.setUsername( "someusername" );
 		userDto.setPassword( "password" );
 		userDto.setEmail( "test@email.com" );
 
-		try {
-			userService.save( userDto );
-		}
-		catch ( UserValidationException uve ) {
-			List<ObjectError> errors = uve.getErrors();
-			assertEquals( 1, errors.size() );
-			FieldError fieldError = (FieldError) errors.get( 0 );
-			assertEquals( "user", fieldError.getObjectName() );
-			assertEquals( "username", fieldError.getField() );
-			assertEquals( "some username", fieldError.getRejectedValue() );
-			assertEquals( "username cannot be specified when useEmailAsUsername is set",
-			              fieldError.getDefaultMessage() );
-		}
+		userService.save( userDto );
 	}
 
 	@Test

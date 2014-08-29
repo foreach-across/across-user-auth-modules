@@ -1,11 +1,11 @@
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.repositories.UserRepository;
-import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService
 			}
 		}
 
-		if ( useEmailAsUsername ) {
+		if ( useEmailAsUsername && StringUtils.isBlank( userDto.getUsername() ) ) {
 			userDto.setUsername( userDto.getEmail() );
 		}
 

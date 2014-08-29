@@ -88,7 +88,6 @@ public class TestUserService
 		assertEquals( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ), userDto.getRestrictions() );
 		assertEquals( true, userDto.hasRestrictions() );
 
-
 		assertEquals( Sets.newSet( new SimpleGrantedAuthority( "role 1" ),
 		                           new SimpleGrantedAuthority( "permission 1" ),
 		                           new SimpleGrantedAuthority( "permission 2" ) ),
@@ -144,18 +143,33 @@ public class TestUserService
 		}
 		catch ( UserValidationException uve ) {
 			List<ObjectError> errors = uve.getErrors();
-			assertEquals( 2, errors.size() );
+			assertEquals( 1, errors.size() );
 			FieldError usernameError = (FieldError) errors.get( 0 );
 			assertEquals( "user", usernameError.getObjectName() );
 			assertEquals( "username", usernameError.getField() );
 			assertEquals( "username cannot be empty", usernameError.getDefaultMessage() );
+		}
+	}
 
-			FieldError emailError = (FieldError) errors.get( 1 );
+	@Test
+	public void emailIsValidatedWhenSet() {
+		UserDto dto = new UserDto();
+		dto.setUsername( "someusername" );
+		dto.setEmail( "bademailaddress" );
+		dto.setPassword( "my-password" );
+
+		try {
+			userService.save( dto );
+		}
+		catch ( UserValidationException uve ) {
+			List<ObjectError> errors = uve.getErrors();
+			assertEquals( 1, errors.size() );
+
+			FieldError emailError = (FieldError) errors.get( 0 );
 			assertEquals( "user", emailError.getObjectName() );
 			assertEquals( "email", emailError.getField() );
-			assertEquals( "email cannot be empty", emailError.getDefaultMessage() );
+			assertEquals( "invalid email", emailError.getDefaultMessage() );
 		}
-
 	}
 
 	@Test(expected = UserModuleException.class)

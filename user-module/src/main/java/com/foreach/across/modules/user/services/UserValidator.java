@@ -1,10 +1,9 @@
 package com.foreach.across.modules.user.services;
 
-import com.foreach.across.modules.hibernate.business.IdBasedEntity;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.UserDto;
-import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +31,10 @@ public class UserValidator implements Validator
 					errors.reject( null, "email already exists" );
 				}
 			}
-			if ( userService.isUseEmailAsUsername() ) {
-				if ( StringUtils.isNotBlank( userDto.getUsername() ) && !StringUtils.equalsIgnoreCase(
-						userDto.getUsername(), userDto.getEmail() ) ) {
-					errors.rejectValue( "username", null,
-					                    "username cannot be specified when useEmailAsUsername is set or must be equal to the email" );
+
+			if ( userService.isUseEmailAsUsername() || userService.isRequireEmailUnique() ) {
+				if ( StringUtils.isBlank( userDto.getEmail() ) ) {
+					errors.rejectValue( "email", null, "email cannot be empty" );
 				}
 			}
 			else {
@@ -48,25 +46,31 @@ public class UserValidator implements Validator
 			if ( StringUtils.contains( userDto.getUsername(), ' ' ) ) {
 				errors.rejectValue( "username", null, "username cannot contain whitespaces" );
 			}
-			if ( StringUtils.isBlank( userDto.getEmail() ) ) {
-				errors.rejectValue( "email", null, "email cannot be empty" );
-			}
-			else {
+
+			if ( !StringUtils.isBlank( userDto.getEmail() ) ) {
 				if ( !emailValidator.isValid( userDto.getEmail(), null ) ) {
 					errors.rejectValue( "email", null, "invalid email" );
 				}
 			}
 
 			if ( !errors.hasErrors() ) {
-				IdBasedEntity principal = securityPrincipalService.getPrincipalByName(
-					userService.isUseEmailAsUsername() ? userDto.getEmail() : userDto.getUsername()
-				);
+				String principalName = userDto.getUsername();
 
-				if ( principal != null && !ObjectUtils.equals( principal.getId(), userDto.getId() ) ) {
+				if ( userService.isUseEmailAsUsername() && StringUtils.isBlank( principalName ) ) {
+					principalName = userDto.getEmail();
+				}
+
+				SecurityPrincipal principal = securityPrincipalService.getPrincipalByName( principalName );
+
+				if ( principal != null && !isSamePrincipal( principal, userDto ) ) {
 					errors.rejectValue( "username", null, "username is not available" );
 				}
 			}
 		}
+	}
+
+	private boolean isSamePrincipal( SecurityPrincipal principal, UserDto user ) {
+		return principal instanceof User && ( (User) principal ).getId() == user.getId();
 	}
 
 	@Override
