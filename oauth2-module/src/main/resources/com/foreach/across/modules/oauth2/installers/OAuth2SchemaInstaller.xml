@@ -213,9 +213,7 @@
 	
 	<changeSet id="201408291124" author="marc">
 		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="oauth_client_role"/>
-			</not>
+			<tableExists tableName="oauth_client_role"/>
 		</preConditions>
 		<comment>This table has been remove in favour of principal_role</comment>
 		<dropTable tableName="oauth_client_role"/>
