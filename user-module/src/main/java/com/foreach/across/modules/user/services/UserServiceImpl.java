@@ -117,8 +117,17 @@ public class UserServiceImpl implements UserService
 			}
 		}
 
-		if ( useEmailAsUsername && StringUtils.isBlank( userDto.getUsername() ) ) {
-			userDto.setUsername( userDto.getEmail() );
+		if ( useEmailAsUsername ) {
+			if ( StringUtils.isBlank( userDto.getUsername() ) ) {
+				userDto.setUsername( userDto.getEmail() );
+			}
+
+			// Update username to new email if it is modified and username was the old email
+			if ( !userDto.isNewEntity()
+					&& !StringUtils.equals( userDto.getEmail(), user.getEmail() )
+					&& StringUtils.equals( userDto.getUsername(), user.getEmail() ) ) {
+				userDto.setUsername( userDto.getEmail() );
+			}
 		}
 
 		if ( !userDto.isNewEntity() && !StringUtils.equalsIgnoreCase( userDto.getUsername(), user.getUsername() ) ) {
