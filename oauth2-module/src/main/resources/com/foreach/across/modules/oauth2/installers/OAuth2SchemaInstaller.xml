@@ -210,4 +210,14 @@
 		<dropColumn tableName="${table.grant_type}" columnName="id"/>
 		<dropColumn tableName="${table.resource}" columnName="id"/>
 	</changeSet>
+	
+	<changeSet id="201408291124" author="marc">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="oauth_client_role"/>
+			</not>
+		</preConditions>
+		<comment>This table has been remove in favour of principal_role</comment>
+		<dropTable tableName="oauth_client_role"/>
+	</changeSet>
 </databaseChangeLog>

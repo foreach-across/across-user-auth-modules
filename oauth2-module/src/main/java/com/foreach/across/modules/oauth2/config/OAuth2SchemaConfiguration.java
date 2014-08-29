@@ -9,7 +9,6 @@ public class OAuth2SchemaConfiguration extends SchemaConfiguration
 {
 
 	public static final String TABLE_CLIENT = "oauth_client";
-	public static final String TABLE_CLIENT_ROLE = "oauth_client_role";
 	public static final String TABLE_CLIENT_SCOPE = "oauth_client_scope";
 	public static final String TABLE_SCOPE = "oauth_scope";
 	public static final String TABLE_RESOURCEID = "oauth_resource_id";
@@ -18,7 +17,6 @@ public class OAuth2SchemaConfiguration extends SchemaConfiguration
 
 	public OAuth2SchemaConfiguration() {
 		super( Arrays.asList( new SchemaObject( "table.client", TABLE_CLIENT ),
-		                      new SchemaObject( "table.client_role", TABLE_CLIENT_ROLE ),
 		                      new SchemaObject( "table.client_scope", TABLE_CLIENT_SCOPE ),
 		                      new SchemaObject( "table.scope", TABLE_SCOPE ),
 		                      new SchemaObject( "table.resource", TABLE_RESOURCEID ),
