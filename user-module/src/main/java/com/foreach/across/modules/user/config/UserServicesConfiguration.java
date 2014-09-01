@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.support.ConfigurableConversionService;
-import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -27,7 +26,7 @@ public class UserServicesConfiguration
 	private ConfigurableConversionService conversionService;
 
 	@Autowired
-	private Environment environment;
+	private UserModuleSettings settings;
 
 	@PostConstruct
 	void registerConverters() {
@@ -65,7 +64,7 @@ public class UserServicesConfiguration
 
 	@Bean(name = "userPasswordEncoder")
 	public PasswordEncoder userPasswordEncoder() {
-		PasswordEncoder encoder = environment.getProperty( UserModuleSettings.PASSWORD_ENCODER, PasswordEncoder.class );
+		PasswordEncoder encoder = settings.getProperty( UserModuleSettings.PASSWORD_ENCODER, PasswordEncoder.class );
 
 		if ( encoder != null ) {
 			LOG.debug( "Using the PasswordEncoder instance configured on the UserModule: {}", encoder );
@@ -89,10 +88,8 @@ public class UserServicesConfiguration
 
 	@Bean
 	public UserService userService() {
-		boolean useEmailAsUsername = environment.getProperty( UserModuleSettings.USE_EMAIL_AS_USERNAME, Boolean.class,
-		                                                      false );
-		boolean requireEmailUnique = environment.getProperty( UserModuleSettings.REQUIRE_EMAIL_UNIQUE, Boolean.class,
-		                                                      false );
-		return new UserServiceImpl( userPasswordEncoder(), useEmailAsUsername, requireEmailUnique );
+		return new UserServiceImpl( userPasswordEncoder(),
+		                            settings.isUseEmailAsUsername(),
+		                            settings.isRequireUniqueEmail() );
 	}
 }
