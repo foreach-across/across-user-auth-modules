@@ -16,12 +16,11 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.user.TestDatabaseConfig;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
-import com.foreach.across.modules.user.services.PermissionService;
-import com.foreach.across.modules.user.services.PermissionServiceImpl;
-import com.foreach.across.modules.user.services.RoleService;
-import com.foreach.across.modules.user.services.RoleServiceImpl;
+import com.foreach.across.modules.user.dto.GroupDto;
+import com.foreach.across.modules.user.services.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,16 +48,30 @@ public class TestUserRepository
 	private RoleService roleService;
 
 	@Autowired
+	private GroupService groupService;
+
+	@Autowired
 	private PermissionService permissionService;
 
+	private Group existingGroup;
+
 	@Before
-	public void createRolesAndPermissions() {
+	public void createGroupsAndRolesAndPermissions() {
 		permissionService.definePermission( "perm one", "", "test-perms" );
 		permissionService.definePermission( "perm two", "", "test-perms" );
 		permissionService.definePermission( "perm three", "", "test-perms" );
 
 		roleService.defineRole( "role one", "", Arrays.asList( "perm one", "perm two" ) );
 		roleService.defineRole( "role two", "", Arrays.asList( "perm two", "perm three" ) );
+
+		existingGroup = groupService.getGroupById( -333 );
+
+		if ( existingGroup == null ) {
+			GroupDto group = new GroupDto();
+			group.setName( "existing" );
+
+			existingGroup = groupService.save( group );
+		}
 	}
 
 	@Test
@@ -93,11 +106,11 @@ public class TestUserRepository
 		assertEquals( user.getDisplayName(), existing.getDisplayName() );
 		assertEquals( user.getEmail(), existing.getEmail() );
 		assertEquals( user.getPassword(), existing.getPassword() );
-        assertEquals( user.isDeleted(), existing.isDeleted() );
-        assertEquals( user.getEmailConfirmed(), existing.getEmailConfirmed()  );
+		assertEquals( user.isDeleted(), existing.isDeleted() );
+		assertEquals( user.getEmailConfirmed(), existing.getEmailConfirmed() );
 		assertNotNull( existing.getRestrictions() );
-        assertEquals( user.getRestrictions(), existing.getRestrictions()  );
-		for( UserRestriction userRestriction : UserRestriction.values() ) {
+		assertEquals( user.getRestrictions(), existing.getRestrictions() );
+		for ( UserRestriction userRestriction : UserRestriction.values() ) {
 			assertEquals( false, existing.hasRestriction( userRestriction ) );
 		}
 
@@ -138,6 +151,21 @@ public class TestUserRepository
 		assertEquals( user.getRoles(), existing.getRoles() );
 	}
 
+	@Test
+	public void userWithGroup() {
+		User user = new User();
+		user.setUsername( "freddy" );
+		user.addRole( roleService.getRole( "role one" ) );
+		user.addGroup( existingGroup );
+
+		userRepository.create( user );
+
+		User existing = userRepository.getById( user.getId() );
+
+		assertEquals( user.getGroups(), existing.getGroups() );
+		assertEquals( user.getRoles(), existing.getRoles() );
+	}
+
 	@Configuration
 	@Import(TestDatabaseConfig.class)
 	static class Config
@@ -155,6 +183,16 @@ public class TestUserRepository
 		@Bean
 		public RoleRepository roleRepository() {
 			return new RoleRepositoryImpl();
+		}
+
+		@Bean
+		public GroupRepositoryImpl groupRepository() {
+			return new GroupRepositoryImpl();
+		}
+
+		@Bean
+		public GroupService groupService() {
+			return new GroupServiceImpl();
 		}
 
 		@Bean

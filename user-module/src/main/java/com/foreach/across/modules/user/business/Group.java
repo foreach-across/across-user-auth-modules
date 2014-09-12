@@ -26,7 +26,7 @@ import javax.persistence.Table;
 @Entity
 @DiscriminatorValue("group")
 @Table(name = UserSchemaConfiguration.TABLE_GROUP)
-public class Group extends NonGroupedPrincipal implements Comparable<Group>
+public class Group extends BasicSecurityPrincipal implements Comparable<Group>
 {
 	@Column(name = "name")
 	private String name;

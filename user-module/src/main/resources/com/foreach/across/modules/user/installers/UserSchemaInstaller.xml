@@ -403,7 +403,17 @@
 		                         referencedColumnNames="id"/>
 	</changeSet>
 
-	<changeSet id="201408221354" author="arne">
+	<changeSet id="201409121508" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="${table.principal_group}"/>
+		</preConditions>
+		
+		<comment>Drop existing principal_group table</comment>
+		
+		<dropTable tableName="${table.principal_group}" />
+	</changeSet>
+
+	<changeSet id="201408221354B" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="${table.principal_group}"/>
@@ -413,7 +423,7 @@
 		<comment>Create principal_group table</comment>
 
 		<createTable tableName="${table.principal_group}">
-			<column name="id" type="java.sql.Types.BIGINT">
+			<column name="principal_id" type="java.sql.Types.BIGINT">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_um_pgrp"/>
 			</column>
 			<column name="group_id" type="java.sql.Types.BIGINT">
@@ -421,11 +431,11 @@
 			</column>
 		</createTable>
 
-		<addForeignKeyConstraint baseTableName="${table.principal_group}" baseColumnNames="id"
+		<addForeignKeyConstraint baseTableName="${table.principal_group}" baseColumnNames="principal_id"
 		                         constraintName="fk_um_pgrp_pid"
 		                         referencedTableName="${table.principal}"
 		                         referencedColumnNames="id"/>
-		<addForeignKeyConstraint baseTableName="${table.principal_group}" baseColumnNames="id"
+		<addForeignKeyConstraint baseTableName="${table.principal_group}" baseColumnNames="group_id"
 		                         constraintName="fk_um_pgrp_gid"
 		                         referencedTableName="${table.group}"
 		                         referencedColumnNames="id"/>

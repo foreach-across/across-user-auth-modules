@@ -21,19 +21,17 @@ import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.hibernate.annotations.BatchSize;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.*;
 
 /**
- * Extension to {@link NonGroupedPrincipal}
+ * Extension to {@link BasicSecurityPrincipal}
  * that allows being a member of one or more principal groups.
  *
  * @author Arne Vandamme
  */
-public abstract class GroupedPrincipal extends NonGroupedPrincipal implements SecurityPrincipalHierarchy
+@MappedSuperclass
+public abstract class GroupedPrincipal extends BasicSecurityPrincipal implements SecurityPrincipalHierarchy
 {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@BatchSize(size = 50)
@@ -57,6 +55,10 @@ public abstract class GroupedPrincipal extends NonGroupedPrincipal implements Se
 
 	public void addGroup( Group group ) {
 		groups.add( group );
+	}
+
+	public void removeGroup( Group group ) {
+		groups.remove( group );
 	}
 
 	@Override

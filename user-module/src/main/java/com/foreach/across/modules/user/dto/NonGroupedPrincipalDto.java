@@ -16,7 +16,7 @@
 package com.foreach.across.modules.user.dto;
 
 import com.foreach.across.modules.hibernate.dto.IdBasedEntityDto;
-import com.foreach.across.modules.user.business.NonGroupedPrincipal;
+import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.Role;
 
 import java.util.Set;
@@ -25,7 +25,7 @@ import java.util.TreeSet;
 /**
  * @author Arne Vandamme
  */
-public class NonGroupedPrincipalDto<T extends NonGroupedPrincipal> extends IdBasedEntityDto<T>
+public class NonGroupedPrincipalDto<T extends BasicSecurityPrincipal> extends IdBasedEntityDto<T>
 {
 	private Set<Role> roles = new TreeSet<>();
 

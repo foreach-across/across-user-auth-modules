@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.user.business;
 
-import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.spring.security.infrastructure.business.AbstractSecurityPrincipal;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
@@ -42,7 +41,7 @@ import java.util.TreeSet;
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
 )
-public abstract class NonGroupedPrincipal extends AbstractSecurityPrincipal implements IdBasedSecurityPrincipal
+public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal implements IdBasedSecurityPrincipal
 {
 	@Id
 	@GeneratedValue(generator = "seq_um_principal_id")
@@ -101,6 +100,14 @@ public abstract class NonGroupedPrincipal extends AbstractSecurityPrincipal impl
 		return getRoles().contains( role );
 	}
 
+	public void addRole( Role role ) {
+		getRoles().add( role );
+	}
+
+	public void removeRole( Role role ) {
+		getRoles().remove( role );
+	}
+
 	public boolean hasPermission( String name ) {
 		return hasPermission( new Permission( name ) );
 	}
@@ -133,11 +140,11 @@ public abstract class NonGroupedPrincipal extends AbstractSecurityPrincipal impl
 		if ( this == o ) {
 			return true;
 		}
-		if ( !( o instanceof NonGroupedPrincipal ) ) {
+		if ( !( o instanceof BasicSecurityPrincipal ) ) {
 			return false;
 		}
 
-		NonGroupedPrincipal that = (NonGroupedPrincipal) o;
+		BasicSecurityPrincipal that = (BasicSecurityPrincipal) o;
 
 		if ( id != that.id ) {
 			return false;
