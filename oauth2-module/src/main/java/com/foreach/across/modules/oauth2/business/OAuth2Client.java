@@ -16,7 +16,7 @@
 package com.foreach.across.modules.oauth2.business;
 
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
-import com.foreach.across.modules.user.business.NonGroupedPrincipal;
+import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -27,7 +27,7 @@ import java.util.*;
 @Entity
 @DiscriminatorValue("oauth2client")
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT)
-public class OAuth2Client extends NonGroupedPrincipal implements ClientDetails
+public class OAuth2Client extends BasicSecurityPrincipal implements ClientDetails
 {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.oAuth2Client", cascade = CascadeType.ALL)
 	private Set<OAuth2ClientScope> oAuth2ClientScopes = new TreeSet<OAuth2ClientScope>();
