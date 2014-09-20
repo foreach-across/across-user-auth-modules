@@ -19,39 +19,57 @@
 </head>
 <body th:fragment="content">
 
-<div th:if="${existing}">
-	editing existing
-</div>
-<form method="post" th:action="@{${@adminWeb.path('/roles/save')}}" th:object="${role}">
+<h4 th:if="${existing}">Modify role: <span th:text="${role.description}">name</span></h4>
+<h4 th:unless="${existing}">Create a new role</h4>
+
+<form method="post" th:action="@{${@adminWeb.path('/roles/save')}}" th:object="${role}" role="form">
 	<input type="hidden" th:field="*{id}"/>
 	<input type="hidden" th:field="*{name}" th:if="${existing}"/>
 
-	<div th:unless="${existing}">
-		<label>Id</label>
-		<input type="text" th:field="*{name}"/>
+	<div class="row">
+		<div class="col-md-4">
+
+			<div class="form-group" th:unless="${existing}">
+				<label for="roleId">Id</label>
+				<input id="roleId" type="text" th:field="*{name}" class="form-control" placeholder="Unique textual id used for authority checking"/>
+			</div>
+
+			<div class="form-group">
+				<label for="name">Name</label>
+				<input id="name" type="text" th:field="*{description}" class="form-control" placeholder="Unique descriptive name"/>
+			</div>
+
+			<input class="btn btn-primary" type="submit" value="Save"/>
+			<a class="btn btn-link" th:href="@{${@adminWeb.path('/roles')}}">Cancel</a>
+
+		</div>
+		<div class="col-md-8">
+
+			<label>Permissions</label>
+			<table class="table table-condensed table-bordered table-responsive" th:each="permissionGroup:${permissionGroups}">
+				<tr class="active">
+					<td colspan="2">
+						<div><strong th:text="${permissionGroup.title}">Permission group</strong></div>
+						<span class="small" th:text="${permissionGroup.description}">description</span>
+					</td>
+				</tr>
+				<tr th:each="permission:${permissionGroup.permissions}">
+					<td style="width: 30px" class="text-center">
+						<input type="checkbox"
+						       th:id="${#ids.seq('permission')}"
+						       th:field="*{permissions}"
+						       th:value="${permission.name}"/>
+					</td>
+					<td>
+						<label th:for="${#ids.prev('permission')}" th:text="${permission.name}"></label><br />
+						<span class="small" th:text="${permission.description}"></span>
+					</td>
+				</tr>
+			</table>
+
+		</div>
 	</div>
 
-	<div>
-		<label>Name</label>
-		<input type="text" th:field="*{description}"/>
-	</div>
-
-	<div th:each="permissionGroup:${permissionGroups}">
-		<p th:text="${permissionGroup.title}">Permission group</p>
-		<ul>
-			<li th:each="permission:${permissionGroup.permissions}">
-				<input type="checkbox"
-				       th:field="*{permissions}"
-				       th:value="${permission.name}"/>
-				<label th:text="${permission.name}"></label>
-			</li>
-		</ul>
-	</div>
-
-
-	<input type="submit" value="Save"/>
-
-	<a th:href="@{${@adminWeb.path('/roles')}}">Cancel</a>
 </form>
 
 </body>

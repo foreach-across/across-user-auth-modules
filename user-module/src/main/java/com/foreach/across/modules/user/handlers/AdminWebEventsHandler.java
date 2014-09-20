@@ -47,7 +47,9 @@ public class AdminWebEventsHandler
 		}
 
 		if ( currentUser.hasPermission( "manage user roles" ) ) {
-			builder.item( "/users/roles", "Roles", RoleController.PATH ).order( 2 );
+			builder
+					.item( "/users/roles", "Roles", RoleController.PATH ).order( 2 ).and()
+					.item( "/users/roles/create", "Create a new role", RoleController.PATH + "/create" );
 		}
 	}
 }

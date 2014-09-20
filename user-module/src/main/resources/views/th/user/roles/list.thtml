@@ -18,7 +18,9 @@
 	<title th:fragment="title">Role overview</title>
 </head>
 <body th:fragment="content">
-<a th:href="@{${@adminWeb.path('/roles/create')}}">create a new role</a>
+<div class="text-right">
+	<a class="btn btn-primary" th:href="@{${@adminWeb.path('/roles/create')}}">Create a new role</a>
+</div>
 <table class="table table-striped table-hover">
 	<thead>
 	<tr>
