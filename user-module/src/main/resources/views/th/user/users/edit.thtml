@@ -29,32 +29,32 @@
 	<span th:text="*{id}">1</span>
 
 	<div>
-		<label th:for="${#ids.next('username')}">Username</label>
+		<label for="username">Username</label>
 		<input type="text" th:field="*{username}"/>
 	</div>
 
 	<div>
-		<label th:for="${#ids.next('password')}">Password</label>
+		<label for="password">Password</label>
 		<input type="text" th:field="*{password}"/>
 	</div>
 
 	<div>
-		<label th:for="${#ids.next('email')}">Email</label>
+		<label for="email">Email</label>
 		<input type="text" th:field="*{email}"/>
 	</div>
 
 	<div>
-		<label th:for="${#ids.next('firstName')}">First Name</label>
+		<label th:for="firstName">First Name</label>
 		<input type="text" th:field="*{firstName}"/>
 	</div>
 
 	<div>
-		<label th:for="${#ids.next('lastName')}">Last Name</label>
+		<label th:for="lastName">Last Name</label>
 		<input type="text" th:field="*{lastName}"/>
 	</div>
 
 	<div>
-		<label th:for="${#ids.next('displayName')}">Display Name</label>
+		<label th:for="displayName">Display Name</label>
 		<input type="text" th:field="*{displayName}"/>
 	</div>
 
@@ -72,12 +72,12 @@
 
 	<div>
 		<label>Email Confirmed?</label>
-		<input type="checkbox" th:field="*{emailConfirmed}" th:value="${emailConfirmed}"/><label th:text="Yes" th:for="${#ids.prev('emailConfirmed')}"></label>
+		<input type="checkbox" th:field="*{emailConfirmed}" th:value="${emailConfirmed}"/><label th:text="Yes" th:for="emailConfirmed"></label>
 	</div>
 
 	<div>
 		<label>Deleted?</label>
-		<input type="checkbox" th:field="*{deleted}" th:value="${deleted}"/><label th:text="Yes" th:for="${#ids.prev('deleted')}"></label>
+		<input type="checkbox" th:field="*{deleted}" th:value="${deleted}"/><label th:text="Yes" th:for="deleted"></label>
 	</div>
 
 	<div>
