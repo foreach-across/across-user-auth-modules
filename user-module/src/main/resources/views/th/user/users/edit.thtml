@@ -71,8 +71,9 @@
 	</div>
 
 	<div>
-		<label>Email Confirmed?</label>
-		<input type="checkbox" th:field="*{emailConfirmed}" th:value="${emailConfirmed}"/><label th:text="Yes" th:for="${#ids.prev('emailConfirmed')}"></label>
+		<label>Email status</label>
+		<input type="radio" th:field="*{emailConfirmed}" value="true"/><label th:text="Confirmed" th:for="${#ids.prev('emailConfirmed')}"></label>
+		<input type="radio" th:field="*{emailConfirmed}" value="false"/><label th:text="Unconfirmed" th:for="${#ids.prev('emailConfirmed')}"></label>
 	</div>
 
 	<div>
