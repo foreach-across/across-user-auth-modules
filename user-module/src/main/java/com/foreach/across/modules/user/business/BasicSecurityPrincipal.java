@@ -24,10 +24,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Represents a security principal that can be assigned one or more roles.
@@ -146,7 +143,7 @@ public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal i
 
 		BasicSecurityPrincipal that = (BasicSecurityPrincipal) o;
 
-		if ( id != that.id ) {
+		if ( getId() != that.getId() ) {
 			return false;
 		}
 
@@ -155,6 +152,6 @@ public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal i
 
 	@Override
 	public int hashCode() {
-		return (int) ( id ^ ( id >>> 32 ) );
+		return Objects.hash( getId() );
 	}
 }
