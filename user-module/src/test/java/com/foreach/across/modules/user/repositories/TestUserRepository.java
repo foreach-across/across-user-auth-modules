@@ -35,6 +35,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestUserRepository.Config.class)
@@ -193,6 +194,11 @@ public class TestUserRepository
 		@Bean
 		public GroupService groupService() {
 			return new GroupServiceImpl();
+		}
+
+		@Bean
+		public GroupPropertiesService groupPropertiesService() {
+			return mock( GroupPropertiesService.class );
 		}
 
 		@Bean

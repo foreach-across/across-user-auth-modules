@@ -17,7 +17,9 @@ package com.foreach.across.modules.it.user;
 
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.GroupProperties;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.dto.GroupDto;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.GroupService;
@@ -30,9 +32,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Collection;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
@@ -60,6 +63,27 @@ public class ITSecurityPrincipalService
 		              securityPrincipalService.getPrincipalByName( expectedUserOne.getPrincipalName() ) );
 		assertEquals( expectedUserTwo,
 		              securityPrincipalService.getPrincipalByName( expectedUserTwo.getPrincipalName() ) );
+
+		UserProperties propsOne = userService.getProperties( expectedUserOne );
+		propsOne.put( "custom.property", 777L );
+		propsOne.put( "other.property", 19 );
+		userService.saveProperties( propsOne );
+
+		UserProperties propsTwo = userService.getProperties( expectedUserTwo );
+		propsTwo.put( "custom.property", 888L );
+		propsTwo.put( "other.property", 19 );
+		userService.saveProperties( propsTwo );
+
+		Collection<User> users = userService.getUsersWithPropertyValue( "custom.property", 888L );
+		assertNotNull( users );
+		assertEquals( 1, users.size() );
+		assertTrue( users.contains( expectedUserTwo ) );
+
+		users = userService.getUsersWithPropertyValue( "other.property", 19 );
+		assertNotNull( users );
+		assertEquals( 2, users.size() );
+		assertTrue( users.contains( expectedUserOne ) );
+		assertTrue( users.contains( expectedUserTwo ) );
 	}
 
 	@Test
@@ -71,6 +95,27 @@ public class ITSecurityPrincipalService
 		              securityPrincipalService.getPrincipalByName( expectedGroupOne.getPrincipalName() ) );
 		assertEquals( expectedGroupTwo,
 		              securityPrincipalService.getPrincipalByName( expectedGroupTwo.getPrincipalName() ) );
+
+		GroupProperties propsOne = groupService.getProperties( expectedGroupOne );
+		propsOne.put( "custom.property", 777L );
+		propsOne.put( "other.property", 19 );
+		groupService.saveProperties( propsOne );
+
+		GroupProperties propsTwo = groupService.getProperties( expectedGroupTwo );
+		propsTwo.put( "custom.property", 888L );
+		propsTwo.put( "other.property", 19 );
+		groupService.saveProperties( propsTwo );
+
+		Collection<Group> groups = groupService.getGroupsWithPropertyValue( "custom.property", 888L );
+		assertNotNull( groups );
+		assertEquals( 1, groups.size() );
+		assertTrue( groups.contains( expectedGroupTwo ) );
+
+		groups = groupService.getGroupsWithPropertyValue( "other.property", 19 );
+		assertNotNull( groups );
+		assertEquals( 2, groups.size() );
+		assertTrue( groups.contains( expectedGroupOne ) );
+		assertTrue( groups.contains( expectedGroupTwo ) );
 	}
 
 	private Group createGroup( String name ) {

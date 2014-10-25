@@ -21,7 +21,7 @@ import com.foreach.across.modules.user.dto.UserDto;
 
 import java.util.Collection;
 
-public interface UserService extends UserPropertiesService
+public interface UserService
 {
 	boolean isUseEmailAsUsername();
 
@@ -41,7 +41,15 @@ public interface UserService extends UserPropertiesService
 
 	void delete( long id );
 
+	void saveProperties( UserProperties userProperties );
+
+	void deleteProperties( User user );
+
+	void deleteProperties( long userId );
+
 	UserProperties getProperties( User user );
 
 	UserProperties getProperties( UserDto userDto );
+
+	Collection<User> getUsersWithPropertyValue( String propertyName, Object propertyValue );
 }

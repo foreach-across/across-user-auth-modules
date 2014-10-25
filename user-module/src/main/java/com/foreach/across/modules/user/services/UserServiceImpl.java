@@ -33,6 +33,7 @@ import org.springframework.validation.Errors;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
+import java.util.Collections;
 
 @Service
 public class UserServiceImpl implements UserService
@@ -196,25 +197,39 @@ public class UserServiceImpl implements UserService
 	}
 
 	@Override
-	public void deleteProperties( Long userId ) {
-		userPropertiesService.deleteProperties( userId );
-	}
-
-	public UserProperties getProperties( User user ) {
-		return getProperties( user.getId() );
-	}
-
-	public UserProperties getProperties( UserDto userDto ) {
-		return getProperties( userDto.getId() );
+	public void deleteProperties( User user ) {
+		deleteProperties( user.getId() );
 	}
 
 	@Override
-	public UserProperties getProperties( Long userId ) {
-		return userPropertiesService.getProperties( userId );
+	public void deleteProperties( long userId ) {
+		userPropertiesService.deleteProperties( userId );
+	}
+
+	@Override
+	public UserProperties getProperties( User user ) {
+		return userPropertiesService.getProperties( user.getId() );
+	}
+
+	@Override
+	public UserProperties getProperties( UserDto userDto ) {
+		return userPropertiesService.getProperties( userDto.getId() );
 	}
 
 	@Override
 	public void saveProperties( UserProperties userProperties ) {
 		userPropertiesService.saveProperties( userProperties );
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Collection<User> getUsersWithPropertyValue( String propertyName, Object propertyValue ) {
+		Collection<Long> userIds = userPropertiesService.getEntityIdsForPropertyValue( propertyName, propertyValue );
+
+		if ( userIds.isEmpty() ) {
+			return Collections.emptyList();
+		}
+
+		return userRepository.getAllForIds( userIds );
 	}
 }

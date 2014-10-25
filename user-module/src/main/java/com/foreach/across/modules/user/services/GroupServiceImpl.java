@@ -17,6 +17,7 @@ package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.GroupProperties;
 import com.foreach.across.modules.user.dto.GroupDto;
 import com.foreach.across.modules.user.repositories.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Arne Vandamme
@@ -33,6 +35,9 @@ public class GroupServiceImpl implements GroupService
 {
 	@Autowired
 	private GroupRepository groupRepository;
+
+	@Autowired
+	private GroupPropertiesService groupPropertiesService;
 
 	@Override
 	public Collection<Group> getGroups() {
@@ -48,5 +53,50 @@ public class GroupServiceImpl implements GroupService
 	@Override
 	public Group save( GroupDto groupDto ) {
 		return BasicServiceHelper.save( groupDto, Group.class, groupRepository );
+	}
+
+	@Override
+	@Transactional
+	public void delete( long groupId ) {
+		Group group = groupRepository.getById( groupId );
+		deleteProperties( groupId );
+		groupRepository.delete( group );
+	}
+
+	@Override
+	public GroupProperties getProperties( Group group ) {
+		return groupPropertiesService.getProperties( group.getId() );
+	}
+
+	@Override
+	public GroupProperties getProperties( GroupDto groupDto ) {
+		return groupPropertiesService.getProperties( groupDto.getId() );
+	}
+
+	@Override
+	public void saveProperties( GroupProperties groupProperties ) {
+		groupPropertiesService.saveProperties( groupProperties );
+	}
+
+	@Override
+	public void deleteProperties( Group group ) {
+		deleteProperties( group.getId() );
+	}
+
+	@Override
+	public void deleteProperties( long groupId ) {
+		groupPropertiesService.deleteProperties( groupId );
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Collection<Group> getGroupsWithPropertyValue( String propertyName, Object propertyValue ) {
+		Collection<Long> groupIds = groupPropertiesService.getEntityIdsForPropertyValue( propertyName, propertyValue );
+
+		if ( groupIds.isEmpty() ) {
+			return Collections.emptyList();
+		}
+
+		return groupRepository.getAllForIds( groupIds );
 	}
 }

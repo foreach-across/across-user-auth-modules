@@ -13,24 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.user.repositories;
+package com.foreach.across.modules.user.services;
 
-import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
-import com.foreach.across.modules.user.business.Group;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
-import org.springframework.stereotype.Repository;
+import com.foreach.across.modules.properties.services.EntityPropertiesService;
+import com.foreach.across.modules.user.business.GroupProperties;
+import com.foreach.across.modules.user.business.UserProperties;
 
 /**
  * @author Arne Vandamme
  */
-@Repository
-public class GroupRepositoryImpl extends BasicRepositoryImpl<Group> implements GroupRepository
+public interface GroupPropertiesService extends EntityPropertiesService<GroupProperties, Long>
 {
-	@Override
-	protected Criteria ordered( Criteria criteria ) {
-		criteria.addOrder( Order.asc( "name" ) );
-
-		return criteria;
-	}
 }

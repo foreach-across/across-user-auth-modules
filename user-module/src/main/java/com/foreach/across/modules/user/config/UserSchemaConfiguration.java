@@ -31,10 +31,12 @@ public class UserSchemaConfiguration extends SchemaConfiguration
 	public static final String TABLE_PRINCIPAL = "um_principal";
 	public static final String TABLE_PRINCIPAL_ROLE = "um_principal_role";
 	public static final String TABLE_GROUP = "um_group";
+	public static final String TABLE_GROUP_PROPERTIES = "um_group_properties";
 	public static final String TABLE_PRINCIPAL_GROUP = "um_principal_group";
 	public static final String TABLE_MACHINE_PRINCIPAL = "um_machine";
 
 	public static final String COLUMN_USER_ID = "user_id";
+	public static final String COLUMN_GROUP_ID = "group_id";
 
 	public UserSchemaConfiguration() {
 		super( Arrays.asList( new SchemaObject( "table.permission", TABLE_PERMISSION ),
@@ -44,9 +46,10 @@ public class UserSchemaConfiguration extends SchemaConfiguration
 		                      new SchemaObject( "table.principal", TABLE_PRINCIPAL ),
 		                      new SchemaObject( "table.principal_role", TABLE_PRINCIPAL_ROLE ),
 		                      new SchemaObject( "table.group", TABLE_GROUP ),
+		                      new SchemaObject( "table.group_properties", TABLE_GROUP_PROPERTIES ),
 		                      new SchemaObject( "table.principal_group", TABLE_PRINCIPAL_GROUP ),
 		                      new SchemaObject( "table.user", TABLE_USER ),
 		                      new SchemaObject( "table.user_properties", TABLE_USER_PROPERTIES ),
-		                      new SchemaObject( "table.machine", TABLE_MACHINE_PRINCIPAL )) );
+		                      new SchemaObject( "table.machine", TABLE_MACHINE_PRINCIPAL ) ) );
 	}
 }

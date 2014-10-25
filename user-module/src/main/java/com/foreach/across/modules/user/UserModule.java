@@ -28,16 +28,10 @@ import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.*;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
-import com.foreach.across.modules.user.config.UserPropertiesConfiguration;
-import com.foreach.across.modules.user.config.UserRepositoriesConfiguration;
-import com.foreach.across.modules.user.config.UserSchemaConfiguration;
-import com.foreach.across.modules.user.config.UserServicesConfiguration;
+import com.foreach.across.modules.user.config.*;
 import com.foreach.across.modules.user.config.modules.UserAdminWebConfiguration;
 import com.foreach.across.modules.user.config.modules.UserSpringSecurityConfiguration;
-import com.foreach.across.modules.user.installers.AclPermissionsInstaller;
-import com.foreach.across.modules.user.installers.DefaultUserInstaller;
-import com.foreach.across.modules.user.installers.UserPropertiesSchemaInstaller;
-import com.foreach.across.modules.user.installers.UserSchemaInstaller;
+import com.foreach.across.modules.user.installers.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
@@ -75,6 +69,7 @@ public class UserModule extends AcrossModule implements HasHibernatePackageProvi
 						UserRepositoriesConfiguration.class,
 						UserServicesConfiguration.class,
 						UserPropertiesConfiguration.class,
+						GroupPropertiesConfiguration.class,
 						UserAdminWebConfiguration.class,
 						UserSpringSecurityConfiguration.class
 				)
@@ -85,6 +80,7 @@ public class UserModule extends AcrossModule implements HasHibernatePackageProvi
 	public Object[] getInstallers() {
 		return new Object[] {
 				AcrossSequencesInstaller.class,
+				new GroupPropertiesSchemaInstaller( schemaConfiguration ),
 				new UserPropertiesSchemaInstaller( schemaConfiguration ),
 				new UserSchemaInstaller( schemaConfiguration ),
 				DefaultUserInstaller.class,

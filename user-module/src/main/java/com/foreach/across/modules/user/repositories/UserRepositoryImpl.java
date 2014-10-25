@@ -18,6 +18,8 @@ package com.foreach.across.modules.user.repositories;
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.converters.FieldUtils;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,5 +41,14 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 		return (User) distinct()
 				.add( Restrictions.eq( "username", FieldUtils.lowerCase( userName ) ) )
 				.uniqueResult();
+	}
+
+	@Override
+	protected Criteria ordered( Criteria criteria ) {
+		criteria.addOrder( Order.asc( "displayName" ) )
+		        .addOrder( Order.asc( "username" ) )
+		        .addOrder( Order.asc( "email" ) );
+
+		return criteria;
 	}
 }

@@ -15,22 +15,17 @@
  */
 package com.foreach.across.modules.user.repositories;
 
-import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
-import com.foreach.across.modules.user.business.Group;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
+import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
+import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 import org.springframework.stereotype.Repository;
 
 /**
  * @author Arne Vandamme
  */
 @Repository
-public class GroupRepositoryImpl extends BasicRepositoryImpl<Group> implements GroupRepository
+public class GroupPropertiesRepository extends EntityPropertiesRepository<Long>
 {
-	@Override
-	protected Criteria ordered( Criteria criteria ) {
-		criteria.addOrder( Order.asc( "name" ) );
-
-		return criteria;
+	public GroupPropertiesRepository( EntityPropertiesDescriptor configuration ) {
+		super( configuration );
 	}
 }

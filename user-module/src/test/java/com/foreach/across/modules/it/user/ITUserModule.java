@@ -135,7 +135,10 @@ public class ITUserModule
 
 	@Test
 	public void propertiesCanOnlyBeSavedForExistingUser() {
-		UserProperties userProperties = userService.getProperties( -9999L );
+		User unsaved = new User();
+		unsaved.setId( -9999L );
+
+		UserProperties userProperties = userService.getProperties( unsaved );
 		userProperties.put( "test", "test" );
 
 		boolean failed = false;
@@ -150,7 +153,7 @@ public class ITUserModule
 		assertTrue( failed );
 
 		User admin = userService.getUserByUsername( "admin" );
-		UserProperties adminProperties = userService.getProperties( admin.getId() );
+		UserProperties adminProperties = userService.getProperties( admin );
 		adminProperties.put( "admin", "test" );
 
 		userService.saveProperties( adminProperties );
