@@ -25,17 +25,17 @@ public enum UserRestriction implements BitFlag
 	CREDENTIALS_EXPIRED( 8 ),
 	REQUIRES_CONFIRMATION( 16 );
 
-	private int bit;
+	private int id;
 
-	public int getBitFlag() {
-		return bit;
+	public Integer getId() {
+		return id;
 	}
 
 	public String getName() {
 		return name();
 	}
 
-	UserRestriction( int bit ) {
-		this.bit = bit;
+	UserRestriction( int id ) {
+		this.id = id;
 	}
 }
