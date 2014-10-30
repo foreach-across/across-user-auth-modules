@@ -38,7 +38,7 @@ import java.util.Set;
 
 @AcrossDepends(
 		required = { AcrossHibernateModule.NAME, PropertiesModule.NAME, SpringSecurityInfrastructureModule.NAME },
-		optional = "AdminWebModule"
+		optional = { "AdminWebModule", SpringSecurityInfrastructureModule.ACL_MODULE }
 )
 public class UserModule extends AcrossModule implements HasHibernatePackageProvider, HasSchemaConfiguration
 {

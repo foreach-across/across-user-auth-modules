@@ -42,6 +42,12 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>across-standard-modules</groupId>
+			<artifactId>spring-security-acl</artifactId>
+			<version>${project.parent.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>

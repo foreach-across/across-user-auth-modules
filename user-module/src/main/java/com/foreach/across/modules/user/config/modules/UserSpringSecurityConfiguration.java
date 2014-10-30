@@ -18,6 +18,7 @@ package com.foreach.across.modules.user.config.modules;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.controllers.UserAclController;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
 import com.foreach.across.modules.user.security.CurrentUserProxyImpl;
 import com.foreach.across.modules.user.security.UserDetailsServiceImpl;
@@ -43,6 +44,12 @@ public class UserSpringSecurityConfiguration
 	@Bean
 	public CurrentUserProxy currentUserProxy() {
 		return new CurrentUserProxyImpl();
+	}
+
+	@Bean
+	@AcrossDepends(required = "SpringSecurityAclModule")
+	public UserAclController userAclController() {
+		return new UserAclController();
 	}
 
 	/**

@@ -22,10 +22,11 @@ import com.foreach.across.core.EmptyAcrossModule;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Refreshable;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
-import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
+import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
@@ -35,8 +36,6 @@ import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
-import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
-import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -47,6 +46,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
@@ -58,9 +59,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
@@ -294,6 +293,35 @@ public class ITAclServices
 		assertTrue( acl.hasPermission( userFour, fileInFolderOne, AclPermission.WRITE ) );
 		assertFalse( acl.hasPermission( userFour, fileInFolderTwo, AclPermission.READ ) );
 		assertTrue( acl.hasPermission( userFour, fileInFolderTwo, AclPermission.WRITE ) );
+	}
+
+	@Test
+	public void retrieveObjectIdentitiesForPrincipal() {
+		logon( userOne );
+
+		acl.createAcl( repository );
+		acl.createAclWithParent( folderOne, repository );
+		acl.createAclWithParent( fileInFolderOne, folderOne );
+		acl.createAclWithParent( folderTwo, repository );
+		acl.createAclWithParent( fileInFolderTwo, folderTwo );
+
+		acl.allow( "manage files", repository, AclPermission.READ );
+		acl.allow( userTwo, folderTwo, AclPermission.READ );
+		acl.allow( userOne, fileInFolderOne, AclPermission.READ );
+		acl.allow( userOne, fileInFolderTwo, AclPermission.WRITE );
+
+		acl.allow( group, repository, AclPermission.WRITE );
+
+		Collection<ObjectIdentity> identities = acl.getObjectIdentitiesWithAclEntriesForPrincipal( userOne );
+		assertEquals( 2, identities.size() );
+		assertTrue( identities.contains( new ObjectIdentityImpl( fileInFolderOne.getClass(),
+		                                                         fileInFolderOne.getId() ) ) );
+		assertTrue( identities.contains( new ObjectIdentityImpl( fileInFolderTwo.getClass(),
+		                                                         fileInFolderTwo.getId() ) ) );
+
+		identities = acl.getObjectIdentitiesWithAclEntriesForPrincipal( userTwo );
+		assertEquals( 1, identities.size() );
+		assertTrue( identities.contains( new ObjectIdentityImpl( folderTwo.getClass(), folderTwo.getId() ) ) );
 	}
 
 	private boolean canRead( Object object ) {

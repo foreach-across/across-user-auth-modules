@@ -17,6 +17,7 @@ package com.foreach.across.modules.user.controllers;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
+import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.RoleService;
