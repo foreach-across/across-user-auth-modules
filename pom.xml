@@ -95,6 +95,7 @@
 		<module>user-module</module>
 		<module>oauth2-module</module>
 		<module>properties-module</module>
+		<module>spring-security-acl</module>
 	</modules>
 
 	<distributionManagement>
