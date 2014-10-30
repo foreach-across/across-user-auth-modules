@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.services;
+package com.foreach.across.modules.spring.security.acl.config.modules;
 
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Sid;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.spring.security.acl.controllers.AclBrowserController;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Arne Vandamme
  */
-public interface SecurityPrincipalAclService extends MutableAclService
+@AcrossDepends(required = "AdminWebModule")
+@Configuration
+public class AdminWebModuleConfiguration
 {
-	List<ObjectIdentity> findObjectIdentitiesWithAclForSid( Sid sid );
-
-	Collection<Class<?>> getRegisteredAclClasses();
+	@Bean
+	public AclBrowserController aclBrowserController() {
+		return new AclBrowserController();
+	}
 }

@@ -78,14 +78,4 @@ public interface AclSecurityService
 	boolean hasPermission( SecurityPrincipal principal, IdBasedEntity entity, AclPermission permission );
 
 	void setDefaultParentAcl( IdBasedEntity entity );
-
-	/**
-	 * Retrieve the list of ObjectIdentities that have an ACL that contains the at least one entry for
-	 * the given principal.  Only ACLs that contain the principal related entry directly are taken into
-	 * account, inherited entries do not make a difference.
-	 *
-	 * @param principal Security principal to get the entries for.
-	 * @return Collection of ObjectIdentity instances.
-	 */
-	Collection<ObjectIdentity> getObjectIdentitiesWithAclEntriesForPrincipal( SecurityPrincipal principal );
 }

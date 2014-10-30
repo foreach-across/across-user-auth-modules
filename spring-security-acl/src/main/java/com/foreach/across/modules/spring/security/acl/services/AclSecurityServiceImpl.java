@@ -39,7 +39,7 @@ import java.util.*;
  * @author Arne Vandamme
  */
 @Service
-public class AclSecurityServiceImpl implements AclSecurityService
+public class AclSecurityServiceImpl implements QueryableAclSecurityService
 {
 	@Autowired
 	private SecurityPrincipalAclService aclService;

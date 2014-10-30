@@ -16,6 +16,7 @@
 package com.foreach.across.modules.spring.security.acl.services;
 
 import com.foreach.across.modules.spring.security.acl.config.AclSecurityConfiguration;
+import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -26,13 +27,13 @@ import org.springframework.security.acls.jdbc.LookupStrategy;
 import org.springframework.security.acls.model.AclCache;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Sid;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Arne Vandamme
@@ -44,6 +45,8 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 					+ "from acl_entry entry inner join acl_object_identity obj on obj.id = entry.acl_object_identity " +
 					"inner join acl_class class on obj.object_id_class = class.id "
 					+ "where entry.sid = ?";
+
+	private static final String SELECT_ALL_CLASSES = "select class from acl_class";
 
 	@Autowired
 	private CacheManager cacheManager;
@@ -75,6 +78,7 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 		return sidId;
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	protected Long createOrRetrieveClassPrimaryKey( String type, boolean allowCreate ) {
 		Long classId;
@@ -89,6 +93,7 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 		return classId;
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<ObjectIdentity> findObjectIdentitiesWithAclForSid( Sid sid ) {
 		Long ownerId = createOrRetrieveSidPrimaryKey( sid, false );
@@ -97,7 +102,7 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 			return Collections.emptyList();
 		}
 
-		Object[] args = {  ownerId };
+		Object[] args = { ownerId };
 		List<ObjectIdentity> objects = jdbcTemplate.query( SELECT_OBJECT_IDENTITIES_FOR_SID, args,
 		                                                   new RowMapper<ObjectIdentity>()
 		                                                   {
@@ -111,5 +116,30 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 			                                                   }
 		                                                   } );
 		return objects;
+	}
+
+	@Override
+	public Collection<Class<?>> getRegisteredAclClasses() {
+		List<String> classNames = jdbcTemplate.query( SELECT_ALL_CLASSES, new RowMapper<String>()
+		{
+			@Override
+			public String mapRow( ResultSet rs, int rowNum ) throws SQLException {
+				return rs.getString( "class" );
+			}
+		} );
+
+		Set<Class<?>> classes = new HashSet<>();
+
+		for ( String className : classNames ) {
+			try {
+				Class<?> clazz = ClassUtils.getClass( className );
+				classes.add( clazz );
+			}
+			catch ( ClassNotFoundException cnfe ) {
+				/* ignore */
+			}
+		}
+
+		return classes;
 	}
 }
