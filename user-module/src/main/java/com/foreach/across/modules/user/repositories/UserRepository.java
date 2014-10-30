@@ -16,11 +16,16 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepository;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
+
+import java.util.Collection;
 
 public interface UserRepository extends BasicRepository<User>
 {
 	User getByUsername( String userName );
 
 	User getByEmail( String email );
+
+	Collection<User> getUsersInGroup( Group group );
 }

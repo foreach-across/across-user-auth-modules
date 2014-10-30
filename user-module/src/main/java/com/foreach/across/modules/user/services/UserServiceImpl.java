@@ -17,6 +17,7 @@ package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModuleSettings;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.dto.UserDto;
@@ -231,5 +232,10 @@ public class UserServiceImpl implements UserService
 		}
 
 		return userRepository.getAllForIds( userIds );
+	}
+
+	@Override
+	public Collection<User> getUsersInGroup( Group group ) {
+		return userRepository.getUsersInGroup( group );
 	}
 }

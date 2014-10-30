@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.dto.UserDto;
@@ -52,4 +53,6 @@ public interface UserService
 	UserProperties getProperties( UserDto userDto );
 
 	Collection<User> getUsersWithPropertyValue( String propertyName, Object propertyValue );
+
+	Collection<User> getUsersInGroup( Group group );
 }

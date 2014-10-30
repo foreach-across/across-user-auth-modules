@@ -16,13 +16,18 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.converters.FieldUtils;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.criteria.JoinType;
+import java.util.Collection;
 
 @Repository
 public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements UserRepository
@@ -33,6 +38,14 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 		return (User) distinct()
 				.add( Restrictions.eq( "email", FieldUtils.lowerCase( email ) ) )
 				.uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
+	@Override
+	public Collection<User> getUsersInGroup( Group group ) {
+		return (Collection<User>) distinct().createAlias( "groups", "group", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN )
+				.add( Restrictions.eq( "group.id", group.getId() ) ).list();
 	}
 
 	@Transactional(readOnly = true)

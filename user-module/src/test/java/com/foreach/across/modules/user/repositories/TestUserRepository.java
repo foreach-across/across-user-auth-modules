@@ -33,6 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -165,6 +166,34 @@ public class TestUserRepository
 
 		assertEquals( user.getGroups(), existing.getGroups() );
 		assertEquals( user.getRoles(), existing.getRoles() );
+	}
+
+	@Test
+	public void usersInGroup() {
+		GroupDto anotherGroupDto = new GroupDto();
+		anotherGroupDto.setName( "anotherGroup" );
+		Group anotherGroup = groupService.save( anotherGroupDto );
+
+		User user1 = new User();
+		user1.setUsername("userInGroup1");
+		user1.addGroup( existingGroup );
+		user1.addGroup( anotherGroup );
+		userRepository.create( user1 );
+
+		User user2 = new User();
+		user2.setUsername( "userInGroup2" );
+		user2.addGroup( existingGroup );
+		userRepository.create( user2 );
+
+		User user3 = new User();
+		user3.setUsername( "userInGroup3" );
+		user3.addGroup( anotherGroup );
+		userRepository.create( user3 );
+
+		Collection<User> users = userRepository.getUsersInGroup( existingGroup );
+		assertTrue( users.contains( user1 ));
+		assertTrue( users.contains( user2 ) );
+		assertFalse( users.contains( user3 ) );
 	}
 
 	@Configuration
