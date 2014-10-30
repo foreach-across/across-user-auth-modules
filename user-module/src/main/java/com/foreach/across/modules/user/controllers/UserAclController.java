@@ -16,10 +16,9 @@
 package com.foreach.across.modules.user.controllers;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.acl.services.QueryableAclSecurityService;
 import com.foreach.across.modules.user.business.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserAclController
 {
 	@Autowired
-	private AclSecurityService aclSecurityService;
+	private QueryableAclSecurityService aclSecurityService;
 
 	@RequestMapping(value = "/users/{id}/acl")
 	public String viewAcl( @PathVariable("id") User user, Model model ) {

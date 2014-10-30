@@ -25,7 +25,7 @@ import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
-import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.acl.services.QueryableAclSecurityService;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.Role;
@@ -91,7 +91,7 @@ public class ITAclServices
 	private SecuredBean securedBean;
 
 	@Autowired
-	private AclSecurityService acl;
+	private QueryableAclSecurityService acl;
 
 	@Autowired
 	private SecurityPrincipalService securityPrincipalService;
