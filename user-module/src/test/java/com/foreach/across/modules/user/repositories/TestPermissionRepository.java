@@ -89,6 +89,12 @@ public class TestPermissionRepository
 
 		assertTrue( manageUsers.getId() > 0 );
 
+		Permission manageGroups = new Permission( "manage groups" );
+		manageGroups.setGroup( userGroup );
+		permissionRepository.save( manageGroups );
+
+		assertTrue( manageGroups.getId() > 0 );
+
 		Permission existing = permissionRepository.getPermission( "manage users" );
 		assertEquals( manageUsers, existing );
 		assertEquals( manageUsers.getId(), existing.getId() );
@@ -96,6 +102,15 @@ public class TestPermissionRepository
 		permissionRepository.delete( existing );
 
 		existing = permissionRepository.getPermission( "manage users" );
+		assertNull( existing );
+
+		Permission existingManageGroups = permissionRepository.getPermission( "manage groups" );
+		assertEquals( manageGroups, existingManageGroups );
+		assertEquals( manageGroups.getId(), existingManageGroups.getId() );
+
+		permissionRepository.delete( existingManageGroups );
+
+		existing = permissionRepository.getPermission( "manage groups" );
 		assertNull( existing );
 	}
 

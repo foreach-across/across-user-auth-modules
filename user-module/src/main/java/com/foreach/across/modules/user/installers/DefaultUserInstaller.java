@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.HashSet;
 
-@Installer(description = "Installs the default permissions, roles and user", version = 3,
+@Installer(description = "Installs the default permissions, roles and user", version = 4,
            phase = InstallerPhase.AfterModuleBootstrap)
 public class DefaultUserInstaller
 {
@@ -88,11 +88,12 @@ public class DefaultUserInstaller
 		                                    UserModule.NAME );
 
 		permissionService.definePermission( "manage users", "Manage user accounts", UserModule.NAME );
+		permissionService.definePermission( "manage groups", "Manage groups", UserModule.NAME );
 		permissionService.definePermission( "manage user roles", "Manage user roles", UserModule.NAME );
 
 		roleService.defineRole( "ROLE_ADMIN", "Administrator",
-		                        Arrays.asList( "access administration", "manage users", "manage user roles" ) );
-		roleService.defineRole( "ROLE_MANAGER", "Manager", Arrays.asList( "access administration", "manage users" ) );
+		                        Arrays.asList( "access administration", "manage users", "manage user roles", "manage groups" ) );
+		roleService.defineRole( "ROLE_MANAGER", "Manager", Arrays.asList( "access administration", "manage users", "manage groups" ) );
 	}
 
 	private void createUser() {
