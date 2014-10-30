@@ -16,6 +16,7 @@
 package com.foreach.across.modules.user.config;
 
 import com.foreach.across.modules.user.UserModuleSettings;
+import com.foreach.across.modules.user.converters.ObjectToGroupConverter;
 import com.foreach.across.modules.user.converters.ObjectToPermissionConverter;
 import com.foreach.across.modules.user.converters.ObjectToRoleConverter;
 import com.foreach.across.modules.user.converters.ObjectToUserConverter;
@@ -51,6 +52,7 @@ public class UserServicesConfiguration
 			conversionService.addConverter( new ObjectToRoleConverter( conversionService, roleService() ) );
 			conversionService.addConverter( new ObjectToPermissionConverter( conversionService, permissionService() ) );
 			conversionService.addConverter( new ObjectToUserConverter( conversionService, userService() ) );
+			conversionService.addConverter( new ObjectToGroupConverter( conversionService, groupService() ) );
 		}
 		else {
 			LOG.debug( "No ConfigurableConversionService found - unable to auto-register user converters" );
