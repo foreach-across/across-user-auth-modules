@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.HashSet;
 
-@Installer(description = "Installs the default permissions, roles and user", version = 4,
+@Installer(description = "Installs the default permissions, roles and user", version = 5,
            phase = InstallerPhase.AfterModuleBootstrap)
 public class DefaultUserInstaller
 {
@@ -91,9 +91,23 @@ public class DefaultUserInstaller
 		permissionService.definePermission( "manage groups", "Manage groups", UserModule.NAME );
 		permissionService.definePermission( "manage user roles", "Manage user roles", UserModule.NAME );
 
-		roleService.defineRole( "ROLE_ADMIN", "Administrator",
-		                        Arrays.asList( "access administration", "manage users", "manage user roles", "manage groups" ) );
-		roleService.defineRole( "ROLE_MANAGER", "Manager", Arrays.asList( "access administration", "manage users", "manage groups" ) );
+		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
+		if( adminRole == null )  {
+			roleService.defineRole( "ROLE_ADMIN", "Administrator",
+			                        Arrays.asList( "access administration", "manage users", "manage user roles" ) );
+		} else {
+			adminRole.addPermission( "manage groups" );
+			roleService.save( adminRole );
+		}
+
+		Role managerRole = roleService.getRole( "ROLE_MANAGER" );
+		if( managerRole == null ) {
+			roleService.defineRole( "ROLE_MANAGER", "Manager", Arrays.asList( "access administration", "manage users" ) );
+		} else {
+			managerRole.addPermission( "manage groups" );
+			roleService.save( managerRole );
+		}
+
 	}
 
 	private void createUser() {

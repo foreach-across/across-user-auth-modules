@@ -19,12 +19,17 @@ import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.repositories.PermissionRepository;
 import com.foreach.across.modules.user.repositories.RoleRepository;
-import org.springframework.beans.BeanUtils;
+import liquibase.util.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
@@ -32,6 +37,8 @@ import java.util.TreeSet;
 @Service
 public class RoleServiceImpl implements RoleService
 {
+	private static final Logger LOG = LoggerFactory.getLogger( RoleServiceImpl.class );
+
 	@Autowired
 	private PermissionRepository permissionRepository;
 
@@ -63,13 +70,22 @@ public class RoleServiceImpl implements RoleService
 		Role existing = roleRepository.getRole( role.getName() );
 
 		if ( existing != null ) {
-			existing.setName( role.getName() );
-			existing.setDescription( role.getDescription() );
-			existing.setPermissions( role.getPermissions() );
-
-			roleRepository.save( existing );
-
-			BeanUtils.copyProperties( existing, role );
+			if( existing.getPermissions().size() != role.getPermissions().size() ) {
+				Collection<Permission> difference = CollectionUtils.disjunction( existing.getPermissions(),
+				                                                                 role.getPermissions() );
+				Collection<String> permissionNames = CollectionUtils.collect( difference,
+				                                                              new Transformer<Permission, String>()
+				                                                              {
+					                                                              @Override
+					                                                              public String transform( Permission input ) {
+						                                                              return input.getName();
+					                                                              }
+				                                                              },
+				                                                              new ArrayList<String>()
+				);
+				                        LOG.error( "Cannot redefine role '{}' because it would loose the permissions: '{}', you should .addPermission() instead", role,
+				                                   StringUtils.join( permissionNames, ", " ) );
+			}
 		}
 		else {
 			roleRepository.save( role );

@@ -17,6 +17,7 @@ package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.user.TestDatabaseConfig;
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.GroupDto;
@@ -74,6 +75,18 @@ public class TestUserRepository
 
 			existingGroup = groupService.save( group );
 		}
+	}
+
+	@Test
+	public void redefiningRoleShouldNotSaveAndLogAnError() {
+		permissionService.definePermission( "role three perm one", "", "test-perms" );
+		permissionService.definePermission( "role three perm two", "", "test-perms" );
+		permissionService.definePermission( "role three perm three", "", "test-perms" );
+		Role role =	roleService.defineRole( "role three", "", Arrays.asList( "role three perm one", "role three perm two" ) );
+		role.addPermission( "role three perm three" );
+		roleService.defineRole( role );
+
+		assertEquals( 2, roleService.getRole( "role three" ).getPermissions().size() );
 	}
 
 	@Test
