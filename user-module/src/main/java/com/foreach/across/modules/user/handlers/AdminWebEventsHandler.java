@@ -43,7 +43,8 @@ public class AdminWebEventsHandler
 		builder.group( "/users", "User management" );
 
 		if ( currentUser.hasPermission( "manage users" ) ) {
-			builder.item( "/users/users", "Users", UserController.PATH ).order( 1 );
+			builder.item( "/users/users", "Users", UserController.PATH ).order( 1 ).and()
+			       .item( "/users/users/create", "Create a new user", UserController.PATH + "/create" );
 		}
 
 		if ( currentUser.hasPermission( "manage user roles" ) ) {

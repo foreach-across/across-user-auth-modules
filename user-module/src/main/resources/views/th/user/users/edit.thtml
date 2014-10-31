@@ -19,6 +19,11 @@
 </head>
 <body th:fragment="content">
 
+<ul class="nav nav-tabs">
+	<li><a href="">Properties</a></li>
+	<li><a href="">Groups</a></li>
+</ul>
+
 <ul th:if="${#fields.hasErrors('${user.*}')}">
 	<li th:each="err : ${#fields.errors('${user.*}')}" th:text="${err}"/>
 </ul>

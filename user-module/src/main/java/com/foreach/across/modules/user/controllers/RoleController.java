@@ -17,6 +17,7 @@ package com.foreach.across.modules.user.controllers;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
+import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
@@ -60,8 +61,12 @@ public class RoleController
 	}
 
 	@RequestMapping("/{name}")
-	public String editRole( @PathVariable("name") String name, Model model ) {
+	public String editRole( @PathVariable("name") String name,
+	                        AdminMenu adminMenu,
+	                        Model model ) {
 		Role role = roleService.getRole( name );
+
+		adminMenu.getLowestSelectedItem().addItem( "/selectedRole", role.getDescription() ).setSelected( true );
 
 		model.addAttribute( "existing", true );
 		model.addAttribute( "role", role );

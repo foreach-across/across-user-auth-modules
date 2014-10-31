@@ -17,7 +17,8 @@ package com.foreach.across.modules.user.controllers;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.adminweb.menu.AdminMenu;
+import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.RoleService;
@@ -51,6 +52,9 @@ public class UserController
 	@Autowired
 	private UserValidator userValidator;
 
+	@Autowired
+	private UserModuleSettings userModuleSettings;
+
 	@InitBinder("user")
 	protected void initBinder( WebDataBinder binder ) {
 		binder.setValidator( userValidator );
@@ -74,8 +78,10 @@ public class UserController
 	}
 
 	@RequestMapping("/{id}")
-	public String editUser( @PathVariable("id") long id, Model model ) {
+	public String editUser( @PathVariable("id") long id, AdminMenu adminMenu, Model model ) {
 		UserDto user = userService.createUserDto( userService.getUserById( id ) );
+
+		breadcrumb( adminMenu, user );
 
 		model.addAttribute( "existing", true );
 		model.addAttribute( "user", user );
@@ -85,7 +91,7 @@ public class UserController
 		return "th/user/users/edit";
 	}
 
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	@RequestMapping(value = { "/create", "/{id}" }, method = RequestMethod.POST)
 	public String saveUser( @ModelAttribute("user") @Valid UserDto user,
 	                        BindingResult bindingResult,
 	                        RedirectAttributes re,
@@ -106,6 +112,15 @@ public class UserController
 			model.addAttribute( "userRestrictions", EnumSet.allOf( UserRestriction.class ) );
 
 			return "th/user/users/edit";
+		}
+	}
+
+	private void breadcrumb( AdminMenu adminMenu, UserDto user ) {
+		if ( !user.isNewEntity() ) {
+			adminMenu.getLowestSelectedItem()
+			         .addItem( "/selectedUser",
+			                   userModuleSettings.isUseEmailAsUsername() ? user.getEmail() : user.getUsername() )
+			         .setSelected( true );
 		}
 	}
 }
