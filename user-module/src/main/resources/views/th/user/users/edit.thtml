@@ -20,15 +20,16 @@
 <body th:fragment="content">
 
 <ul class="nav nav-tabs">
-	<li><a href="">Properties</a></li>
-	<li><a href="">Groups</a></li>
+	<li th:each="tab : ${entityMenu.items}" th:classappend="${tab.selected}? 'active'">
+		<a th:href="@{${tab.url}}" th:text="${tab.title}">tab menu</a>
+	</li>
 </ul>
 
 <ul th:if="${#fields.hasErrors('${user.*}')}">
 	<li th:each="err : ${#fields.errors('${user.*}')}" th:text="${err}"/>
 </ul>
 
-<form method="post" th:action="@{${@adminWeb.path('/users/save')}}" th:object="${user}">
+<form method="post" th:action="@{${@adminWeb.path('/users/' + (user.newEntity ? 'create' : user.id))}}" th:object="${user}">
 	<input type="hidden" th:field="*{id}"/>
 
 	<span th:text="*{id}">1</span>
@@ -96,9 +97,8 @@
 	</div>
 
 
-	<input type="submit" value="Save"/>
-
-	<a th:href="@{${@adminWeb.path('/users')}}">Cancel</a>
+	<input class="btn btn-primary" type="submit" value="Save"/>
+	<a class="btn btn-link" th:href="@{${@adminWeb.path('/users')}}">Cancel</a>
 </form>
 
 </body>

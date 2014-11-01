@@ -92,22 +92,25 @@ public class DefaultUserInstaller
 		permissionService.definePermission( "manage user roles", "Manage user roles", UserModule.NAME );
 
 		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
-		if( adminRole == null )  {
+		if ( adminRole == null ) {
 			roleService.defineRole( "ROLE_ADMIN", "Administrator",
-			                        Arrays.asList( "access administration", "manage users", "manage user roles" ) );
-		} else {
+			                        Arrays.asList( "access administration", "manage users", "manage groups",
+			                                       "manage user roles" ) );
+		}
+		else {
 			adminRole.addPermission( "manage groups" );
 			roleService.save( adminRole );
 		}
 
 		Role managerRole = roleService.getRole( "ROLE_MANAGER" );
-		if( managerRole == null ) {
-			roleService.defineRole( "ROLE_MANAGER", "Manager", Arrays.asList( "access administration", "manage users" ) );
-		} else {
+		if ( managerRole == null ) {
+			roleService.defineRole( "ROLE_MANAGER", "Manager", Arrays.asList( "access administration", "manage users",
+			                                                                  "manage groups" ) );
+		}
+		else {
 			managerRole.addPermission( "manage groups" );
 			roleService.save( managerRole );
 		}
-
 	}
 
 	private void createUser() {

@@ -16,6 +16,7 @@
 package com.foreach.across.modules.user.dto;
 
 import com.foreach.across.modules.user.business.Group;
+import org.springframework.beans.BeanUtils;
 
 /**
  * @author Arne Vandamme
@@ -30,5 +31,12 @@ public class GroupDto extends NonGroupedPrincipalDto<Group>
 
 	public void setName( String name ) {
 		this.name = name;
+	}
+
+	public static GroupDto fromGroup( Group group ) {
+		GroupDto dto = new GroupDto();
+		BeanUtils.copyProperties( group, dto );
+
+		return dto;
 	}
 }

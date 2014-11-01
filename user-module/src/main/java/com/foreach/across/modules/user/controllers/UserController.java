@@ -18,12 +18,15 @@ package com.foreach.across.modules.user.controllers;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.user.UserModuleSettings;
+import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.modules.user.services.UserValidator;
+import com.foreach.across.modules.web.menu.MenuFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -55,6 +58,9 @@ public class UserController
 	@Autowired
 	private UserModuleSettings userModuleSettings;
 
+	@Autowired
+	private MenuFactory menuFactory;
+
 	@InitBinder("user")
 	protected void initBinder( WebDataBinder binder ) {
 		binder.setValidator( userValidator );
@@ -69,6 +75,7 @@ public class UserController
 
 	@RequestMapping("/create")
 	public String createUser( Model model ) {
+		model.addAttribute( "entityMenu", menuFactory.buildMenu( new EntityAdminMenu<>( User.class ) ) );
 		model.addAttribute( "existing", false );
 		model.addAttribute( "user", new UserDto() );
 		model.addAttribute( "roles", roleService.getRoles() );
@@ -79,12 +86,14 @@ public class UserController
 
 	@RequestMapping("/{id}")
 	public String editUser( @PathVariable("id") long id, AdminMenu adminMenu, Model model ) {
-		UserDto user = userService.createUserDto( userService.getUserById( id ) );
+		User user = userService.getUserById( id );
+		UserDto userDto = userService.createUserDto( user );
 
-		breadcrumb( adminMenu, user );
+		breadcrumb( adminMenu, userDto );
 
+		model.addAttribute( "entityMenu", menuFactory.buildMenu( new EntityAdminMenu<>( User.class, user ) ) );
 		model.addAttribute( "existing", true );
-		model.addAttribute( "user", user );
+		model.addAttribute( "user", userDto );
 		model.addAttribute( "roles", roleService.getRoles() );
 		model.addAttribute( "userRestrictions", EnumSet.allOf( UserRestriction.class ) );
 
@@ -95,6 +104,7 @@ public class UserController
 	public String saveUser( @ModelAttribute("user") @Valid UserDto user,
 	                        BindingResult bindingResult,
 	                        RedirectAttributes re,
+	                        AdminMenu adminMenu,
 	                        Model model ) {
 		if ( !bindingResult.hasErrors() ) {
 			userService.save( user );
@@ -104,6 +114,14 @@ public class UserController
 			return adminWeb.redirect( "/users/{userId}" );
 		}
 		else {
+			User existing = null;
+
+			if ( !user.isNewEntity() ) {
+				existing = userService.getUserById( user.getId() );
+				breadcrumb( adminMenu, userService.createUserDto( existing ) );
+			}
+
+			model.addAttribute( "entityMenu", menuFactory.buildMenu( new EntityAdminMenu<>( User.class, existing ) ) );
 			model.addAttribute( "errors", bindingResult.getAllErrors() );
 
 			model.addAttribute( "existing", true );

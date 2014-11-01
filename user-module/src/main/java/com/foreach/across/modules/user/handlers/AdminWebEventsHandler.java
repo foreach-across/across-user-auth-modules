@@ -16,8 +16,14 @@
 package com.foreach.across.modules.user.handlers;
 
 import com.foreach.across.core.annotations.AcrossEventHandler;
+import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.events.AdminWebUrlRegistry;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenuEvent;
+import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.controllers.GroupController;
 import com.foreach.across.modules.user.controllers.RoleController;
 import com.foreach.across.modules.user.controllers.UserController;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
@@ -31,13 +37,14 @@ public class AdminWebEventsHandler
 	@Autowired
 	private CurrentUserProxy currentUser;
 
-	@Handler
+	@Event
 	public void secureUrls( AdminWebUrlRegistry urls ) {
 		urls.match( UserController.PATH, UserController.PATH + "/*" ).hasAuthority( "manage users" );
 		urls.match( RoleController.PATH, RoleController.PATH + "/*" ).hasAuthority( "manage user roles" );
+		urls.match( GroupController.PATH, GroupController.PATH + "/*" ).hasAuthority( "manage groups" );
 	}
 
-	@Handler
+	@Event
 	public void registerMenu( AdminMenuEvent adminMenuEvent ) {
 		PathBasedMenuBuilder builder = adminMenuEvent.builder();
 		builder.group( "/users", "User management" );
@@ -49,8 +56,40 @@ public class AdminWebEventsHandler
 
 		if ( currentUser.hasPermission( "manage user roles" ) ) {
 			builder
-					.item( "/users/roles", "Roles", RoleController.PATH ).order( 2 ).and()
+					.item( "/users/roles", "Roles", RoleController.PATH ).order( 3 ).and()
 					.item( "/users/roles/create", "Create a new role", RoleController.PATH + "/create" );
+		}
+
+		if ( currentUser.hasPermission( "manage groups" ) ) {
+			builder
+					.item( "/users/groups", "Groups", GroupController.PATH ).order( 2 ).and()
+					.item( "/users/groups/create", "Create a new group", GroupController.PATH + "/create" );
+		}
+	}
+
+	@Event
+	public void userMenu( EntityAdminMenuEvent<User> menuEvent ) {
+		PathBasedMenuBuilder builder = menuEvent.builder();
+
+		if ( menuEvent.isExisting() ) {
+			builder.item( "/users/" + menuEvent.getEntity().getId(), "Properties" );
+		}
+		else {
+			builder.item( "/users/create", "Properties" );
+		}
+	}
+
+	@Event
+	public void groupMenu( EntityAdminMenuEvent<Group> menuEvent ) {
+		PathBasedMenuBuilder builder = menuEvent.builder();
+
+		if ( menuEvent.isExisting() ) {
+			builder
+					.item( "properties", "Properties", "/groups/" + menuEvent.getEntity().getId() ).order( -10 ).and()
+					.item( "members", "Members", "/groups/" + menuEvent.getEntity().getId() + "/members" ).order( -9 );
+		}
+		else {
+			builder.item( "properties", "Properties", "/groups/create" );
 		}
 	}
 }

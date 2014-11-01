@@ -16,6 +16,7 @@
 package com.foreach.across.modules.user.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.user.controllers.GroupController;
 import com.foreach.across.modules.user.controllers.RoleController;
 import com.foreach.across.modules.user.controllers.UserController;
 import com.foreach.across.modules.user.handlers.AdminWebEventsHandler;
@@ -34,6 +35,11 @@ public class UserAdminWebConfiguration
 	@Bean
 	public UserController userController() {
 		return new UserController();
+	}
+
+	@Bean
+	public GroupController groupController() {
+		return new GroupController();
 	}
 
 	@Bean
