@@ -15,10 +15,10 @@
  */
 package com.foreach.across.modules.spring.security.acl.controllers;
 
+import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.spring.security.acl.services.SecurityPrincipalAclService;
-import net.engio.mbassy.listener.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.ui.Model;
@@ -35,7 +35,7 @@ public class AclBrowserController
 	@Autowired
 	private SecurityPrincipalAclService aclService;
 
-	@Handler
+	@Event
 	public void registerMenu( AdminMenuEvent adminMenuEvent ) {
 		adminMenuEvent.builder().item( "/security/acl", "ACL browser" );
 	}
