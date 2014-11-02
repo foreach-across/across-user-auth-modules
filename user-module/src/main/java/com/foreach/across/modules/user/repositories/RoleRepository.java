@@ -15,17 +15,14 @@
  */
 package com.foreach.across.modules.user.repositories;
 
+import com.foreach.across.modules.hibernate.repositories.BasicRepository;
 import com.foreach.across.modules.user.business.Role;
 
 import java.util.Collection;
 
-public interface RoleRepository
+public interface RoleRepository extends BasicRepository<Role>
 {
-	Collection<Role> getAll();
-
 	Role getRole( String name );
-
-	void delete( Role role );
 
 	void save( Role role );
 }

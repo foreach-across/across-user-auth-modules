@@ -17,6 +17,7 @@ package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -28,6 +29,7 @@ import javax.persistence.Table;
 @Table(name = UserSchemaConfiguration.TABLE_GROUP)
 public class Group extends BasicSecurityPrincipal implements Comparable<Group>
 {
+	@NotBlank
 	@Column(name = "name")
 	private String name;
 

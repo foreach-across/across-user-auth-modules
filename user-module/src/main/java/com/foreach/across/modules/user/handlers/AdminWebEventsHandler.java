@@ -67,6 +67,7 @@ public class AdminWebEventsHandler
 		}
 	}
 
+	/*
 	@Event
 	public void userMenu( EntityAdminMenuEvent<User> menuEvent ) {
 		PathBasedMenuBuilder builder = menuEvent.builder();
@@ -92,4 +93,5 @@ public class AdminWebEventsHandler
 			builder.item( "properties", "Properties", "/groups/create" );
 		}
 	}
+	*/
 }

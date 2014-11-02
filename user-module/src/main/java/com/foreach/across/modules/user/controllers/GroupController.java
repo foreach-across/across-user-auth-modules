@@ -1,10 +1,13 @@
 package com.foreach.across.modules.user.controllers;
 
+import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.GroupedPrincipal;
 import com.foreach.across.modules.user.dto.GroupDto;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.RoleService;
@@ -34,6 +37,14 @@ public class GroupController
 
 	@Autowired
 	private MenuFactory menuFactory;
+
+	@Event
+	protected void registerGroupsTab( EntityAdminMenuEvent<GroupedPrincipal> menu ) {
+		if ( menu.isForUpdate() ) {
+			menu.builder().item( "groups", "Groups",
+			                     "/entities/" + ( menu.getEntityClass().getSimpleName().toLowerCase() ) + "/" + menu.getEntity().getId() + "/groups" );
+		}
+	}
 
 	@RequestMapping
 	public String listGroups( Model model ) {

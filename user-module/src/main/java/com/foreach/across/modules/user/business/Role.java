@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.user.business;
 
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +30,7 @@ import java.util.TreeSet;
 
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_ROLE)
-public class Role implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable
+public class Role implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable, IdBasedEntity
 {
 	@Id
 	@GeneratedValue(generator = "seq_um_role_id")

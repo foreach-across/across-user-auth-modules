@@ -1,0 +1,87 @@
+<!--
+  Copyright 2014 the original author or authors
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:fragment="title">Modify entity</title>
+</head>
+<body th:fragment="content">
+
+<h4 th:if="${existing}" th:text="|Modify ${entityConfig.name}: ${original}|">Modify entity: name</h4>
+<h4 th:unless="${existing}" th:text="|Create a new ${entityConfig.name}|">Create a new entity</h4>
+
+<ul class="nav nav-tabs">
+	<li th:each="tab : ${entityMenu.items}" th:classappend="${tab.selected}? 'active'">
+		<a th:href="@{${tab.url}}" th:text="${tab.title}">tab menu</a>
+	</li>
+</ul>
+
+<form method="post" th:action="@{${@adminWeb.path('/entities/' + entityConfig.path + (existing ? '/' + entity.id : '/create'))}}" th:object="${entity}" role="form">
+	<input type="hidden" th:field="*{id}"/>
+
+	<div class="row">
+		<div class="col-md-4">
+			<div class="form-group" th:each="element : ${entityForm.elements}" th:classappend="${#fields.hasErrors(element.name)}? has-error">
+				<!--/* hidden */-->
+				<div th:if="${element.elementType eq 'hidden'}">
+					<input type="hidden" th:name="${element.name}" th:value="${element.value}" />
+				</div>
+				<!--/* textbox */-->
+				<div th:if="${element.elementType eq 'textbox'}">
+					<label th:for="${element.name}" th:text="${element.label}">label</label>
+					<input type="text" th:name="${element.name}" class="form-control" th:value="${element.value}" />
+				</div>
+				<!--/* checkbox */-->
+				<div th:if="${element.elementType eq 'checkbox'}">
+					<label th:for="${element.name}">
+						<input type="checkbox" th:name="${element.name}" th:checked="${element.value}" />
+						<span th:text="${element.label}">label</span>
+					</label>
+				</div>
+				<!--/* select */-->
+				<div th:if="${element.elementType eq 'select'}">
+					<label th:for="${element.name}" th:text="${element.label}">label</label>
+					<select class="form-control" th:name="${element.name}">
+						<option></option>
+						<option th:each="possibleValue : ${element.possibleValues}"
+						        th:value="${possibleValue}"
+						        th:text="${possibleValue}" />
+					</select>
+				</div>
+				<!--/* multi checkbox */-->
+				<div th:if="${element.elementType eq 'multi-checkbox'}">
+					<label th:text="${element.label}">Multi-checkbox label</label>
+					<ul>
+						<li th:each="possibleValue:${element.possibleValues}">
+							<input type="checkbox"
+							       th:id="${#ids.seq(element.name)}"
+							       th:name="${element.name}"
+							       th:value="${possibleValue}"
+								   th:checked="${element.value.contains(possibleValue)}" />
+							<label th:text="${possibleValue}" th:for="${#ids.prev(element.name)}"></label>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<input class="btn btn-primary" type="submit" value="Save"/>
+			<a class="btn btn-link" th:href="@{${@adminWeb.path('/entities/' + entityConfig.path)}}">Cancel</a>
+
+		</div>
+	</div>
+</form>
+
+</body>
+</html>
