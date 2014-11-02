@@ -1,18 +1,3 @@
-/*
- * Copyright 2014 the original author or authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.foreach.across.modules.oauth2.repositories;
 
 import com.foreach.across.modules.oauth2.TestDatabaseConfig;
@@ -44,13 +29,15 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestOAuth2Repository.Config.class)
+@ContextConfiguration(classes = TestOAuth2ClientRepository.Config.class)
 @DirtiesContext
-public class TestOAuth2Repository
+public class TestOAuth2ClientRepository
 {
+	@Autowired
+	private OAuth2ClientRepository oAuth2ClientRepository;
 
 	@Autowired
-	private OAuth2Repository oAuth2Repository;
+	private OAuth2ScopeRepository oAuth2ScopeRepository;
 
 	@Autowired
 	private RoleService roleService;
@@ -70,7 +57,7 @@ public class TestOAuth2Repository
 
 	@Test
 	public void clientNotFound() {
-		OAuth2Client bla = oAuth2Repository.getClientById( "-4" );
+		OAuth2Client bla = oAuth2ClientRepository.getByClientId( "-4" );
 		assertNull( bla );
 	}
 
@@ -81,12 +68,12 @@ public class TestOAuth2Repository
 		oAuth2Client.setClientSecret( "fred" );
 		oAuth2Client.setSecretRequired( true );
 
-		oAuth2Repository.save( oAuth2Client );
+		oAuth2ClientRepository.save( oAuth2Client );
 
 		assertNotNull( oAuth2Client.getClientId() );
 		assertTrue( oAuth2Client.getId() > 0 );
 
-		OAuth2Client existing = oAuth2Repository.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2ClientRepository.getByClientId( oAuth2Client.getClientId() );
 
 		assertEquals( oAuth2Client.getClientId(), existing.getClientId() );
 		assertEquals( oAuth2Client.getClientSecret(), existing.getClientSecret() );
@@ -102,9 +89,9 @@ public class TestOAuth2Repository
 		oAuth2Client.getRoles().add( roleService.getRole( "role one" ) );
 		oAuth2Client.getRoles().add( roleService.getRole( "role two" ) );
 
-		oAuth2Repository.save( oAuth2Client );
+		oAuth2ClientRepository.save( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Repository.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2ClientRepository.getByClientId( oAuth2Client.getClientId() );
 
 		assertEquals( oAuth2Client.getRoles(), existing.getRoles() );
 	}
@@ -113,24 +100,24 @@ public class TestOAuth2Repository
 	public void clientWithScopes() {
 		OAuth2Scope oAuth2Scope = new OAuth2Scope();
 		oAuth2Scope.setName( "testScope" );
-		oAuth2Repository.save( oAuth2Scope );
+		oAuth2ScopeRepository.save( oAuth2Scope );
 
 		OAuth2Client oAuth2Client = new OAuth2Client();
 		oAuth2Client.setClientId( "test2" );
 		oAuth2Client.setClientSecret( "secret" );
 		oAuth2Client.setSecretRequired( true );
 
-		oAuth2Repository.save( oAuth2Client );
+		oAuth2ClientRepository.save( oAuth2Client );
 
-		OAuth2Scope scope = oAuth2Repository.getScopeById( oAuth2Scope.getId() );
+		OAuth2Scope scope = oAuth2ScopeRepository.getById( oAuth2Scope.getId() );
 		OAuth2ClientScope oAuth2ClientScope = new OAuth2ClientScope();
 		oAuth2ClientScope.setOAuth2Scope( scope );
 		oAuth2ClientScope.setOAuth2Client( oAuth2Client );
 		oAuth2Client.getOAuth2ClientScopes().add( oAuth2ClientScope );
 
-		oAuth2Repository.save( oAuth2Client );
+		oAuth2ClientRepository.save( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Repository.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2ClientRepository.getByClientId( oAuth2Client.getClientId() );
 
 		Set<String> existingScope = existing.getScope();
 		assertTrue( existingScope.contains( "testScope" ) );
@@ -146,9 +133,9 @@ public class TestOAuth2Repository
 		resourceIds.add( "resourceId1" );
 		resourceIds.add( "resourceId2" );
 
-		oAuth2Repository.save( oAuth2Client );
+		oAuth2ClientRepository.save( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Repository.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2ClientRepository.getByClientId( oAuth2Client.getClientId() );
 
 		assertEquals( resourceIds, existing.getResourceIds() );
 	}
@@ -163,9 +150,9 @@ public class TestOAuth2Repository
 		authorizedGrantTypes.add( "auth1" );
 		authorizedGrantTypes.add( "auth2" );
 
-		oAuth2Repository.save( oAuth2Client );
+		oAuth2ClientRepository.save( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Repository.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2ClientRepository.getByClientId( oAuth2Client.getClientId() );
 
 		assertEquals( authorizedGrantTypes, existing.getAuthorizedGrantTypes() );
 	}
@@ -180,9 +167,9 @@ public class TestOAuth2Repository
 		registeredRedirectUri.add( "auth1" );
 		registeredRedirectUri.add( "auth2" );
 
-		oAuth2Repository.save( oAuth2Client );
+		oAuth2ClientRepository.save( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Repository.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2ClientRepository.getByClientId( oAuth2Client.getClientId() );
 
 		assertEquals( registeredRedirectUri, existing.getRegisteredRedirectUri() );
 	}
@@ -212,8 +199,13 @@ public class TestOAuth2Repository
 		}
 
 		@Bean
-		public OAuth2Repository oAuth2Repository() {
-			return new OAuth2RepositoryImpl();
+		public OAuth2ClientRepository oAuth2ClientRepository() {
+			return new OAuth2ClientRepositoryImpl();
+		}
+
+		@Bean
+		public OAuth2ScopeRepository oAuth2ScopeRepository() {
+			return new OAuth2ScopeRepositoryImpl();
 		}
 	}
 

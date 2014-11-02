@@ -15,8 +15,10 @@
  */
 package com.foreach.across.modules.oauth2.config;
 
-import com.foreach.across.modules.oauth2.repositories.OAuth2Repository;
-import com.foreach.across.modules.oauth2.repositories.OAuth2RepositoryImpl;
+import com.foreach.across.modules.oauth2.repositories.OAuth2ClientRepository;
+import com.foreach.across.modules.oauth2.repositories.OAuth2ClientRepositoryImpl;
+import com.foreach.across.modules.oauth2.repositories.OAuth2ScopeRepository;
+import com.foreach.across.modules.oauth2.repositories.OAuth2ScopeRepositoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,7 +26,13 @@ import org.springframework.context.annotation.Configuration;
 public class OAuth2RepositoriesConfiguration
 {
 	@Bean
-	public OAuth2Repository oAuth2Repository() {
-		return new OAuth2RepositoryImpl();
+	public OAuth2ClientRepository oAuth2ClientRepository() {
+		return new OAuth2ClientRepositoryImpl();
+	}
+
+	@Deprecated
+	@Bean
+	public OAuth2ScopeRepository oAuth2Repository() {
+		return new OAuth2ScopeRepositoryImpl();
 	}
 }

@@ -15,22 +15,17 @@
  */
 package com.foreach.across.modules.oauth2.repositories;
 
-import com.foreach.across.modules.oauth2.business.OAuth2Client;
+import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
 import com.foreach.across.modules.oauth2.business.OAuth2Scope;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-
-public interface OAuth2Repository
+@Repository
+public class OAuth2ScopeRepositoryImpl extends BasicRepositoryImpl<OAuth2Scope> implements OAuth2ScopeRepository
 {
-	Collection<OAuth2Client> getOAuth2Clients();
-
-	Collection<OAuth2Scope> getOAuth2Scopes();
-
-	void save( OAuth2Scope oAuth2Scope );
-
-	OAuth2Scope getScopeById( long id );
-
-	void save( OAuth2Client oAuth2Client );
-
-	OAuth2Client getClientById( String clientId );
+	@Transactional
+	@Override
+	public void save( OAuth2Scope oAuth2Scope ) {
+		session().saveOrUpdate( oAuth2Scope );
+	}
 }
