@@ -30,6 +30,7 @@ import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.user.config.*;
 import com.foreach.across.modules.user.config.modules.UserAdminWebConfiguration;
+import com.foreach.across.modules.user.config.modules.UserSpringSecurityAclConfiguration;
 import com.foreach.across.modules.user.config.modules.UserSpringSecurityConfiguration;
 import com.foreach.across.modules.user.installers.*;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +72,8 @@ public class UserModule extends AcrossModule implements HasHibernatePackageProvi
 						UserPropertiesConfiguration.class,
 						GroupPropertiesConfiguration.class,
 						UserAdminWebConfiguration.class,
-						UserSpringSecurityConfiguration.class
+						UserSpringSecurityConfiguration.class,
+						UserSpringSecurityAclConfiguration.class
 				)
 		);
 	}
