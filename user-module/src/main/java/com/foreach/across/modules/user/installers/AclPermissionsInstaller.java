@@ -20,7 +20,9 @@ import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
+import com.foreach.across.modules.spring.security.acl.aop.AclSecurityEntityAclInterceptor;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
+import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.dto.AclSecurityEntityDto;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
@@ -39,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AcrossDepends(required = SpringSecurityAclModule.NAME)
 @Installer(
 		description = "Installs the ACL permissions if ACL module is enabled",
-		version = 2,
+		version = 3,
 		phase = InstallerPhase.AfterModuleBootstrap
 )
 public class AclPermissionsInstaller
@@ -66,6 +68,7 @@ public class AclPermissionsInstaller
 	public void install() {
 		createPermissionsAndAddToAdminRole();
 		createSystemEntity();
+		createGroupsAclSecurityEntity();
 	}
 
 	public void createSystemEntity() {
@@ -113,5 +116,21 @@ public class AclPermissionsInstaller
 			                         AclAuthorities.AUDIT_ACL );
 			roleService.save( adminRole );
 		}
+	}
+
+	public void createGroupsAclSecurityEntity() {
+		AclSecurityEntity existing = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+		AclSecurityEntityDto dto = new AclSecurityEntityDto();
+
+		if (existing != null) {
+			dto.setId( existing.getId() );
+		}
+
+		dto.setName( "groups" );
+		dto.setParent( aclSecurityEntityService.getSecurityEntityByName( "system" ) );
+
+		existing = aclSecurityEntityService.save( dto );
+		aclSecurityService.createAclWithParent( existing, aclSecurityEntityService.getSecurityEntityByName( "system" ) );
+		aclSecurityService.allow( "manage groups", existing, AclPermission.READ, AclPermission.WRITE );
 	}
 }

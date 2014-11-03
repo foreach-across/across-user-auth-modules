@@ -17,6 +17,8 @@ package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
+import com.foreach.across.core.context.info.AcrossContextInfo;
+import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
@@ -24,6 +26,7 @@ import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.dto.UserDto;
+import com.foreach.across.modules.user.services.GroupAclInterceptor;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserService;
@@ -31,7 +34,9 @@ import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,6 +60,9 @@ public class ITUserModule
 	@Autowired
 	private MachinePrincipalService machinePrincipalService;
 
+	@Autowired
+	private AcrossContextInfo acrossContextInfo;
+
 	@Test
 	public void verifyBootstrapped() {
 		assertNotNull( userService );
@@ -72,6 +80,14 @@ public class ITUserModule
 
 		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" );
 		assertNotNull( machine );
+
+		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
+
+		try {
+			assertNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
+		} catch (NoSuchBeanDefinitionException e) {
+			assertTrue( true ); //If we get this exception, the desired result has been achieved.
+		}
 	}
 
 	@Test

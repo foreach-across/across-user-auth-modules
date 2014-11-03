@@ -44,6 +44,13 @@ public class UserModuleSettings extends AcrossModuleSettings
 	 */
 	public static final String REQUIRE_EMAIL_UNIQUE = "userModule.requireEmailUnique";
 
+	/**
+	 * Specifies whether the GroupAclInterceptor should make an ACL for each group.
+	 * <p/>
+	 * True/False
+	 */
+	public static final String MAKE_ACL_FOR_GROUP = "userModule.makeAclForGroup";
+
 	@Override
 	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
 		registry.register( PASSWORD_ENCODER, PasswordEncoder.class, null,
@@ -52,6 +59,8 @@ public class UserModuleSettings extends AcrossModuleSettings
 		                   "Specifies whether to use the email for login and registration instead of username." );
 		registry.register( REQUIRE_EMAIL_UNIQUE, Boolean.class, false,
 		                   "Specifies whether the email field is unique, must be true when useEmailAsUsername is True." );
+		registry.register( MAKE_ACL_FOR_GROUP, Boolean.class, false,
+		                   "Specifies whether the GroupAclInterceptor should make an ACL for each group.");
 	}
 
 	public boolean isUseEmailAsUsername() {
@@ -60,5 +69,9 @@ public class UserModuleSettings extends AcrossModuleSettings
 
 	public boolean isRequireUniqueEmail() {
 		return getProperty( REQUIRE_EMAIL_UNIQUE, Boolean.class );
+	}
+
+	public boolean isMakeAclForGroup() {
+		return getProperty( MAKE_ACL_FOR_GROUP, Boolean.class );
 	}
 }
