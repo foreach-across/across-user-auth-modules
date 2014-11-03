@@ -16,6 +16,7 @@
 package com.foreach.across.modules.spring.security.acl.support;
 
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
+import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import org.slf4j.Logger;
@@ -45,6 +46,9 @@ public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity>
 	@Autowired
 	private AclSecurityService aclSecurityService;
 
+	@Autowired
+	private AclSecurityEntityService aclSecurityEntityService;
+
 	@SuppressWarnings("unchecked")
 	public IdBasedEntityAclInterceptor() {
 		ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
@@ -53,6 +57,10 @@ public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity>
 
 	protected AclSecurityService aclSecurityService() {
 		return aclSecurityService;
+	}
+
+	public AclSecurityEntityService getAclSecurityEntityService() {
+		return aclSecurityEntityService;
 	}
 
 	/**
