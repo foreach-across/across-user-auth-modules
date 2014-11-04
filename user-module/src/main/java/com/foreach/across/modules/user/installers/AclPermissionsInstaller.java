@@ -120,17 +120,15 @@ public class AclPermissionsInstaller
 
 	public void createGroupsAclSecurityEntity() {
 		AclSecurityEntity existing = aclSecurityEntityService.getSecurityEntityByName( "groups" );
-		AclSecurityEntityDto dto = new AclSecurityEntityDto();
 
-		if (existing != null) {
-			dto.setId( existing.getId() );
+		if (existing == null) {
+			AclSecurityEntityDto dto = new AclSecurityEntityDto();
+			dto.setName( "groups" );
+			dto.setParent( aclSecurityEntityService.getSecurityEntityByName( "system" ) );
+
+			existing = aclSecurityEntityService.save( dto );
+			aclSecurityService.createAclWithParent( existing, aclSecurityEntityService.getSecurityEntityByName( "system" ) );
+			aclSecurityService.allow( "manage groups", existing, AclPermission.READ, AclPermission.WRITE );
 		}
-
-		dto.setName( "groups" );
-		dto.setParent( aclSecurityEntityService.getSecurityEntityByName( "system" ) );
-
-		existing = aclSecurityEntityService.save( dto );
-		aclSecurityService.createAclWithParent( existing, aclSecurityEntityService.getSecurityEntityByName( "system" ) );
-		aclSecurityService.allow( "manage groups", existing, AclPermission.READ, AclPermission.WRITE );
 	}
 }
