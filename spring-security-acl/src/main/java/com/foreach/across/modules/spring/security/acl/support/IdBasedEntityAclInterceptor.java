@@ -46,9 +46,6 @@ public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity>
 	@Autowired
 	private AclSecurityService aclSecurityService;
 
-	@Autowired
-	private AclSecurityEntityService aclSecurityEntityService;
-
 	@SuppressWarnings("unchecked")
 	public IdBasedEntityAclInterceptor() {
 		ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
@@ -57,10 +54,6 @@ public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity>
 
 	protected AclSecurityService aclSecurityService() {
 		return aclSecurityService;
-	}
-
-	public AclSecurityEntityService getAclSecurityEntityService() {
-		return aclSecurityEntityService;
 	}
 
 	/**
