@@ -60,7 +60,7 @@ public class UserModuleSettings extends AcrossModuleSettings
 		registry.register( REQUIRE_EMAIL_UNIQUE, Boolean.class, false,
 		                   "Specifies whether the email field is unique, must be true when useEmailAsUsername is True." );
 		registry.register( ENABLE_DEFAULT_ACLS, Boolean.class, false,
-		                   "Specifies whether the GroupAclInterceptor should make an ACL for each group.");
+		                   "Specifies whether default ACLs should be created via interceptors, such as for Groups.");
 	}
 
 	public boolean isUseEmailAsUsername() {
