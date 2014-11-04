@@ -27,6 +27,7 @@ import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
+import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.QueryableAclSecurityService;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
@@ -49,6 +50,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -346,22 +348,37 @@ public class ITAclServices
 		group1.setName( "Test-group" );
 		Group savedGroup = groupService.save( group1 );
 
-		assertTrue( acl.hasPermission( savedGroup, savedGroup, AclPermission.READ ) );
-		assertTrue( acl.hasPermission( savedGroup, savedGroup, AclPermission.WRITE ) );
+		assertNotNull( groupService.getGroupById( savedGroup.getId()) );
+		MutableAcl ownAcl = acl.getAcl( savedGroup );
+		assertNotNull( ownAcl );
+		Long parentAclId = (Long) ownAcl.getParentAcl().getObjectIdentity().getIdentifier();
+		AclSecurityEntity parentEntity = aclSecurityEntityService.getSecurityEntityById( parentAclId );
+		assertNotNull( parentEntity );
+		assertEquals( parentEntity.getName(), "groups" );
+
+		groupService.delete( savedGroup.getId() );
+		assertNull( groupService.getGroupById( savedGroup.getId() ) );
+		assertNull( acl.getAcl( savedGroup ) );
+		assertNotNull( aclSecurityEntityService.getSecurityEntityByName( "groups" ) );
 
 		//Not sure if I should be doing this here...
 		acrossContextInfo.getModuleInfo( UserModule.NAME ).getModule().setProperty(
-				UserModuleSettings.MAKE_ACL_FOR_GROUP, false );
+				UserModuleSettings.ENABLE_DEFAULT_ACLS, false );
 		GroupDto group2Dto = new GroupDto();
 		group2Dto.setName( "Test-group-2" );
 		Group savedGroup2 = groupService.save( group2Dto );
 
-		assertFalse( acl.hasPermission( savedGroup2, savedGroup2, AclPermission.READ ) );
-		assertFalse( acl.hasPermission( savedGroup2, savedGroup2, AclPermission.WRITE ) );
+		assertNotNull( groupService.getGroupById( savedGroup2.getId()) );
+		assertNull( acl.getAcl( savedGroup2 ));
+
+		groupService.delete( savedGroup2.getId() );
+		assertNull( groupService.getGroupById( savedGroup2.getId() ) );
+		assertNull( acl.getAcl( savedGroup2 ) );
+		assertNotNull( aclSecurityEntityService.getSecurityEntityByName( "groups" ) );
 
 		//Back to the original situation
 		acrossContextInfo.getModuleInfo( UserModule.NAME ).getModule().setProperty(
-				UserModuleSettings.MAKE_ACL_FOR_GROUP, true );
+				UserModuleSettings.ENABLE_DEFAULT_ACLS, true );
 	}
 
 	private boolean canRead( Object object ) {
@@ -391,7 +408,7 @@ public class ITAclServices
 	{
 		@Override
 		public void configure( AcrossContext context ) {
-			context.getModule( UserModule.NAME ).setProperty( UserModuleSettings.MAKE_ACL_FOR_GROUP, true );
+			context.getModule( UserModule.NAME ).setProperty( UserModuleSettings.ENABLE_DEFAULT_ACLS, true );
 			context.addModule( new SpringSecurityAclModule() );
 			context.addModule( testModule() );
 		}

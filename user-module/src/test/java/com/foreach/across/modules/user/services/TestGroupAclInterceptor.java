@@ -1,5 +1,6 @@
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.hibernate.repositories.Undeletable;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
@@ -51,13 +52,12 @@ public class TestGroupAclInterceptor
 		groups.setId( -1 );
 		groups.setName( "groups" );
 
-		when( userModuleSettings.isMakeAclForGroup() ).thenReturn( true );
+		when( userModuleSettings.isEnableDefaultAcls() ).thenReturn( true );
 		when( aclSecurityEntityService.getSecurityEntityByName( "groups" ) ).thenReturn( groups );
 
 		groupAclInterceptor.afterCreate( group );
 
 		verify( aclSecurityService ).createAclWithParent( group, groups );
-		verify( aclSecurityService ).allow( group, group, AclPermission.READ, AclPermission.WRITE );
 		verifyNoMoreInteractions( aclSecurityService );
 	}
 
@@ -67,9 +67,36 @@ public class TestGroupAclInterceptor
 		group.setId( -1 );
 		group.setName( "Foo" );
 
-		when( userModuleSettings.isMakeAclForGroup() ).thenReturn( false );
+		when( userModuleSettings.isEnableDefaultAcls() ).thenReturn( false );
 
 		groupAclInterceptor.afterCreate( group );
+
+		verifyZeroInteractions( aclSecurityService, aclSecurityEntityService );
+	}
+
+	@Test
+	public void testAclDeleted() {
+		Group group = new Group();
+		group.setId( -1 );
+		group.setName( "Foo" );
+
+		when( userModuleSettings.isEnableDefaultAcls() ).thenReturn( true );
+
+		groupAclInterceptor.beforeDelete( group, (group instanceof Undeletable) );
+
+		verify( aclSecurityService ).deleteAcl( group, true );
+		verifyNoMoreInteractions( aclSecurityService );
+	}
+
+	@Test
+	public void testAclNotDeletedWithConfigDisabled() {
+		Group group = new Group();
+		group.setId( -1 );
+		group.setName( "Foo" );
+
+		when( userModuleSettings.isEnableDefaultAcls() ).thenReturn( false );
+
+		groupAclInterceptor.afterDelete( group, (group instanceof Undeletable) );
 
 		verifyZeroInteractions( aclSecurityService, aclSecurityEntityService );
 	}
