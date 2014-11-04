@@ -22,6 +22,7 @@ import com.foreach.across.modules.user.controllers.UserAclController;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
 import com.foreach.across.modules.user.security.CurrentUserProxyImpl;
 import com.foreach.across.modules.user.security.UserDetailsServiceImpl;
+import com.foreach.across.modules.user.services.GroupAclInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,11 +47,7 @@ public class UserSpringSecurityConfiguration
 		return new CurrentUserProxyImpl();
 	}
 
-	@Bean
-	@AcrossDepends(required = "SpringSecurityAclModule")
-	public UserAclController userAclController() {
-		return new UserAclController();
-	}
+
 
 	/**
 	 * Configuration to load inside the SpringSecurityModule ApplicationContext.

@@ -21,21 +21,24 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.EmptyAcrossModule;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Refreshable;
+import com.foreach.across.core.context.info.AcrossContextInfo;
+import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
+import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
+import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.QueryableAclSecurityService;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.GroupDto;
 import com.foreach.across.modules.user.dto.UserDto;
-import com.foreach.across.modules.user.services.GroupService;
-import com.foreach.across.modules.user.services.PermissionService;
-import com.foreach.across.modules.user.services.RoleService;
-import com.foreach.across.modules.user.services.UserService;
+import com.foreach.across.modules.user.services.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -47,6 +50,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -96,6 +100,12 @@ public class ITAclServices
 	@Autowired
 	private SecurityPrincipalService securityPrincipalService;
 
+	@Autowired
+	private AcrossContextInfo acrossContextInfo;
+
+	@Autowired
+	private AclSecurityEntityService aclSecurityEntityService;
+
 	private Group group;
 	private User userOne, userTwo, userThree, userFour;
 
@@ -110,6 +120,13 @@ public class ITAclServices
 		userTwo = createRandomUser( Collections.<Group>emptyList(), Collections.singleton( "ROLE_ADMIN" ) );
 		userThree = createRandomUser( Collections.<Group>emptyList(), Collections.singleton( "ROLE_FILE_MANAGER" ) );
 		userFour = createRandomUser( Collections.singleton( group ), Collections.<String>emptyList() );
+	}
+
+	@Test
+	public void verifyBootstrapped() {
+		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
+
+		assertNotNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
 	}
 
 	private Group createGroup( String... roles ) {
@@ -324,6 +341,46 @@ public class ITAclServices
 		assertTrue( identities.contains( new ObjectIdentityImpl( folderTwo.getClass(), folderTwo.getId() ) ) );
 	}
 
+	@Test
+	public void testGroups() {
+		logon( userOne );
+		GroupDto group1 = new GroupDto();
+		group1.setName( "Test-group" );
+		Group savedGroup = groupService.save( group1 );
+
+		assertNotNull( groupService.getGroupById( savedGroup.getId()) );
+		MutableAcl ownAcl = acl.getAcl( savedGroup );
+		assertNotNull( ownAcl );
+		Long parentAclId = (Long) ownAcl.getParentAcl().getObjectIdentity().getIdentifier();
+		AclSecurityEntity parentEntity = aclSecurityEntityService.getSecurityEntityById( parentAclId );
+		assertNotNull( parentEntity );
+		assertEquals( parentEntity.getName(), "groups" );
+
+		groupService.delete( savedGroup.getId() );
+		assertNull( groupService.getGroupById( savedGroup.getId() ) );
+		assertNull( acl.getAcl( savedGroup ) );
+		assertNotNull( aclSecurityEntityService.getSecurityEntityByName( "groups" ) );
+
+		//Not sure if I should be doing this here...
+		acrossContextInfo.getModuleInfo( UserModule.NAME ).getModule().setProperty(
+				UserModuleSettings.ENABLE_DEFAULT_ACLS, false );
+		GroupDto group2Dto = new GroupDto();
+		group2Dto.setName( "Test-group-2" );
+		Group savedGroup2 = groupService.save( group2Dto );
+
+		assertNotNull( groupService.getGroupById( savedGroup2.getId()) );
+		assertNull( acl.getAcl( savedGroup2 ));
+
+		groupService.delete( savedGroup2.getId() );
+		assertNull( groupService.getGroupById( savedGroup2.getId() ) );
+		assertNull( acl.getAcl( savedGroup2 ) );
+		assertNotNull( aclSecurityEntityService.getSecurityEntityByName( "groups" ) );
+
+		//Back to the original situation
+		acrossContextInfo.getModuleInfo( UserModule.NAME ).getModule().setProperty(
+				UserModuleSettings.ENABLE_DEFAULT_ACLS, true );
+	}
+
 	private boolean canRead( Object object ) {
 		try {
 			return securedBean.canRead( object );
@@ -351,6 +408,7 @@ public class ITAclServices
 	{
 		@Override
 		public void configure( AcrossContext context ) {
+			context.getModule( UserModule.NAME ).setProperty( UserModuleSettings.ENABLE_DEFAULT_ACLS, true );
 			context.addModule( new SpringSecurityAclModule() );
 			context.addModule( testModule() );
 		}
