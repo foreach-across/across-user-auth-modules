@@ -62,6 +62,21 @@ public abstract class GroupedPrincipal extends BasicSecurityPrincipal implements
 	}
 
 	@Override
+	public boolean hasPermission( Permission permission ) {
+		if ( super.hasPermission( permission ) ) {
+			return true;
+		}
+
+		for ( Group group : getGroups() ) {
+			if ( group.hasPermission( permission ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
 
