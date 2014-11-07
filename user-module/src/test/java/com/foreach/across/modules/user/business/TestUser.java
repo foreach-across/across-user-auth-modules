@@ -49,4 +49,28 @@ public class TestUser
 		assertTrue( user.hasPermission( new Permission( "perm one" ) ) );
 		assertTrue( user.hasPermission( new Permission( "perm two" ) ) );
 	}
+
+	@Test
+	public void userInGroupHasPermissionChecksGroup() {
+		Permission permA = new Permission( "PermA" );
+		Permission permB = new Permission( "PermB" );
+
+		Role roleA = new Role();
+		roleA.setName( "RoleA" );
+		roleA.getPermissions().addAll( Arrays.asList( permA, permB ) );
+
+		Group groupA = new Group();
+		groupA.setName( "GroupA" );
+		groupA.addRole( roleA );
+
+		User userA = new User();
+		userA.addRole( roleA );
+		User userB = new User();
+		userB.addGroup( groupA );
+
+		assertTrue( userA.hasPermission( permA ) );
+		assertTrue( userA.hasPermission( permB ) );
+		assertTrue( userB.hasPermission( permA ) );
+		assertTrue( userB.hasPermission( permB ) );
+	}
 }
