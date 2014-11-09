@@ -19,7 +19,7 @@
 </head>
 <body th:fragment="content">
 
-<h4 th:if="${existing}" th:text="|Modify ${entityConfig.name}: ${original}|">Modify entity: name</h4>
+<h4 th:if="${existing}" th:text="|Modify ${entityConfig.name}: ${original.entityLabel}|">Modify entity: name</h4>
 <h4 th:unless="${existing}" th:text="|Create a new ${entityConfig.name}|">Create a new entity</h4>
 
 <ul class="nav nav-tabs">
@@ -44,9 +44,9 @@
 					<input type="text" th:name="${element.name}" class="form-control" th:value="${element.value}" />
 				</div>
 				<!--/* checkbox */-->
-				<div th:if="${element.elementType eq 'checkbox'}">
-					<label th:for="${element.name}">
-						<input type="checkbox" th:name="${element.name}" th:checked="${element.value}" />
+				<div th:if="${element.elementType eq 'checkbox'}" class="checkbox">
+					<label>
+						<input type="checkbox" th:id="${#ids.seq(element.name)}" th:name="${element.name}" th:checked="${element.value}" />
 						<span th:text="${element.label}">label</span>
 					</label>
 				</div>
@@ -54,23 +54,24 @@
 				<div th:if="${element.elementType eq 'select'}">
 					<label th:for="${element.name}" th:text="${element.label}">label</label>
 					<select class="form-control" th:name="${element.name}">
-						<option></option>
+						<option value=""></option>
 						<option th:each="possibleValue : ${element.possibleValues}"
-						        th:value="${possibleValue}"
-						        th:text="${possibleValue}" />
+						        th:value="${element.entityId(possibleValue)}"
+						        th:selected="${possibleValue.equals(element.value)}"
+						        th:text="${element.entityLabel(possibleValue)}" />
 					</select>
 				</div>
 				<!--/* multi checkbox */-->
 				<div th:if="${element.elementType eq 'multi-checkbox'}">
 					<label th:text="${element.label}">Multi-checkbox label</label>
-					<ul>
-						<li th:each="possibleValue:${element.possibleValues}">
+					<ul class="list-unstyled">
+						<li th:each="possibleValue:${element.possibleValues}" class="checkbox">
 							<input type="checkbox"
 							       th:id="${#ids.seq(element.name)}"
 							       th:name="${element.name}"
-							       th:value="${possibleValue}"
+							       th:value="${element.entityId(possibleValue)}"
 								   th:checked="${element.value.contains(possibleValue)}" />
-							<label th:text="${possibleValue}" th:for="${#ids.prev(element.name)}"></label>
+							<label th:text="${element.entityLabel(possibleValue)}" th:for="${#ids.prev(element.name)}"></label>
 						</li>
 					</ul>
 				</div>

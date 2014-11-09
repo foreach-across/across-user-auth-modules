@@ -5,6 +5,7 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.entity.business.EntityForm;
+import com.foreach.across.modules.entity.business.EntityWrapper;
 import com.foreach.across.modules.entity.config.EntityConfiguration;
 import com.foreach.across.modules.entity.services.EntityFormFactory;
 import com.foreach.across.modules.entity.services.EntityRegistry;
@@ -12,7 +13,6 @@ import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
@@ -56,9 +56,9 @@ public class EntitySaveController
 		Object entity = entityConfiguration.getEntityClass().newInstance();
 
 		if ( entityId != null && entityId != 0 ) {
-			Object original =  entityConfiguration.getRepository().getById( entityId );
-			model.addAttribute( "original", original );
-			BeanUtils.copyProperties(original, entity );
+			Object original = entityConfiguration.getRepository().getById( entityId );
+			model.addAttribute( "original", entityConfiguration.wrap( original ) );
+			BeanUtils.copyProperties( original, entity );
 		}
 
 		return entity;
@@ -87,18 +87,27 @@ public class EntitySaveController
 			return adminWeb.redirect( "/entities/" + entityConfiguration.getPath() + "/{entityId}" );
 		}
 		else {
-			Object originalEntity = model.get( "original" );
+			EntityWrapper originalEntity = (EntityWrapper) model.get( "original" );
 
 			if ( originalEntity != null ) {
-				adminMenu.getLowestSelectedItem().addItem( "/selectedEntity", originalEntity.toString() ).setSelected( true );
+				adminMenu.getLowestSelectedItem()
+				         .addItem( "/selectedEntity", originalEntity.getEntityLabel() )
+				         .setSelected( true );
 				model.addAttribute( "entityMenu",
-				                    menuFactory.buildMenu( new EntityAdminMenu( entityConfiguration.getEntityClass(),
-				                                                                originalEntity ) ) );
+				                    menuFactory.buildMenu(
+						                    new EntityAdminMenu(
+								                    entityConfiguration.getEntityClass(),
+								                    originalEntity.getEntity()
+						                    )
+				                    )
+				);
 			}
 			else {
 				model.addAttribute( "entityMenu",
-				                    menuFactory.buildMenu( new EntityAdminMenu(
-						                    entityConfiguration.getEntityClass() ) ) );
+				                    menuFactory.buildMenu(
+						                    new EntityAdminMenu( entityConfiguration.getEntityClass() )
+				                    )
+				);
 			}
 
 			EntityForm entityForm = formFactory.create( entityConfiguration );
@@ -107,7 +116,7 @@ public class EntitySaveController
 			model.addAttribute( "entityForm", entityForm );
 			model.addAttribute( "existing", originalEntity != null );
 			model.addAttribute( "entityConfig", entityConfiguration );
-			model.addAttribute( "entity", entity );
+			//model.addAttribute( "entity", entityConfiguration.wrap( entity ) );
 		}
 
 		return "th/entity/edit";

@@ -17,6 +17,7 @@ package com.foreach.across.modules.user.config;
 
 import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.repositories.GroupPropertiesRepository;
 import com.foreach.across.modules.user.services.GroupPropertiesRegistry;
 import com.foreach.across.modules.user.services.GroupPropertiesService;
@@ -33,6 +34,11 @@ public class GroupPropertiesConfiguration extends AbstractEntityPropertiesConfig
 	public static final String ID = UserModule.NAME + ".GroupProperties";
 
 	@Override
+	public Class<?> entityClass() {
+		return Group.class;
+	}
+
+	@Override
 	public String propertiesId() {
 		return ID;
 	}
@@ -47,18 +53,20 @@ public class GroupPropertiesConfiguration extends AbstractEntityPropertiesConfig
 		return UserSchemaConfiguration.COLUMN_GROUP_ID;
 	}
 
-	@Bean
-	public GroupPropertiesService groupPropertiesService() {
-		return new GroupPropertiesServiceImpl( groupPropertiesRegistry(), groupPropertiesRepository() );
-	}
-
-	@Bean
-	public GroupPropertiesRegistry groupPropertiesRegistry() {
-		return new GroupPropertiesRegistry( this );
+	@Bean(name = "groupPropertiesService")
+	@Override
+	public GroupPropertiesService service() {
+		return new GroupPropertiesServiceImpl( registry(), groupPropertiesRepository() );
 	}
 
 	@Bean
 	public GroupPropertiesRepository groupPropertiesRepository() {
 		return new GroupPropertiesRepository( this );
+	}
+
+	@Bean(name = "groupPropertiesRegistry")
+	@Override
+	public GroupPropertiesRegistry registry() {
+		return new GroupPropertiesRegistry( this );
 	}
 }

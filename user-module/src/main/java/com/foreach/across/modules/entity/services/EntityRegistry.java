@@ -2,13 +2,22 @@ package com.foreach.across.modules.entity.services;
 
 import com.foreach.across.core.annotations.PostRefresh;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
+import com.foreach.across.modules.entity.business.EntityWrapper;
 import com.foreach.across.modules.entity.config.EntityConfiguration;
+import com.foreach.across.modules.entity.config.EntityConfigurer;
+import com.foreach.across.modules.entity.generators.EntityLabelGenerator;
+import com.foreach.across.modules.entity.generators.id.DefaultIdGenerator;
+import com.foreach.across.modules.entity.generators.label.PropertyLabelGenerator;
+import com.foreach.across.modules.entity.generators.label.ToStringLabelGenerator;
 import com.foreach.across.modules.hibernate.repositories.BasicRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -27,6 +36,9 @@ public class EntityRegistry
 	@Autowired
 	private AcrossContextBeanRegistry beanRegistry;
 
+	@Autowired
+	private ConfigurableConversionService conversionService;
+
 	private Collection<EntityConfiguration> entityConfigurations;
 
 	public Collection<EntityConfiguration> getEntities() {
@@ -35,15 +47,57 @@ public class EntityRegistry
 
 	@PostRefresh
 	protected void buildRegistry() {
+		Collection<EntityConfigurer> configurers = beanRegistry.getBeansOfType( EntityConfigurer.class, true );
+
 		// Scan all repositories
 		Collection<BasicRepository> repositories = beanRegistry.getBeansOfType( BasicRepository.class, true );
 
 		// Register the entity classes
 		List<EntityConfiguration> entities = new ArrayList<>( repositories.size() );
 
-		for ( BasicRepository repository : repositories ) {
+		for ( final BasicRepository repository : repositories ) {
 			if ( isAllowedEntity( repository.getEntityClass() ) ) {
-				entities.add( new EntityConfiguration( repository ) );
+				EntityConfiguration entityConfiguration = new EntityConfiguration( repository );
+
+				if ( entityConfiguration.getLabelGenerator() == null ) {
+					EntityLabelGenerator generator = PropertyLabelGenerator.forProperty( repository.getEntityClass(),
+					                                                                     "name" );
+					if ( generator == null ) {
+						generator = PropertyLabelGenerator.forProperty( repository.getEntityClass(), "title" );
+					}
+
+					if ( generator == null ) {
+						generator = new ToStringLabelGenerator();
+					}
+
+					if ( !conversionService.canConvert( String.class, repository.getEntityClass() ) ) {
+						conversionService.addConverter( String.class, repository.getEntityClass(),
+						                                new Converter<Object, Object>()
+						                                {
+							                                @Override
+							                                public Object convert( Object source ) {
+								                                if ( source == null || StringUtils.isBlank(
+										                                source.toString() ) ) {
+									                                return null;
+								                                }
+								                                return repository.getById( Long.parseLong(
+										                                source.toString() ) );
+							                                }
+						                                } );
+					}
+
+					entityConfiguration.setLabelGenerator( generator );
+				}
+
+				entityConfiguration.setIdGenerator( new DefaultIdGenerator() );
+
+				for( EntityConfigurer configurer : configurers ) {
+					if ( configurer.accepts( repository.getEntityClass() ) ) {
+						configurer.configure( entityConfiguration );
+					}
+				}
+
+				entities.add( entityConfiguration );
 			}
 		}
 
@@ -74,5 +128,15 @@ public class EntityRegistry
 		}
 
 		return null;
+	}
+
+	public EntityWrapper wrap( Object entity ) {
+		EntityConfiguration config = getEntityByClass( ClassUtils.getUserClass( entity ) );
+
+		if ( config == null ) {
+			config = new EntityConfiguration( ClassUtils.getUserClass( entity ) );
+		}
+
+		return config.wrap( entity );
 	}
 }

@@ -4,6 +4,7 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.entity.business.EntityForm;
+import com.foreach.across.modules.entity.business.EntityWrapper;
 import com.foreach.across.modules.entity.config.EntityConfiguration;
 import com.foreach.across.modules.entity.services.EntityFormFactory;
 import com.foreach.across.modules.entity.services.EntityRegistry;
@@ -71,22 +72,22 @@ public class EntityController
 	                            AdminMenu adminMenu,
 	                            Model model ) throws Exception {
 		EntityConfiguration entityConfiguration = entityRegistry.getEntityByPath( entityType );
-		Object entity = entityConfiguration.getRepository().getById( entityId );
+		EntityWrapper entity = entityConfiguration.wrap( entityConfiguration.getRepository().getById( entityId ) );
 
-		adminMenu.getLowestSelectedItem().addItem( "/selectedEntity", entity.toString() ).setSelected( true );
+		adminMenu.getLowestSelectedItem().addItem( "/selectedEntity", entity.getEntityLabel() ).setSelected( true );
 
 		model.addAttribute( "entityMenu",
 		                    menuFactory.buildMenu( new EntityAdminMenu( entityConfiguration.getEntityClass(),
-		                                                                entity ) ) );
+		                                                                entity.getEntity() ) ) );
 
 		EntityForm entityForm = formFactory.create( entityConfiguration );
-		entityForm.setEntity( entity );
+		entityForm.setEntity( entity.getEntity() );
 
 		model.addAttribute( "entityForm", entityForm );
 		model.addAttribute( "existing", true );
 		model.addAttribute( "entityConfig", entityConfiguration );
 		model.addAttribute( "original", entity );
-		model.addAttribute( "entity", entity );
+		model.addAttribute( "entity", entity.getEntity() );
 
 		return "th/entity/edit";
 	}

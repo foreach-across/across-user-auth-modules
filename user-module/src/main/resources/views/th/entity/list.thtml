@@ -32,10 +32,10 @@
 	</tr>
 	</thead>
 	<tbody>
-	<tr th:each="entity,entityStats:${entities}">
+	<tr th:each="entity,entityStats:${entities}" th:with="wrapped=${entityConfig.wrap(entity)}">
 		<td th:text="${entityStats.count}"></td>
-		<td th:text="${entity}"></td>
-		<td><a th:href="@{${@adminWeb.path('/entities/' + entityConfig.path + '/' + entity.id)}}">edit</a></td>
+		<td th:text="${wrapped.entityLabel}"></td>
+		<td><a th:href="@{${@adminWeb.path('/entities/' + entityConfig.path + '/' + wrapped.id)}}">edit</a></td>
 	</tr>
 	</tbody>
 </table>

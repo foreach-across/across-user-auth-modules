@@ -17,6 +17,7 @@ package com.foreach.across.modules.user.config;
 
 import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.repositories.UserPropertiesRepository;
 import com.foreach.across.modules.user.services.UserPropertiesRegistry;
 import com.foreach.across.modules.user.services.UserPropertiesService;
@@ -33,6 +34,11 @@ public class UserPropertiesConfiguration extends AbstractEntityPropertiesConfigu
 	public static final String ID = UserModule.NAME + ".UserProperties";
 
 	@Override
+	public Class<?> entityClass() {
+		return User.class;
+	}
+
+	@Override
 	public String propertiesId() {
 		return ID;
 	}
@@ -47,18 +53,20 @@ public class UserPropertiesConfiguration extends AbstractEntityPropertiesConfigu
 		return UserSchemaConfiguration.COLUMN_USER_ID;
 	}
 
-	@Bean
-	public UserPropertiesService userPropertiesService() {
-		return new UserPropertiesServiceImpl( userPropertiesRegistry(), userPropertiesRepository() );
-	}
-
-	@Bean
-	public UserPropertiesRegistry userPropertiesRegistry() {
-		return new UserPropertiesRegistry( this );
+	@Bean(name = "userPropertiesService")
+	@Override
+	public UserPropertiesService service() {
+		return new UserPropertiesServiceImpl( registry(), userPropertiesRepository() );
 	}
 
 	@Bean
 	public UserPropertiesRepository userPropertiesRepository() {
 		return new UserPropertiesRepository( this );
+	}
+
+	@Bean(name = "userPropertiesRegistry")
+	@Override
+	public UserPropertiesRegistry registry() {
+		return new UserPropertiesRegistry( this );
 	}
 }

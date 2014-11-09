@@ -20,12 +20,14 @@ import com.foreach.across.modules.hibernate.repositories.Undeletable;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserRestriction;
 import org.hibernate.annotations.Type;
+import org.springframework.context.annotation.Description;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.util.EnumSet;
 import java.util.Set;
 

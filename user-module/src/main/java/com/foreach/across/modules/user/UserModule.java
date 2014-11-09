@@ -64,21 +64,6 @@ public class UserModule extends AcrossModule implements HasHibernatePackageProvi
 	}
 
 	@Override
-	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
-		contextConfigurers.add(
-				new AnnotatedClassConfigurer(
-						UserRepositoriesConfiguration.class,
-						UserServicesConfiguration.class,
-						UserPropertiesConfiguration.class,
-						GroupPropertiesConfiguration.class,
-						UserAdminWebConfiguration.class,
-						UserSpringSecurityConfiguration.class,
-						UserSpringSecurityAclConfiguration.class
-				)
-		);
-	}
-
-	@Override
 	public Object[] getInstallers() {
 		return new Object[] {
 				AcrossSequencesInstaller.class,

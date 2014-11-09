@@ -47,11 +47,10 @@ public class UserSpringSecurityConfiguration
 		return new CurrentUserProxyImpl();
 	}
 
-
-
 	/**
 	 * Configuration to load inside the SpringSecurityModule ApplicationContext.
 	 */
+	@AcrossDepends(required = "SpringSecurityModule")
 	@Configuration
 	public static class UserDetailsServiceConfiguration
 	{

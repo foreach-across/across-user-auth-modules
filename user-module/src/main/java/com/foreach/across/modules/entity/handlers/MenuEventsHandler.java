@@ -39,12 +39,12 @@ public class MenuEventsHandler
 			builder.item(
 					"/entities/" + ( menu.getEntityClass().getSimpleName().toLowerCase() ) + "/" + menu.getEntity()
 					                                                                                   .getId(),
-					"Properties" )
+					"General" )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 		}
 		else {
 			builder.item( "/entities/" + ( menu.getEntityClass().getSimpleName().toLowerCase() ) + "/create",
-			              "Properties" )
+			              "General" )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 		}
 	}

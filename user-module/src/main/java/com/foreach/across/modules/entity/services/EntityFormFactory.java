@@ -55,7 +55,7 @@ public class EntityFormFactory
 							}
 						}
 
-						form.addElement( new MultiCheckboxFormElement( descriptor, possibleValues ) );
+						form.addElement( new MultiCheckboxFormElement( entityRegistry, descriptor, possibleValues ) );
 
 					}
 				}
@@ -64,7 +64,7 @@ public class EntityFormFactory
 							descriptor.getPropertyType() );
 
 					form.addElement(
-							new SelectFormElement( descriptor, itemEntityType.getRepository().getAll() )
+							new SelectFormElement( entityRegistry, descriptor, itemEntityType.getRepository().getAll() )
 					);
 				}
 				else {
