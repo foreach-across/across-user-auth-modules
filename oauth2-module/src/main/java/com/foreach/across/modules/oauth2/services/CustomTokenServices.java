@@ -18,12 +18,27 @@ package com.foreach.across.modules.oauth2.services;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 public class CustomTokenServices extends DefaultTokenServices
 {
 	private TokenStore tokenStore;
+
+	@Override
+	public synchronized OAuth2AccessToken createAccessToken(
+			OAuth2Authentication authentication) throws AuthenticationException {
+		// https://github.com/spring-projects/spring-security-oauth/issues/276
+		return super.createAccessToken(authentication);
+	}
+
+	@Override
+	public synchronized OAuth2AccessToken refreshAccessToken(
+			String refreshTokenValue, TokenRequest request) {
+		// https://github.com/spring-projects/spring-security-oauth/issues/276
+		return super.refreshAccessToken(refreshTokenValue, request);
+	}
 
 	@Override
 	public void setTokenStore( TokenStore tokenStore ) {
