@@ -19,8 +19,6 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
 import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
-import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
-import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.database.HasSchemaConfiguration;
 import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.core.installers.AcrossSequencesInstaller;
@@ -28,14 +26,10 @@ import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.*;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
-import com.foreach.across.modules.user.config.*;
-import com.foreach.across.modules.user.config.modules.UserAdminWebConfiguration;
-import com.foreach.across.modules.user.config.modules.UserSpringSecurityAclConfiguration;
+import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.config.modules.UserSpringSecurityConfiguration;
 import com.foreach.across.modules.user.installers.*;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Set;
 
 @AcrossDepends(
 		required = { AcrossHibernateModule.NAME, PropertiesModule.NAME, SpringSecurityInfrastructureModule.NAME },
@@ -71,7 +65,8 @@ public class UserModule extends AcrossModule implements HasHibernatePackageProvi
 				new UserPropertiesSchemaInstaller( schemaConfiguration ),
 				new UserSchemaInstaller( schemaConfiguration ),
 				DefaultUserInstaller.class,
-				AclPermissionsInstaller.class
+				AclPermissionsInstaller.class,
+				new BasicSecurityPrincipalAuditableInstaller( schemaConfiguration )
 		};
 	}
 
