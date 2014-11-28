@@ -16,7 +16,7 @@
 package com.foreach.across.modules.spring.security.acl.support;
 
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.modules.hibernate.aop.IdBasedEntityInterceptor;
+import com.foreach.across.modules.hibernate.aop.EntityInterceptorAdapter;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
@@ -37,7 +37,7 @@ import org.springframework.util.ClassUtils;
  * @author Arne Vandamme
  */
 @AcrossDepends(required = "AcrossHibernateModule")
-public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity> extends IdBasedEntityInterceptor<T>
+public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity> extends EntityInterceptorAdapter<T>
 {
 	protected final Logger LOG = LoggerFactory.getLogger( ClassUtils.getUserClass( getClass() ) );
 
