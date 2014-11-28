@@ -352,7 +352,7 @@ public class ITAclServices
 		group1.setName( "Test-group" );
 		Group savedGroup = groupService.save( group1 );
 
-		assertNotNull( groupService.getGroupById( savedGroup.getId()) );
+		assertNotNull( groupService.getGroupById( savedGroup.getId() ) );
 		MutableAcl ownAcl = acl.getAcl( savedGroup );
 		assertNotNull( ownAcl );
 		Long parentAclId = (Long) ownAcl.getParentAcl().getObjectIdentity().getIdentifier();
@@ -372,8 +372,8 @@ public class ITAclServices
 		group2Dto.setName( "Test-group-2" );
 		Group savedGroup2 = groupService.save( group2Dto );
 
-		assertNotNull( groupService.getGroupById( savedGroup2.getId()) );
-		assertNull( acl.getAcl( savedGroup2 ));
+		assertNotNull( groupService.getGroupById( savedGroup2.getId() ) );
+		assertNull( acl.getAcl( savedGroup2 ) );
 
 		groupService.delete( savedGroup2.getId() );
 		assertNull( groupService.getGroupById( savedGroup2.getId() ) );
