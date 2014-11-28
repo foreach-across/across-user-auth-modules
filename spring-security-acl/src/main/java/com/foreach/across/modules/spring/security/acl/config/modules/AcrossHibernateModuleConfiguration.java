@@ -19,9 +19,8 @@ import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.registry.IncrementalRefreshableRegistry;
 import com.foreach.across.core.registry.RefreshableRegistry;
+import com.foreach.across.modules.hibernate.aop.BasicRepositoryInterceptorAdvisor;
 import com.foreach.across.modules.spring.security.acl.aop.AclSecurityEntityAclInterceptor;
-import com.foreach.across.modules.spring.security.acl.aop.BasicRepositoryAclInterceptor;
-import com.foreach.across.modules.spring.security.acl.aop.BasicRepositoryAclInterceptorAdvisor;
 import com.foreach.across.modules.spring.security.acl.repositories.AclSecurityEntityRepository;
 import com.foreach.across.modules.spring.security.acl.repositories.AclSecurityEntityRepositoryImpl;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
@@ -53,17 +52,6 @@ public class AcrossHibernateModuleConfiguration
 	private AcrossContextBeanRegistry contextBeanRegistry;
 
 	@Bean
-	RefreshableRegistry<IdBasedEntityAclInterceptor> aclEntityInterceptors() {
-		return new IncrementalRefreshableRegistry<>( IdBasedEntityAclInterceptor.class, true );
-	}
-
-	@Bean
-	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public BasicRepositoryAclInterceptor aclInterceptor() {
-		return new BasicRepositoryAclInterceptor( aclEntityInterceptors() );
-	}
-
-	@Bean
 	SessionFactory sessionFactory() {
 		ModuleInternalBeanTargetSource sessionFactorySource = new ModuleInternalBeanTargetSource();
 		sessionFactorySource.setContextBeanRegistry( contextBeanRegistry );
@@ -86,17 +74,6 @@ public class AcrossHibernateModuleConfiguration
 	@Bean
 	public AclSecurityEntityAclInterceptor aclSecurityEntityAclInterceptor() {
 		return new AclSecurityEntityAclInterceptor();
-	}
-
-	@Bean
-	@AcrossDepends(required = "AcrossHibernateModule")
-	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public BasicRepositoryAclInterceptorAdvisor aclInterceptorAdvisor() {
-		BasicRepositoryAclInterceptorAdvisor advisor = new BasicRepositoryAclInterceptorAdvisor();
-		advisor.setAdvice( aclInterceptor() );
-		advisor.setOrder( BasicRepositoryAclInterceptorAdvisor.INTERCEPT_ORDER );
-
-		return advisor;
 	}
 
 	static class ModuleInternalBeanTargetSource extends AbstractLazyCreationTargetSource
