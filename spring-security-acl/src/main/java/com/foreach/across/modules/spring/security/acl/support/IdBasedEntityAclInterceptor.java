@@ -20,12 +20,9 @@ import com.foreach.across.modules.hibernate.aop.EntityInterceptorAdapter;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.ClassUtils;
 
 /**
  * Base class for an interceptor hooked to {@link com.foreach.across.modules.hibernate.repositories.BasicRepository}
@@ -39,8 +36,6 @@ import org.springframework.util.ClassUtils;
 @AcrossDepends(required = "AcrossHibernateModule")
 public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity> extends EntityInterceptorAdapter<T>
 {
-	protected final Logger LOG = LoggerFactory.getLogger( ClassUtils.getUserClass( getClass() ) );
-
 	@Autowired
 	private AclSecurityService aclSecurityService;
 

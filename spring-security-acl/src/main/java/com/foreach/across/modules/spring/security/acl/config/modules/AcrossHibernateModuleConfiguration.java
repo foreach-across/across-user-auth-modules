@@ -17,23 +17,17 @@ package com.foreach.across.modules.spring.security.acl.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
-import com.foreach.across.core.registry.IncrementalRefreshableRegistry;
-import com.foreach.across.core.registry.RefreshableRegistry;
-import com.foreach.across.modules.hibernate.aop.BasicRepositoryInterceptorAdvisor;
 import com.foreach.across.modules.spring.security.acl.aop.AclSecurityEntityAclInterceptor;
 import com.foreach.across.modules.spring.security.acl.repositories.AclSecurityEntityRepository;
 import com.foreach.across.modules.spring.security.acl.repositories.AclSecurityEntityRepositoryImpl;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityServiceImpl;
-import com.foreach.across.modules.spring.security.acl.support.IdBasedEntityAclInterceptor;
 import org.hibernate.SessionFactory;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.target.AbstractLazyCreationTargetSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
 import org.springframework.util.Assert;
 
 /**
