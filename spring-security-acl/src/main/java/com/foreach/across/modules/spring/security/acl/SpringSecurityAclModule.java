@@ -33,6 +33,7 @@ import com.foreach.across.modules.spring.security.acl.config.ModuleAclSecurityCo
 import com.foreach.across.modules.spring.security.acl.config.modules.AcrossHibernateModuleConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.modules.AdminWebModuleConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.modules.SpringSecurityInfrastructureModuleConfiguration;
+import com.foreach.across.modules.spring.security.acl.installers.AclEntityAuditableInstaller;
 import com.foreach.across.modules.spring.security.acl.installers.AclSchemaInstaller;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 
@@ -96,6 +97,7 @@ public class SpringSecurityAclModule extends AcrossModule implements HasHibernat
 
 	@Override
 	public Object[] getInstallers() {
-		return new Object[] { AclSchemaInstaller.class };
+		return new Object[] { AclSchemaInstaller.class,
+		                      AclEntityAuditableInstaller.class };
 	}
 }
