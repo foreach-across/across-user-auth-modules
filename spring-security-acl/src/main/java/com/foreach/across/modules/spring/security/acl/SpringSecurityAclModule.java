@@ -45,7 +45,7 @@ import java.util.Set;
 @AcrossRole(AcrossModuleRole.INFRASTRUCTURE)
 @AcrossDepends(
 		required = { SpringSecurityModule.NAME, SpringSecurityInfrastructureModule.NAME },
-		optional = "EhcacheModule"
+		optional = { "AcrossHibernateModule", "EhcacheModule" }
 )
 public class SpringSecurityAclModule extends AcrossModule implements HasHibernatePackageProvider
 {
