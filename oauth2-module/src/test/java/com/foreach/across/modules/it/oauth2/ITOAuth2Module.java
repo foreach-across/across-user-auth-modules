@@ -78,9 +78,9 @@ public class ITOAuth2Module
 		public void configure( AcrossContext context ) {
 			context.addModule( acrossHibernateModule() );
 			context.addModule( userModule() );
-			context.addModule( springSecurityModule() );
 			context.addModule( oauth2Module() );
 			context.addModule( propertiesModule() );
+			context.addModule( springSecurityModule() );
 		}
 
 		private PropertiesModule propertiesModule() {
