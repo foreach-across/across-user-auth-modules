@@ -76,12 +76,11 @@ public class ITOAuth2Module
 	{
 		@Override
 		public void configure( AcrossContext context ) {
-			//TODO As a temporary fix, we need SpringSecurityModule to be registered BEFORE AcrossHibernateModule, as INFRA doesn't take optional dependencies into account.
-			context.addModule( springSecurityModule() );
 			context.addModule( acrossHibernateModule() );
 			context.addModule( userModule() );
 			context.addModule( oauth2Module() );
 			context.addModule( propertiesModule() );
+			context.addModule( springSecurityModule() );
 		}
 
 		private PropertiesModule propertiesModule() {
