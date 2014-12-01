@@ -23,7 +23,7 @@ import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@AcrossDepends(required = { "SpringSecurityAclModule", "AcrossHibernateModule" })
+@AcrossDepends(required = "SpringSecurityAclModule")
 public class GroupAclInterceptor extends IdBasedEntityAclInterceptor<Group>
 {
 	@Autowired
