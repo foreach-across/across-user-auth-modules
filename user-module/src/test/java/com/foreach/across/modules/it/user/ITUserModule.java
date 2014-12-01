@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -85,7 +84,8 @@ public class ITUserModule
 
 		try {
 			assertNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
-		} catch (NoSuchBeanDefinitionException e) {
+		}
+		catch ( NoSuchBeanDefinitionException e ) {
 			assertTrue( true ); //If we get this exception, the desired result has been achieved.
 		}
 	}

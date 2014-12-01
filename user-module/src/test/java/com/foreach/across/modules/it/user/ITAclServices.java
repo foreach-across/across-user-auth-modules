@@ -30,6 +30,8 @@ import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.QueryableAclSecurityService;
+import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
+import com.foreach.across.modules.spring.security.infrastructure.aop.AuditableEntityInterceptor;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleSettings;
@@ -58,10 +60,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -106,6 +105,9 @@ public class ITAclServices
 	@Autowired
 	private AclSecurityEntityService aclSecurityEntityService;
 
+	@Autowired
+	private MachinePrincipalService machinePrincipalService;
+
 	private Group group;
 	private User userOne, userTwo, userThree, userFour;
 
@@ -127,6 +129,8 @@ public class ITAclServices
 		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
 
 		assertNotNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
+		assertNotNull( acrossContextInfo.getModuleInfo( SpringSecurityInfrastructureModule.NAME )
+		                                .getApplicationContext().getBean( AuditableEntityInterceptor.class ) );
 	}
 
 	private Group createGroup( String... roles ) {
@@ -348,7 +352,7 @@ public class ITAclServices
 		group1.setName( "Test-group" );
 		Group savedGroup = groupService.save( group1 );
 
-		assertNotNull( groupService.getGroupById( savedGroup.getId()) );
+		assertNotNull( groupService.getGroupById( savedGroup.getId() ) );
 		MutableAcl ownAcl = acl.getAcl( savedGroup );
 		assertNotNull( ownAcl );
 		Long parentAclId = (Long) ownAcl.getParentAcl().getObjectIdentity().getIdentifier();
@@ -359,7 +363,13 @@ public class ITAclServices
 		groupService.delete( savedGroup.getId() );
 		assertNull( groupService.getGroupById( savedGroup.getId() ) );
 		assertNull( acl.getAcl( savedGroup ) );
-		assertNotNull( aclSecurityEntityService.getSecurityEntityByName( "groups" ) );
+
+		AclSecurityEntity groupsSecurityEntity = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+		assertNotNull( groupsSecurityEntity );
+		assertNotNull( groupsSecurityEntity.getCreatedDate() );
+		assertNotNull( groupsSecurityEntity.getCreatedBy() );
+		assertNotNull( groupsSecurityEntity.getLastModifiedDate() );
+		assertNotNull( groupsSecurityEntity.getLastModifiedBy() );
 
 		//Not sure if I should be doing this here...
 		acrossContextInfo.getModuleInfo( UserModule.NAME ).getModule().setProperty(
@@ -368,8 +378,8 @@ public class ITAclServices
 		group2Dto.setName( "Test-group-2" );
 		Group savedGroup2 = groupService.save( group2Dto );
 
-		assertNotNull( groupService.getGroupById( savedGroup2.getId()) );
-		assertNull( acl.getAcl( savedGroup2 ));
+		assertNotNull( groupService.getGroupById( savedGroup2.getId() ) );
+		assertNull( acl.getAcl( savedGroup2 ) );
 
 		groupService.delete( savedGroup2.getId() );
 		assertNull( groupService.getGroupById( savedGroup2.getId() ) );
@@ -379,6 +389,29 @@ public class ITAclServices
 		//Back to the original situation
 		acrossContextInfo.getModuleInfo( UserModule.NAME ).getModule().setProperty(
 				UserModuleSettings.ENABLE_DEFAULT_ACLS, true );
+	}
+
+	@Test
+	public void usersShouldHaveAuditInfo() {
+		securityPrincipalService.authenticate( machinePrincipalService.getMachinePrincipalByName( "system" ) );
+
+		User createdUser = createRandomUser( new ArrayList<Group>(), new ArrayList<String>() );
+		assertNotNull( createdUser.getCreatedDate() );
+		assertNotNull( createdUser.getCreatedBy() );
+		Date lastModifiedDate = createdUser.getLastModifiedDate();
+		assertNotNull( lastModifiedDate );
+		assertNotNull( createdUser.getLastModifiedBy() );
+
+		UserDto createdUserDto = new UserDto( createdUser );
+		createdUserDto.setLastName( "foo" );
+		userService.save( createdUserDto );
+
+		createdUser = createRandomUser( new ArrayList<Group>(), new ArrayList<String>() );
+		assertNotNull( createdUser.getCreatedDate() );
+		assertNotNull( createdUser.getCreatedBy() );
+		assertNotNull( createdUser.getLastModifiedDate() );
+		assertNotNull( createdUser.getLastModifiedBy() );
+		assertNotEquals( lastModifiedDate, createdUser.getLastModifiedDate() );
 	}
 
 	private boolean canRead( Object object ) {

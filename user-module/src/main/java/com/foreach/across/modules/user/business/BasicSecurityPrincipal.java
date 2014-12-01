@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.user.business;
 
+import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.spring.security.infrastructure.business.AbstractSecurityPrincipal;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
@@ -38,7 +39,8 @@ import java.util.*;
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
 )
-public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal implements IdBasedSecurityPrincipal
+public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal
+		implements IdBasedSecurityPrincipal, Auditable<String>
 {
 	@Id
 	@GeneratedValue(generator = "seq_um_principal_id")
@@ -60,6 +62,15 @@ public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal i
 			inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new TreeSet<>();
 
+	@Column(name = "created_by", nullable = true)
+	private String createdBy;
+	@Column(name = "created_date", nullable = true)
+	private Date createdDate;
+	@Column(name = "last_modified_by", nullable = true)
+	private String lastModifiedBy;
+	@Column(name = "last_modified_date", nullable = true)
+	private Date lastModifiedDate;
+
 	@Column(name = "principal_name")
 	private String principalName;
 
@@ -79,6 +90,46 @@ public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal i
 
 	public void setId( long id ) {
 		this.id = id;
+	}
+
+	@Override
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	@Override
+	public void setCreatedBy( String createdBy ) {
+		this.createdBy = createdBy;
+	}
+
+	@Override
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	@Override
+	public void setCreatedDate( Date createdDate ) {
+		this.createdDate = createdDate;
+	}
+
+	@Override
+	public String getLastModifiedBy() {
+		return lastModifiedBy;
+	}
+
+	@Override
+	public void setLastModifiedBy( String lastModifiedBy ) {
+		this.lastModifiedBy = lastModifiedBy;
+	}
+
+	@Override
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	@Override
+	public void setLastModifiedDate( Date lastModifiedDate ) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
 
 	public Set<Role> getRoles() {
