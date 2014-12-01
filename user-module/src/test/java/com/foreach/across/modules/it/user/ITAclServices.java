@@ -363,7 +363,13 @@ public class ITAclServices
 		groupService.delete( savedGroup.getId() );
 		assertNull( groupService.getGroupById( savedGroup.getId() ) );
 		assertNull( acl.getAcl( savedGroup ) );
-		assertNotNull( aclSecurityEntityService.getSecurityEntityByName( "groups" ) );
+
+		AclSecurityEntity groupsSecurityEntity = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+		assertNotNull( groupsSecurityEntity );
+		assertNotNull( groupsSecurityEntity.getCreatedDate() );
+		assertNotNull( groupsSecurityEntity.getCreatedBy() );
+		assertNotNull( groupsSecurityEntity.getLastModifiedDate() );
+		assertNotNull( groupsSecurityEntity.getLastModifiedBy() );
 
 		//Not sure if I should be doing this here...
 		acrossContextInfo.getModuleInfo( UserModule.NAME ).getModule().setProperty(

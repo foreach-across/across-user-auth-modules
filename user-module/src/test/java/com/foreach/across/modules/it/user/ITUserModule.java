@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -85,7 +84,8 @@ public class ITUserModule
 
 		try {
 			assertNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
-		} catch (NoSuchBeanDefinitionException e) {
+		}
+		catch ( NoSuchBeanDefinitionException e ) {
 			assertTrue( true ); //If we get this exception, the desired result has been achieved.
 		}
 	}
@@ -184,10 +184,12 @@ public class ITUserModule
 	{
 		@Override
 		public void configure( AcrossContext context ) {
+			//TODO As a temporary fix, we need SpringSecurityModule to be registered BEFORE AcrossHibernateModule, as INFRA doesn't take optional dependencies into account.
+			context.addModule( new SpringSecurityModule() );
 			context.addModule( acrossHibernateModule() );
 			context.addModule( userModule() );
 			context.addModule( propertiesModule() );
-			context.addModule( new SpringSecurityModule() );
+
 		}
 
 		private PropertiesModule propertiesModule() {
