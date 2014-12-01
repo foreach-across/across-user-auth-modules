@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.spring.security.acl.business;
 
+import com.foreach.across.modules.hibernate.business.AuditableEntity;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,14 +26,14 @@ import javax.persistence.*;
  * Represents a generic named entity that can be used for ACL control.
  * This is usually a more abstract concept: like the default system ACL that does not have any
  * other entity representation (unlike User records for example).
- *
+ * <p/>
  * An AclSecurityEntity can optionally have a single parent AclSecurityEntity.
  *
  * @author Arne Vandamme
  */
 @Entity
 @Table(name = "acl_entity")
-public class AclSecurityEntity implements IdBasedEntity
+public class AclSecurityEntity extends AuditableEntity implements IdBasedEntity
 {
 	@Id
 	@GeneratedValue(generator = "seq_acl_entity_id")
