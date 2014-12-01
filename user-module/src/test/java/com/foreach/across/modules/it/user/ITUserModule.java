@@ -184,12 +184,10 @@ public class ITUserModule
 	{
 		@Override
 		public void configure( AcrossContext context ) {
-			//TODO As a temporary fix, we need SpringSecurityModule to be registered BEFORE AcrossHibernateModule, as INFRA doesn't take optional dependencies into account.
-			context.addModule( new SpringSecurityModule() );
 			context.addModule( acrossHibernateModule() );
 			context.addModule( userModule() );
 			context.addModule( propertiesModule() );
-
+			context.addModule( new SpringSecurityModule() );
 		}
 
 		private PropertiesModule propertiesModule() {
