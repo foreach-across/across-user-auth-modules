@@ -23,9 +23,9 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<across.version>1.0.4-SNAPSHOT</across.version>
+		<across.version>1.0.4</across.version>
+		<foreach.common.version>0.10</foreach.common.version>
 		<spring.version>4.0.6.RELEASE</spring.version>
-		<foreach.common.version>0.10-SNAPSHOT</foreach.common.version>
 		<querydsl.version>3.5.1</querydsl.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -43,6 +43,11 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
@@ -56,6 +61,7 @@
 				<version>2.1.2</version>
 				<executions>
 					<execution>
+						<id>attach-sources</id>
 						<goals>
 							<goal>jar</goal>
 						</goals>
