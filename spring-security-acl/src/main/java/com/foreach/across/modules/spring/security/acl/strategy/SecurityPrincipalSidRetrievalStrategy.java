@@ -15,9 +15,9 @@
  */
 package com.foreach.across.modules.spring.security.acl.strategy;
 
+import com.foreach.across.modules.spring.security.acl.business.SecurityPrincipalSid;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalHierarchy;
-import com.foreach.across.modules.spring.security.acl.business.SecurityPrincipalSid;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Sid;
