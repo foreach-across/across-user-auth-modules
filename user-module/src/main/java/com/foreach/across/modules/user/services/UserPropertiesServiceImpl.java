@@ -20,7 +20,7 @@ import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry
 import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 import com.foreach.across.modules.properties.services.AbstractEntityPropertiesService;
 import com.foreach.across.modules.user.business.UserProperties;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 import org.springframework.stereotype.Service;
 
 /**

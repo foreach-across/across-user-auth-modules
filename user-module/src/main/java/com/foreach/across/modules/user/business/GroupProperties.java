@@ -1,8 +1,8 @@
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.properties.business.EntityProperties;
-import com.foreach.common.spring.util.PropertiesSource;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.properties.PropertiesSource;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 
 public class GroupProperties extends EntityProperties<Long>
 {
