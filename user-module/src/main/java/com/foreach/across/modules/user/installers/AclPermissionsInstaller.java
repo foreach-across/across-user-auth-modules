@@ -20,7 +20,6 @@ import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
-import com.foreach.across.modules.spring.security.acl.aop.AclSecurityEntityAclInterceptor;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;

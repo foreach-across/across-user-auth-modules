@@ -16,8 +16,8 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepository;
-import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalRetrievalStrategy;
+import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 
 /**
  * @author Arne Vandamme
