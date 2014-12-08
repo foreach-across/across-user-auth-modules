@@ -17,6 +17,7 @@ package com.foreach.across.modules.oauth2.services;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
@@ -37,7 +38,11 @@ public class CustomTokenServices extends DefaultTokenServices
 	public synchronized OAuth2AccessToken refreshAccessToken(
 			String refreshTokenValue, TokenRequest request) {
 		// https://github.com/spring-projects/spring-security-oauth/issues/276
-		return super.refreshAccessToken(refreshTokenValue, request);
+		try {
+			return super.refreshAccessToken( refreshTokenValue, request );
+		} catch ( RemoveTokenException e ) {
+			throw new InvalidGrantException( "User is invalid" );
+		}
 	}
 
 	@Override
