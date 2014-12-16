@@ -162,6 +162,7 @@
 		<module>entity-module</module>
 		<module>user-module</module>
 		<module>application-info</module>
+		<module>logging-module</module>
 	</modules>
 
 	<distributionManagement>
