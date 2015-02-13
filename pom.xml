@@ -72,6 +72,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9.1</version>
+                <configuration>
+                    <reportOutputDirectory>${project.reporting.outputDirectory}</reportOutputDirectory>
+                    <destDir>${project.version}/javadoc</destDir>
+                </configuration>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -84,11 +88,32 @@
 						<goals>
 							<goal>aggregate</goal>
 						</goals>
-						<phase>package</phase>
+						<phase>prepare-package</phase>
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <inherited>false</inherited>
+                <configuration>
+                    <sourceDirectory>docs</sourceDirectory>
+                    <sourceDocumentName>index.adoc</sourceDocumentName>
+                    <outputDirectory>${project.build.directory}/site/${project.version}/reference</outputDirectory>
+                    <backend>html</backend>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>output-html</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.17</version>
