@@ -15,12 +15,12 @@
  */
 package com.foreach.across.modules.user.repositories;
 
+import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 import com.foreach.across.modules.user.business.Group;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * @author Arne Vandamme
  */
-public interface GroupRepository extends JpaRepository<Group, Long>
+public interface GroupRepository extends IdBasedEntityJpaRepository<Group>
 {
 }
