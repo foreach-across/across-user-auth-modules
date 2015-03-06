@@ -18,6 +18,7 @@ package com.foreach.across.modules.oauth2.business;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
@@ -27,7 +28,7 @@ import java.util.Objects;
 		                                           joinColumns = @JoinColumn(name = "client_id")),
 		                      @AssociationOverride(name = "pk.oAuth2Scope",
 		                                           joinColumns = @JoinColumn(name = "scope_id")) })
-public class OAuth2ClientScope implements Comparable
+public class OAuth2ClientScope implements Comparable, Serializable
 {
 
 	@EmbeddedId
