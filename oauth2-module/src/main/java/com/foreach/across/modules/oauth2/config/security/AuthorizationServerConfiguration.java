@@ -37,6 +37,8 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter
@@ -87,10 +89,13 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Override
 	public void configure( AuthorizationServerEndpointsConfigurer endpoints ) throws Exception {
+		Map<String, String> mapping = new HashMap<>();
+		mapping.put( "/oauth/confirm_access", "/oauth/custom_confirm_access" );
 		endpoints.tokenStore( tokenStore() )
 		         .tokenServices( tokenServices() )
 		         .userApprovalHandler( new DefaultUserApprovalHandler() )
-		         .authenticationManager( authenticationManager );
+		         .authenticationManager( authenticationManager )
+				 .getFrameworkEndpointHandlerMapping().setMappings( mapping );
 	}
 
 	@Override

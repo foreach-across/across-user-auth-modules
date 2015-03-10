@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.oauth2.config;
 
+import com.foreach.across.modules.oauth2.controllers.AcrossWhitelabelApprovalEndpoint;
 import com.foreach.across.modules.oauth2.controllers.InvalidateTokenEndpoint;
 import com.foreach.across.modules.oauth2.controllers.UserTokenEndpoint;
 import org.springframework.context.annotation.Bean;
@@ -37,5 +38,10 @@ public class OAuth2EndpointsConfiguration
 	@Bean
 	public UserTokenEndpoint userTokenEndpoint() {
 		return new UserTokenEndpoint();
+	}
+
+	@Bean
+	public AcrossWhitelabelApprovalEndpoint acrossWhitelabelApprovalEndpoint() {
+		return new AcrossWhitelabelApprovalEndpoint();
 	}
 }
