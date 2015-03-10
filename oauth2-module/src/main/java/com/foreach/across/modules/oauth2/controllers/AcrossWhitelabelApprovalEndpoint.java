@@ -36,7 +36,6 @@ public class AcrossWhitelabelApprovalEndpoint// extends WhitelabelApprovalEndpoi
 	@Autowired
 	private OAuth2ModuleSettings oAuth2ModuleSettings;
 
-	//@Override
 	@RequestMapping("/oauth/custom_confirm_access")
 	public void getAccessConfirmation( Map<String, Object> model,
 	                                           HttpServletRequest request, HttpServletResponse response  ) throws Exception {
