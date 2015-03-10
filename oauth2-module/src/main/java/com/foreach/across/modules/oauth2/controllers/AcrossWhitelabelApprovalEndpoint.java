@@ -15,18 +15,13 @@
  */
 package com.foreach.across.modules.oauth2.controllers;
 
+import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.provider.endpoint.WhitelabelApprovalEndpoint;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -38,11 +33,15 @@ public class AcrossWhitelabelApprovalEndpoint// extends WhitelabelApprovalEndpoi
 	@Autowired
 	private WhitelabelApprovalEndpoint whitelabelApprovalEndpoint;
 
+	@Autowired
+	private OAuth2ModuleSettings oAuth2ModuleSettings;
+
 	//@Override
 	@RequestMapping("/oauth/custom_confirm_access")
 	public void getAccessConfirmation( Map<String, Object> model,
 	                                           HttpServletRequest request, HttpServletResponse response  ) throws Exception {
 		whitelabelApprovalEndpoint.getAccessConfirmation( model, request );
-		response.sendRedirect( "http://knooppunt.local:8080/oauth?" + request.getQueryString() );
+		String confirmFormRedirectUrl = oAuth2ModuleSettings.getCustomApprovalForm();
+		response.sendRedirect( confirmFormRedirectUrl + (confirmFormRedirectUrl.contains( "?" ) ? "&" : "?") + request.getQueryString() );
 	}
 }
