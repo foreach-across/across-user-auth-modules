@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.it.properties.definingmodule.repositories;
+package com.foreach.across.modules.properties;
 
-import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
-import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
 /**
  * @author Arne Vandamme
  */
-public class UserPropertiesRepository extends EntityPropertiesRepository<Long>
+public class TestPropertiesModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	public UserPropertiesRepository( EntityPropertiesDescriptor configuration ) {
-		super( configuration );
+	@Override
+	protected boolean hasSettings() {
+		return true;
+	}
+
+	@Override
+	protected AcrossModule createModule() {
+		return new PropertiesModule();
 	}
 }

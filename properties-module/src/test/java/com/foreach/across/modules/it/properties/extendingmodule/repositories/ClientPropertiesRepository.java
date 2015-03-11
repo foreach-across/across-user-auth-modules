@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.it.properties.definingmodule.repositories;
+package com.foreach.across.modules.it.properties.extendingmodule.repositories;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.it.properties.definingmodule.business.EntityRevision;
 import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
-import com.foreach.across.modules.properties.repositories.RevisionBasedEntityPropertiesRepository;
+import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 
 /**
  * @author Arne Vandamme
  */
-@Exposed
-public class RevisionPropertiesRepository extends RevisionBasedEntityPropertiesRepository<Long, EntityRevision>
+public class ClientPropertiesRepository extends EntityPropertiesRepository<Long>
 {
-	public RevisionPropertiesRepository( EntityPropertiesDescriptor configuration ) {
+	public ClientPropertiesRepository( EntityPropertiesDescriptor configuration ) {
 		super( configuration );
-	}
-
-	public void setAllowRevisionModification( boolean allowRevisionModification ) {
-		super.setAllowRevisionModification( allowRevisionModification );
 	}
 }

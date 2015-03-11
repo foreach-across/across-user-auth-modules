@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.it.properties.definingmodule.registry;
+package com.foreach.across.modules.it.properties.extendingmodule.installers;
 
-import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
-import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
+import com.foreach.across.core.annotations.Installer;
+import com.foreach.across.modules.properties.installers.EntityPropertiesInstaller;
 
 /**
  * @author Arne Vandamme
  */
-public class UserPropertyRegistry extends EntityPropertiesRegistry
+@Installer(description = "Creates client properties table", version = 1)
+public class ClientPropertiesInstaller extends EntityPropertiesInstaller
 {
-	public UserPropertyRegistry( EntityPropertiesDescriptor descriptor ) {
-		super( descriptor );
+	@Override
+	protected String getTableName() {
+		return "client_properties";
+	}
+
+	@Override
+	protected String getKeyColumnName() {
+		return "client_id";
 	}
 }
