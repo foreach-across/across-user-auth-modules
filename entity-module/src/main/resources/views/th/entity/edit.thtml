@@ -1,0 +1,52 @@
+<!--
+  Copyright 2014 the original author or authors
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:fragment="title">Modify entity</title>
+</head>
+<body th:fragment="content">
+
+<h4 class="page-header" th:if="${pageTitle != null}" th:text="${pageTitle}">
+	Page title
+</h4>
+
+<div th:if="${successMessage}" class="alert alert-success alert-dismissible" role="alert">
+	<span th:text="${messages.withNameSingular(successMessage, entityConfiguration.getLabel(entity))}">
+		Entity has been saved succesfully.
+	</span>
+	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
+	</button>
+</div>
+
+<div class="tabbable filled">
+	<ul class="nav nav-tabs">
+		<li th:each="tab : ${entityMenu.items}" th:classappend="${tab.selected}? 'active'">
+			<a th:href="@{${tab.url}}" th:text="${tab.title}">tab menu</a>
+		</li>
+	</ul>
+
+	<div class="tab-content">
+		<div class="tab-pane active">
+			<form method="post" th:action="@{${@adminWeb.path(formAction)}}" th:object="${viewRequest}" role="form">
+				<div th:replace="th/entity/formFields :: form_fields(${properties})" />
+			</form>
+		</div>
+	</div>
+
+</div>
+
+</body>
+</html>
