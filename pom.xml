@@ -202,15 +202,15 @@
 		<module>across-hibernate</module>
 		<module>across-ehcache</module>
 		<module>debug-web</module>
-		<module>admin-web</module>
+		<module>application-info</module>
+		<module>logging-module</module>
 		<module>spring-security</module>
+		<module>admin-web</module>
 		<module>oauth2-module</module>
 		<module>properties-module</module>
 		<module>spring-security-acl</module>
 		<module>entity-module</module>
 		<module>user-module</module>
-		<module>application-info</module>
-		<module>logging-module</module>
 	</modules>
 
 	<distributionManagement>
