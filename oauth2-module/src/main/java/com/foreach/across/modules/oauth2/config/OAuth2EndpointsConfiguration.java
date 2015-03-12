@@ -15,11 +15,19 @@
  */
 package com.foreach.across.modules.oauth2.config;
 
+import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
 import com.foreach.across.modules.oauth2.controllers.AcrossWhitelabelApprovalEndpoint;
 import com.foreach.across.modules.oauth2.controllers.InvalidateTokenEndpoint;
 import com.foreach.across.modules.oauth2.controllers.UserTokenEndpoint;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.provider.approval.ApprovalStore;
+import org.springframework.security.oauth2.provider.approval.InMemoryApprovalStore;
+import org.springframework.security.oauth2.provider.approval.JdbcApprovalStore;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 
 /**
  * Adds some additional OAuth endpoints.
@@ -30,6 +38,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OAuth2EndpointsConfiguration
 {
+	@Autowired
+	private OAuth2ModuleSettings settings;
+
+	@Resource
+	private DataSource acrossDataSource;
+
 	@Bean
 	public InvalidateTokenEndpoint invalidateTokenEndpoint() {
 		return new InvalidateTokenEndpoint();
@@ -43,5 +57,15 @@ public class OAuth2EndpointsConfiguration
 	@Bean
 	public AcrossWhitelabelApprovalEndpoint acrossWhitelabelApprovalEndpoint() {
 		return new AcrossWhitelabelApprovalEndpoint();
+	}
+
+	@Bean
+	public ApprovalStore approvalStore() {
+		if ( settings.isUseInmemoryApprovalStore() ) {
+			return new InMemoryApprovalStore();
+		}
+		else {
+			return new JdbcApprovalStore( acrossDataSource );
+		}
 	}
 }

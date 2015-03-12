@@ -29,14 +29,29 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 	 */
 	public static final String CUSTOM_APPROVAL_FORM = "OAuth2Module.customApprovalForm";
 
+	/**
+	 * Specifies whether the authentication process should use an in-memory approval store
+	 * or the default jdbc approval store
+	 * <p/>
+	 * False/True
+	 */
+	public static final String USE_INMEMORY_APPROVAL_STORE = "OAuth2Module.useInmemoryApprovalStore";
+
 	@Override
 	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
 		registry.register( CUSTOM_APPROVAL_FORM, String.class, "",
 		                   "Specifies whether the default spring endpoint for the approval form should be used" +
 				                   " (when left empty) or the custom endpoint that redirects to a custom form" );
+		registry.register( USE_INMEMORY_APPROVAL_STORE, Boolean.class, false,
+		                   "Specifies whether the authentication process should use an in-memory approval store" +
+				                   " or the default jdbc approval store" );
 	}
 
 	public String getCustomApprovalForm() {
 		return getProperty( CUSTOM_APPROVAL_FORM, String.class );
+	}
+
+	public Boolean isUseInmemoryApprovalStore() {
+		return getProperty( USE_INMEMORY_APPROVAL_STORE, Boolean.class );
 	}
 }
