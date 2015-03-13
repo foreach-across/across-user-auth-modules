@@ -16,10 +16,7 @@
 package com.foreach.across.modules.oauth2.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepository;
-import com.foreach.across.modules.oauth2.business.OAuth2Client;
 import com.foreach.across.modules.oauth2.business.OAuth2Scope;
-
-import java.util.Collection;
 
 public interface OAuth2ScopeRepository extends BasicRepository<OAuth2Scope>
 {
