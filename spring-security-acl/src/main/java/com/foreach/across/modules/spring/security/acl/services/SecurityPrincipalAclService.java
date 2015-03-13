@@ -21,7 +21,6 @@ import org.springframework.security.acls.model.Sid;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Arne Vandamme
