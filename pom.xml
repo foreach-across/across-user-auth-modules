@@ -22,7 +22,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<across.version>1.0.5</across.version>
+		<across.version>1.0.6-SNAPSHOT</across.version>
 		<foreach.common.version>0.11</foreach.common.version>
 		<spring.version>4.0.9.RELEASE</spring.version>
 		<querydsl.version>3.5.1</querydsl.version>
@@ -67,31 +67,31 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-					<execution>
-						<inherited>false</inherited>
-						<id>aggregate</id>
-						<goals>
-							<goal>aggregate</goal>
-						</goals>
-						<phase>prepare-package</phase>
-						<configuration>
-							<reportOutputDirectory>${project.reporting.outputDirectory}</reportOutputDirectory>
-							<destDir>${project.version}/javadoc</destDir>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			<!--<plugin>-->
+				<!--<groupId>org.apache.maven.plugins</groupId>-->
+				<!--<artifactId>maven-javadoc-plugin</artifactId>-->
+				<!--<version>2.9.1</version>-->
+				<!--<executions>-->
+					<!--<execution>-->
+						<!--<id>attach-javadocs</id>-->
+						<!--<goals>-->
+							<!--<goal>jar</goal>-->
+						<!--</goals>-->
+					<!--</execution>-->
+					<!--<execution>-->
+						<!--<inherited>false</inherited>-->
+						<!--<id>aggregate</id>-->
+						<!--<goals>-->
+							<!--<goal>aggregate</goal>-->
+						<!--</goals>-->
+						<!--<phase>prepare-package</phase>-->
+						<!--<configuration>-->
+							<!--<reportOutputDirectory>${project.reporting.outputDirectory}</reportOutputDirectory>-->
+							<!--<destDir>${project.version}/javadoc</destDir>-->
+						<!--</configuration>-->
+					<!--</execution>-->
+				<!--</executions>-->
+			<!--</plugin>-->
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
