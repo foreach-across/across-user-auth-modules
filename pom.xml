@@ -13,17 +13,16 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>across-standard-modules</groupId>
 	<artifactId>across-standard-modules</artifactId>
-	<version>1.0.5-SNAPSHOT</version>
+	<version>1.0.6-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<across.version>1.0.5-SNAPSHOT</across.version>
+		<across.version>1.0.5</across.version>
 		<foreach.common.version>0.11</foreach.common.version>
 		<spring.version>4.0.9.RELEASE</spring.version>
 		<querydsl.version>3.5.1</querydsl.version>
@@ -202,15 +201,15 @@
 		<module>across-hibernate</module>
 		<module>across-ehcache</module>
 		<module>debug-web</module>
-		<module>admin-web</module>
+		<module>application-info</module>
+		<module>logging-module</module>
 		<module>spring-security</module>
+		<module>admin-web</module>
 		<module>oauth2-module</module>
 		<module>properties-module</module>
 		<module>spring-security-acl</module>
 		<module>entity-module</module>
 		<module>user-module</module>
-		<module>application-info</module>
-		<module>logging-module</module>
 	</modules>
 
 	<distributionManagement>
