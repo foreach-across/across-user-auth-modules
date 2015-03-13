@@ -20,8 +20,7 @@ import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry
 import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 import com.foreach.across.modules.properties.services.AbstractEntityPropertiesService;
 import com.foreach.across.modules.user.business.UserProperties;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
-import org.springframework.core.convert.ConversionService;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,8 +37,7 @@ public class UserPropertiesServiceImpl extends AbstractEntityPropertiesService<U
 	@Override
 	protected UserProperties createEntityProperties( Long entityId,
 	                                                 PropertyTypeRegistry<String> propertyTypeRegistry,
-	                                                 ConversionService conversionService,
 	                                                 StringPropertiesSource source ) {
-		return new UserProperties( entityId, propertyTypeRegistry, conversionService, source );
+		return new UserProperties( entityId, propertyTypeRegistry, source );
 	}
 }

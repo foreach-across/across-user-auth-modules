@@ -1,7 +1,6 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.repositories.Undeletable;
-import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;

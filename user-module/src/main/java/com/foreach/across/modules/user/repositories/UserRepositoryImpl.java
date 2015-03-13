@@ -20,13 +20,11 @@ import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.converters.FieldUtils;
 import org.hibernate.Criteria;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.JoinType;
 import java.util.Collection;
 
 @Repository

@@ -16,9 +16,8 @@
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.properties.business.EntityProperties;
-import com.foreach.common.spring.util.PropertiesSource;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
-import org.springframework.core.convert.ConversionService;
+import com.foreach.common.spring.properties.PropertiesSource;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 
 /**
  * @author Arne Vandamme
@@ -29,9 +28,8 @@ public class UserProperties extends EntityProperties<Long>
 
 	public UserProperties( long userId,
 	                       PropertyTypeRegistry<String> propertyTypeRegistry,
-	                       ConversionService conversionService,
 	                       PropertiesSource source ) {
-		super( propertyTypeRegistry, conversionService, source );
+		super( propertyTypeRegistry, source );
 
 		this.userId = userId;
 	}

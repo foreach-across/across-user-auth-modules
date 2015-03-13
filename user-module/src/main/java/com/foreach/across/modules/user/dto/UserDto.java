@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.user.dto;
 
-import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.converters.FieldUtils;

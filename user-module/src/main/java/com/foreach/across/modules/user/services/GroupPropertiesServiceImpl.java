@@ -5,8 +5,7 @@ import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry
 import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 import com.foreach.across.modules.properties.services.AbstractEntityPropertiesService;
 import com.foreach.across.modules.user.business.GroupProperties;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
-import org.springframework.core.convert.ConversionService;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,8 +19,7 @@ public class GroupPropertiesServiceImpl extends AbstractEntityPropertiesService<
 	@Override
 	protected GroupProperties createEntityProperties( Long entityId,
 	                                                  PropertyTypeRegistry<String> propertyTypeRegistry,
-	                                                  ConversionService conversionService,
 	                                                  StringPropertiesSource source ) {
-		return new GroupProperties( entityId, propertyTypeRegistry, conversionService, source );
+		return new GroupProperties( entityId, propertyTypeRegistry, source );
 	}
 }
