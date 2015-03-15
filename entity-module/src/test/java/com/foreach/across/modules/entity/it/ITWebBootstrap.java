@@ -78,6 +78,7 @@ public class ITWebBootstrap
 			springDataJpaModule.setExposeFilter( new ClassBeanFilter( ClientRepository.class ) );
 			context.addModule( springDataJpaModule );
 
+
 			context.addModule( new AdminWebModule() );
 			context.addModule( new SpringSecurityModule() );
 		}

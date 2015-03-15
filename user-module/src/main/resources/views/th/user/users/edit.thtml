@@ -1,0 +1,105 @@
+<!--
+  Copyright 2014 the original author or authors
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:fragment="title">Modify user</title>
+</head>
+<body th:fragment="content">
+
+<ul class="nav nav-tabs">
+	<li th:each="tab : ${entityMenu.items}" th:classappend="${tab.selected}? 'active'">
+		<a th:href="@{${tab.url}}" th:text="${tab.title}">tab menu</a>
+	</li>
+</ul>
+
+<ul th:if="${#fields.hasErrors('${user.*}')}">
+	<li th:each="err : ${#fields.errors('${user.*}')}" th:text="${err}"/>
+</ul>
+
+<form method="post" th:action="@{${@adminWeb.path('/users/' + (user.new ? 'create' : user.id))}}" th:object="${user}">
+	<input type="hidden" th:field="*{id}"/>
+
+	<span th:text="*{id}">1</span>
+
+	<div>
+		<label for="username">Username</label>
+		<input type="text" th:field="*{username}"/>
+	</div>
+
+	<div>
+		<label for="password">Password</label>
+		<input type="password" th:field="*{password}"/>
+	</div>
+
+	<div>
+		<label for="email">Email</label>
+		<input type="text" th:field="*{email}"/>
+	</div>
+
+	<div>
+		<label th:for="firstName">First Name</label>
+		<input type="text" th:field="*{firstName}"/>
+	</div>
+
+	<div>
+		<label th:for="lastName">Last Name</label>
+		<input type="text" th:field="*{lastName}"/>
+	</div>
+
+	<div>
+		<label th:for="displayName">Display Name</label>
+		<input type="text" th:field="*{displayName}"/>
+	</div>
+
+	<div>
+		<label>Restrictions</label>
+		<ul>
+			<li th:each="restriction:${userRestrictions}">
+				<input type="checkbox"
+				       th:field="*{restrictions}"
+				       th:value="${restriction.name}"/>
+				<label th:text="${restriction.name}" th:for="${#ids.prev('restrictions')}"></label>
+			</li>
+		</ul>
+	</div>
+
+	<div>
+		<label>Email status</label>
+		<input type="radio" th:field="*{emailConfirmed}" value="true"/><label th:text="Confirmed" th:for="${#ids.prev('emailConfirmed')}"></label>
+		<input type="radio" th:field="*{emailConfirmed}" value="false"/><label th:text="Unconfirmed" th:for="${#ids.prev('emailConfirmed')}"></label>
+	</div>
+
+	<div>
+		<label>Deleted?</label>
+		<input type="checkbox" th:field="*{deleted}" th:value="${deleted}"/><label th:text="Yes" th:for="deleted"></label>
+	</div>
+
+	<div>
+	    <label for="roles">Roles</label>
+			    <select multiple="multiple" th:field="*{roles}">
+                    <option th:each="element : ${roles}"
+                                th:value="${element.name}"
+                                th:text="${element.description}"></option>
+                </select>
+	</div>
+
+
+	<input class="btn btn-primary" type="submit" value="Save"/>
+	<a class="btn btn-link" th:href="@{${@adminWeb.path('/users')}}">Cancel</a>
+</form>
+
+</body>
+</html>
