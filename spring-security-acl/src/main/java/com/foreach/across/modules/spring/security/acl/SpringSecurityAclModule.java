@@ -42,7 +42,7 @@ import java.util.Set;
 /**
  * @author Arne Vandamme
  */
-@AcrossRole(AcrossModuleRole.INFRASTRUCTURE)
+@AcrossRole(value = AcrossModuleRole.INFRASTRUCTURE)
 @AcrossDepends(
 		required = { SpringSecurityModule.NAME, SpringSecurityInfrastructureModule.NAME },
 		optional = { "AcrossHibernateJpaModule", "EhcacheModule" }
