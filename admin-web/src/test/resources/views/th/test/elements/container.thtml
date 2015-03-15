@@ -1,0 +1,13 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:bootstrap="http://across.foreach.be/bootstrap">
+<body>
+<ul th:fragment="render(component)">
+	<li th:each="item: ${component}" th:text="${item.text}">item</li>
+</ul>
+
+<ol th:fragment="nested(component)">
+	<li th:each="item: ${component}">
+		<bootstrap:component data="${item}"/>
+	</li>
+</ol>
+</body>
+</html>
