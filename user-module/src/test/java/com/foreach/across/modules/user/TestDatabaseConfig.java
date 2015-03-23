@@ -16,9 +16,11 @@
 package com.foreach.across.modules.user;
 
 import com.foreach.across.core.AcrossContext;
+import com.foreach.across.database.support.HikariDataSourceHelper;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.PackagesToScanProvider;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -54,12 +56,7 @@ public class TestDatabaseConfig
 
 	@Bean
 	public DataSource dataSource() throws Exception {
-		HikariDataSource dataSource = new HikariDataSource();
-		dataSource.setDriverClassName( "org.hsqldb.jdbc.JDBCDriver" );
-		dataSource.setJdbcUrl( "jdbc:hsqldb:mem:/hsql/user-module" );
-		dataSource.setUsername( "sa" );
-		dataSource.setPassword( "" );
-
-		return dataSource;
+		return HikariDataSourceHelper.create( "org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:/hsql/user-module", "sa",
+		                                      StringUtils.EMPTY );
 	}
 }
