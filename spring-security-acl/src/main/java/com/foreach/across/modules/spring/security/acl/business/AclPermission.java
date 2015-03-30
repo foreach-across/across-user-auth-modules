@@ -20,7 +20,6 @@ import org.springframework.security.acls.domain.AbstractPermission;
 /**
  * Redefined instance of {@link org.springframework.security.acls.domain.BasePermission} to avoid
  * confusion with the Permission from UserModule.
- * }
  *
  * @author Arne Vandamme
  */
