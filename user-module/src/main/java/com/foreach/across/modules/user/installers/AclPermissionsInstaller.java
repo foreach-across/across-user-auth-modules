@@ -25,7 +25,9 @@ import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.infrastructure.services.CloseableAuthentication;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.PermissionGroup;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
@@ -70,18 +72,20 @@ public class AclPermissionsInstaller
 	}
 
 	public void createSystemEntity() {
-		securityPrincipalService.authenticate( machinePrincipalService.getMachinePrincipalByName( "system" ) );
+		MachinePrincipal system = machinePrincipalService.getMachinePrincipalByName( "system" );
 
-		AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" );
+		try (CloseableAuthentication authenticated = securityPrincipalService.authenticate( system )) {
+			AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" );
 
-		if ( systemAcl == null ) {
-			AclSecurityEntity dto = new AclSecurityEntity();
-			dto.setName( "system" );
+			if ( systemAcl == null ) {
+				AclSecurityEntity dto = new AclSecurityEntity();
+				dto.setName( "system" );
 
-			systemAcl = aclSecurityEntityService.save( dto );
+				systemAcl = aclSecurityEntityService.save( dto );
+			}
+
+			aclSecurityService.setDefaultParentAcl( systemAcl );
 		}
-
-		aclSecurityService.setDefaultParentAcl( systemAcl );
 	}
 
 	public void createPermissionsAndAddToAdminRole() {
