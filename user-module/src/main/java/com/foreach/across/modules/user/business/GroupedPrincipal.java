@@ -81,7 +81,7 @@ public abstract class GroupedPrincipal<T extends SettableIdBasedEntity<?>>
 	}
 
 	@Override
-	public Collection<GrantedAuthority> getAuthorities() {
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
 
 		for ( Role role : getRoles() ) {

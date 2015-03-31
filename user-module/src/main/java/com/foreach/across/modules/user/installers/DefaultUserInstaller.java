@@ -18,6 +18,7 @@ package com.foreach.across.modules.user.installers;
 import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
+import com.foreach.across.modules.user.UserAuthorities;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.PermissionGroup;
@@ -33,8 +34,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 @Installer(description = "Installs the default permissions, roles and user", version = 5,
-           phase = InstallerPhase.AfterModuleBootstrap)
-public class DefaultUserInstaller
+		phase = InstallerPhase.AfterModuleBootstrap)
+public class DefaultUserInstaller implements UserAuthorities
 {
 	@Autowired
 	private PermissionService permissionService;
@@ -85,28 +86,31 @@ public class DefaultUserInstaller
 		                                    "User can perform one or more administrative actions.  Usually this means the user can access the administration interface.",
 		                                    UserModule.NAME );
 
-		permissionService.definePermission( "manage users", "Manage user accounts", UserModule.NAME );
-		permissionService.definePermission( "manage groups", "Manage groups", UserModule.NAME );
-		permissionService.definePermission( "manage user roles", "Manage user roles", UserModule.NAME );
+		permissionService.definePermission( MANAGE_USERS, "Manage user accounts", UserModule.NAME );
+		permissionService.definePermission( MANAGE_GROUPS, "Manage groups", UserModule.NAME );
+		permissionService.definePermission( MANAGE_USER_ROLES, "Manage user roles", UserModule.NAME );
 
 		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
 		if ( adminRole == null ) {
 			roleService.defineRole( "ROLE_ADMIN", "Administrator",
-			                        Arrays.asList( "access administration", "manage users", "manage groups",
-			                                       "manage user roles" ) );
+			                        Arrays.asList( "access administration",
+			                                       MANAGE_USERS,
+			                                       MANAGE_GROUPS,
+			                                       MANAGE_USER_ROLES ) );
 		}
 		else {
-			adminRole.addPermission( "manage groups" );
+			adminRole.addPermission( MANAGE_GROUPS );
 			roleService.save( adminRole );
 		}
 
 		Role managerRole = roleService.getRole( "ROLE_MANAGER" );
 		if ( managerRole == null ) {
-			roleService.defineRole( "ROLE_MANAGER", "Manager", Arrays.asList( "access administration", "manage users",
-			                                                                  "manage groups" ) );
+			roleService.defineRole( "ROLE_MANAGER", "Manager", Arrays.asList( "access administration",
+			                                                                  MANAGE_USERS,
+			                                                                  MANAGE_GROUPS ) );
 		}
 		else {
-			managerRole.addPermission( "manage groups" );
+			managerRole.addPermission( MANAGE_GROUPS );
 			roleService.save( managerRole );
 		}
 	}

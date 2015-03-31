@@ -111,6 +111,8 @@ public class ITAclServices
 
 	@Before
 	public void createUsers() {
+		securityPrincipalService.authenticate( securityPrincipalService.getPrincipalByName( "system" ) );
+
 		permissionService.definePermission( "manage files", "Manage all files and folders", "unit-test" );
 		roleService.defineRole( "ROLE_FILE_MANAGER", "File manager", Arrays.asList( "manage files" ) );
 
@@ -120,6 +122,11 @@ public class ITAclServices
 		userTwo = createRandomUser( Collections.<Group>emptyList(), Collections.singleton( "ROLE_ADMIN" ) );
 		userThree = createRandomUser( Collections.<Group>emptyList(), Collections.singleton( "ROLE_FILE_MANAGER" ) );
 		userFour = createRandomUser( Collections.singleton( group ), Collections.<String>emptyList() );
+	}
+
+	@After
+	public void logout() {
+		securityPrincipalService.clearAuthentication();
 	}
 
 	@Test

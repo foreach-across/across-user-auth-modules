@@ -175,7 +175,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		return false;
 	}
 
-	public Collection<GrantedAuthority> getAuthorities() {
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
 
 		for ( Role role : getRoles() ) {

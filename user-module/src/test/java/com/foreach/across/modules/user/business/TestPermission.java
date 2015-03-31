@@ -15,10 +15,13 @@
  */
 package com.foreach.across.modules.user.business;
 
+import com.foreach.across.modules.spring.security.AuthorityMatcher;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.Assert.*;
 
 public class TestPermission
 {
@@ -41,5 +44,17 @@ public class TestPermission
 		Permission right = new Permission( "SOME permission" );
 
 		assertEquals( left, right );
+	}
+
+	@Test
+	public void authorityMatching() {
+		Set<Permission> actuals = new HashSet<>();
+		actuals.add( new Permission( "some permission" ) );
+
+		AuthorityMatcher matcher = AuthorityMatcher.allOf( "some permission" );
+		assertTrue( matcher.matches( actuals ) );
+
+		matcher = AuthorityMatcher.allOf( new Permission( "some permission" ) );
+		assertTrue( matcher.matches( actuals ) );
 	}
 }

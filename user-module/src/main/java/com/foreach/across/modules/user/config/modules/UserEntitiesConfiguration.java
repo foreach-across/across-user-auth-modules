@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UserEntitiesConfiguration implements EntityConfigurer
 {
+
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		// By default permissions cannot be managed through the user interface

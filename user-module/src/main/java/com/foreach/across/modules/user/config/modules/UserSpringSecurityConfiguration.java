@@ -17,7 +17,20 @@ package com.foreach.across.modules.user.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
+import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
+import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
+import com.foreach.across.modules.entity.config.EntityConfigurer;
+import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.spring.security.AuthorityMatcher;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AuthorityMatchingAllowableActions;
+import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
+import com.foreach.across.modules.user.UserAuthorities;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.MachinePrincipal;
+import com.foreach.across.modules.user.business.Role;
+import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
 import com.foreach.across.modules.user.security.CurrentUserProxyImpl;
 import com.foreach.across.modules.user.security.UserDetailsServiceImpl;
@@ -28,13 +41,48 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Registers the UserDetailsService implementation for the User module.
+ * Configures the security rules for the entities.
  */
 @AcrossDepends(required = "SpringSecurityModule")
 @Configuration
-public class UserSpringSecurityConfiguration
+public class UserSpringSecurityConfiguration implements EntityConfigurer
 {
+	@Autowired
+	private CurrentSecurityPrincipalProxy securityPrincipal;
+
+	@Override
+	public void configure( EntitiesConfigurationBuilder configuration ) {
+		// Map allowable actions based on the authorities
+		configuration.entity( User.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USERS ) )
+		             .and()
+		             .entity( Group.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_GROUPS ) )
+		             .and()
+		             .entity( MachinePrincipal.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) )
+		             .and()
+		             .entity( Role.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) );
+	}
+
+	private EntityConfigurationAllowableActionsBuilder actionsBuilderForAuthority( String authority ) {
+		Map<AllowableAction, AuthorityMatcher> actionAuthorityMatcherMap = new HashMap<>();
+		actionAuthorityMatcherMap.put( AllowableAction.READ, AuthorityMatcher.allOf( authority ) );
+		actionAuthorityMatcherMap.put( AllowableAction.WRITE, AuthorityMatcher.allOf( authority ) );
+		actionAuthorityMatcherMap.put( AllowableAction.DELETE, AuthorityMatcher.allOf( authority ) );
+		actionAuthorityMatcherMap.put( AllowableAction.CREATE, AuthorityMatcher.allOf( authority ) );
+
+		return new FixedEntityAllowableActionsBuilder(
+				AuthorityMatchingAllowableActions.forSecurityPrincipal( securityPrincipal, actionAuthorityMatcherMap )
+		);
+	}
+
 	@Bean
 	public UserDetailsService userDetailsServiceImpl() {
 		return new UserDetailsServiceImpl();
