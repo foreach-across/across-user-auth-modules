@@ -19,6 +19,7 @@ import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cascade;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 import javax.persistence.*;
@@ -82,6 +83,12 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 	public void setClientId( String clientId ) {
 		this.clientId = clientId;
 		setPrincipalName( clientId );
+	}
+
+	@Override
+	@SuppressWarnings( "unchecked" )
+	public Collection<GrantedAuthority> getAuthorities() {
+		return (Collection<GrantedAuthority>) super.getAuthorities();
 	}
 
 	@Override
