@@ -74,7 +74,7 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 	private EntityConfigurationAllowableActionsBuilder actionsBuilderForAuthority( String authority ) {
 		Map<AllowableAction, AuthorityMatcher> actionAuthorityMatcherMap = new HashMap<>();
 		actionAuthorityMatcherMap.put( AllowableAction.READ, AuthorityMatcher.allOf( authority ) );
-		actionAuthorityMatcherMap.put( AllowableAction.WRITE, AuthorityMatcher.allOf( authority ) );
+		actionAuthorityMatcherMap.put( AllowableAction.UPDATE, AuthorityMatcher.allOf( authority ) );
 		actionAuthorityMatcherMap.put( AllowableAction.DELETE, AuthorityMatcher.allOf( authority ) );
 		actionAuthorityMatcherMap.put( AllowableAction.CREATE, AuthorityMatcher.allOf( authority ) );
 

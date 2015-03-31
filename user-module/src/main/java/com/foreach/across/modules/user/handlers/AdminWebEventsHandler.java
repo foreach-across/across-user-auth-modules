@@ -16,14 +16,7 @@
 package com.foreach.across.modules.user.handlers;
 
 import com.foreach.across.core.annotations.AcrossEventHandler;
-import com.foreach.across.core.annotations.Event;
-import com.foreach.across.modules.adminweb.events.AdminWebUrlRegistry;
-import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
-import com.foreach.across.modules.user.controllers.GroupController;
-import com.foreach.across.modules.user.controllers.RoleController;
-import com.foreach.across.modules.user.controllers.UserController;
-import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @AcrossEventHandler
@@ -32,6 +25,7 @@ public class AdminWebEventsHandler
 	@Autowired
 	private CurrentSecurityPrincipalProxy currentPrincipal;
 
+	/*
 	@Event
 	public void secureUrls( AdminWebUrlRegistry urls ) {
 		urls.match( UserController.PATH, UserController.PATH + "/*" ).hasAuthority( "manage users" );
@@ -62,7 +56,6 @@ public class AdminWebEventsHandler
 		}
 	}
 
-	/*
 	@Event
 	public void userMenu( EntityAdminMenuEvent<User> menuEvent ) {
 		PathBasedMenuBuilder builder = menuEvent.builder();
