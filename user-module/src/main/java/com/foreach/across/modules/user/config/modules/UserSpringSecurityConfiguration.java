@@ -21,9 +21,9 @@ import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableAct
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.spring.security.AuthorityMatcher;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AuthorityMatchingAllowableActions;
+import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
 import com.foreach.across.modules.user.UserAuthorities;
 import com.foreach.across.modules.user.UserModule;

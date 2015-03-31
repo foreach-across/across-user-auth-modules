@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.user.business;
 
-import com.foreach.across.modules.spring.security.AuthorityMatcher;
+import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
 
