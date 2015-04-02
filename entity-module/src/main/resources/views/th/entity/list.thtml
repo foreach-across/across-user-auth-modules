@@ -35,6 +35,8 @@
 
 	<div class="tab-content" th:remove="${hasMenu} ? none: tag">
 		<div class="tab-pane active" th:remove="${hasMenu} ? none: tag">
+            <across:view element="${newElements}" />
+
 			<div th:replace="th/entity/formFields :: form_fields(${properties})"/>
 		</div>
 	</div>
