@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.services.EntityFormService;
@@ -81,7 +82,43 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		view.setEntityProperties( getEntityProperties( viewCreationContext, entityConfiguration,
 		                                               messageCodeResolver ) );
 
+		view.addAttribute( "newElements",
+		                   buildNewElements( entityConfiguration, messageCodeResolver )
+		);
+
 		extendViewModel( viewCreationContext, view );
+	}
+
+	private com.foreach.across.modules.web.ui.ViewElements buildNewElements(
+			EntityConfiguration entityConfiguration,
+			EntityMessageCodeResolver messageCodeResolver
+	) {
+		com.foreach.across.modules.web.ui.ViewElements elements = new com.foreach.across.modules.web.ui.elements.ContainerViewElement();
+
+		EntityPropertyFilter filter = getPropertyFilter() != null ? getPropertyFilter() : EntityPropertyFilters.NoOp;
+
+		EntityPropertyRegistry registry = getPropertyRegistry();
+
+		if ( registry == null ) {
+			registry = entityConfiguration.getPropertyRegistry();
+		}
+
+		ViewElementBuilderContext builderContext
+				= entityFormService.createBuilderContext( entityConfiguration, registry, messageCodeResolver,
+				                                          getMode() );
+
+		List<EntityPropertyDescriptor> descriptors;
+
+		if ( getPropertyComparator() != null ) {
+			descriptors = registry.getProperties( filter, getPropertyComparator() );
+		}
+		else {
+			descriptors = registry.getProperties( filter );
+		}
+
+		elements.add( new BootstrapUiFactoryImpl().text( "Rendering the new view elements" ).build( null ) );
+
+		return elements;
 	}
 
 	private ViewElements getEntityProperties( V viewCreationContext,
