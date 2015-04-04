@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.mysema.util.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
@@ -55,6 +56,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	@Autowired
 	protected EntityRegistry entityRegistry;
 
+	protected ViewElementBuilderContext builderContext;
 	protected Map<String, EntityPropertyDescriptor> properties = new HashMap<>();
 
 	@Before
@@ -62,8 +64,11 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	public void before() {
 		reset( entityConfiguration, registry );
 
-		when( entityConfiguration.getEntityMessageCodeResolver() )
-				.thenReturn( mock( EntityMessageCodeResolver.class ) );
+		builderContext = mock( ViewElementBuilderContext.class );
+
+		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
+
+		when( entityConfiguration.getEntityMessageCodeResolver() ).thenReturn( codeResolver );
 
 		if ( properties.isEmpty() ) {
 			BeanMetaDataManager manager = new BeanMetaDataManager(
@@ -85,6 +90,12 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 				TypeDescriptor typeDescriptor = new TypeDescriptor( field );
 				when( descriptor.getPropertyTypeDescriptor() ).thenReturn( typeDescriptor );
 
+				when( codeResolver.getMessageWithFallback(
+						"properties." + field.getName(),
+						StringUtils.lowerCase( propertyName )
+				) )
+						.thenReturn( "resolved: " + StringUtils.lowerCase( propertyName ) );
+
 				properties.put( propertyName, descriptor );
 			}
 		}
@@ -93,35 +104,14 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	protected abstract Class getTestClass();
 
 	protected <V extends T> V assemble( String propertyName ) {
-		V template = assemble( properties.get( propertyName ) );
-
-		/*
-		assertEquals( propertyName, template.getName() );
-		assertEquals( StringUtils.lowerCase( propertyName ), template.getLabel() );
-		assertEquals( "properties." + propertyName, template.getLabelCode() );
-		assertNull( template.getCustomTemplate() );
-		assertNotNull( template.getMessageCodeResolver() );
-		assertNotNull( template.getValuePrinter() );
-		assertTrue( template.getValuePrinter() instanceof ConversionServiceConvertingValuePrinter );
-		*/
-
-		return template;
+		return assemble( properties.get( propertyName ) );
 	}
 
 	@SuppressWarnings("unchecked")
 	protected <V extends T> V assemble( EntityPropertyDescriptor descriptor ) {
 		return (V) builderFactory()
 				.createBuilder( descriptor, registry, entityConfiguration )
-				.build( null );
-
-		/*
-		CloningViewElementBuilderFactory builderFactory =
-				(CloningViewElementBuilderFactory) getAssembler().createBuilderFactory(
-						entityConfiguration, registry, descriptor
-				);
-		assertNotNull( builderFactory );
-
-		return (T) builderFactory.getBuilderTemplate();*/
+				.build( builderContext );
 	}
 
 	protected abstract EntityViewElementBuilderFactory builderFactory();
