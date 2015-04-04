@@ -15,11 +15,12 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
-import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
-import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactory;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.common.test.MockedLoader;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -28,6 +29,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -36,6 +39,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -48,6 +55,9 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 	@Autowired
 	private TextboxFormElementBuilderFactory factory;
 
+	@Autowired
+	private ConversionService conversionService;
+
 	@Override
 	protected Class getTestClass() {
 		return Validators.class;
@@ -58,36 +68,105 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 		return factory;
 	}
 
+	// depends on qualifiers should be set
+
 	@Test
 	public void noValidator() {
-		FormGroupElement group = assemble( "noValidator" );
+		TextareaFormElement textarea = assembleAndVerify( "noValidator", false );
+		assertEquals( TextareaFormElement.Type.TEXTAREA, textarea.getType() );
+		assertNull( textarea.getMaxLength() );
+	}
+
+	@Test
+	public void noValidatorNumber() {
+		TextboxFormElement textbox = assembleAndVerify( "noValidatorNumber", false );
+		assertEquals( TextboxFormElement.Type.TEXT, textbox.getType() );
+		assertNull( textbox.getMaxLength() );
+	}
+
+	@Test
+	public void notNullValidator() {
+		TextareaFormElement textarea = assembleAndVerify( "notNullValidator", true );
+		assertNull( textarea.getMaxLength() );
+	}
+
+	@Test
+	public void notBlankValidator() {
+		TextareaFormElement textarea = assembleAndVerify( "notBlankValidator", true );
+		assertNull( textarea.getMaxLength() );
+	}
+
+	@Test
+	public void notEmptyValidator() {
+		TextareaFormElement textarea = assembleAndVerify( "notEmptyValidator", true );
+		assertNull( textarea.getMaxLength() );
+	}
+
+	@Test
+	public void sizeValidator() {
+		TextboxFormElement textbox = assembleAndVerify( "sizeValidator", false );
+		assertEquals( Integer.valueOf( 200 ), textbox.getMaxLength() );
+		assertFalse( textbox instanceof TextareaFormElement );
+	}
+
+	@Test
+	public void sizeForMultiLineValidator() {
+		TextareaFormElement textarea = assembleAndVerify( "sizeForMultiLineValidator", false );
+		assertEquals( Integer.valueOf( 201 ), textarea.getMaxLength() );
+	}
+
+	@Test
+	public void lengthValidator() {
+		TextboxFormElement textbox = assembleAndVerify( "lengthValidator", false );
+		assertEquals( Integer.valueOf( 10 ), textbox.getMaxLength() );
+		assertFalse( textbox instanceof TextareaFormElement );
+	}
+
+	@Test
+	public void combinedValidator() {
+		TextboxFormElement textbox = assembleAndVerify( "combinedValidator", true );
+		assertEquals( Integer.valueOf( 50 ), textbox.getMaxLength() );
+		assertFalse( textbox instanceof TextareaFormElement );
+	}
+
+	@Test
+	public void valueSetFromEntity() {
+		when( properties.get( "noValidator" ).getValueFetcher() )
+				.thenReturn( new ValueFetcher()
+				{
+					@Override
+					public Object getValue( Object entity ) {
+						return "fetchedValue";
+					}
+				} );
+
+		when( conversionService.convert( eq( "fetchedValue" ), any( TypeDescriptor.class ),
+		                                 any( TypeDescriptor.class ) ) )
+				.thenReturn( "converted-value" );
+
+		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+
+		TextareaFormElement textarea = assembleAndVerify( "noValidator", false );
+		assertEquals( "converted-value", textarea.getText() );
+	}
+
+	@SuppressWarnings("unchecked")
+	private <V> V assembleAndVerify( String propertyName, boolean required ) {
+		FormGroupElement group = assemble( propertyName );
 		assertNotNull( group );
+		assertEquals( required, group.isRequired() );
 
 		LabelFormElement label = group.getLabel();
-		assertEquals( "novalidator", label.getText() );
+		assertEquals( "resolved: " + StringUtils.lowerCase( propertyName ), label.getText() );
 
-		TextareaFormElement textbox = group.getControl();
-		assertEquals( "noValidator", textbox.getName() );
-		assertEquals( "noValidator", textbox.getControlName() );
-		assertFalse( textbox.isReadonly() );
-		assertFalse( textbox.isDisabled() );
-		assertFalse( textbox.isRequired() );
+		FormControlElementSupport control = group.getControl();
+		assertEquals( propertyName, control.getName() );
+		assertEquals( propertyName, control.getControlName() );
+		assertFalse( control.isReadonly() );
+		assertFalse( control.isDisabled() );
+		assertEquals( required, control.isRequired() );
 
-		// Verify label text was looked up
-		// Verify textbox placeholder text was looked up
-
-		assertEquals( TextareaFormElement.Type.TEXTAREA, textbox.getType() );
-
-		// required
-		// depends on attributes
-		// value setting
-
-		/*
-			template = assembleAndVerify( "noValidator" );
-			assertNull( template.getMaxLength() );
-			assertFalse( template.isRequired() );
-			assertTrue( template.isMultiLine() );
-			*/
+		return (V) control;
 	}
 
 	private static class Validators
@@ -125,8 +204,14 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 		@Bean
 		public TextboxFormElementBuilderFactory textboxFormElementBuilderFactory() {
 			TextboxFormElementBuilderFactory factory = new TextboxFormElementBuilderFactory();
-			//assembler.setMaximumSingleLineLength( 200 );
+			factory.setMaximumSingleLineLength( 200 );
+
 			return factory;
+		}
+
+		@Bean
+		public ConversionService conversionService() {
+			return mock( ConversionService.class );
 		}
 	}
 }
