@@ -24,6 +24,7 @@ import java.util.List;
  *
  */
 @Service
+@Deprecated
 public class EntityFormService
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityFormService.class );

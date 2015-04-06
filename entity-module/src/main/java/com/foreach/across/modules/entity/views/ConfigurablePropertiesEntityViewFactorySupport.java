@@ -16,6 +16,8 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
+import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
+import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.services.EntityFormService;
@@ -40,6 +42,9 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 
 	@Autowired
 	private EntityFormService entityFormService;
+
+	@Autowired
+	private EntityViewElementBuilderService viewElementBuilderService;
 
 	private EntityPropertyRegistry propertyRegistry;
 	private EntityPropertyFilter propertyFilter;
@@ -93,7 +98,8 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 			EntityConfiguration entityConfiguration,
 			EntityMessageCodeResolver messageCodeResolver
 	) {
-		com.foreach.across.modules.web.ui.ViewElements elements = new com.foreach.across.modules.web.ui.elements.ContainerViewElement();
+		com.foreach.across.modules.web.ui.ViewElements elements =
+				new com.foreach.across.modules.web.ui.elements.ContainerViewElement();
 
 		EntityPropertyFilter filter = getPropertyFilter() != null ? getPropertyFilter() : EntityPropertyFilters.NoOp;
 
@@ -116,7 +122,25 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 			descriptors = registry.getProperties( filter );
 		}
 
-		elements.add( new BootstrapUiFactoryImpl().text( "Rendering the new view elements" ).build( null ) );
+		elements.add( new BootstrapUiFactoryImpl().text( "Rendering the new view elements" )
+		                                          .build( new EntityViewElementBuilderContext() ) );
+
+		for ( EntityPropertyDescriptor descriptor : descriptors ) {
+			com.foreach.across.modules.web.ui.ViewElementBuilder builder = viewElementBuilderService.getElementBuilder(
+					entityConfiguration, descriptor,
+					com.foreach.across.modules.entity.newviews.ViewElementMode.WRITING );
+
+			if ( builder != null ) {
+				elements.add( builder.build( new EntityViewElementBuilderContext() ) );
+			}
+
+			/*
+			ViewElement propertyView = createPropertyView( builderContext, descriptor );
+
+			if ( propertyView != null ) {
+				viewElements.add( propertyView );
+			}*/
+		}
 
 		return elements;
 	}

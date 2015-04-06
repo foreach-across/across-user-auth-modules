@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.newviews.bootstrapui;
 
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactory;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -110,7 +111,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	@SuppressWarnings("unchecked")
 	protected <V extends T> V assemble( EntityPropertyDescriptor descriptor ) {
 		return (V) builderFactory()
-				.createBuilder( descriptor, registry, entityConfiguration )
+				.createBuilder( descriptor, registry, entityConfiguration, ViewElementMode.WRITING )
 				.build( builderContext );
 	}
 
