@@ -125,10 +125,11 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		elements.add( new BootstrapUiFactoryImpl().text( "Rendering the new view elements" )
 		                                          .build( new EntityViewElementBuilderContext() ) );
 
+
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
 			com.foreach.across.modules.web.ui.ViewElementBuilder builder = viewElementBuilderService.getElementBuilder(
 					entityConfiguration, descriptor,
-					com.foreach.across.modules.entity.newviews.ViewElementMode.WRITING );
+					com.foreach.across.modules.entity.newviews.ViewElementMode.FORM_WRITE );
 
 			if ( builder != null ) {
 				elements.add( builder.build( new EntityViewElementBuilderContext() ) );
