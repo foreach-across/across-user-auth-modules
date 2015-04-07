@@ -57,6 +57,9 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	@Autowired
 	protected EntityRegistry entityRegistry;
 
+	@Autowired
+	protected EntityViewElementBuilderFactory builderFactory;
+
 	protected ViewElementBuilderContext builderContext;
 	protected Map<String, EntityPropertyDescriptor> properties = new HashMap<>();
 
@@ -92,8 +95,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 				when( descriptor.getPropertyTypeDescriptor() ).thenReturn( typeDescriptor );
 
 				when( codeResolver.getMessageWithFallback(
-						"properties." + field.getName(),
-						StringUtils.lowerCase( propertyName )
+						"properties." + field.getName(), StringUtils.lowerCase( propertyName )
 				) )
 						.thenReturn( "resolved: " + StringUtils.lowerCase( propertyName ) );
 
@@ -104,16 +106,20 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 
 	protected abstract Class getTestClass();
 
+	@Deprecated
 	protected <V extends T> V assemble( String propertyName ) {
-		return assemble( properties.get( propertyName ) );
+		return assemble( properties.get( propertyName ), null );
+	}
+
+	protected <V extends T> V assemble( String propertyName, ViewElementMode viewElementMode ) {
+		return assemble( properties.get( propertyName ), viewElementMode );
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <V extends T> V assemble( EntityPropertyDescriptor descriptor ) {
-		return (V) builderFactory()
-				.createBuilder( descriptor, registry, entityConfiguration, ViewElementMode.WRITING )
+	protected <V extends T> V assemble( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
+		return (V) builderFactory
+				.createBuilder( descriptor, registry, entityConfiguration, viewElementMode )
 				.build( builderContext );
 	}
 
-	protected abstract EntityViewElementBuilderFactory builderFactory();
 }
