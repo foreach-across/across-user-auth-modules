@@ -15,14 +15,11 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
-import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
-import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
-import com.foreach.across.modules.entity.newviews.ViewElementMode;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.common.test.MockedLoader;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -52,8 +49,9 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@ContextConfiguration(classes = TestTextboxFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
-public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<TextboxFormElement>
+@ContextConfiguration(classes = TestTextboxGroupFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
+@Deprecated
+public class TestTextboxGroupFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<FormGroupElement>
 {
 	@Autowired
 	private ConversionService conversionService;
@@ -62,6 +60,8 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 	protected Class getTestClass() {
 		return Validators.class;
 	}
+
+	// depends on qualifiers should be set
 
 	@Test
 	public void noValidator() {
@@ -124,13 +124,14 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void valueSetFromEntity() {
-		when( properties.get( "noValidator" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-		{
-			@Override
-			public Object getValue( Object entity ) {
-				return "fetchedValue";
-			}
-		} );
+		when( properties.get( "noValidator" ).getValueFetcher() )
+				.thenReturn( new ValueFetcher()
+				{
+					@Override
+					public Object getValue( Object entity ) {
+						return "fetchedValue";
+					}
+				} );
 
 		when( conversionService.convert( eq( "fetchedValue" ), any( TypeDescriptor.class ),
 		                                 any( TypeDescriptor.class ) ) )
@@ -144,7 +145,14 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@SuppressWarnings("unchecked")
 	private <V> V assembleAndVerify( String propertyName, boolean required ) {
-		TextboxFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
+		FormGroupElement group = assemble( propertyName );
+		assertNotNull( group );
+		assertEquals( required, group.isRequired() );
+
+		LabelFormElement label = group.getLabel();
+		assertEquals( "resolved: " + StringUtils.lowerCase( propertyName ), label.getText() );
+
+		FormControlElementSupport control = group.getControl();
 		assertEquals( propertyName, control.getName() );
 		assertEquals( propertyName, control.getControlName() );
 		assertFalse( control.isReadonly() );
@@ -188,16 +196,11 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 	{
 		@Bean
 		@Primary
-		public TextboxFormElementBuilderFactory textboxFormElementBuilderFactory() {
-			TextboxFormElementBuilderFactory factory = new TextboxFormElementBuilderFactory();
+		public TextboxGroupFormElementBuilderFactory textboxFormElementBuilderFactory() {
+			TextboxGroupFormElementBuilderFactory factory = new TextboxGroupFormElementBuilderFactory();
 			factory.setMaximumSingleLineLength( 200 );
 
 			return factory;
-		}
-
-		@Bean
-		public BootstrapUiFactory bootstrapUiFactory() {
-			return new BootstrapUiFactoryImpl();
 		}
 
 		@Bean
