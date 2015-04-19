@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
+import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.elements.*;
@@ -30,6 +31,8 @@ import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.ui.elements.ViewElementGenerator;
+import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -119,6 +122,54 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	@Override
 	protected EntityListView createEntityView( ModelMap model ) {
 		return new EntityListView( model );
+	}
+
+	@Override
+	protected void buildNewViewElements( V viewCreationContext,
+	                                     ViewElementBuilderContext builderContext,
+	                                     Collection<EntityPropertyDescriptor> descriptors,
+	                                     ContainerViewElementBuilder container ) {
+
+		TableViewElementBuilder table = bootstrapUi.table();
+		TableViewElementBuilder.Row headerRow = table.row();
+
+		// Create header cells
+		for ( EntityPropertyDescriptor descriptor : descriptors ) {
+			headerRow.add(
+					table.heading()
+					     .add(
+							     viewElementBuilderService.getElementBuilder(
+									     viewCreationContext.getEntityConfiguration(),
+									     descriptor,
+									     com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_LABEL )
+					     )
+			);
+		}
+
+		table.header().add( headerRow );
+
+		TableViewElementBuilder.Row valueRow = table.row();
+
+		// Create value cells
+		for ( EntityPropertyDescriptor descriptor : descriptors ) {
+			valueRow.add(
+					table.cell()
+					     .add(
+							     viewElementBuilderService.getElementBuilder(
+									     viewCreationContext.getEntityConfiguration(),
+									     descriptor,
+									     com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VALUE )
+					     )
+			);
+		}
+
+		ViewElementGenerator<Object, com.foreach.across.modules.bootstrapui.elements.TableViewElement.Row>
+				rowGenerator = new ViewElementGenerator<>();
+		rowGenerator.setItemTemplate( valueRow );
+
+		table.body().add( valueRow );
+
+		container.add( table );
 	}
 
 	@Override
