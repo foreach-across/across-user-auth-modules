@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.services.EntityFormService;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.elements.*;
+import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
@@ -44,7 +45,10 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	private EntityFormService entityFormService;
 
 	@Autowired
-	private EntityViewElementBuilderService viewElementBuilderService;
+	protected BootstrapUiFactory bootstrapUi;
+
+	@Autowired
+	protected EntityViewElementBuilderService viewElementBuilderService;
 
 	private EntityPropertyRegistry propertyRegistry;
 	private EntityPropertyFilter propertyFilter;
@@ -88,13 +92,14 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		                                               messageCodeResolver ) );
 
 		view.addAttribute( "newElements",
-		                   buildNewElements( entityConfiguration, messageCodeResolver )
+		                   buildNewElements( viewCreationContext, entityConfiguration, messageCodeResolver )
 		);
 
 		extendViewModel( viewCreationContext, view );
 	}
 
 	private com.foreach.across.modules.web.ui.ViewElements buildNewElements(
+			V viewCreationContext,
 			EntityConfiguration entityConfiguration,
 			EntityMessageCodeResolver messageCodeResolver
 	) {
@@ -122,28 +127,43 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 			descriptors = registry.getProperties( filter );
 		}
 
-		elements.add( new BootstrapUiFactoryImpl().text( "Rendering the new view elements" )
-		                                          .build( new EntityViewElementBuilderContext() ) );
+		ContainerViewElementBuilder container = bootstrapUi
+				.container()
+				.add( bootstrapUi.text( "Rendering the new view elements" ) );
 
+		buildNewViewElements( viewCreationContext, builderContext, descriptors, container );
 
+//		for ( EntityPropertyDescriptor descriptor : descriptors ) {
+//			com.foreach.across.modules.web.ui.ViewElementBuilder builder = viewElementBuilderService.getElementBuilder(
+//					entityConfiguration, descriptor,
+//					com.foreach.across.modules.entity.newviews.ViewElementMode.FORM_WRITE );
+//
+//			if ( builder != null ) {
+//				elements.add( builder.build( new EntityViewElementBuilderContext() ) );
+//			}
+//
+//			/*
+//			ViewElement propertyView = createPropertyView( builderContext, descriptor );
+//
+//			if ( propertyView != null ) {
+//				viewElements.add( propertyView );
+//			}*/
+//		}
+
+		return container.build( new EntityViewElementBuilderContext() );
+	}
+
+	protected void buildNewViewElements( V viewCreationContext,
+	                                     ViewElementBuilderContext builderContext,
+	                                     Collection<EntityPropertyDescriptor> descriptors,
+	                                     ContainerViewElementBuilder container ) {
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
 			com.foreach.across.modules.web.ui.ViewElementBuilder builder = viewElementBuilderService.getElementBuilder(
-					entityConfiguration, descriptor,
+					viewCreationContext.getEntityConfiguration(), descriptor,
 					com.foreach.across.modules.entity.newviews.ViewElementMode.FORM_WRITE );
 
-			if ( builder != null ) {
-				elements.add( builder.build( new EntityViewElementBuilderContext() ) );
-			}
-
-			/*
-			ViewElement propertyView = createPropertyView( builderContext, descriptor );
-
-			if ( propertyView != null ) {
-				viewElements.add( propertyView );
-			}*/
+			container.add( builder );
 		}
-
-		return elements;
 	}
 
 	private ViewElements getEntityProperties( V viewCreationContext,

@@ -185,12 +185,9 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		EntityMessageCodeResolver codeResolver = createMessageCodeResolver( entityConfiguration );
 		view.setEntityMessages( createEntityMessages( codeResolver ) );
 
-		// todo add this once switched to regular ModelMap everywhere
-		/*
-		if ( view.getEntityLinkBuilder() == null ) {
-			registerLinkBuilder( creationContext, view );
-		}
-		*/
+//		if ( view.getEntityLinkBuilder() == null ) {
+//			registerLinkBuilder( creationContext, view.asMap() );
+//		}
 
 		handlePreProcessors( creationContext, view );
 
