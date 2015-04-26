@@ -24,6 +24,8 @@ import com.foreach.across.modules.entity.services.EntityFormService;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.elements.*;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
@@ -39,6 +41,8 @@ import java.util.List;
 public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends ViewCreationContext, T extends EntityView>
 		extends SimpleEntityViewFactorySupport<V, T>
 {
+	protected static final Logger LOG = LoggerFactory.getLogger( ConfigurablePropertiesEntityViewFactorySupport.class );
+
 	private EntityPropertyRegistries entityPropertyRegistries;
 
 	@Autowired
@@ -162,7 +166,12 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 					viewCreationContext.getEntityConfiguration(), descriptor,
 					com.foreach.across.modules.entity.newviews.ViewElementMode.FORM_WRITE );
 
-			container.add( builder );
+			if ( builder != null ) {
+				container.add( builder );
+			}
+			else {
+				LOG.debug( "No FORM_WRITE element for {}", descriptor.getName() );
+			}
 		}
 	}
 

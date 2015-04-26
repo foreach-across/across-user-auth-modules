@@ -130,7 +130,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	                                     Collection<EntityPropertyDescriptor> descriptors,
 	                                     ContainerViewElementBuilder container ) {
 
-		TableViewElementBuilder table = bootstrapUi.table();
+		TableViewElementBuilder table = bootstrapUi.table().name( "__tbl" );
 		TableViewElementBuilder.Row headerRow = table.row();
 
 		// Create header cells
@@ -152,22 +152,34 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 
 		// Create value cells
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
-			valueRow.add(
-					table.cell()
-					     .add(
-							     viewElementBuilderService.getElementBuilder(
-									     viewCreationContext.getEntityConfiguration(),
-									     descriptor,
-									     com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VALUE )
-					     )
-			);
+			com.foreach.across.modules.web.ui.ViewElementBuilder listValueBuilder =
+					viewElementBuilderService.getElementBuilder(
+							viewCreationContext.getEntityConfiguration(),
+							descriptor,
+							com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VALUE );
+
+			if ( listValueBuilder != null ) {
+				valueRow.add( table.cell().add( listValueBuilder ) );
+			}
+			else {
+				valueRow.add( table.cell() );
+				LOG.debug( "No LIST_VALUE element for {}", descriptor.getName() );
+			}
 		}
 
-		ViewElementGenerator<Object, com.foreach.across.modules.bootstrapui.elements.TableViewElement.Row>
-				rowGenerator = new ViewElementGenerator<>();
-		rowGenerator.setItemTemplate( valueRow );
+		//ViewElementGenerator<Object, com.foreach.across.modules.bootstrapui.elements.TableViewElement.Row>
+		//		rowGenerator = new ViewElementGenerator<>();
+		//rowGenerator.setItemTemplate( valueRow );
+		//rowGenerator.setItems( page.setContent() );
 
-		table.body().add( valueRow );
+		table.body()
+		     .add(
+				     bootstrapUi.generator( Object.class,
+				                            com.foreach.across.modules.bootstrapui.elements.TableViewElement.Row.class )
+				                .name( "__rows" )
+				                .itemBuilder( valueRow )
+
+		     );
 
 		container.add( table );
 	}
@@ -180,6 +192,12 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		view.setPageable( pageable );
 		view.setPage( page );
 		view.setShowResultNumber( isShowResultNumber() );
+
+		ViewElementGenerator generator =
+				( (com.foreach.across.modules.web.ui.elements.ContainerViewElement) view.getAttribute( "newElements" ) )
+						.<com.foreach.across.modules.bootstrapui.elements.TableViewElement>get( "__tbl" )
+						.getBody().get( "__rows" );
+		generator.setItems( page.getContent() );
 
 		SortableTableHeaderCellProcessor sortableTableHeaderCellProcessor = new SortableTableHeaderCellProcessor();
 		sortableTableHeaderCellProcessor.setSortableProperties( sortableProperties );
