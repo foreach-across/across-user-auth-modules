@@ -178,7 +178,6 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 				                            com.foreach.across.modules.bootstrapui.elements.TableViewElement.Row.class )
 				                .name( "__rows" )
 				                .itemBuilder( valueRow )
-
 		     );
 
 		container.add( table );
