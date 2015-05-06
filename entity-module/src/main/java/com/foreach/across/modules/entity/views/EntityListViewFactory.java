@@ -16,6 +16,8 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -31,6 +33,9 @@ import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.ViewElementGenerator;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,8 +135,17 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	                                     Collection<EntityPropertyDescriptor> descriptors,
 	                                     ContainerViewElementBuilder container ) {
 
+		container.add(
+				bootstrapUi.button()
+				           .link( "create new" )
+				           .style( Style.Button.PRIMARY )
+				           .text( "Create a new group" )
+		);
+
 		TableViewElementBuilder table = bootstrapUi.table().name( "__tbl" );
 		TableViewElementBuilder.Row headerRow = table.row();
+
+		headerRow.add( table.heading().add( bootstrapUi.text( "#" ) ) );
 
 		// Create header cells
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
@@ -146,9 +160,21 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			);
 		}
 
-		table.header().add( headerRow );
+		table.header().add( headerRow.add( table.heading() ) );
 
 		TableViewElementBuilder.Row valueRow = table.row();
+
+		valueRow.add( table.cell().add( bootstrapUi.text().postProcessor(
+				new ViewElementPostProcessor<TextViewElement>()
+				{
+					@Override
+					public void postProcess( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext,
+					                         TextViewElement element ) {
+						IteratorViewElementBuilderContext iteratorViewElementBuilderContext =
+								(IteratorViewElementBuilderContext) builderContext;
+						element.setText( String.valueOf( iteratorViewElementBuilderContext.getIndex() + 1 ) );
+					}
+				} ) ) );
 
 		// Create value cells
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
@@ -166,6 +192,51 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 				LOG.debug( "No LIST_VALUE element for {}", descriptor.getName() );
 			}
 		}
+
+		/*
+		ContainerViewElement itemButtons = new ContainerViewElement( "itemButtons" );
+
+			ButtonViewElement edit = new ButtonViewElement()
+			{
+				@Override
+				public String print( Object entity ) {
+					return view.getEntityLinkBuilder().update( entity );
+				}
+			};
+			edit.setName( "btn-edit" );
+			edit.setElementType( CommonViewElements.LINK_BUTTON );
+			edit.setStyle( ButtonViewElement.Style.ICON );
+			edit.setIcon( "edit" );
+			edit.setLabel( messages.updateAction() );
+
+			itemButtons.add( edit );
+
+			( (ViewElements) table.getColumns() ).add( itemButtons );
+		 */
+
+		valueRow.add( table.cell()
+		                   .add(
+				                   bootstrapUi.button()
+				                              .link()
+				                              .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
+				                              .text( "Modify group" )
+				                              .postProcessor(
+						                              new ViewElementPostProcessor<com.foreach.across.modules.bootstrapui.elements.ButtonViewElement>()
+						                              {
+							                              @Override
+							                              public void postProcess( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext,
+							                                                       com.foreach.across.modules.bootstrapui.elements.ButtonViewElement element ) {
+								                              element.setUrl( "hip hoi" );
+							                              }
+						                              } )
+		                   )
+		                   .add(
+				                   bootstrapUi.button()
+				                              .link()
+				                              .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
+				                              .text( "Delete group" )
+		                   )
+		);
 
 		//ViewElementGenerator<Object, com.foreach.across.modules.bootstrapui.elements.TableViewElement.Row>
 		//		rowGenerator = new ViewElementGenerator<>();
