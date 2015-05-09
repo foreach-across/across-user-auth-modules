@@ -18,17 +18,29 @@ package com.foreach.across.modules.user.config.modules;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.registry.EntityModelImpl;
+import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.PermissionGroup;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.repository.core.CrudInvoker;
+
+import java.io.Serializable;
 
 @AcrossDepends(required = "EntityModule")
 @Configuration
 public class UserEntitiesConfiguration implements EntityConfigurer
 {
+	@Autowired
+	private MutableEntityRegistry entityRegistry;
+
+	@Autowired
+	private UserService userService;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
@@ -67,6 +79,23 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 				)
 				.property( "group-membership" ).displayName( "Groups" ).spelValueFetcher( "groups.size()" ).and()
 				.property( "role-membership" ).displayName( "Roles" ).spelValueFetcher( "roles.size()" );
+
+		// Use the UserService for persisting User - as that one takes care of password handling
+		EntityModelImpl userModel = (EntityModelImpl) entityRegistry.getMutableEntityConfiguration( User.class )
+		                                                            .getEntityModel();
+		userModel.setCrudInvoker( new CrudInvoker<User>()
+		{
+			@Override
+			public User invokeSave( User object ) {
+				return userService.save( object );
+			}
+
+			@Override
+			public User invokeFindOne( Serializable id ) {
+				return userService.getUserById( (Long) id );
+			}
+		} );
+
 
 		/*
 		configuration.entity( Role.class )
