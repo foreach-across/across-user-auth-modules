@@ -17,10 +17,12 @@ package com.foreach.across.modules.oauth2.config.security;
 
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
 import com.foreach.across.modules.oauth2.services.ClientOAuth2AuthenticationSerializer;
 import com.foreach.across.modules.oauth2.services.CustomTokenServices;
 import com.foreach.across.modules.oauth2.services.OAuth2StatelessJdbcTokenStore;
 import com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +39,8 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter
@@ -51,6 +55,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Autowired
 	@Qualifier("oAuth2ClientDetailsService")
 	private ClientDetailsService clientDetailsService;
+
+	@Autowired
+	private OAuth2ModuleSettings oAuth2ModuleSettings;
 
 	@Bean
 	public ClientOAuth2AuthenticationSerializer clientOAuth2AuthenticationSerializer() {
@@ -87,10 +94,15 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Override
 	public void configure( AuthorizationServerEndpointsConfigurer endpoints ) throws Exception {
+		Map<String, String> mapping = new HashMap<>();
+		if ( StringUtils.isNotBlank(oAuth2ModuleSettings.getCustomApprovalForm())) {
+			mapping.put( "/oauth/confirm_access", "/oauth/custom_confirm_access" );
+		}
 		endpoints.tokenStore( tokenStore() )
 		         .tokenServices( tokenServices() )
 		         .userApprovalHandler( new DefaultUserApprovalHandler() )
-		         .authenticationManager( authenticationManager );
+		         .authenticationManager( authenticationManager )
+				 .getFrameworkEndpointHandlerMapping().setMappings( mapping );
 	}
 
 	@Override

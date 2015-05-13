@@ -19,12 +19,13 @@ import com.foreach.across.core.database.AcrossSchemaConfiguration;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_SCOPE)
-public class OAuth2Scope
+public class OAuth2Scope implements Serializable
 {
 
 	@Id
