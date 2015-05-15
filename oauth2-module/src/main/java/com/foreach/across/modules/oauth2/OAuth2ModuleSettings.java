@@ -37,6 +37,14 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 	 */
 	public static final String USE_INMEMORY_APPROVAL_STORE = "OAuth2Module.useInmemoryApprovalStore";
 
+	/**
+	 * Specifies whether the authentication process should use a tokenStoreUserApprovalHandler instead of the
+	 * defaultUserApprovalHandler.
+	 * <p/>
+	 * False/True
+	 */
+	public static final String USE_TOKEN_STORE_USER_APPROVAL_HANDLER = "OAuth2Module.useTokenStoreUserApprovalHandler";
+
 	@Override
 	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
 		registry.register( CUSTOM_APPROVAL_FORM, String.class, "",
@@ -45,6 +53,9 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 		registry.register( USE_INMEMORY_APPROVAL_STORE, Boolean.class, false,
 		                   "Specifies whether the authentication process should use an in-memory approval store" +
 				                   " or the default jdbc approval store" );
+		registry.register( USE_TOKEN_STORE_USER_APPROVAL_HANDLER, Boolean.class, false,
+		                   "Specifies whether the authentication process should use a tokenStoreUserApprovalHandler " +
+				                   "instead of the defaultUserApprovalHandler." );
 	}
 
 	public String getCustomApprovalForm() {
@@ -53,5 +64,9 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 
 	public Boolean isUseInmemoryApprovalStore() {
 		return getProperty( USE_INMEMORY_APPROVAL_STORE, Boolean.class );
+	}
+
+	public boolean isUseTokenStoreUserApprovalHandler() {
+		return getProperty( USE_TOKEN_STORE_USER_APPROVAL_HANDLER, Boolean.class );
 	}
 }

@@ -35,6 +35,8 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
+import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
@@ -95,14 +97,32 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Override
 	public void configure( AuthorizationServerEndpointsConfigurer endpoints ) throws Exception {
 		Map<String, String> mapping = new HashMap<>();
-		if ( StringUtils.isNotBlank(oAuth2ModuleSettings.getCustomApprovalForm())) {
+		if ( StringUtils.isNotBlank( oAuth2ModuleSettings.getCustomApprovalForm() ) ) {
 			mapping.put( "/oauth/confirm_access", "/oauth/custom_confirm_access" );
 		}
 		endpoints.tokenStore( tokenStore() )
 		         .tokenServices( tokenServices() )
-		         .userApprovalHandler( new DefaultUserApprovalHandler() )
+
 		         .authenticationManager( authenticationManager )
-				 .getFrameworkEndpointHandlerMapping().setMappings( mapping );
+		         .getFrameworkEndpointHandlerMapping().setMappings( mapping );
+
+		if ( oAuth2ModuleSettings.isUseTokenStoreUserApprovalHandler() ) {
+			endpoints.userApprovalHandler( tokenStoreApprovalHandler() ).requestFactory( oAuth2RequestFactory() );
+		}
+		else {
+			endpoints.userApprovalHandler( new DefaultUserApprovalHandler() );
+		}
+	}
+
+	private TokenStoreUserApprovalHandler tokenStoreApprovalHandler() {
+		TokenStoreUserApprovalHandler tokenStoreUserApprovalHandler = new TokenStoreUserApprovalHandler();
+		tokenStoreUserApprovalHandler.setRequestFactory( oAuth2RequestFactory() );
+		tokenStoreUserApprovalHandler.setTokenStore( tokenStore() );
+		return tokenStoreUserApprovalHandler;
+	}
+
+	private DefaultOAuth2RequestFactory oAuth2RequestFactory() {
+		return new DefaultOAuth2RequestFactory( clientDetailsService );
 	}
 
 	@Override
