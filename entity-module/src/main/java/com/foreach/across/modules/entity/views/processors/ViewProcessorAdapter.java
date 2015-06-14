@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.ViewCreationContext;
 import com.foreach.across.modules.entity.views.elements.ViewElements;
 import org.springframework.ui.ModelMap;
@@ -28,7 +29,7 @@ import org.springframework.validation.DataBinder;
  * @author Andy Somers, Arne Vandamme
  */
 public class ViewProcessorAdapter<T extends ViewCreationContext, U extends EntityView>
-		implements ViewPreProcessor<T, U>, ViewPostProcessor<T, U>, ViewDataBinderProcessor<T>, ViewModelAndCommandProcessor<T>
+		implements EntityViewProcessor<T, U>
 {
 	@Override
 	public void prepareModelAndCommand( String viewName,

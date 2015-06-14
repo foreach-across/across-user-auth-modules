@@ -42,10 +42,12 @@ public class EntityFormView extends EntityView
 		addAttribute( ATTRIBUTE_ORIGINAL_ENTITY, entity );
 	}
 
+	@Deprecated
 	public String getFormAction() {
 		return getAttribute( ATTRIBUTE_FORM_ACTION );
 	}
 
+	@Deprecated
 	public void setFormAction( String action ) {
 		addAttribute( ATTRIBUTE_FORM_ACTION, action );
 	}
