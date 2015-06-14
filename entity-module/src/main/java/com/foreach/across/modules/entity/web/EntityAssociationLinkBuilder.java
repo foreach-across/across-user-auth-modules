@@ -20,9 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 
 /**
- * Generates links for an {@link com.foreach.across.modules.entity.registry.EntityAssociation}.
- * This link builder is the base for scoped versions created with {@link #asAssociationFor(EntityLinkBuilder, Object)},
- * direct use is rare.
+ * <p>Generates links for an {@link com.foreach.across.modules.entity.registry.EntityAssociation}.
+ * This link builder is the base for scoped versions created with {@link #asAssociationFor(EntityLinkBuilder, Object)}.</p>
  *
  * @author Arne Vandamme
  */

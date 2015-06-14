@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.web;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.web.context.WebAppPathResolver;
 import org.springframework.core.convert.ConversionService;
 
 import java.io.Serializable;
@@ -38,6 +39,8 @@ public class EntityConfigurationLinkBuilder implements EntityLinkBuilder
 	private String deletePath = "{0}/{1}/{2}/delete";
 	private String associationsPath = "{0}/{1}/{2}/associations";
 
+	private WebAppPathResolver webAppPathResolver;
+
 	public EntityConfigurationLinkBuilder( String rootPath,
 	                                       EntityConfiguration entityConfiguration,
 	                                       ConversionService conversionService ) {
@@ -46,28 +49,52 @@ public class EntityConfigurationLinkBuilder implements EntityLinkBuilder
 		this.conversionService = conversionService;
 	}
 
-	protected String getOverviewPath() {
+	public EntityConfigurationLinkBuilder( String rootPath,
+	                                       EntityConfiguration entityConfiguration,
+	                                       ConversionService conversionService,
+	                                       WebAppPathResolver webAppPathResolver ) {
+		this.rootPath = rootPath;
+		this.entityConfiguration = entityConfiguration;
+		this.conversionService = conversionService;
+		this.webAppPathResolver = webAppPathResolver;
+	}
+
+	WebAppPathResolver getWebAppPathResolver() {
+		return webAppPathResolver;
+	}
+
+	String getOverviewPath() {
 		return overviewPath;
 	}
 
-	protected String getCreatePath() {
+	String getCreatePath() {
 		return createPath;
 	}
 
-	protected String getViewPath() {
+	String getViewPath() {
 		return viewPath;
 	}
 
-	protected String getUpdatePath() {
+	String getUpdatePath() {
 		return updatePath;
 	}
 
-	protected String getDeletePath() {
+	String getDeletePath() {
 		return deletePath;
 	}
 
-	protected String getAssociationsPath() {
+	String getAssociationsPath() {
 		return associationsPath;
+	}
+
+	/**
+	 * Set the {@link WebAppPathResolver} to be used for this builder.  All generated links will be passed
+	 * through this resolver.
+	 *
+	 * @param webAppPathResolver to use, can be null
+	 */
+	public void setWebAppPathResolver( WebAppPathResolver webAppPathResolver ) {
+		this.webAppPathResolver = webAppPathResolver;
 	}
 
 	public void setOverviewPath( String overviewPath ) {
@@ -96,44 +123,48 @@ public class EntityConfigurationLinkBuilder implements EntityLinkBuilder
 
 	@Override
 	public String overview() {
-		return format( overviewPath );
+		return generate( overviewPath );
 	}
 
 	@Override
 	public String create() {
-		return format( createPath );
+		return generate( createPath );
 	}
 
 	@Override
 	public String update( Object entity ) {
-		return format( updatePath, entity );
+		return generate( updatePath, entity );
 	}
 
 	@Override
 	public String delete( Object entity ) {
-		return format( deletePath, entity );
+		return generate( deletePath, entity );
 	}
 
 	@Override
 	public String view( Object entity ) {
-		return format( viewPath, entity );
+		return generate( viewPath, entity );
 	}
 
 	@Override
 	public String associations( Object entity ) {
-		return format( associationsPath, entity );
+		return generate( associationsPath, entity );
 	}
 
-	private String format( String pattern ) {
-		return MessageFormat.format( pattern, rootPath, getEntityConfigurationPath(), null );
+	private String generate( String pattern ) {
+		return resolve( MessageFormat.format( pattern, rootPath, getEntityConfigurationPath(), null ) );
 	}
 
 	@SuppressWarnings("unchecked")
-	private String format( String pattern, Object entity ) {
+	private String generate( String pattern, Object entity ) {
 		Serializable id = entityConfiguration.getEntityModel().getId( entity );
 		String idAsString = conversionService.convert( id, String.class );
 
-		return MessageFormat.format( pattern, rootPath, getEntityConfigurationPath(), idAsString );
+		return resolve( MessageFormat.format( pattern, rootPath, getEntityConfigurationPath(), idAsString ) );
+	}
+
+	private String resolve( String path ) {
+		return webAppPathResolver != null ? webAppPathResolver.path( path ) : path;
 	}
 
 	protected String getEntityConfigurationPath() {

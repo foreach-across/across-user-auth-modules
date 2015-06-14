@@ -18,10 +18,6 @@ package com.foreach.across.modules.entity.views;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.views.processors.ViewDataBinderProcessor;
-import com.foreach.across.modules.entity.views.processors.ViewModelAndCommandProcessor;
-import com.foreach.across.modules.entity.views.processors.ViewPostProcessor;
-import com.foreach.across.modules.entity.views.processors.ViewPreProcessor;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import org.springframework.context.MessageSource;
@@ -33,8 +29,13 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Base support class for entity view factories that support message resolving along with template specification.
- * It also allows a custom EntityLinkBuilder to be specified for the view.
+ * Base support class for {@link EntityViewFactory} implementations that supports the following features:
+ * <ul>
+ * <li>template specification</li>
+ * <li>message source and message code resolving</li>
+ * <li>custom entity link builders</li>
+ * <li>custom view processors for customizing the view generation</li>
+ * </ul>
  *
  * @author Arne Vandamme
  */
@@ -42,10 +43,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 {
 	public static final String CONTAINER = "_entityView";
 
-	private Collection<ViewPreProcessor<V, T>> preProcessors = Collections.emptyList();
-	private Collection<ViewPostProcessor<V, T>> postProcessors = Collections.emptyList();
-	private Collection<ViewDataBinderProcessor<V>> dataBinderProcessors = Collections.emptyList();
-	private Collection<ViewModelAndCommandProcessor<V>> modelAndCommandProcessors = Collections.emptyList();
+	private Collection<EntityViewProcessor<V, T>> processors = Collections.emptyList();
 
 	private String template;
 	private MessageSource messageSource;
@@ -106,48 +104,17 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		this.entityLinkBuilder = entityLinkBuilder;
 	}
 
-	/**
-	 * Set the ViewPreProcessors that should be handled before building the EntityView
-	 *
-	 * @param preProcessors A Collection of ViewPreProcessors
-	 */
-	public void setPreProcessors( Collection<ViewPreProcessor<V, T>> preProcessors ) {
-		Assert.notNull( preProcessors );
-		this.preProcessors = preProcessors;
-	}
-
-	public Collection<ViewPreProcessor<V, T>> getPreProcessors() {
-		return preProcessors;
+	public Collection<EntityViewProcessor<V, T>> getProcessors() {
+		return processors;
 	}
 
 	/**
-	 * Set the ViewPostProcessors that should be handled before building the EntityView
+	 * Set the {@link EntityViewProcessor}s that should be called when building the {@link EntityView}.
 	 *
-	 * @param postProcessors A Collection of ViewPostProcessors
+	 * @param processors A Collection of ViewPreProcessors
 	 */
-	public void setPostProcessors( Collection<ViewPostProcessor<V, T>> postProcessors ) {
-		Assert.notNull( postProcessors );
-		this.postProcessors = postProcessors;
-	}
-
-	public Collection<ViewPostProcessor<V, T>> getPostProcessors() {
-		return postProcessors;
-	}
-
-	public Collection<ViewDataBinderProcessor<V>> getDataBinderProcessors() {
-		return dataBinderProcessors;
-	}
-
-	public void setDataBinderProcessors( Collection<ViewDataBinderProcessor<V>> dataBinderProcessors ) {
-		this.dataBinderProcessors = dataBinderProcessors;
-	}
-
-	public Collection<ViewModelAndCommandProcessor<V>> getModelAndCommandProcessors() {
-		return modelAndCommandProcessors;
-	}
-
-	public void setModelAndCommandProcessors( Collection<ViewModelAndCommandProcessor<V>> modelAndCommandProcessors ) {
-		this.modelAndCommandProcessors = modelAndCommandProcessors;
+	public void setProcessors( Collection<EntityViewProcessor<V, T>> processors ) {
+		this.processors = processors;
 	}
 
 	@Override
@@ -157,8 +124,8 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	                                    ModelMap model ) {
 		registerLinkBuilder( creationContext, model );
 
-		for ( ViewModelAndCommandProcessor<V> modelAndCommandProcessor : modelAndCommandProcessors ) {
-			modelAndCommandProcessor.prepareModelAndCommand( viewName, creationContext, command, model );
+		for ( EntityViewProcessor<V, T> processor : processors ) {
+			processor.prepareModelAndCommand( viewName, creationContext, command, model );
 		}
 	}
 
@@ -167,8 +134,8 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	                               V creationContext,
 	                               EntityViewCommand command,
 	                               DataBinder dataBinder ) {
-		for ( ViewDataBinderProcessor<V> dataBinderProcessor : dataBinderProcessors ) {
-			dataBinderProcessor.prepareDataBinder( viewName, creationContext, command, dataBinder );
+		for ( EntityViewProcessor<V, T> processor : processors ) {
+			processor.prepareDataBinder( viewName, creationContext, command, dataBinder );
 		}
 	}
 
@@ -185,15 +152,11 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		EntityMessageCodeResolver codeResolver = createMessageCodeResolver( entityConfiguration );
 		view.setEntityMessages( createEntityMessages( codeResolver ) );
 
-//		if ( view.getEntityLinkBuilder() == null ) {
-//			registerLinkBuilder( creationContext, view.asMap() );
-//		}
-
-		handlePreProcessors( creationContext, view );
+		preProcessEntityView( creationContext, view );
 
 		buildViewModel( creationContext, entityConfiguration, codeResolver, view );
 
-		handlePostProcessors( creationContext, view );
+		postProcessEntityView( creationContext, view );
 
 		return view;
 	}
@@ -235,15 +198,15 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		model.addAttribute( EntityView.ATTRIBUTE_ENTITY_LINKS, linkBuilder );
 	}
 
-	private void handlePreProcessors( V creationContext, T view ) {
-		for ( ViewPreProcessor<V, T> preProcessor : preProcessors ) {
-			preProcessor.preProcess( creationContext, view );
+	protected void preProcessEntityView( V creationContext, T view ) {
+		for ( EntityViewProcessor<V, T> processor : processors ) {
+			processor.preProcess( creationContext, view );
 		}
 	}
 
-	private void handlePostProcessors( V creationContext, T view ) {
-		for ( ViewPostProcessor<V, T> postProcessor : postProcessors ) {
-			postProcessor.postProcess( creationContext, view );
+	protected void postProcessEntityView( V creationContext, T view ) {
+		for ( EntityViewProcessor<V, T> processor : processors ) {
+			processor.postProcess( creationContext, view );
 		}
 	}
 
