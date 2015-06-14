@@ -15,7 +15,11 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.modules.bootstrapui.elements.Grid;
+import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.registry.EntityModel;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.elements.CommonViewElements;
 import com.foreach.across.modules.entity.views.elements.ViewElementMode;
 import com.foreach.across.modules.entity.views.elements.ViewElements;
@@ -23,6 +27,7 @@ import com.foreach.across.modules.entity.views.elements.button.ButtonViewElement
 import com.foreach.across.modules.entity.views.elements.container.ColumnsViewElement;
 import com.foreach.across.modules.entity.views.elements.container.ContainerViewElement;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -35,24 +40,13 @@ public class EntityFormViewFactory<V extends ViewCreationContext> extends Config
 	public static final String FORM_RIGHT = "_formGrid_right";
 
 	@Override
-	protected ViewElements customizeViewElements( ViewElements elements ) {
-		ContainerViewElement left = new ContainerViewElement( FORM_LEFT );
-		left.addAll( elements );
-
-		ColumnsViewElement formGrid = new ColumnsViewElement( FORM_GRID );
-		formGrid.add( left );
-		formGrid.add( new ContainerViewElement( FORM_RIGHT ) );
-
-		ContainerViewElement root = new ContainerViewElement( CONTAINER );
-		root.add( formGrid );
-
-		return root;
+	protected EntityFormView createEntityView( ModelMap model ) {
+		return new EntityFormView( model );
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected void extendViewModel( V viewCreationContext, EntityFormView view ) {
-		EntityModel entityModel = viewCreationContext.getEntityConfiguration().getEntityModel();
+	protected void preProcessEntityView( V creationContext, EntityFormView view ) {
+		EntityModel entityModel = creationContext.getEntityConfiguration().getEntityModel();
 
 		Object entity = retrieveOrCreateEntity( entityModel, view );
 		view.setEntity( entity );
@@ -70,6 +64,94 @@ public class EntityFormViewFactory<V extends ViewCreationContext> extends Config
 				                    : view.getEntityLinkBuilder().update( original )
 		);
 
+		super.preProcessEntityView( creationContext, view );
+	}
+
+	private Object retrieveOrCreateEntity( EntityModel entityModel, EntityFormView view ) {
+		Object entity = view.getEntity();
+
+		if ( entity == null ) {
+			entity = entityModel.createNew();
+		}
+
+		return entity;
+	}
+
+	@Override
+	protected com.foreach.across.modules.web.ui.ViewElements buildViewElements( V viewCreationContext,
+	                                                                            EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext,
+	                                                                            EntityMessageCodeResolver messageCodeResolver ) {
+		com.foreach.across.modules.web.ui.ViewElements elements =
+				super.buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver );
+
+		EntityLinkBuilder linkBuilder = viewElementBuilderContext.getEntityView().getEntityLinkBuilder();
+		EntityMessages messages = viewElementBuilderContext.getEntityView().getEntityMessages();
+
+		return bootstrapUi.form()
+							//.url( linkBuilder.update( entity  ))
+		                  .add(
+				                  bootstrapUi.row()
+				                             .add(
+						                             bootstrapUi.column( Grid.Device.MD.width( Grid.Width.HALF ) )
+						                                        .name( FORM_LEFT )
+						                                        .addAll( elements )
+				                             )
+				                             .add(
+						                             bootstrapUi.column( Grid.Device.MD.width( Grid.Width.HALF ) )
+						                                        .name( FORM_RIGHT )
+				                             )
+		                  )
+		                  .add(
+				                  bootstrapUi.container()
+				                             .name( "buttons" )
+				                             .add(
+						                             bootstrapUi.button()
+						                                        .name( "btn-save" )
+						                                        .style( Style.PRIMARY )
+						                                        .submit()
+						                                        .text( messages.messageWithFallback( "actions.save" ) )
+				                             )
+				                             .add(
+						                             bootstrapUi.button()
+						                                        .name( "btn-cancel" )
+						                                        .link( linkBuilder.overview() )
+						                                        .text(
+								                                        messages.messageWithFallback( "actions.cancel" )
+						                                        )
+				                             )
+		                  )
+		                  .build( viewElementBuilderContext );
+	}
+
+	@Override
+	protected ViewElements customizeViewElements( ViewElements elements ) {
+//		bootstrapUi.form()
+//				.add( elements );
+
+//		bootstrapUi.container()
+//				.add(
+//						bootstrapUi.button()
+//						           .name("btn-save")
+//						           .submit()
+//						           .text( messages.messageWithFallb )
+//				)
+
+		ContainerViewElement left = new ContainerViewElement( FORM_LEFT );
+		left.addAll( elements );
+
+		ColumnsViewElement formGrid = new ColumnsViewElement( FORM_GRID );
+		formGrid.add( left );
+		formGrid.add( new ContainerViewElement( FORM_RIGHT ) );
+
+		ContainerViewElement root = new ContainerViewElement( CONTAINER );
+		root.add( formGrid );
+
+		return root;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void extendViewModel( V viewCreationContext, EntityFormView view ) {
 		EntityMessages messages = view.getEntityMessages();
 
 		ContainerViewElement buttons = new ContainerViewElement();
@@ -92,23 +174,9 @@ public class EntityFormViewFactory<V extends ViewCreationContext> extends Config
 		view.getEntityProperties().add( buttons );
 	}
 
-	private Object retrieveOrCreateEntity( EntityModel entityModel, EntityFormView view ) {
-		Object entity = view.getEntity();
-
-		if ( entity == null ) {
-			entity = entityModel.createNew();
-		}
-
-		return entity;
-	}
-
 	@Override
 	protected ViewElementMode getMode() {
 		return ViewElementMode.FOR_WRITING;
 	}
 
-	@Override
-	protected EntityFormView createEntityView( ModelMap model ) {
-		return new EntityFormView( model );
-	}
 }

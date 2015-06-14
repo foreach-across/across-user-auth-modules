@@ -19,7 +19,10 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilter;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.services.EntityFormService;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.elements.*;
@@ -28,13 +31,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
 /**
- * Base support class for entity view factories that supports the configuration of the properties
- * to display for a a given entity type.
+ * Extends the {@link SimpleEntityViewFactorySupport} with support for configuring a set of properties
+ * that should be rendered for a given entity type.
  *
  * @author Arne Vandamme
  */
@@ -42,8 +46,6 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		extends SimpleEntityViewFactorySupport<V, T>
 {
 	protected static final Logger LOG = LoggerFactory.getLogger( ConfigurablePropertiesEntityViewFactorySupport.class );
-
-	private EntityPropertyRegistries entityPropertyRegistries;
 
 	@Autowired
 	private EntityFormService entityFormService;
@@ -62,6 +64,9 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		return propertyRegistry;
 	}
 
+	/**
+	 * Set the {@link EntityPropertyRegistry} from which the {@link EntityPropertyDescriptor}s should be fetched.
+	 */
 	public void setPropertyRegistry( EntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
 	}
@@ -70,6 +75,9 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		return propertyFilter;
 	}
 
+	/**
+	 * Set the {@link EntityPropertyFilter} that specifies which properties should be selected.
+	 */
 	public void setPropertyFilter( EntityPropertyFilter propertyFilter ) {
 		this.propertyFilter = propertyFilter;
 	}
@@ -78,13 +86,11 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		return propertyComparator;
 	}
 
+	/**
+	 * Set the {@link Comparator} that should be used for sorting the properties.
+	 */
 	public void setPropertyComparator( Comparator<EntityPropertyDescriptor> propertyComparator ) {
 		this.propertyComparator = propertyComparator;
-	}
-
-	@Autowired
-	public void setEntityPropertyRegistries( EntityPropertyRegistries entityPropertyRegistries ) {
-		this.entityPropertyRegistries = entityPropertyRegistries;
 	}
 
 	@Override
@@ -92,92 +98,108 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	                               EntityConfiguration entityConfiguration,
 	                               EntityMessageCodeResolver messageCodeResolver,
 	                               T view ) {
-		view.setEntityProperties( getEntityProperties( viewCreationContext, entityConfiguration,
-		                                               messageCodeResolver ) );
+		EntityViewElementBuilderContext<T> viewElementBuilderContext = createEntityViewElementBuilderContext( view );
+
+		// createBuilder
+
+		// buildElements
+
+		// customizeElements
+
+		view.setEntityProperties( getOldEntityProperties( viewCreationContext, entityConfiguration,
+		                                                  messageCodeResolver ) );
 
 		view.addAttribute( "newElements",
-		                   buildNewElements( viewCreationContext, entityConfiguration, messageCodeResolver )
+		                   buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver )
 		);
 
 		extendViewModel( viewCreationContext, view );
 	}
 
-	private com.foreach.across.modules.web.ui.ViewElements buildNewElements(
+	protected EntityViewElementBuilderContext createEntityViewElementBuilderContext( T view ) {
+		return new EntityViewElementBuilderContext<>( view );
+	}
+
+	protected com.foreach.across.modules.web.ui.ViewElements buildViewElements(
 			V viewCreationContext,
-			EntityConfiguration entityConfiguration,
+			EntityViewElementBuilderContext<T> viewElementBuilderContext,
 			EntityMessageCodeResolver messageCodeResolver
 	) {
-		com.foreach.across.modules.web.ui.ViewElements elements =
-				new com.foreach.across.modules.web.ui.elements.ContainerViewElement();
+		EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
+		List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
 
+		ContainerViewElementBuilder container = bootstrapUi.container();
+
+		Collection<com.foreach.across.modules.web.ui.ViewElementBuilder> builders
+				= getViewElementBuilders( entityConfiguration, descriptors,
+				                          com.foreach.across.modules.entity.newviews.ViewElementMode.FORM_WRITE );
+
+		for ( com.foreach.across.modules.web.ui.ViewElementBuilder builder : builders ) {
+			if ( builder != null ) {
+				container.add( builder );
+			}
+		}
+
+		return container.build( viewElementBuilderContext );
+	}
+
+	/**
+	 * Get the actual property descriptors that are configured on this {@link EntityViewFactory}.
+	 *
+	 * @param entityConfiguration from which to fetch the properties by default
+	 * @return list of {@link EntityPropertyDescriptor}s
+	 */
+	protected List<EntityPropertyDescriptor> getPropertyDescriptors( EntityConfiguration entityConfiguration ) {
 		EntityPropertyFilter filter = getPropertyFilter() != null ? getPropertyFilter() : EntityPropertyFilters.NoOp;
+		EntityPropertyRegistry registry = getPropertyRegistry( entityConfiguration );
 
+		if ( getPropertyComparator() != null ) {
+			return registry.getProperties( filter, getPropertyComparator() );
+		}
+
+		return registry.getProperties( filter );
+	}
+
+	/**
+	 * @param entityConfiguration form which to fetch the properties by default
+	 * @return registry instance to use
+	 */
+	protected EntityPropertyRegistry getPropertyRegistry( EntityConfiguration entityConfiguration ) {
 		EntityPropertyRegistry registry = getPropertyRegistry();
 
 		if ( registry == null ) {
 			registry = entityConfiguration.getPropertyRegistry();
 		}
 
-		ViewElementBuilderContext builderContext
-				= entityFormService.createBuilderContext( entityConfiguration, registry, messageCodeResolver,
-				                                          getMode() );
-
-		List<EntityPropertyDescriptor> descriptors;
-
-		if ( getPropertyComparator() != null ) {
-			descriptors = registry.getProperties( filter, getPropertyComparator() );
-		}
-		else {
-			descriptors = registry.getProperties( filter );
-		}
-
-		ContainerViewElementBuilder container = bootstrapUi
-				.container()
-				.add( bootstrapUi.text( "Rendering the new view elements" ) );
-
-		buildNewViewElements( viewCreationContext, builderContext, descriptors, container );
-
-//		for ( EntityPropertyDescriptor descriptor : descriptors ) {
-//			com.foreach.across.modules.web.ui.ViewElementBuilder builder = viewElementBuilderService.getElementBuilder(
-//					entityConfiguration, descriptor,
-//					com.foreach.across.modules.entity.newviews.ViewElementMode.FORM_WRITE );
-//
-//			if ( builder != null ) {
-//				elements.add( builder.build( new EntityViewElementBuilderContext() ) );
-//			}
-//
-//			/*
-//			ViewElement propertyView = createPropertyView( builderContext, descriptor );
-//
-//			if ( propertyView != null ) {
-//				viewElements.add( propertyView );
-//			}*/
-//		}
-
-		return container.build( new EntityViewElementBuilderContext() );
+		return registry;
 	}
 
-	protected void buildNewViewElements( V viewCreationContext,
-	                                     ViewElementBuilderContext builderContext,
-	                                     Collection<EntityPropertyDescriptor> descriptors,
-	                                     ContainerViewElementBuilder container ) {
+	/**
+	 * Creates a {@link ViewElementBuilder} for every property for the given mode.
+	 * If a given descriptor does not create a valid {@link com.foreach.across.modules.web.ui.ViewElementBuilder},
+	 * a null entry will be inserted in the resulting list.
+	 *
+	 * @param viewElementMode for the builders
+	 * @return collection of builders
+	 */
+	protected Collection<com.foreach.across.modules.web.ui.ViewElementBuilder> getViewElementBuilders(
+			EntityConfiguration entityConfiguration,
+			Collection<EntityPropertyDescriptor> descriptors,
+			com.foreach.across.modules.entity.newviews.ViewElementMode viewElementMode ) {
+		List<com.foreach.across.modules.web.ui.ViewElementBuilder> builders = new ArrayList<>( descriptors.size() );
+
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
-			com.foreach.across.modules.web.ui.ViewElementBuilder builder = viewElementBuilderService.getElementBuilder(
-					viewCreationContext.getEntityConfiguration(), descriptor,
-					com.foreach.across.modules.entity.newviews.ViewElementMode.FORM_WRITE );
-
-			if ( builder != null ) {
-				container.add( builder );
-			}
-			else {
-				LOG.debug( "No FORM_WRITE element for {}", descriptor.getName() );
-			}
+			builders.add(
+					viewElementBuilderService.getElementBuilder( entityConfiguration, descriptor, viewElementMode )
+			);
 		}
+
+		return builders;
 	}
 
-	private ViewElements getEntityProperties( V viewCreationContext,
-	                                          EntityConfiguration entityConfiguration,
-	                                          EntityMessageCodeResolver messageCodeResolver ) {
+	private ViewElements getOldEntityProperties( V viewCreationContext,
+	                                             EntityConfiguration entityConfiguration,
+	                                             EntityMessageCodeResolver messageCodeResolver ) {
 		EntityPropertyFilter filter = getPropertyFilter() != null ? getPropertyFilter() : EntityPropertyFilters.NoOp;
 
 		EntityPropertyRegistry registry = getPropertyRegistry();
@@ -200,7 +222,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		}
 
 		ViewElements propertyViews = new ViewElements();
-		buildViewElements( viewCreationContext, builderContext, descriptors, propertyViews );
+		buildOldViewElements( viewCreationContext, builderContext, descriptors, propertyViews );
 
 		return customizeViewElements( propertyViews );
 	}
@@ -209,10 +231,11 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		return elements;
 	}
 
-	protected void buildViewElements( V viewCreationContext,
-	                                  ViewElementBuilderContext builderContext,
-	                                  Collection<EntityPropertyDescriptor> descriptors,
-	                                  ViewElements viewElements ) {
+	@Deprecated
+	protected void buildOldViewElements( V viewCreationContext,
+	                                     ViewElementBuilderContext builderContext,
+	                                     Collection<EntityPropertyDescriptor> descriptors,
+	                                     ViewElements viewElements ) {
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
 			ViewElement propertyView = createPropertyView( builderContext, descriptor );
 
@@ -222,6 +245,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		}
 	}
 
+	@Deprecated
 	protected ViewElement createPropertyView( ViewElementBuilderContext builderContext,
 	                                          EntityPropertyDescriptor descriptor ) {
 		ViewElement element = builderContext.getViewElement( descriptor );
@@ -230,6 +254,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		return element;
 	}
 
+	@Deprecated
 	private void applyNamePrefix( ViewElement element, String prefix ) {
 		if ( element instanceof ViewElementSupport && element.isField() ) {
 			( (ViewElementSupport) element ).setName( prefix + element.getName() );
@@ -243,6 +268,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		}
 	}
 
+	@Deprecated
 	protected abstract ViewElementMode getMode();
 
 	protected abstract void extendViewModel( V viewCreationContext, T view );

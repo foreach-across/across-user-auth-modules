@@ -129,7 +129,6 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		return new EntityListView( model );
 	}
 
-	@Override
 	protected void buildNewViewElements( V viewCreationContext,
 	                                     ViewElementBuilderContext builderContext,
 	                                     Collection<EntityPropertyDescriptor> descriptors,
@@ -185,10 +184,10 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 							com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VALUE );
 
 			if ( listValueBuilder != null ) {
-				valueRow.add( table.cell().add( listValueBuilder ) );
+				valueRow.add( table.cell().attribute( "data-field", descriptor.getName() ).add( listValueBuilder ) );
 			}
 			else {
-				valueRow.add( table.cell() );
+				valueRow.add( table.cell().attribute( "data-field", descriptor.getName() ) );
 				LOG.debug( "No LIST_VALUE element for {}", descriptor.getName() );
 			}
 		}
@@ -304,6 +303,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 				public Map<String, String> attributes( Object entity ) {
 					return Collections.singletonMap(
 							"data-summary-url",
+
 							ServletUriComponentsBuilder
 									.fromCurrentContextPath()
 									.path( adminWeb.path( view.getEntityLinkBuilder().view( entity ) ) )
@@ -382,10 +382,10 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	}
 
 	@Override
-	protected void buildViewElements( V viewCreationContext,
-	                                  ViewElementBuilderContext builderContext,
-	                                  Collection<EntityPropertyDescriptor> descriptors,
-	                                  ViewElements viewElements ) {
+	protected void buildOldViewElements( V viewCreationContext,
+	                                     ViewElementBuilderContext builderContext,
+	                                     Collection<EntityPropertyDescriptor> descriptors,
+	                                     ViewElements viewElements ) {
 		Map<ViewElement, EntityPropertyDescriptor> descriptorMap = new HashMap<>();
 
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {

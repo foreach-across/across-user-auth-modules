@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.elements.ViewElements;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -32,7 +33,7 @@ import org.springframework.web.bind.WebDataBinder;
  * @author Andy Somers, Arne Vandamme
  */
 public class WebViewProcessorAdapter<U extends EntityView>
-		implements ViewPreProcessor<WebViewCreationContext, U>, ViewPostProcessor<WebViewCreationContext, U>, ViewDataBinderProcessor<WebViewCreationContext>, ViewModelAndCommandProcessor<WebViewCreationContext>
+		implements EntityViewProcessor<WebViewCreationContext, U>
 {
 	@Override
 	public final void prepareModelAndCommand( String viewName,

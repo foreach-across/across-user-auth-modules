@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.processors;
+package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
-import com.foreach.across.modules.entity.views.ViewCreationContext;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.DataBinder;
 
 /**
  * @author Arne Vandamme
  */
-public interface ViewDataBinderProcessor<V extends ViewCreationContext>
+public interface EntityViewProcessor<V extends ViewCreationContext, T extends EntityView>
 {
+	void prepareModelAndCommand( String viewName,
+	                             V creationContext,
+	                             EntityViewCommand command,
+	                             ModelMap model );
+
 	void prepareDataBinder( String viewName, V creationContext, EntityViewCommand command, DataBinder dataBinder );
+
+	void preProcess( V creationContext, T view );
+
+	void postProcess( V creationContext, T view );
 }
