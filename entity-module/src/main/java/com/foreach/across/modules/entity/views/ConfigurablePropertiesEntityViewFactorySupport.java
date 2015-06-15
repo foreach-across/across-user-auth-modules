@@ -23,10 +23,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilter;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.services.EntityFormService;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.views.elements.*;
-import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
+import com.foreach.across.modules.entity.views.elements.ViewElementBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +44,6 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		extends SimpleEntityViewFactorySupport<V, T>
 {
 	protected static final Logger LOG = LoggerFactory.getLogger( ConfigurablePropertiesEntityViewFactorySupport.class );
-
-	@Autowired
-	private EntityFormService entityFormService;
 
 	@Autowired
 	protected BootstrapUiFactory bootstrapUi;
@@ -100,47 +95,13 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	                               T view ) {
 		EntityViewElementBuilderContext<T> viewElementBuilderContext = createEntityViewElementBuilderContext( view );
 
-		// createBuilder
-
-		// buildElements
-
-		// customizeElements
-
-		view.setEntityProperties( getOldEntityProperties( viewCreationContext, entityConfiguration,
-		                                                  messageCodeResolver ) );
-
-		view.addAttribute( "newElements",
-		                   buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver )
+		view.setViewElements(
+				buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver )
 		);
-
-		extendViewModel( viewCreationContext, view );
 	}
 
-	protected EntityViewElementBuilderContext createEntityViewElementBuilderContext( T view ) {
+	protected EntityViewElementBuilderContext<T> createEntityViewElementBuilderContext( T view ) {
 		return new EntityViewElementBuilderContext<>( view );
-	}
-
-	protected com.foreach.across.modules.web.ui.ViewElements buildViewElements(
-			V viewCreationContext,
-			EntityViewElementBuilderContext<T> viewElementBuilderContext,
-			EntityMessageCodeResolver messageCodeResolver
-	) {
-		EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
-		List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
-
-		ContainerViewElementBuilder container = bootstrapUi.container();
-
-		Collection<com.foreach.across.modules.web.ui.ViewElementBuilder> builders
-				= getViewElementBuilders( entityConfiguration, descriptors,
-				                          com.foreach.across.modules.entity.newviews.ViewElementMode.FORM_WRITE );
-
-		for ( com.foreach.across.modules.web.ui.ViewElementBuilder builder : builders ) {
-			if ( builder != null ) {
-				container.add( builder );
-			}
-		}
-
-		return container.build( viewElementBuilderContext );
 	}
 
 	/**
@@ -197,79 +158,10 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		return builders;
 	}
 
-	private ViewElements getOldEntityProperties( V viewCreationContext,
-	                                             EntityConfiguration entityConfiguration,
-	                                             EntityMessageCodeResolver messageCodeResolver ) {
-		EntityPropertyFilter filter = getPropertyFilter() != null ? getPropertyFilter() : EntityPropertyFilters.NoOp;
 
-		EntityPropertyRegistry registry = getPropertyRegistry();
-
-		if ( registry == null ) {
-			registry = entityConfiguration.getPropertyRegistry();
-		}
-
-		ViewElementBuilderContext builderContext
-				= entityFormService.createBuilderContext( entityConfiguration, registry, messageCodeResolver,
-				                                          getMode() );
-
-		List<EntityPropertyDescriptor> descriptors;
-
-		if ( getPropertyComparator() != null ) {
-			descriptors = registry.getProperties( filter, getPropertyComparator() );
-		}
-		else {
-			descriptors = registry.getProperties( filter );
-		}
-
-		ViewElements propertyViews = new ViewElements();
-		buildOldViewElements( viewCreationContext, builderContext, descriptors, propertyViews );
-
-		return customizeViewElements( propertyViews );
-	}
-
-	protected ViewElements customizeViewElements( ViewElements elements ) {
-		return elements;
-	}
-
-	@Deprecated
-	protected void buildOldViewElements( V viewCreationContext,
-	                                     ViewElementBuilderContext builderContext,
-	                                     Collection<EntityPropertyDescriptor> descriptors,
-	                                     ViewElements viewElements ) {
-		for ( EntityPropertyDescriptor descriptor : descriptors ) {
-			ViewElement propertyView = createPropertyView( builderContext, descriptor );
-
-			if ( propertyView != null ) {
-				viewElements.add( propertyView );
-			}
-		}
-	}
-
-	@Deprecated
-	protected ViewElement createPropertyView( ViewElementBuilderContext builderContext,
-	                                          EntityPropertyDescriptor descriptor ) {
-		ViewElement element = builderContext.getViewElement( descriptor );
-		applyNamePrefix( element, "entity." );
-
-		return element;
-	}
-
-	@Deprecated
-	private void applyNamePrefix( ViewElement element, String prefix ) {
-		if ( element instanceof ViewElementSupport && element.isField() ) {
-			( (ViewElementSupport) element ).setName( prefix + element.getName() );
-
-		}
-
-		if ( element instanceof ViewElements ) {
-			for ( ViewElement child : ( (ViewElements) element ) ) {
-				applyNamePrefix( child, prefix );
-			}
-		}
-	}
-
-	@Deprecated
-	protected abstract ViewElementMode getMode();
-
-	protected abstract void extendViewModel( V viewCreationContext, T view );
+	protected abstract com.foreach.across.modules.web.ui.ViewElements buildViewElements(
+			V viewCreationContext,
+			EntityViewElementBuilderContext<T> viewElementBuilderContext,
+			EntityMessageCodeResolver messageCodeResolver
+	);
 }
