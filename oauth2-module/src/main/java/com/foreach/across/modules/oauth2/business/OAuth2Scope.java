@@ -21,6 +21,7 @@ import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 

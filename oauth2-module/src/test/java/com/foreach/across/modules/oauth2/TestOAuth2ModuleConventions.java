@@ -25,7 +25,7 @@ public class TestOAuth2ModuleConventions extends AbstractAcrossModuleConventions
 {
 	@Override
 	protected boolean hasSettings() {
-		return false;
+		return true;
 	}
 
 	@Override

@@ -63,7 +63,8 @@ public class CustomTokenEndpointsConfiguration extends SpringSecurityWebConfigur
 
 		String userTokenPath = endpoints.oauth2EndpointHandlerMapping().getPath( "/oauth/user_token" );
 		String invalidateTokenPath = endpoints.oauth2EndpointHandlerMapping().getPath( "/oauth/invalidate" );
-		requests.antMatchers( userTokenPath, invalidateTokenPath );
+		String authorizePath = endpoints.oauth2EndpointHandlerMapping().getPath( "/oauth/authorize" );
+		requests.antMatchers( userTokenPath, invalidateTokenPath, authorizePath );
 
 		http
 				.sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
@@ -73,6 +74,7 @@ public class CustomTokenEndpointsConfiguration extends SpringSecurityWebConfigur
 				.csrf().disable()
 				.authorizeRequests()
 				.antMatchers( userTokenPath ).hasAuthority( "manage users" )
+				.antMatchers( authorizePath ).authenticated()
 				.antMatchers( invalidateTokenPath ).authenticated();
 
 		// And set the default expression handler in case one isn't explicit elsewhere
