@@ -34,12 +34,20 @@ public class EntityFormView extends EntityView
 		super( model );
 	}
 
+	/**
+	 * @return The original entity in case of an update form.
+	 */
 	public Object getOriginalEntity() {
 		return getAttribute( ATTRIBUTE_ORIGINAL_ENTITY );
 	}
 
 	public void setOriginalEntity( Object entity ) {
 		addAttribute( ATTRIBUTE_ORIGINAL_ENTITY, entity );
+	}
+
+	public boolean isUpdate() {
+		Object original = getOriginalEntity();
+		return original != null;
 	}
 
 	@Deprecated

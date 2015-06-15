@@ -1,3 +1,18 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
@@ -8,7 +23,6 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElements;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
-import org.springframework.ui.ModelMap;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,14 +31,12 @@ import java.util.List;
  * Simple implementation of {@link ConfigurablePropertiesEntityViewFactorySupport} that builds the view elements
  * in the mode specified, for the properties configured.
  */
-public class SingleEntityViewFactory extends ConfigurablePropertiesEntityViewFactorySupport
+public abstract class SingleEntityViewFactory<V extends ViewCreationContext, T extends EntityView>
+		extends ConfigurablePropertiesEntityViewFactorySupport<V, T>
 {
-	private com.foreach.across.modules.entity.views.elements.ViewElementMode mode =
-			com.foreach.across.modules.entity.views.elements.ViewElementMode.FOR_READING;
-
 	private ViewElementMode viewElementMode = ViewElementMode.FORM_READ;
 
-	public ViewElementMode getViewElementMode() {
+	protected ViewElementMode getViewElementMode() {
 		return viewElementMode;
 	}
 
@@ -34,36 +46,14 @@ public class SingleEntityViewFactory extends ConfigurablePropertiesEntityViewFac
 	 *
 	 * @param viewElementMode to generate controls for
 	 */
-	public void setViewElementMode( com.foreach.across.modules.entity.newviews.ViewElementMode viewElementMode ) {
+	protected void setViewElementMode( com.foreach.across.modules.entity.newviews.ViewElementMode viewElementMode ) {
 		this.viewElementMode = viewElementMode;
-	}
-
-	@Deprecated
-	@Override
-	public com.foreach.across.modules.entity.views.elements.ViewElementMode getMode() {
-		return mode;
-	}
-
-	@Deprecated
-	public void setMode( com.foreach.across.modules.entity.views.elements.ViewElementMode mode ) {
-		this.mode = mode;
-	}
-
-	@Override
-	@Deprecated
-	protected void extendViewModel( ViewCreationContext viewCreationContext, EntityView view ) {
-
-	}
-
-	@Override
-	protected EntityView createEntityView( ModelMap model ) {
-		return new EntityView( model );
 	}
 
 	@Override
 	protected ViewElements buildViewElements(
-			ViewCreationContext viewCreationContext,
-			EntityViewElementBuilderContext viewElementBuilderContext,
+			V viewCreationContext,
+			EntityViewElementBuilderContext<T> viewElementBuilderContext,
 			EntityMessageCodeResolver messageCodeResolver
 	) {
 		EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();

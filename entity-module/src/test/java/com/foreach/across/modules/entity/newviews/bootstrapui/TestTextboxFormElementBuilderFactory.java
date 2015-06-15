@@ -146,7 +146,7 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 	private <V> V assembleAndVerify( String propertyName, boolean required ) {
 		TextboxFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
 		assertEquals( propertyName, control.getName() );
-		assertEquals( propertyName, control.getControlName() );
+		assertEquals( "entity." + propertyName, control.getControlName() );
 		assertFalse( control.isReadonly() );
 		assertFalse( control.isDisabled() );
 		assertEquals( required, control.isRequired() );

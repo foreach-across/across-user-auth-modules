@@ -17,15 +17,10 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
-import com.foreach.across.modules.entity.registry.EntityModel;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.ViewElementMode;
-import com.foreach.across.modules.entity.views.elements.ViewElements;
-import com.foreach.across.modules.entity.views.elements.button.ButtonViewElement;
-import com.foreach.across.modules.entity.views.elements.container.ColumnsViewElement;
-import com.foreach.across.modules.entity.views.elements.container.ContainerViewElement;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import org.springframework.ui.ModelMap;
@@ -33,48 +28,20 @@ import org.springframework.ui.ModelMap;
 /**
  * @author Arne Vandamme
  */
-public class EntityFormViewFactory<V extends ViewCreationContext> extends ConfigurablePropertiesEntityViewFactorySupport<V, EntityFormView>
+public class EntityFormViewFactory<V extends ViewCreationContext>
+		extends SingleEntityViewFactory<V, EntityFormView>
 {
-	public static final String FORM_GRID = "_formGrid";
-	public static final String FORM_LEFT = "_formGrid_left";
-	public static final String FORM_RIGHT = "_formGrid_right";
+	public static final String FORM_NAME = "entityForm";
+	public static final String FORM_LEFT = "entityForm-left";
+	public static final String FORM_RIGHT = "entityForm-right";
+
+	public EntityFormViewFactory() {
+		setViewElementMode( ViewElementMode.FORM_WRITE );
+	}
 
 	@Override
 	protected EntityFormView createEntityView( ModelMap model ) {
 		return new EntityFormView( model );
-	}
-
-	@Override
-	protected void preProcessEntityView( V creationContext, EntityFormView view ) {
-		EntityModel entityModel = creationContext.getEntityConfiguration().getEntityModel();
-
-		Object entity = retrieveOrCreateEntity( entityModel, view );
-		view.setEntity( entity );
-
-		Object original = view.getOriginalEntity();
-
-		if ( original == null ) {
-			original = entity;
-		}
-
-		boolean newEntity = entityModel.isNew( entity );
-		view.addAttribute( "existing", !newEntity );
-		view.setFormAction( newEntity
-				                    ? view.getEntityLinkBuilder().create()
-				                    : view.getEntityLinkBuilder().update( original )
-		);
-
-		super.preProcessEntityView( creationContext, view );
-	}
-
-	private Object retrieveOrCreateEntity( EntityModel entityModel, EntityFormView view ) {
-		Object entity = view.getEntity();
-
-		if ( entity == null ) {
-			entity = entityModel.createNew();
-		}
-
-		return entity;
 	}
 
 	@Override
@@ -88,7 +55,11 @@ public class EntityFormViewFactory<V extends ViewCreationContext> extends Config
 		EntityMessages messages = viewElementBuilderContext.getEntityView().getEntityMessages();
 
 		return bootstrapUi.form()
-							//.url( linkBuilder.update( entity  ))
+		                  .name( FORM_NAME )
+		                  .commandAttribute( EntityControllerAttributes.VIEW_REQUEST )
+		                  .post()
+		                  .noValidate()
+		                  .action( buildActionUrl( viewElementBuilderContext ) )
 		                  .add(
 				                  bootstrapUi.row()
 				                             .add(
@@ -123,60 +94,13 @@ public class EntityFormViewFactory<V extends ViewCreationContext> extends Config
 		                  .build( viewElementBuilderContext );
 	}
 
-	@Override
-	protected ViewElements customizeViewElements( ViewElements elements ) {
-//		bootstrapUi.form()
-//				.add( elements );
+	private String buildActionUrl( EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext ) {
+		EntityFormView formView = viewElementBuilderContext.getEntityView();
 
-//		bootstrapUi.container()
-//				.add(
-//						bootstrapUi.button()
-//						           .name("btn-save")
-//						           .submit()
-//						           .text( messages.messageWithFallb )
-//				)
+		if ( formView.isUpdate() ) {
+			return formView.getEntityLinkBuilder().update( formView.getOriginalEntity() );
+		}
 
-		ContainerViewElement left = new ContainerViewElement( FORM_LEFT );
-		left.addAll( elements );
-
-		ColumnsViewElement formGrid = new ColumnsViewElement( FORM_GRID );
-		formGrid.add( left );
-		formGrid.add( new ContainerViewElement( FORM_RIGHT ) );
-
-		ContainerViewElement root = new ContainerViewElement( CONTAINER );
-		root.add( formGrid );
-
-		return root;
+		return formView.getEntityLinkBuilder().create();
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void extendViewModel( V viewCreationContext, EntityFormView view ) {
-		EntityMessages messages = view.getEntityMessages();
-
-		ContainerViewElement buttons = new ContainerViewElement();
-		buttons.setName( "buttons" );
-
-		ButtonViewElement save = new ButtonViewElement();
-		save.setName( "btn-save" );
-		save.setElementType( CommonViewElements.SUBMIT_BUTTON );
-		save.setLabel( messages.messageWithFallback( "actions.save" ) );
-		buttons.add( save );
-
-		ButtonViewElement cancel = new ButtonViewElement();
-		cancel.setName( "btn-cancel" );
-		cancel.setElementType( CommonViewElements.LINK_BUTTON );
-		cancel.setStyle( ButtonViewElement.Style.LINK );
-		cancel.setLink( view.getEntityLinkBuilder().overview() );
-		cancel.setLabel( messages.messageWithFallback( "actions.cancel" ) );
-		buttons.add( cancel );
-
-		view.getEntityProperties().add( buttons );
-	}
-
-	@Override
-	protected ViewElementMode getMode() {
-		return ViewElementMode.FOR_WRITING;
-	}
-
 }
