@@ -65,10 +65,12 @@ public class EntityListView extends EntityView
 		addAttribute( ATTRIBUTE_PAGE, page );
 	}
 
+	@Deprecated
 	public boolean isShowResultNumber() {
 		return getAttribute( ATTRIBUTE_SHOW_RESULT_NUMBER );
 	}
 
+	@Deprecated
 	public void setShowResultNumber( boolean showResultNumber ) {
 		addAttribute( ATTRIBUTE_SHOW_RESULT_NUMBER, showResultNumber );
 	}

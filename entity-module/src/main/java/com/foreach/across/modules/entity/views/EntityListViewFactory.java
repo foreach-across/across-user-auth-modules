@@ -17,26 +17,23 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.views.elements.*;
-import com.foreach.across.modules.entity.views.elements.button.ButtonViewElement;
-import com.foreach.across.modules.entity.views.elements.container.ContainerViewElement;
-import com.foreach.across.modules.entity.views.elements.table.SortableTableHeaderCellProcessor;
-import com.foreach.across.modules.entity.views.elements.table.TableRowProcessor;
-import com.foreach.across.modules.entity.views.elements.table.TableViewElement;
+import com.foreach.across.modules.entity.views.elements.ViewElementBuilderContext;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
+import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
-import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import com.foreach.across.modules.web.ui.elements.ViewElementGenerator;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,12 +41,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+
+import static com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_LABEL;
+import static com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VALUE;
 
 /**
  * Handles a list of items (entities) with support for the properties to show,
@@ -129,6 +126,133 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		return new EntityListView( model );
 	}
 
+	@Override
+	protected com.foreach.across.modules.web.ui.ViewElements buildViewElements( V viewCreationContext,
+	                                                                            EntityViewElementBuilderContext<EntityListView> viewElementBuilderContext,
+	                                                                            EntityMessageCodeResolver messageCodeResolver ) {
+		EntityListView view = viewElementBuilderContext.getEntityView();
+		final EntityLinkBuilder linkBuilder = view.getEntityLinkBuilder();
+
+		Pageable pageable = buildPageable( view );
+		Page page = getPageFetcher().fetchPage( viewCreationContext, pageable, view );
+
+		view.setPageable( pageable );
+		view.setPage( page );
+		view.setShowResultNumber( isShowResultNumber() );
+
+		AllowableActions allowableActions = viewCreationContext.getEntityConfiguration().getAllowableActions();
+		EntityMessages messages = view.getEntityMessages();
+
+		ContainerViewElementBuilder container = bootstrapUi.container();
+
+		if ( allowableActions.contains( AllowableAction.CREATE ) ) {
+			container.add(
+					bootstrapUi.row().add(
+							bootstrapUi.column( Grid.Device.MD.width( Grid.Width.FULL ) )
+							           .name( "top-buttons" )
+							           .add(
+									           bootstrapUi.button()
+									                      .name( "btn-create" )
+									                      .link( view.getEntityLinkBuilder().create() )
+									                      .style( Style.Button.PRIMARY )
+									                      .text( messages.createAction() )
+							           )
+					)
+			);
+		}
+
+		EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
+		List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
+
+		TableViewElementBuilder table = bootstrapUi.table().name( "__tbl" );
+		TableViewElementBuilder.Row headerRow = table.row();
+
+		headerRow.add( table.heading().add( bootstrapUi.text( "#" ) ) );
+
+		Collection<ViewElementBuilder> builders
+				= getViewElementBuilders( entityConfiguration, descriptors, LIST_LABEL );
+
+		// Create header cells
+		for ( ViewElementBuilder labelBuilder : builders ) {
+			headerRow.add( table.heading().add( labelBuilder ) );
+		}
+
+		table.header().add( headerRow );
+
+		TableViewElementBuilder.Row valueRow = table.row();
+
+		valueRow.add( table.cell().add( bootstrapUi.text().postProcessor(
+				new ViewElementPostProcessor<TextViewElement>()
+				{
+					@Override
+					public void postProcess( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext,
+					                         TextViewElement element ) {
+						IteratorViewElementBuilderContext iteratorViewElementBuilderContext =
+								(IteratorViewElementBuilderContext) builderContext;
+						element.setText( String.valueOf( iteratorViewElementBuilderContext.getIndex() + 1 ) );
+					}
+				} ) ) );
+
+		// Create value cells
+		for ( EntityPropertyDescriptor descriptor : descriptors ) {
+			ViewElementBuilder listValueBuilder = viewElementBuilderService.getElementBuilder(
+					viewCreationContext.getEntityConfiguration(), descriptor, LIST_VALUE
+			);
+
+			if ( listValueBuilder != null ) {
+				valueRow.add( table.cell().attribute( "data-field", descriptor.getName() ).add( listValueBuilder ) );
+			}
+			else {
+				valueRow.add( table.cell().attribute( "data-field", descriptor.getName() ) );
+				LOG.debug( "No LIST_VALUE element for {}", descriptor.getName() );
+			}
+		}
+
+		if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
+			headerRow.add( table.heading() );
+
+			valueRow.add( table.cell()
+			                   .add(
+					                   bootstrapUi.button()
+					                              .link()
+					                              .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
+					                              .text( messages.updateAction() )
+					                              .postProcessor(
+							                              new ViewElementPostProcessor<com.foreach.across.modules.bootstrapui.elements.ButtonViewElement>()
+							                              {
+								                              @Override
+								                              public void postProcess( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext,
+								                                                       com.foreach.across.modules.bootstrapui.elements.ButtonViewElement element ) {
+									                              IteratorViewElementBuilderContext ctx =
+											                              (IteratorViewElementBuilderContext) builderContext;
+
+									                              element.setUrl( linkBuilder.update( ctx.getItem() ) );
+								                              }
+							                              } )
+			                   )
+		                   /*.add(
+				                   bootstrapUi.button()
+				                              .link()
+				                              .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
+				                              .text( "Delete group" )
+		                   )*/
+			);
+		}
+
+		table.body()
+		     .add(
+				     bootstrapUi.generator( Object.class,
+				                            com.foreach.across.modules.bootstrapui.elements.TableViewElement.Row.class )
+				                .name( "__rows" )
+				                .itemBuilder( valueRow )
+				                .items( page.getContent() )
+		     );
+
+		container.add( table );
+
+		return container.build( viewElementBuilderContext );
+	}
+
 	protected void buildNewViewElements( V viewCreationContext,
 	                                     ViewElementBuilderContext builderContext,
 	                                     Collection<EntityPropertyDescriptor> descriptors,
@@ -154,7 +278,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 							     viewElementBuilderService.getElementBuilder(
 									     viewCreationContext.getEntityConfiguration(),
 									     descriptor,
-									     com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_LABEL )
+									     LIST_LABEL )
 					     )
 			);
 		}
@@ -177,11 +301,11 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 
 		// Create value cells
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
-			com.foreach.across.modules.web.ui.ViewElementBuilder listValueBuilder =
+			ViewElementBuilder listValueBuilder =
 					viewElementBuilderService.getElementBuilder(
 							viewCreationContext.getEntityConfiguration(),
 							descriptor,
-							com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VALUE );
+							LIST_VALUE );
 
 			if ( listValueBuilder != null ) {
 				valueRow.add( table.cell().attribute( "data-field", descriptor.getName() ).add( listValueBuilder ) );
@@ -253,118 +377,118 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		container.add( table );
 	}
 
-	@Override
-	protected void extendViewModel( V viewCreationContext, final EntityListView view ) {
-		Pageable pageable = buildPageable( view );
-		Page page = getPageFetcher().fetchPage( viewCreationContext, pageable, view );
-
-		view.setPageable( pageable );
-		view.setPage( page );
-		view.setShowResultNumber( isShowResultNumber() );
-
-		ViewElementGenerator generator =
-				( (com.foreach.across.modules.web.ui.elements.ContainerViewElement) view.getAttribute( "newElements" ) )
-						.<com.foreach.across.modules.bootstrapui.elements.TableViewElement>get( "__tbl" )
-						.getBody().get( "__rows" );
-		generator.setItems( page.getContent() );
-
-		SortableTableHeaderCellProcessor sortableTableHeaderCellProcessor = new SortableTableHeaderCellProcessor();
-		sortableTableHeaderCellProcessor.setSortableProperties( sortableProperties );
-		sortableTableHeaderCellProcessor.setViewElementDescriptorMap(
-				(Map<ViewElement, EntityPropertyDescriptor>)
-						viewCreationContext.removeAttribute( "descriptorElementsMap" )
-		);
-
-		TableViewElement table = new TableViewElement();
-		table.getHeader().setCellProcessor( sortableTableHeaderCellProcessor );
-		table.setName( "resultsTable" );
-		table.setPage( page );
-		table.setShowResultNumber( isShowResultNumber() );
-		table.setColumns( (Iterable<ViewElement>) view.getEntityProperties().remove( "table" ) );
-
-		Map<String, String> tableAttributs = new HashMap<>();
-		tableAttributs.put( "data-tbl", "entity-list" );
-		tableAttributs.put( "data-tbl-type", "paged" );
-		tableAttributs.put( "data-tbl-entity-type", view.getEntityConfiguration().getName() );
-		tableAttributs.put( "data-tbl-current-page", "" + page.getNumber() );
-		tableAttributs.put( "data-tbl-size", "" + page.getSize() );
-		tableAttributs.put( "data-tbl-sort", "" + page.getSort() );
-
-		table.setAttributes( tableAttributs );
-
-		boolean hasListSummaryView = viewCreationContext.isForAssociation()
-				? viewCreationContext.getEntityAssociation().hasView( EntityListView.SUMMARY_VIEW_NAME )
-				: viewCreationContext.getEntityConfiguration().hasView( EntityListView.SUMMARY_VIEW_NAME );
-
-		if ( hasListSummaryView ) {
-			table.setRowProcessor( new TableRowProcessor()
-			{
-				@Override
-				public Map<String, String> attributes( Object entity ) {
-					return Collections.singletonMap(
-							"data-summary-url",
-
-							ServletUriComponentsBuilder
-									.fromCurrentContextPath()
-									.path( adminWeb.path( view.getEntityLinkBuilder().view( entity ) ) )
-									.queryParam( "view", EntityListView.SUMMARY_VIEW_NAME )
-									.queryParam( "_partial", "content" )
-									.toUriString()
-					);
-				}
-			} );
-
-			if ( viewCreationContext instanceof WebViewCreationContext ) {
-				( (WebViewCreationContext) viewCreationContext )
-						.getWebResourceRegistry()
-						.add( WebResource.JAVASCRIPT_PAGE_END, "/js/entity/expandable.js", WebResource.VIEWS );
-			}
-		}
-
-		AllowableActions allowableActions = viewCreationContext.getEntityConfiguration().getAllowableActions();
-		EntityMessages messages = view.getEntityMessages();
-
-		ContainerViewElement buttons = null;
-
-		if ( allowableActions.contains( AllowableAction.CREATE ) ) {
-			buttons = new ContainerViewElement( "buttons" );
-			buttons.setElementType( "paragraph" );
-
-			ButtonViewElement create = new ButtonViewElement();
-			create.setName( "btn-create" );
-			create.setElementType( CommonViewElements.LINK_BUTTON );
-			create.setLink( view.getEntityLinkBuilder().create() );
-			create.setLabel( messages.createAction() );
-			buttons.add( create );
-		}
-
-		if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
-			ContainerViewElement itemButtons = new ContainerViewElement( "itemButtons" );
-
-			ButtonViewElement edit = new ButtonViewElement()
-			{
-				@Override
-				public String print( Object entity ) {
-					return view.getEntityLinkBuilder().update( entity );
-				}
-			};
-			edit.setName( "btn-edit" );
-			edit.setElementType( CommonViewElements.LINK_BUTTON );
-			edit.setStyle( ButtonViewElement.Style.ICON );
-			edit.setIcon( "edit" );
-			edit.setLabel( messages.updateAction() );
-
-			itemButtons.add( edit );
-
-			( (ViewElements) table.getColumns() ).add( itemButtons );
-		}
-
-		view.getEntityProperties().addFirst( table );
-
-		if ( buttons != null ) {
-			view.getEntityProperties().addFirst( buttons );
-		}
-	}
+//	//@Override
+//	protected void extendBlaViewModel( V viewCreationContext, final EntityListView view ) {
+//		Pageable pageable = buildPageable( view );
+//		Page page = getPageFetcher().fetchPage( viewCreationContext, pageable, view );
+//
+//		view.setPageable( pageable );
+//		view.setPage( page );
+//		view.setShowResultNumber( isShowResultNumber() );
+//
+//		ViewElementGenerator generator =
+//				( (com.foreach.across.modules.web.ui.elements.ContainerViewElement) view.getAttribute( "newElements" ) )
+//						.<com.foreach.across.modules.bootstrapui.elements.TableViewElement>get( "__tbl" )
+//						.getBody().get( "__rows" );
+//		generator.setItems( page.getContent() );
+//
+//		SortableTableHeaderCellProcessor sortableTableHeaderCellProcessor = new SortableTableHeaderCellProcessor();
+//		sortableTableHeaderCellProcessor.setSortableProperties( sortableProperties );
+//		sortableTableHeaderCellProcessor.setViewElementDescriptorMap(
+//				(Map<ViewElement, EntityPropertyDescriptor>)
+//						viewCreationContext.removeAttribute( "descriptorElementsMap" )
+//		);
+//
+//		TableViewElement table = new TableViewElement();
+//		table.getHeader().setCellProcessor( sortableTableHeaderCellProcessor );
+//		table.setName( "resultsTable" );
+//		table.setPage( page );
+//		table.setShowResultNumber( isShowResultNumber() );
+//		table.setColumns( (Iterable<ViewElement>) view.getEntityProperties().remove( "table" ) );
+//
+//		Map<String, String> tableAttributs = new HashMap<>();
+//		tableAttributs.put( "data-tbl", "entity-list" );
+//		tableAttributs.put( "data-tbl-type", "paged" );
+//		tableAttributs.put( "data-tbl-entity-type", view.getEntityConfiguration().getName() );
+//		tableAttributs.put( "data-tbl-current-page", "" + page.getNumber() );
+//		tableAttributs.put( "data-tbl-size", "" + page.getSize() );
+//		tableAttributs.put( "data-tbl-sort", "" + page.getSort() );
+//
+//		table.setAttributes( tableAttributs );
+//
+//		boolean hasListSummaryView = viewCreationContext.isForAssociation()
+//				? viewCreationContext.getEntityAssociation().hasView( EntityListView.SUMMARY_VIEW_NAME )
+//				: viewCreationContext.getEntityConfiguration().hasView( EntityListView.SUMMARY_VIEW_NAME );
+//
+//		if ( hasListSummaryView ) {
+//			table.setRowProcessor( new TableRowProcessor()
+//			{
+//				@Override
+//				public Map<String, String> attributes( Object entity ) {
+//					return Collections.singletonMap(
+//							"data-summary-url",
+//
+//							ServletUriComponentsBuilder
+//									.fromCurrentContextPath()
+//									.path( adminWeb.path( view.getEntityLinkBuilder().view( entity ) ) )
+//									.queryParam( "view", EntityListView.SUMMARY_VIEW_NAME )
+//									.queryParam( "_partial", "content" )
+//									.toUriString()
+//					);
+//				}
+//			} );
+//
+//			if ( viewCreationContext instanceof WebViewCreationContext ) {
+//				( (WebViewCreationContext) viewCreationContext )
+//						.getWebResourceRegistry()
+//						.add( WebResource.JAVASCRIPT_PAGE_END, "/js/entity/expandable.js", WebResource.VIEWS );
+//			}
+//		}
+//
+//		AllowableActions allowableActions = viewCreationContext.getEntityConfiguration().getAllowableActions();
+//		EntityMessages messages = view.getEntityMessages();
+//
+//		ContainerViewElement buttons = null;
+//
+//		if ( allowableActions.contains( AllowableAction.CREATE ) ) {
+//			buttons = new ContainerViewElement( "buttons" );
+//			buttons.setElementType( "paragraph" );
+//
+//			ButtonViewElement create = new ButtonViewElement();
+//			create.setName( "btn-create" );
+//			create.setElementType( CommonViewElements.LINK_BUTTON );
+//			create.setLink( view.getEntityLinkBuilder().create() );
+//			create.setLabel( messages.createAction() );
+//			buttons.add( create );
+//		}
+//
+//		if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
+//			ContainerViewElement itemButtons = new ContainerViewElement( "itemButtons" );
+//
+//			ButtonViewElement edit = new ButtonViewElement()
+//			{
+//				@Override
+//				public String print( Object entity ) {
+//					return view.getEntityLinkBuilder().update( entity );
+//				}
+//			};
+//			edit.setName( "btn-edit" );
+//			edit.setElementType( CommonViewElements.LINK_BUTTON );
+//			edit.setStyle( ButtonViewElement.Style.ICON );
+//			edit.setIcon( "edit" );
+//			edit.setLabel( messages.updateAction() );
+//
+//			itemButtons.add( edit );
+//
+//			( (ViewElements) table.getColumns() ).add( itemButtons );
+//		}
+//
+//		view.getEntityProperties().addFirst( table );
+//
+//		if ( buttons != null ) {
+//			view.getEntityProperties().addFirst( buttons );
+//		}
+//	}
 
 	private Pageable buildPageable( EntityListView view ) {
 		Pageable existing = view.getPageable();
@@ -379,42 +503,5 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	@Override
 	protected EntityMessages createEntityMessages( EntityMessageCodeResolver codeResolver ) {
 		return new ListViewEntityMessages( codeResolver );
-	}
-
-	@Override
-	protected void buildOldViewElements( V viewCreationContext,
-	                                     ViewElementBuilderContext builderContext,
-	                                     Collection<EntityPropertyDescriptor> descriptors,
-	                                     ViewElements viewElements ) {
-		Map<ViewElement, EntityPropertyDescriptor> descriptorMap = new HashMap<>();
-
-		for ( EntityPropertyDescriptor descriptor : descriptors ) {
-			ViewElement propertyView = createPropertyView( builderContext, descriptor );
-
-			if ( propertyView != null ) {
-				descriptorMap.put( propertyView, descriptor );
-				viewElements.add( propertyView );
-			}
-		}
-
-		viewCreationContext.addAttribute( "descriptorElementsMap", descriptorMap );
-	}
-
-	@Override
-	protected ViewElements customizeViewElements( ViewElements elements ) {
-		ContainerViewElement root = new ContainerViewElement( "root" );
-
-		// Props are in fact the table members
-		ContainerViewElement table = new ContainerViewElement( "table" );
-		table.addAll( elements );
-
-		root.add( table );
-
-		return root;
-	}
-
-	@Override
-	protected ViewElementMode getMode() {
-		return ViewElementMode.FOR_READING;
 	}
 }

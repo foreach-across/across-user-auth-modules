@@ -49,6 +49,7 @@ public class EntityView implements Model
 	public static final String ATTRIBUTE_ENTITY_LINKS = "entityLinks";
 	public static final String ATTRIBUTE_MESSAGES = "messages";
 	public static final String ATTRIBUTE_PROPERTIES = "properties";
+	public static final String ATTRIBUTE_VIEW_ELEMENTS = "viewElements";
 	public static final String ATTRIBUTE_ENTITY_MENU = "entityMenu";
 	public static final String ATTRIBUTE_PAGE_TITLE = "pageTitle";
 
@@ -104,13 +105,23 @@ public class EntityView implements Model
 		model.addAttribute( ATTRIBUTE_MESSAGES, messages );
 	}
 
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public ViewElements getEntityProperties() {
 		return getAttribute( ATTRIBUTE_PROPERTIES );
 	}
 
+	@Deprecated
 	public void setEntityProperties( ViewElements entityProperties ) {
 		model.put( ATTRIBUTE_PROPERTIES, entityProperties );
+	}
+
+	public com.foreach.across.modules.web.ui.ViewElements getViewElements() {
+		return getAttribute( ATTRIBUTE_VIEW_ELEMENTS );
+	}
+
+	public void setViewElements( com.foreach.across.modules.web.ui.ViewElements viewElements ) {
+		model.put( ATTRIBUTE_VIEW_ELEMENTS, viewElements );
 	}
 
 	@SuppressWarnings("unchecked")

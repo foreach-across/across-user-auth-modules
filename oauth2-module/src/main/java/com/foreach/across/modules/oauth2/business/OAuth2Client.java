@@ -187,7 +187,7 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 		return oAuth2ClientScopes;
 	}
 
-	public void setoAuth2ClientScopes( Set<OAuth2ClientScope> oAuth2ClientScopes ) {
+	public void setOAuth2ClientScopes( Set<OAuth2ClientScope> oAuth2ClientScopes ) {
 		this.oAuth2ClientScopes = oAuth2ClientScopes;
 	}
 }
