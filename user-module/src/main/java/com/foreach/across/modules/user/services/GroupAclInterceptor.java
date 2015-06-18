@@ -41,10 +41,6 @@ public class GroupAclInterceptor extends IdBasedEntityAclInterceptor<Group>
 	}
 
 	@Override
-	public void afterUpdate( Group entity ) {
-	}
-
-	@Override
 	public void beforeDelete( Group entity, boolean isSoftDelete ) {
 		if ( settings.isEnableDefaultAcls() ) {
 			aclSecurityService().deleteAcl( entity, true );
