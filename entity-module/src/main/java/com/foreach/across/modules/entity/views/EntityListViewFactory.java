@@ -15,12 +15,13 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.entity.config.ViewHelpers;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
+import com.foreach.across.modules.entity.newviews.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -57,7 +58,7 @@ import static com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VA
 public class EntityListViewFactory<V extends ViewCreationContext> extends ConfigurablePropertiesEntityViewFactorySupport<V, EntityListView>
 {
 	@Autowired
-	private AdminWeb adminWeb;
+	private ViewHelpers viewHelpers;
 
 	private int pageSize = 50;
 	private boolean showResultNumber = true;
@@ -151,11 +152,15 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 							bootstrapUi.column( Grid.Device.MD.width( Grid.Width.FULL ) )
 							           .name( "top-buttons" )
 							           .add(
-									           bootstrapUi.button()
-									                      .name( "btn-create" )
-									                      .link( view.getEntityLinkBuilder().create() )
-									                      .style( Style.Button.PRIMARY )
-									                      .text( messages.createAction() )
+									           bootstrapUi.node( "p" )
+									                      .add(
+											                      bootstrapUi.button()
+											                                 .name( "btn-create" )
+											                                 .link( view.getEntityLinkBuilder()
+											                                            .create() )
+											                                 .style( Style.Button.PRIMARY )
+											                                 .text( messages.createAction() )
+									                      )
 							           )
 					)
 			);
@@ -164,91 +169,100 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
 		List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
 
-		TableViewElementBuilder table = bootstrapUi.table().name( "__tbl" );
-		TableViewElementBuilder.Row headerRow = table.row();
+		SortableTableBuilder tableBuilder = viewHelpers.createSortableTableBuilder();
+		tableBuilder.setTableName( "entityList" );
+		tableBuilder.setEntityConfiguration( entityConfiguration );
+		tableBuilder.setPropertyDescriptors( descriptors );
+		tableBuilder.setPagingMessages( (ListViewEntityMessages) view.getEntityMessages() );
+		tableBuilder.setPage( page );
+		tableBuilder.setSortableProperties( getSortableProperties() );
+		tableBuilder.setShowResultNumber( isShowResultNumber() );
 
-		headerRow.add( table.heading().add( bootstrapUi.text( "#" ) ) );
+//		TableViewElementBuilder table = bootstrapUi.table().name( "__tbl" );
+//		TableViewElementBuilder.Row headerRow = table.row();
+//
+//		headerRow.add( table.heading().add( bootstrapUi.text( "#" ) ) );
+//
+//		Collection<ViewElementBuilder> builders
+//				= getViewElementBuilders( entityConfiguration, descriptors, LIST_LABEL );
+//
+//		// Create header cells
+//		for ( ViewElementBuilder labelBuilder : builders ) {
+//			headerRow.add( table.heading().add( labelBuilder ) );
+//		}
+//
+//		table.header().add( headerRow );
+//
+//		TableViewElementBuilder.Row valueRow = table.row();
+//
+//		valueRow.add( table.cell().add( bootstrapUi.text().postProcessor(
+//				new ViewElementPostProcessor<TextViewElement>()
+//				{
+//					@Override
+//					public void postProcess( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext,
+//					                         TextViewElement element ) {
+//						IteratorViewElementBuilderContext iteratorViewElementBuilderContext =
+//								(IteratorViewElementBuilderContext) builderContext;
+//						element.setText( String.valueOf( iteratorViewElementBuilderContext.getIndex() + 1 ) );
+//					}
+//				} ) ) );
+//
+//		// Create value cells
+//		for ( EntityPropertyDescriptor descriptor : descriptors ) {
+//			ViewElementBuilder listValueBuilder = viewElementBuilderService.getElementBuilder(
+//					viewCreationContext.getEntityConfiguration(), descriptor, LIST_VALUE
+//			);
+//
+//			if ( listValueBuilder != null ) {
+//				valueRow.add( table.cell().attribute( "data-field", descriptor.getName() ).add( listValueBuilder ) );
+//			}
+//			else {
+//				valueRow.add( table.cell().attribute( "data-field", descriptor.getName() ) );
+//				LOG.debug( "No LIST_VALUE element for {}", descriptor.getName() );
+//			}
+//		}
+//
+//		if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
+//			headerRow.add( table.heading() );
+//
+//			valueRow.add( table.cell()
+//			                   .add(
+//					                   bootstrapUi.button()
+//					                              .link()
+//					                              .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
+//					                              .text( messages.updateAction() )
+//					                              .postProcessor(
+//							                              new ViewElementPostProcessor<com.foreach.across.modules.bootstrapui.elements.ButtonViewElement>()
+//							                              {
+//								                              @Override
+//								                              public void postProcess( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext,
+//								                                                       com.foreach.across.modules.bootstrapui.elements.ButtonViewElement element ) {
+//									                              IteratorViewElementBuilderContext ctx =
+//											                              (IteratorViewElementBuilderContext) builderContext;
+//
+//									                              element.setUrl( linkBuilder.update( ctx.getItem() ) );
+//								                              }
+//							                              } )
+//			                   )
+//		                   /*.add(
+//				                   bootstrapUi.button()
+//				                              .link()
+//				                              .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
+//				                              .text( "Delete group" )
+//		                   )*/
+//			);
+//		}
+//
+//		table.body()
+//		     .add(
+//				     bootstrapUi.generator( Object.class,
+//				                            com.foreach.across.modules.bootstrapui.elements.TableViewElement.Row.class )
+//				                .name( "__rows" )
+//				                .itemBuilder( valueRow )
+//				                .items( page.getContent() )
+//		     );
 
-		Collection<ViewElementBuilder> builders
-				= getViewElementBuilders( entityConfiguration, descriptors, LIST_LABEL );
-
-		// Create header cells
-		for ( ViewElementBuilder labelBuilder : builders ) {
-			headerRow.add( table.heading().add( labelBuilder ) );
-		}
-
-		table.header().add( headerRow );
-
-		TableViewElementBuilder.Row valueRow = table.row();
-
-		valueRow.add( table.cell().add( bootstrapUi.text().postProcessor(
-				new ViewElementPostProcessor<TextViewElement>()
-				{
-					@Override
-					public void postProcess( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext,
-					                         TextViewElement element ) {
-						IteratorViewElementBuilderContext iteratorViewElementBuilderContext =
-								(IteratorViewElementBuilderContext) builderContext;
-						element.setText( String.valueOf( iteratorViewElementBuilderContext.getIndex() + 1 ) );
-					}
-				} ) ) );
-
-		// Create value cells
-		for ( EntityPropertyDescriptor descriptor : descriptors ) {
-			ViewElementBuilder listValueBuilder = viewElementBuilderService.getElementBuilder(
-					viewCreationContext.getEntityConfiguration(), descriptor, LIST_VALUE
-			);
-
-			if ( listValueBuilder != null ) {
-				valueRow.add( table.cell().attribute( "data-field", descriptor.getName() ).add( listValueBuilder ) );
-			}
-			else {
-				valueRow.add( table.cell().attribute( "data-field", descriptor.getName() ) );
-				LOG.debug( "No LIST_VALUE element for {}", descriptor.getName() );
-			}
-		}
-
-		if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
-			headerRow.add( table.heading() );
-
-			valueRow.add( table.cell()
-			                   .add(
-					                   bootstrapUi.button()
-					                              .link()
-					                              .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
-					                              .text( messages.updateAction() )
-					                              .postProcessor(
-							                              new ViewElementPostProcessor<com.foreach.across.modules.bootstrapui.elements.ButtonViewElement>()
-							                              {
-								                              @Override
-								                              public void postProcess( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext,
-								                                                       com.foreach.across.modules.bootstrapui.elements.ButtonViewElement element ) {
-									                              IteratorViewElementBuilderContext ctx =
-											                              (IteratorViewElementBuilderContext) builderContext;
-
-									                              element.setUrl( linkBuilder.update( ctx.getItem() ) );
-								                              }
-							                              } )
-			                   )
-		                   /*.add(
-				                   bootstrapUi.button()
-				                              .link()
-				                              .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
-				                              .text( "Delete group" )
-		                   )*/
-			);
-		}
-
-		table.body()
-		     .add(
-				     bootstrapUi.generator( Object.class,
-				                            com.foreach.across.modules.bootstrapui.elements.TableViewElement.Row.class )
-				                .name( "__rows" )
-				                .itemBuilder( valueRow )
-				                .items( page.getContent() )
-		     );
-
-		container.add( table );
+		container.add( tableBuilder );
 
 		return container.build( viewElementBuilderContext );
 	}
@@ -501,7 +515,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	}
 
 	@Override
-	protected EntityMessages createEntityMessages( EntityMessageCodeResolver codeResolver ) {
+	protected ListViewEntityMessages createEntityMessages( EntityMessageCodeResolver codeResolver ) {
 		return new ListViewEntityMessages( codeResolver );
 	}
 }
