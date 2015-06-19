@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.sortable {
-  cursor: pointer;
+package com.foreach.across.modules.entity.views.elements;
 
-  :hover {
-    color: orange;
-  }
-
-  span.caret {
-    display: none;
-  }
-  &.dropup, &.dropdown {
-    span.caret {
-      display: inline-block;
-    }
-  }
-}
-
-.table > thead > tr.odd {
-  background-color: #ffffff; }
-
-.pager-form {
-  color: black;
+/**
+ * Creates a {@link ViewElementBuilder} that creates a
+ * specific {@link com.foreach.across.modules.entity.views.elements.ViewElement} type.
+ * The factory is expected to be immutable and create a builder usually using a base builder as a template.
+ * The builder itself can then be modified for a particular view before creating the actual
+ * {@link com.foreach.across.modules.entity.views.elements.ViewElement}.
+ *
+ * @author Arne Vandamme
+ */
+public interface ViewElementBuilderFactory<T extends ViewElementBuilder>
+{
+	T createBuilder();
 }
