@@ -13,26 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.sortable {
-  cursor: pointer;
+package com.foreach.across.modules.entity.registry;
 
-  :hover {
-    color: orange;
-  }
+import org.springframework.data.repository.core.EntityInformation;
 
-  span.caret {
-    display: none;
-  }
-  &.dropup, &.dropdown {
-    span.caret {
-      display: inline-block;
-    }
-  }
-}
+import java.io.Serializable;
+import java.util.Locale;
 
-.table > thead > tr.odd {
-  background-color: #ffffff; }
+/**
+ * @author Arne Vandamme
+ */
+public interface EntityModel<T, ID extends Serializable> extends EntityInformation<T, ID>
+{
+	/**
+	 * @return The default generated label for an entity.
+	 */
+	String getLabel( T entity );
 
-.pager-form {
-  color: black;
+	String getLabel( T entity, Locale locale );
+
+	T createNew( Object... args );
+
+	T createDto( T entity );
+
+	T findOne( ID id );
+
+	T save( T entity );
 }

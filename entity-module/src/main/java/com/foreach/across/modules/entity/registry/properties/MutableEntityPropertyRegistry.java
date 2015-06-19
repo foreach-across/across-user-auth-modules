@@ -13,26 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.sortable {
-  cursor: pointer;
+package com.foreach.across.modules.entity.registry.properties;
 
-  :hover {
-    color: orange;
-  }
-
-  span.caret {
-    display: none;
-  }
-  &.dropup, &.dropdown {
-    span.caret {
-      display: inline-block;
-    }
-  }
-}
-
-.table > thead > tr.odd {
-  background-color: #ffffff; }
-
-.pager-form {
-  color: black;
+/**
+ * @author Arne Vandamme
+ */
+public interface MutableEntityPropertyRegistry extends EntityPropertyRegistry
+{
+	MutableEntityPropertyDescriptor getMutableProperty( String propertyName );
 }

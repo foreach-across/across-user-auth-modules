@@ -27,6 +27,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class SortableTableHeaderCellProcessor implements TableHeaderCellProcessor
 {
 	private Collection<String> sortableProperties;

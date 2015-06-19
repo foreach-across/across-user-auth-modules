@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.sortable {
-  cursor: pointer;
+package com.foreach.across.modules.entity.registry;
 
-  :hover {
-    color: orange;
-  }
+import java.util.Collection;
 
-  span.caret {
-    display: none;
-  }
-  &.dropup, &.dropdown {
-    span.caret {
-      display: inline-block;
-    }
-  }
-}
+/**
+ * Base interface for querying the registered entity types.
+ *
+ * @author Arne Vandamme
+ * @see com.foreach.across.modules.entity.registry.MutableEntityRegistry
+ */
+public interface EntityRegistry
+{
+	Collection<EntityConfiguration> getEntities();
 
-.table > thead > tr.odd {
-  background-color: #ffffff; }
+	boolean contains( Class<?> entityType );
 
-.pager-form {
-  color: black;
+	boolean contains( String entityName );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( String entityName );
 }

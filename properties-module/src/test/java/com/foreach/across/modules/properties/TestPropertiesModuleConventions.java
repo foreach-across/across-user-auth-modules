@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.sortable {
-  cursor: pointer;
+package com.foreach.across.modules.properties;
 
-  :hover {
-    color: orange;
-  }
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
-  span.caret {
-    display: none;
-  }
-  &.dropup, &.dropdown {
-    span.caret {
-      display: inline-block;
-    }
-  }
-}
+/**
+ * @author Arne Vandamme
+ */
+public class TestPropertiesModuleConventions extends AbstractAcrossModuleConventionsTest
+{
+	@Override
+	protected boolean hasSettings() {
+		return true;
+	}
 
-.table > thead > tr.odd {
-  background-color: #ffffff; }
-
-.pager-form {
-  color: black;
+	@Override
+	protected AcrossModule createModule() {
+		return new PropertiesModule();
+	}
 }
