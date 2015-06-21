@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.entity.config.ViewHelpers;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
+import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.EntityListActionsProcessor;
 import com.foreach.across.modules.entity.newviews.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -57,6 +58,7 @@ import static com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VA
  */
 public class EntityListViewFactory<V extends ViewCreationContext> extends ConfigurablePropertiesEntityViewFactorySupport<V, EntityListView>
 {
+
 	@Autowired
 	private ViewHelpers viewHelpers;
 
@@ -156,8 +158,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 									                      .add(
 											                      bootstrapUi.button()
 											                                 .name( "btn-create" )
-											                                 .link( view.getEntityLinkBuilder()
-											                                            .create() )
+											                                 .link( linkBuilder.create() )
 											                                 .style( Style.Button.PRIMARY )
 											                                 .text( messages.createAction() )
 									                      )
@@ -177,6 +178,11 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		tableBuilder.setPage( page );
 		tableBuilder.setSortableProperties( getSortableProperties() );
 		tableBuilder.setShowResultNumber( isShowResultNumber() );
+
+		EntityListActionsProcessor actionsProcessor
+				= new EntityListActionsProcessor( bootstrapUi, entityConfiguration, linkBuilder, messages );
+		tableBuilder.addHeaderRowProcessor( actionsProcessor );
+		tableBuilder.addValueRowProcessor( actionsProcessor );
 
 //		TableViewElementBuilder table = bootstrapUi.table().name( "__tbl" );
 //		TableViewElementBuilder.Row headerRow = table.row();
