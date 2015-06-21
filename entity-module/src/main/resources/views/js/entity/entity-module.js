@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var TablePager = function ( element )
-{
+var TablePager = function ( element ) {
     var table = $( element );
     var id = $( element ).attr( 'data-tbl' );
     var page = table.attr( 'data-tbl-current-page' );
     this.size = table.attr( 'data-tbl-size' );
+    this.totalPages = table.attr( 'data-tbl-total-pages' );
     this.sort = [];
 
     var tblSort = table.attr( 'data-tbl-sort' );
 
-    var props = tblSort && tblSort != 'null' ? tblSort.replace(/,\s*ignoring case/g,'').split( ',' ) : [];
+    var props = tblSort && tblSort != 'null' ? tblSort.replace( /,\s*ignoring case/g, '' ).split( ',' ) : [];
 
     this.sortables = $( "[data-tbl='" + id + "'][data-tbl-sort-property]" );
 
@@ -31,27 +31,52 @@ var TablePager = function ( element )
 
     for ( var i = 0; i < props.length; i++ ) {
         var pairs = props[i].split( ':' );
-        this.sort.push( { property: pairs[0], direction: pairs[1].trim() } );
+        this.sort.push( {property: pairs[0], direction: pairs[1].trim()} );
 
         $( "[data-tbl='" + id + "'][data-tbl-sort-property='" + pairs[0] + "']" ).addClass( pairs[1].trim() == 'ASC' ? 'asc' : 'desc' )
     }
 
     var pager = this;
 
-    $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function ()
-                                                         {
-                                                             pager.moveToPage( $( this ).attr( 'data-tbl-page' ) );
-                                                             return false;
-                                                         } );
+    $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function () {
+        pager.moveToPage( $( this ).attr( 'data-tbl-page' ) );
+        return false;
+    } );
 
-    this.sortables.click( function ()
-                     {
-                         pager.sortOnProperty( $( this ).attr( 'data-tbl-sort-property' ) );
-                         return false;
-                     } );
+    $( "input[type='text'][data-tbl='" + id + "'][data-tbl-page-selector]" )
+            .focus( function ( event ) {
+                        event.preventDefault();
+                        $( this ).select();
+                    } )
+            .keypress( function ( event ) {
+                           if ( event.which == 13 ) {
+                               event.preventDefault();
+                               var pageNumber = $( this ).val();
 
-    this.moveToPage = function ( pageNumber )
-    {
+                               if ( isNaN( pageNumber ) ) {
+                                   $( this ).addClass( 'has-error' );
+                               }
+                               else {
+                                   $( this ).removeClass( 'has-error' );
+                                   if ( pageNumber < 1 ) {
+                                       pageNumber =
+                                               1;
+                                   }
+                                   else if ( pageNumber > pager.totalPages ) {
+                                       pageNumber =
+                                               pager.totalPages;
+                                   }
+                                   pager.moveToPage( pageNumber - 1 );
+                               }
+                           }
+                       } );
+
+    this.sortables.click( function () {
+        pager.sortOnProperty( $( this ).attr( 'data-tbl-sort-property' ) );
+        return false;
+    } );
+
+    this.moveToPage = function ( pageNumber ) {
         var sortValue = '';
 
         for ( var i = 0; i < this.sort.length; i++ ) {
@@ -63,15 +88,14 @@ var TablePager = function ( element )
         }
 
         var url = paramReplace( 'sort', window.location.href, sortValue );
-        url = paramReplace( 'page', url, pageNumber );
+        url = paramReplace( 'page', url, '' + pageNumber );
         url = paramReplace( 'size', url, this.size );
 
         window.location.href = url;
         //alert('moving ' + table + ' to ' + pageNumber );
     };
 
-    this.sortOnProperty = function ( propertyName )
-    {
+    this.sortOnProperty = function ( propertyName ) {
         var current;
         for ( var i = 0; i < this.sort.length; i++ ) {
             if ( this.sort[i].property == propertyName ) {
@@ -84,7 +108,7 @@ var TablePager = function ( element )
         }
         else {
             this.sort = [];
-            current = { property: propertyName, direction: 'ASC' };
+            current = {property: propertyName, direction: 'ASC'};
             this.sort.push( current );
         }
 
@@ -92,8 +116,7 @@ var TablePager = function ( element )
     };
 };
 
-function paramReplace( name, string, value )
-{
+function paramReplace( name, string, value ) {
     // Find the param with regex
     // Grab the first character in the returned string (should be ? or &)
     // Replace our href string with our new value, passing on the name and delimeter
@@ -127,10 +150,8 @@ function paramReplace( name, string, value )
     return newString;
 }
 
-$( document ).ready( function ()
-                     {
-                         $( '[data-tbl-type="paged"]' ).each( function ()
-                                                              {
-                                                                  document.tablePager = new TablePager( $( this ) );
-                                                              } );
-                     } );
+$( document ).ready( function () {
+    $( '[data-tbl-type="paged"]' ).each( function () {
+        document.tablePager = new TablePager( $( this ) );
+    } );
+} );
