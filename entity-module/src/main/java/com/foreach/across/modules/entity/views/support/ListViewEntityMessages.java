@@ -26,6 +26,8 @@ public class ListViewEntityMessages extends EntityMessages implements PagingMess
 {
 	public static final String RESULTS_FOUND = "views.listView.resultsFound";
 	public static final String PAGER = "views.listView.pager";
+	public static final String PAGE = "views.listView.pager.page";
+	public static final String OF_PAGES = "views.listView.pager.ofPages";
 	public static final String NEXT_PAGE = "views.listView.pager.nextPage";
 	public static final String PREVIOUS_PAGE = "views.listView.pager.previousPage";
 
@@ -36,6 +38,16 @@ public class ListViewEntityMessages extends EntityMessages implements PagingMess
 	@Override
 	public String pagerText( Page currentPage, Object... args ) {
 		return messageWithFallback( PAGER, currentPage.getNumber() + 1, currentPage.getTotalPages(), args );
+	}
+
+	@Override
+	public String page( Page currentPage, Object... args ) {
+		return messageWithFallback( PAGE, currentPage.getNumber() + 1, currentPage.getTotalPages(), args );
+	}
+
+	@Override
+	public String ofPages( Page currentPage, Object... args ) {
+		return messageWithFallback( OF_PAGES, currentPage.getNumber() + 1, currentPage.getTotalPages(), args );
 	}
 
 	@Override
