@@ -66,7 +66,7 @@ public class FieldsetViewElementBuilderFactoryAssembler implements ViewElementBu
 		return builderFactory;
 	}
 
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	protected FieldsetViewElementBuilder createTemplate(
 			EntityConfiguration entityConfiguration,
 			EntityPropertyRegistry registry,
@@ -95,13 +95,14 @@ public class FieldsetViewElementBuilderFactoryAssembler implements ViewElementBu
 			}
 		}
 		else if ( descriptor.hasAttribute( EntityAttributes.PROPERTY_GROUP ) ) {
-			Collection<String> memberNamesInOrder = descriptor.getAttribute( EntityAttributes.PROPERTY_GROUP );
+			Collection<String> memberNamesInOrder = descriptor.getAttribute( EntityAttributes.PROPERTY_GROUP,
+			                                                                 Collection.class );
 
 			properties.addAll( memberNamesInOrder );
 		}
 
-		Map dependencies = descriptor.getAttribute("dependencies", Map.class);
-		template.setDependencies(dependencies);
+		Map dependencies = descriptor.getAttribute( "dependencies", Map.class );
+		template.setDependencies( dependencies );
 
 		template.setProperties( properties );
 

@@ -55,7 +55,7 @@ public class EntityPropertyRegistryValidationMetaDataBuilder implements EntityPr
 					MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
 
 					if ( mutable != null ) {
-						mutable.addAttribute( PropertyDescriptor.class, validatorDescriptor );
+						mutable.setAttribute( PropertyDescriptor.class, validatorDescriptor );
 					}
 				}
 			}

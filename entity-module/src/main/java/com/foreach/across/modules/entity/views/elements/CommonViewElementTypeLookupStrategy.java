@@ -44,7 +44,7 @@ public class CommonViewElementTypeLookupStrategy implements ViewElementTypeLooku
 		}
 
 		if ( viewElementMode == ViewElementMode.FOR_READING ) {
-			String preferredType = descriptor.getAttribute( EntityAttributes.ELEMENT_TYPE_READABLE );
+			String preferredType = descriptor.getAttribute( EntityAttributes.ELEMENT_TYPE_READABLE, String.class );
 
 			if ( preferredType != null ) {
 				return preferredType;
@@ -53,14 +53,14 @@ public class CommonViewElementTypeLookupStrategy implements ViewElementTypeLooku
 			return CommonViewElements.TEXT;
 		}
 
-		String preferredType = descriptor.getAttribute( EntityAttributes.ELEMENT_TYPE_WRITABLE );
+		String preferredType = descriptor.getAttribute( EntityAttributes.ELEMENT_TYPE_WRITABLE, String.class );
 
 		if ( preferredType != null ) {
 			return preferredType;
 		}
 
 		PropertyPersistenceMetadata metadata = descriptor.getAttribute(
-				EntityAttributes.PROPERTY_PERSISTENCE_METADATA );
+				EntityAttributes.PROPERTY_PERSISTENCE_METADATA, PropertyPersistenceMetadata.class );
 
 		if ( metadata != null && metadata.isEmbedded() ) {
 			return CommonViewElements.FIELDSET;

@@ -13,27 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
+package com.foreach.across.modules.it.properties.extendingmodule.repositories;
 
-import com.foreach.across.core.support.WritableAttributes;
-import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
+import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 
 /**
  * @author Arne Vandamme
  */
-public interface ViewCreationContext extends WritableAttributes
+public class ClientPropertiesRepository extends EntityPropertiesRepository<Long>
 {
-	/**
-	 * @return EntityConfiguration the view is generated for.
-	 */
-	EntityConfiguration getEntityConfiguration();
-
-	void setEntityConfiguration( EntityConfiguration entityConfiguration );
-
-	EntityAssociation getEntityAssociation();
-
-	void setEntityAssociation( EntityAssociation entityAssociation );
-
-	boolean isForAssociation();
+	public ClientPropertiesRepository( EntityPropertiesDescriptor configuration ) {
+		super( configuration );
+	}
 }
