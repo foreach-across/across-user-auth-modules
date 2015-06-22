@@ -89,8 +89,8 @@ public class TestEntityConfigurationBuilder
 
 		builder.apply( entityRegistry, beanFactory );
 
-		verify( client ).addAttribute( Company.class, companyAttribute );
-		verify( client ).addAttribute( "attributeKey", 123 );
+		verify( client ).setAttribute( Company.class, companyAttribute );
+		verify( client ).setAttribute( "attributeKey", 123 );
 	}
 
 	@Test

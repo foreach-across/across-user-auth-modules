@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
-
-import com.foreach.across.core.support.WritableAttributes;
-import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
+package com.foreach.across.modules.entity.views.elements;
 
 /**
+ * Creates a {@link ViewElementBuilder} that creates a
+ * specific {@link com.foreach.across.modules.entity.views.elements.ViewElement} type.
+ * The factory is expected to be immutable and create a builder usually using a base builder as a template.
+ * The builder itself can then be modified for a particular view before creating the actual
+ * {@link com.foreach.across.modules.entity.views.elements.ViewElement}.
+ *
  * @author Arne Vandamme
  */
-public interface ViewCreationContext extends WritableAttributes
+public interface ViewElementBuilderFactory<T extends ViewElementBuilder>
 {
-	/**
-	 * @return EntityConfiguration the view is generated for.
-	 */
-	EntityConfiguration getEntityConfiguration();
-
-	void setEntityConfiguration( EntityConfiguration entityConfiguration );
-
-	EntityAssociation getEntityAssociation();
-
-	void setEntityAssociation( EntityAssociation entityAssociation );
-
-	boolean isForAssociation();
+	T createBuilder();
 }

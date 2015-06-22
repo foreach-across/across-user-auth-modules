@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
+package com.foreach.across.modules.entity.views.elements.form.select;
 
-import com.foreach.across.core.support.WritableAttributes;
-import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+
+import java.util.Collection;
 
 /**
+ * Interface for implementation that creates select options.
+ *
  * @author Arne Vandamme
  */
-public interface ViewCreationContext extends WritableAttributes
+public interface SelectOptionGenerator
 {
-	/**
-	 * @return EntityConfiguration the view is generated for.
-	 */
-	EntityConfiguration getEntityConfiguration();
-
-	void setEntityConfiguration( EntityConfiguration entityConfiguration );
-
-	EntityAssociation getEntityAssociation();
-
-	void setEntityAssociation( EntityAssociation entityAssociation );
-
-	boolean isForAssociation();
+	Collection<SelectOption> generateOptions( EntityMessageCodeResolver codeResolver );
 }

@@ -13,27 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
+package com.foreach.across.modules.entity.views.elements.form.hidden;
 
-import com.foreach.across.core.support.WritableAttributes;
-import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderSupport;
 
 /**
  * @author Arne Vandamme
  */
-public interface ViewCreationContext extends WritableAttributes
+public class HiddenFormElementBuilder extends FormElementBuilderSupport<HiddenFormElement>
 {
-	/**
-	 * @return EntityConfiguration the view is generated for.
-	 */
-	EntityConfiguration getEntityConfiguration();
-
-	void setEntityConfiguration( EntityConfiguration entityConfiguration );
-
-	EntityAssociation getEntityAssociation();
-
-	void setEntityAssociation( EntityAssociation entityAssociation );
-
-	boolean isForAssociation();
+	public HiddenFormElementBuilder() {
+		super( HiddenFormElement.class );
+	}
 }
