@@ -60,7 +60,7 @@ public class EntityPropertyRegistryMappingMetaDataBuilder implements EntityPrope
 						MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
 
 						if ( mutable != null ) {
-							mutable.addAttribute( PersistentProperty.class, persistentProperty );
+							mutable.setAttribute( PersistentProperty.class, persistentProperty );
 						}
 					}
 				}

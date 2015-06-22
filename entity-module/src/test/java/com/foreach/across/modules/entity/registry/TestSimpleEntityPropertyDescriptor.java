@@ -31,10 +31,10 @@ public class TestSimpleEntityPropertyDescriptor
 	public void mergeProperties() {
 		SimpleEntityPropertyDescriptor one = new SimpleEntityPropertyDescriptor( "address" );
 		one.setDisplayName( "Address" );
-		one.addAttribute( EntityAttributes.SORTABLE_PROPERTY, "address" );
+		one.setAttribute( EntityAttributes.SORTABLE_PROPERTY, "address" );
 
 		SimpleEntityPropertyDescriptor two = new SimpleEntityPropertyDescriptor( "street" );
-		two.addAttribute( EntityAttributes.SORTABLE_PROPERTY, "street" );
+		two.setAttribute( EntityAttributes.SORTABLE_PROPERTY, "street" );
 
 		EntityPropertyDescriptor merged = one.merge( two );
 

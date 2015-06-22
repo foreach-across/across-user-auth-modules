@@ -15,9 +15,9 @@
  */
 package com.foreach.across.modules.entity.web;
 
+import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.support.AttributeSupport;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceUtils;
 import org.springframework.web.context.request.NativeWebRequest;

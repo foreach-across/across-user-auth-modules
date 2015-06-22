@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.core.support.ReadableAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.support.ReadableAttributes;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 

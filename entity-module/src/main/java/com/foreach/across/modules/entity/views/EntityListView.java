@@ -15,8 +15,6 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.views.processors.NoOpRowProcessor;
-import com.foreach.across.modules.entity.views.processors.RowProcessor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.ui.ModelMap;
@@ -35,18 +33,9 @@ public class EntityListView extends EntityView
 
 	public static final String ATTRIBUTE_PAGEABLE = "pageable";
 	public static final String ATTRIBUTE_PAGE = "page";
-	public static final String ATTRIBUTE_SHOW_RESULT_NUMBER = "showResultNumber";
-	public static final String ATTRIBUTE_ROW_PROCESSOR = "rowProcessor";
 
 	public EntityListView( ModelMap model ) {
 		super( model );
-
-		if ( !containsAttribute( ATTRIBUTE_SHOW_RESULT_NUMBER ) ) {
-			setShowResultNumber( true );
-		}
-		if ( !containsAttribute( ATTRIBUTE_ROW_PROCESSOR ) ) {
-			setRowProcessor( new NoOpRowProcessor() );
-		}
 	}
 
 	public Pageable getPageable() {
@@ -63,24 +52,5 @@ public class EntityListView extends EntityView
 
 	public void setPage( Page page ) {
 		addAttribute( ATTRIBUTE_PAGE, page );
-	}
-
-	@Deprecated
-	public boolean isShowResultNumber() {
-		return getAttribute( ATTRIBUTE_SHOW_RESULT_NUMBER );
-	}
-
-	@Deprecated
-	public void setShowResultNumber( boolean showResultNumber ) {
-		addAttribute( ATTRIBUTE_SHOW_RESULT_NUMBER, showResultNumber );
-	}
-
-	@Deprecated
-	public void setRowProcessor( RowProcessor rowProcessor ) {
-		addAttribute( ATTRIBUTE_ROW_PROCESSOR, rowProcessor );
-	}
-
-	public RowProcessor getRowProcessor() {
-		return getAttribute( ATTRIBUTE_ROW_PROCESSOR );
 	}
 }

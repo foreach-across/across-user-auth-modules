@@ -179,10 +179,10 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
 		}
 
-		descriptor.addAllAttributes( child.getAttributes() );
+		descriptor.setAttributes( child.attributeMap() );
 
 		if ( child.hasAttribute( EntityAttributes.SORTABLE_PROPERTY ) ) {
-			descriptor.addAttribute(
+			descriptor.setAttribute(
 					EntityAttributes.SORTABLE_PROPERTY,
 					parent.getName() + "." + child.getAttribute( EntityAttributes.SORTABLE_PROPERTY )
 			);

@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.core.support.ReadableAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.support.ReadableAttributes;
 
 /**
  * Filtered view on an association between two {@link com.foreach.across.modules.entity.registry.EntityConfiguration}s.

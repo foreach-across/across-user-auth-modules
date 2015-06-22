@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.modules.entity.registry.support.WritableAttributes;
+import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import org.springframework.core.convert.TypeDescriptor;
 

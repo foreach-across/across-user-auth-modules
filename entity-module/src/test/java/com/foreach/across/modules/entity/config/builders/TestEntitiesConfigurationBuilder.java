@@ -72,11 +72,11 @@ public class TestEntitiesConfigurationBuilder
 
 		builder.apply( entityRegistry, beanFactory );
 
-		verify( client ).addAttribute( Company.class, companyAttribute );
-		verify( company ).addAttribute( Company.class, companyAttribute );
+		verify( client ).setAttribute( Company.class, companyAttribute );
+		verify( company ).setAttribute( Company.class, companyAttribute );
 
-		verify( client ).addAttribute( "attributeKey", 123 );
-		verify( company ).addAttribute( "attributeKey", 123 );
+		verify( client ).setAttribute( "attributeKey", 123 );
+		verify( company ).setAttribute( "attributeKey", 123 );
 	}
 
 	@Test
@@ -106,11 +106,11 @@ public class TestEntitiesConfigurationBuilder
 		builder.apply( entityRegistry, beanFactory );
 
 		InOrder order = inOrder( client );
-		order.verify( client ).addAttribute( "someAttribute", 1000 );
-		order.verify( client ).addAttribute( "someAttribute", 2000 );
+		order.verify( client ).setAttribute( "someAttribute", 1000 );
+		order.verify( client ).setAttribute( "someAttribute", 2000 );
 
-		verify( company ).addAttribute( "someAttribute", 1000 );
-		verify( company, never() ).addAttribute( "someAttribute", 2000 );
+		verify( company ).setAttribute( "someAttribute", 1000 );
+		verify( company, never() ).setAttribute( "someAttribute", 2000 );
 	}
 
 	@Test

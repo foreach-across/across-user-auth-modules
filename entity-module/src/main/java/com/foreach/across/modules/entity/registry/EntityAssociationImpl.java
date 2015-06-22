@@ -15,16 +15,14 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.support.AttributeSupport;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 
 /**
  * @author Arne Vandamme
  */
-public class EntityAssociationImpl
-		extends AttributeSupport
-		implements MutableEntityAssociation
+public class EntityAssociationImpl extends AttributeSupport implements MutableEntityAssociation
 {
 	private final String name;
 	private final MutableEntityConfiguration sourceEntityConfiguration;

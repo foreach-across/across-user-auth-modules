@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.support.WritableAttributes;
 
 /**
  * @author Arne Vandamme

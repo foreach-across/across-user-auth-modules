@@ -15,10 +15,10 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.support.AttributeSupport;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
