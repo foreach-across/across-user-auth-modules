@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.properties;
+package com.foreach.across.modules.entity.registrars.repository.associations;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
+import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import org.springframework.data.mapping.PersistentProperty;
 
 /**
- * @author Arne Vandamme
+ * @author Andy Somers
  */
-public class TestPropertiesModuleConventions extends AbstractAcrossModuleConventionsTest
+public interface EntityAssociationBuilder
 {
-	@Override
-	protected boolean hasSettings() {
-		return true;
-	}
+	boolean supports( PersistentProperty<?> sourceProperty );
 
-	@Override
-	protected AcrossModule createModule() {
-		return new PropertiesModule();
-	}
+	void buildAssociation( MutableEntityRegistry entityRegistry,
+	                       MutableEntityConfiguration entityConfiguration,
+	                       PersistentProperty property );
 }
