@@ -82,6 +82,16 @@ public class TestEntityQueryJpaUtils
 	}
 
 	@Test
+	public void findAll() {
+		EntityQuery query = new EntityQuery();
+		List<Company> found = companyRepository.findAll( EntityQueryJpaUtils.<Company>toSpecification( query ) );
+
+		assertNotNull( found );
+		assertEquals( 3, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two, three ) ) );
+	}
+
+	@Test
 	public void eq() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.EQ, "two" ) );
 		Company found = companyRepository.findOne( EntityQueryJpaUtils.<Company>toSpecification( query ) );
@@ -110,5 +120,18 @@ public class TestEntityQueryJpaUtils
 		assertNotNull( found );
 		assertEquals( 2, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( one, two ) ) );
+	}
+
+	@Test
+	public void combined() {
+		EntityQuery query = EntityQuery.and(
+				new EntityQueryCondition( "id", EntityQueryOps.NEQ, "two" ),
+				new EntityQueryCondition( "representatives", EntityQueryOps.CONTAINS, john )
+		);
+		List<Company> found = companyRepository.findAll( EntityQueryJpaUtils.<Company>toSpecification( query ) );
+
+		assertNotNull( found );
+		assertEquals( 1, found.size() );
+		assertTrue( found.contains( one ) );
 	}
 }
