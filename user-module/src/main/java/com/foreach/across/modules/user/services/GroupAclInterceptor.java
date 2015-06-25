@@ -33,6 +33,11 @@ public class GroupAclInterceptor extends IdBasedEntityAclInterceptor<Group>
 	private AclSecurityEntityService aclSecurityEntityService;
 
 	@Override
+	public boolean handles( Class<?> entityClass ) {
+		return Group.class.equals( entityClass );
+	}
+
+	@Override
 	public void afterCreate( Group entity ) {
 		if ( settings.isEnableDefaultAcls() ) {
 			AclSecurityEntity groupParentEntity = aclSecurityEntityService.getSecurityEntityByName( "groups" );
@@ -41,7 +46,7 @@ public class GroupAclInterceptor extends IdBasedEntityAclInterceptor<Group>
 	}
 
 	@Override
-	public void beforeDelete( Group entity, boolean isSoftDelete ) {
+	public void beforeDelete( Group entity ) {
 		if ( settings.isEnableDefaultAcls() ) {
 			aclSecurityService().deleteAcl( entity, true );
 		}
