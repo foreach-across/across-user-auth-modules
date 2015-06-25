@@ -38,6 +38,7 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
 import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
@@ -46,7 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableAspectJAutoProxy
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter
 {
 	@Autowired
@@ -75,7 +76,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Bean
 	@Primary
-	public DefaultTokenServices tokenServices() {
+	public AuthorizationServerTokenServices tokenServices() {
 		DefaultTokenServices tokenServices = new CustomTokenServices();
 		tokenServices.setTokenStore( tokenStore() );
 		tokenServices.setSupportRefreshToken( true );
@@ -104,7 +105,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		}
 		endpoints.tokenStore( tokenStore() )
 		         .tokenServices( tokenServices() )
-
 		         .authenticationManager( authenticationManager )
 		         .getFrameworkEndpointHandlerMapping().setMappings( mapping );
 
