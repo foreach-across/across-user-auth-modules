@@ -24,6 +24,11 @@ import com.foreach.across.modules.spring.security.acl.support.IdBasedEntityAclIn
 public class AclSecurityEntityAclInterceptor extends IdBasedEntityAclInterceptor<AclSecurityEntity>
 {
 	@Override
+	public boolean handles( Class<?> entityClass ) {
+		return AclSecurityEntity.class.equals( entityClass );
+	}
+
+	@Override
 	public void afterCreate( AclSecurityEntity entity ) {
 		AclSecurityEntity parent = entity.getParent();
 
@@ -41,7 +46,6 @@ public class AclSecurityEntityAclInterceptor extends IdBasedEntityAclInterceptor
 	}
 
 	@Override
-	public void beforeDelete( AclSecurityEntity entity, boolean isSoftDelete ) {
-
+	public void beforeDelete( AclSecurityEntity entity ) {
 	}
 }
