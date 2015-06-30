@@ -150,6 +150,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		view.setEntityConfiguration( entityConfiguration );
 
 		EntityMessageCodeResolver codeResolver = createMessageCodeResolver( entityConfiguration );
+		view.setMessageCodeResolver( codeResolver );
 		view.setEntityMessages( createEntityMessages( codeResolver ) );
 
 		preProcessEntityView( creationContext, view );

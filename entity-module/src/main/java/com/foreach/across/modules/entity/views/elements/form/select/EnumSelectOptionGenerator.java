@@ -28,6 +28,7 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class EnumSelectOptionGenerator implements SelectOptionGenerator
 {
 	private Class<? extends Enum> enumType;

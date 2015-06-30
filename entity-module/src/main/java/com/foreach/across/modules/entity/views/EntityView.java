@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.elements.ViewElements;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
@@ -95,6 +96,14 @@ public class EntityView implements Model
 
 	public void setEntityLinkBuilder( EntityLinkBuilder entityLinks ) {
 		model.addAttribute( ATTRIBUTE_ENTITY_LINKS, entityLinks );
+	}
+
+	public EntityMessageCodeResolver getMessageCodeResolver() {
+		return getAttribute( EntityMessageCodeResolver.class.getName() );
+	}
+
+	public void setMessageCodeResolver( EntityMessageCodeResolver codeResolver ) {
+		addAttribute( EntityMessageCodeResolver.class.getName(), codeResolver );
 	}
 
 	public EntityMessages getEntityMessages() {

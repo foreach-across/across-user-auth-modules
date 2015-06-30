@@ -138,12 +138,16 @@ public class RepositoryEntityPropertyRegistryBuilder
 	                                         PersistentEntity<?, ?> persistentEntity ) {
 		for ( EntityPropertyDescriptor descriptor : registry.getRegisteredDescriptors() ) {
 			PersistentProperty persistentProperty = persistentEntity.getPersistentProperty( descriptor.getName() );
-			if ( persistentProperty != null && ( persistentProperty.isAnnotationPresent( Embedded.class )
-					|| persistentProperty.isAnnotationPresent( EmbeddedId.class ) ) ) {
+			if ( persistentProperty != null ) {
 				MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
 				if ( mutable != null ) {
-					mutable.setAttribute( EntityAttributes.PROPERTY_PERSISTENCE_METADATA,
-					                      new PropertyPersistenceMetadata() );
+					mutable.setAttribute( PersistentProperty.class, persistentProperty );
+					// todo: remove
+					if ( persistentProperty.isAnnotationPresent( Embedded.class )
+							|| persistentProperty.isAnnotationPresent( EmbeddedId.class ) ) {
+						mutable.setAttribute( EntityAttributes.PROPERTY_PERSISTENCE_METADATA,
+						                      new PropertyPersistenceMetadata() );
+					}
 				}
 			}
 		}
