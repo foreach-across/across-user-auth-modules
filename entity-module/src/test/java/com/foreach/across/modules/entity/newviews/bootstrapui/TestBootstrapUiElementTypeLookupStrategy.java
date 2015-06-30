@@ -39,6 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -203,7 +204,6 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
-	@Ignore
 	@SuppressWarnings("unchecked")
 	public void collectionEntityTypeShouldReturnMultiCheckbox() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
@@ -212,14 +212,31 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
 
 		when( descriptor.getPropertyType() ).thenReturn( (Class) List.class );
-		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection( List.class, TypeDescriptor.valueOf(
-				Client.class ) );
+		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
+				List.class, TypeDescriptor.valueOf( Client.class )
+		);
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
-//		when( descriptor.getPropertyTypeDescriptor().getResolvableType() )
-//				.thenReturn( ResolvableType.forClassWithGenerics( List.class, Client.class ) );
 
-		//assertEquals( BootstrapUiElements.MULTI_CHECKBOX, strategy.findElementType( entityConfiguration, descriptor,
-		//                                                                           ViewElementMode.FORM_WRITE ) );
+		assertEquals( BootstrapUiElements.MULTI_CHECKBOX,
+		              strategy.findElementType( entityConfiguration, descriptor, ViewElementMode.CONTROL ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void collectionEnumShouldReturnMultiCheckbox() {
+		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
+
+		when( entityConfiguration.getEntityType() ).thenReturn( (Class) Client.class );
+		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
+
+		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
+		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
+				Set.class, TypeDescriptor.valueOf( CompanyStatus.class )
+		);
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
+
+		assertEquals( BootstrapUiElements.MULTI_CHECKBOX,
+		              strategy.findElementType( entityConfiguration, descriptor, ViewElementMode.CONTROL ) );
 	}
 
 	@Test
