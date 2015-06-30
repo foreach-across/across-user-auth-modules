@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.mysema.util.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
@@ -33,9 +34,11 @@ import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.data.mapping.PersistentProperty;
 
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
@@ -68,7 +71,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	public void before() {
 		reset( entityConfiguration, registry );
 
-		builderContext = mock( ViewElementBuilderContext.class );
+		builderContext = spy( new ViewElementBuilderContextImpl() );
 
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
 
@@ -100,6 +103,17 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 						.thenReturn( "resolved: " + StringUtils.lowerCase( propertyName ) );
 
 				properties.put( propertyName, descriptor );
+
+				PersistentProperty persistentProperty = mock( PersistentProperty.class );
+
+				for ( Annotation annotation : field.getAnnotations() ) {
+					when( persistentProperty.isAnnotationPresent( annotation.annotationType() ) ).thenReturn( true );
+					when( persistentProperty.findAnnotation( annotation.annotationType() ) ).thenReturn( annotation );
+
+					if ( annotation.annotationType().getName().startsWith( "javax.persistence" ) ) {
+						when( descriptor.getAttribute( PersistentProperty.class ) ).thenReturn( persistentProperty );
+					}
+				}
 			}
 		}
 	}

@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.registry.properties.meta;
+package com.foreach.across.modules.properties;
+
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
 /**
- * @author niels
- * @since 4/02/2015
+ * @author Arne Vandamme
  */
-@Deprecated
-public class PropertyPersistenceMetadata
+public class TestPropertiesModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-
-	private boolean embedded;
-
-	public void setEmbedded( boolean embedded ) {
-		this.embedded = embedded;
+	@Override
+	protected boolean hasSettings() {
+		return true;
 	}
 
-	public boolean isEmbedded() {
-		return embedded;
+	@Override
+	protected AcrossModule createModule() {
+		return new PropertiesModule();
 	}
 }
