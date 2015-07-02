@@ -17,8 +17,8 @@ package com.foreach.across.modules.entity.views.fetchers;
 
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -32,12 +32,12 @@ import org.springframework.data.domain.Pageable;
 public class AssociationListViewPageFetcher implements EntityListViewPageFetcher<ViewCreationContext>
 {
 	private final EntityPropertyDescriptor property;
-	private final EntityQueryPageFetcher entityQueryPageFetcher;
+	private final EntityQueryExecutor entityQueryExecutor;
 
 	public AssociationListViewPageFetcher( EntityPropertyDescriptor property,
-	                                       EntityQueryPageFetcher entityQueryPageFetcher ) {
+	                                       EntityQueryExecutor entityQueryExecutor ) {
 		this.property = property;
-		this.entityQueryPageFetcher = entityQueryPageFetcher;
+		this.entityQueryExecutor = entityQueryExecutor;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -45,7 +45,7 @@ public class AssociationListViewPageFetcher implements EntityListViewPageFetcher
 	public Page fetchPage( ViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
 		EntityQuery query = EntityQuery.and( buildEqualsOrContainsCondition( model.getParentEntity() ) );
 
-		return entityQueryPageFetcher.fetchPage( query, pageable );
+		return entityQueryExecutor.findAll( query, pageable );
 	}
 
 	private EntityQueryCondition buildEqualsOrContainsCondition( Object value ) {

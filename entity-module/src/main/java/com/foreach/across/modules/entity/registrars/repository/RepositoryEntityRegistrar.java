@@ -19,9 +19,9 @@ import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
-import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaPageFetcher;
-import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslPageFetcher;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
+import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryMappingMetaDataBuilder;
@@ -155,7 +155,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 			entityConfiguration.setHidden( Modifier.isAbstract( entityType.getModifiers() ) );
 
-			registerEntityQueryPageFetcher( entityConfiguration );
+			registerEntityQueryExecutor( entityConfiguration );
 
 			propertyRegistryBuilder.buildEntityPropertyRegistry( entityConfiguration );
 			entityModelBuilder.buildEntityModel( entityConfiguration );
@@ -214,26 +214,26 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 	}
 
 	/**
-	 * Determine the best {@link com.foreach.across.modules.entity.query.EntityQueryPageFetcher} implementation
+	 * Determine the best {@link EntityQueryExecutor} implementation
 	 * for this entity.
 	 */
-	private void registerEntityQueryPageFetcher( MutableEntityConfiguration entityConfiguration ) {
+	private void registerEntityQueryExecutor( MutableEntityConfiguration entityConfiguration ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
-		EntityQueryPageFetcher entityQueryPageFetcher = null;
+		EntityQueryExecutor entityQueryExecutor = null;
 
 		// Because of some bugs related to JPA - Hibernate integration, favour the use of QueryDsl if possible,
 		// see particular issue: https://hibernate.atlassian.net/browse/HHH-5948
 		if ( repository instanceof QueryDslPredicateExecutor ) {
-			entityQueryPageFetcher = new EntityQueryQueryDslPageFetcher( (QueryDslPredicateExecutor) repository,
+			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QueryDslPredicateExecutor) repository,
 			                                                             entityConfiguration );
 		}
 		else if ( repository instanceof JpaSpecificationExecutor ) {
-			entityQueryPageFetcher = new EntityQueryJpaPageFetcher( (JpaSpecificationExecutor) repository );
+			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );
 		}
 
-		if ( entityQueryPageFetcher != null ) {
-			entityConfiguration.setAttribute( EntityQueryPageFetcher.class, entityQueryPageFetcher );
+		if ( entityQueryExecutor != null ) {
+			entityConfiguration.setAttribute( EntityQueryExecutor.class, entityQueryExecutor );
 		}
 	}
 
