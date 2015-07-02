@@ -22,6 +22,9 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
+import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
@@ -45,6 +48,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mapping.PersistentEntity;
+import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
@@ -83,7 +88,7 @@ public class TestRepositoryEntityRegistrar
 
 	@Test
 	public void clientShouldBeRegisteredWithRepositoryInformation() {
-		//assertEquals( 4, entityRegistry.getEntities().size() );
+		assertEquals( 6, entityRegistry.getEntities().size() );
 		assertTrue( entityRegistry.contains( Client.class ) );
 
 		EntityConfiguration<?> configuration = entityRegistry.getEntityConfiguration( Client.class );
@@ -95,6 +100,15 @@ public class TestRepositoryEntityRegistrar
 		RepositoryFactoryInformation<Client, Long> repositoryFactoryInformation
 				= configuration.getAttribute( RepositoryFactoryInformation.class );
 		assertNotNull( repositoryFactoryInformation );
+
+		PersistentEntity persistentEntity = configuration.getAttribute( PersistentEntity.class );
+		assertNotNull( persistentEntity );
+		assertEquals( persistentEntity.getType(), Client.class );
+
+		EntityPropertyDescriptor propertyDescriptor = configuration.getPropertyRegistry().getProperty( "name" );
+		PersistentProperty persistentProperty = propertyDescriptor.getAttribute( PersistentProperty.class );
+		assertNotNull( persistentProperty );
+		assertSame( persistentProperty, persistentEntity.getPersistentProperty( "name" ) );
 
 		EntityModel model = configuration.getEntityModel();
 		assertNotNull( model );
@@ -271,6 +285,24 @@ public class TestRepositoryEntityRegistrar
 
 		EntityFormViewFactory viewFactory = configuration.getViewFactory( EntityFormView.CREATE_VIEW_NAME );
 		assertNotNull( viewFactory );
+	}
+
+	@Test
+	public void clientShouldHaveAJpaExecutor() {
+		EntityConfiguration<Client> configuration = entityRegistry.getEntityConfiguration( Client.class );
+		EntityQueryExecutor<Client> queryExecutor = configuration.getAttribute( EntityQueryExecutor.class );
+
+		assertNotNull( queryExecutor );
+		assertTrue( queryExecutor instanceof EntityQueryJpaExecutor );
+	}
+
+	@Test
+	public void companyShouldHaveAQueryDslExecutor() {
+		EntityConfiguration<Company> configuration = entityRegistry.getEntityConfiguration( Company.class );
+		EntityQueryExecutor<Company> queryExecutor = configuration.getAttribute( EntityQueryExecutor.class );
+
+		assertNotNull( queryExecutor );
+		assertTrue( queryExecutor instanceof EntityQueryQueryDslExecutor );
 	}
 
 	@Configuration
