@@ -21,8 +21,8 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -75,7 +74,7 @@ public class ITEntityModuleDependency
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityQueryPageFetcher() {
+	public void entityQueryExecutor() {
 		Group group = createTestUserAndGroup();
 
 		Collection<User> users = userService.findUsers( QUser.user.groups.contains( group ) );
@@ -86,17 +85,16 @@ public class ITEntityModuleDependency
 		EntityAssociation association = entityConfiguration.association( "user.groups" );
 		assertNotNull( association );
 
-		EntityQueryPageFetcher queryPageFetcher = association.getTargetEntityConfiguration()
-		                                                     .getAttribute( EntityQueryPageFetcher.class );
+		EntityQueryExecutor queryPageFetcher = association.getTargetEntityConfiguration()
+		                                                  .getAttribute( EntityQueryExecutor.class );
 		assertNotNull( queryPageFetcher );
 
 		EntityQuery query = EntityQuery.and(
 				new EntityQueryCondition( "groups", EntityQueryOps.CONTAINS, group )
 		);
 
-		Page page = queryPageFetcher.fetchPage( query, null );
+		users = queryPageFetcher.findAll( query );
 
-		users = (Collection<User>) page.getContent();
 		assertEquals( 1, users.size() );
 		assertEquals( Long.valueOf( -9875L ), users.iterator().next().getId() );
 	}

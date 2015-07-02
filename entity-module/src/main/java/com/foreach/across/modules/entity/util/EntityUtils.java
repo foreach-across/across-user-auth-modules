@@ -75,20 +75,33 @@ public class EntityUtils
 	 * @param collection contains the items in the page
 	 * @return Page instance
 	 */
-	public static Page<?> createPage( Iterable<?> collection ) {
-		if ( collection instanceof List ) {
-			return new PageImpl<>( (List<?>) collection );
+	public static <Y> Page<Y> asPage( Iterable<Y> collection ) {
+		return new PageImpl<Y>( asList( collection ) );
+	}
+
+	/**
+	 * Create a {@link List} from any {@link Iterable}.  If the iterable is a list the same instance
+	 * will be returned.  In all other cases a new instance will be created from the elements of
+	 * the iterable.
+	 *
+	 * @param iterable containing the elements
+	 * @param <Y>      element type
+	 * @return List instance
+	 */
+	public static <Y> List<Y> asList( Iterable<Y> iterable ) {
+		if ( iterable instanceof List ) {
+			return (List<Y>) iterable;
 		}
 
-		if ( collection instanceof Collection ) {
-			return new PageImpl<>( new ArrayList<>( (Collection) collection ) );
+		if ( iterable instanceof Collection ) {
+			return new ArrayList<>( (Collection<Y>) iterable );
 		}
 
-		List<Object> list = new ArrayList<>();
-		for ( Object item : collection ) {
+		List<Y> list = new ArrayList<>();
+		for ( Y item : iterable ) {
 			list.add( item );
 		}
 
-		return new PageImpl<>( list );
+		return list;
 	}
 }

@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
@@ -96,15 +96,15 @@ public class OneToManyEntityAssociationBuilder implements EntityAssociationBuild
 		                                "entityViews.listView",
 		                                "entityViews" );
 
-		EntityQueryPageFetcher queryPageFetcher = to.getAttribute( EntityQueryPageFetcher.class );
+		EntityQueryExecutor queryExecutor = to.getAttribute( EntityQueryExecutor.class );
 
-		if ( queryPageFetcher != null ) {
+		if ( queryExecutor != null ) {
 			viewFactory.setPageFetcher(
-					new AssociationListViewPageFetcher( association.getTargetProperty(), queryPageFetcher )
+					new AssociationListViewPageFetcher( association.getTargetProperty(), queryExecutor )
 			);
 		}
 		else {
-			LOG.warn( "Unable to create OneToMany association {} as there is no EntityQueryPageFetcher available",
+			LOG.warn( "Unable to create OneToMany association {} as there is no EntityQueryExecutor available",
 			          association.getName() );
 		}
 

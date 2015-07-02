@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
@@ -71,9 +71,9 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 	}
 
 	private boolean canAssociationBeBuilt( MutableEntityConfiguration from, MutableEntityConfiguration to ) {
-		if ( !to.hasAttribute( EntityQueryPageFetcher.class ) ) {
+		if ( !to.hasAttribute( EntityQueryExecutor.class ) ) {
 			LOG.warn(
-					"Unable to build association between {} and {} because {} does not provide an EntityQueryPageFetcher.",
+					"Unable to build association between {} and {} because {} does not provide an EntityQueryExecutor.",
 					from.getName(), to.getName(), to.getName() );
 			return false;
 		}
@@ -91,15 +91,15 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 		                                "entityViews.listView",
 		                                "entityViews" );
 
-		EntityQueryPageFetcher queryPageFetcher = to.getAttribute( EntityQueryPageFetcher.class );
+		EntityQueryExecutor queryExecutor = to.getAttribute( EntityQueryExecutor.class );
 
-		if ( queryPageFetcher != null ) {
+		if ( queryExecutor != null ) {
 			viewFactory.setPageFetcher(
-					new AssociationListViewPageFetcher( association.getTargetProperty(), queryPageFetcher )
+					new AssociationListViewPageFetcher( association.getTargetProperty(), queryExecutor )
 			);
 		}
 		else {
-			LOG.warn( "Unable to create ManyToOne association {} as there is no EntityQueryPageFetcher available",
+			LOG.warn( "Unable to create ManyToOne association {} as there is no EntityQueryExecutor available",
 			          association.getName() );
 		}
 
