@@ -15,16 +15,12 @@
  */
 package com.foreach.across.modules.oauth2.config;
 
-import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
+import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.oauth2.OAuth2Module;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories(
-		transactionManagerRef = HibernateJpaConfiguration.TRANSACTION_MANAGER,
-		basePackageClasses = OAuth2Module.class
-)
+@EnableAcrossJpaRepositories(basePackageClasses = OAuth2Module.class)
 public class OAuth2RepositoriesConfiguration
 {
 }
