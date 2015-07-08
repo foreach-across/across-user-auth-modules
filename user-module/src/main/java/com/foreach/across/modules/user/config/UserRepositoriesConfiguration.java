@@ -15,16 +15,12 @@
  */
 package com.foreach.across.modules.user.config;
 
-import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
+import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.user.UserModule;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories(
-		transactionManagerRef = HibernateJpaConfiguration.TRANSACTION_MANAGER,
-		basePackageClasses = UserModule.class
-)
+@EnableAcrossJpaRepositories(basePackageClasses = UserModule.class)
 public class UserRepositoriesConfiguration
 {
 }
