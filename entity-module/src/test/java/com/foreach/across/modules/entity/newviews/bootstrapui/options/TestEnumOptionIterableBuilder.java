@@ -57,7 +57,10 @@ public class TestEnumOptionIterableBuilder
 	public void before() {
 		valueFetcher = mock( ValueFetcher.class );
 
-		iterableBuilder = new EnumOptionIterableBuilder( Counter.class, valueFetcher );
+		iterableBuilder = new EnumOptionIterableBuilder();
+		iterableBuilder.setEnumType( Counter.class );
+		iterableBuilder.setValueFetcher( valueFetcher );
+
 		elementBuilderContext = new ViewElementBuilderContextImpl();
 
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
@@ -73,6 +76,17 @@ public class TestEnumOptionIterableBuilder
 		elementBuilderContext.setAttribute( EntityMessageCodeResolver.class, codeResolver );
 
 		options.clear();
+	}
+
+	@Test
+	public void noValueFetcherMeansNoOptionSelected() {
+		elementBuilderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, "entity" );
+		when( valueFetcher.getValue( "entity" ) ).thenReturn( Counter.TWO );
+
+		iterableBuilder.setValueFetcher( null );
+
+		build();
+		assertNotSelected( Counter.ONE, Counter.TWO, Counter.THREE );
 	}
 
 	@Test
