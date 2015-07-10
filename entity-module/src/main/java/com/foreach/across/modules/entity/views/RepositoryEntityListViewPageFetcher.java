@@ -15,15 +15,12 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.modules.entity.util.EntityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Arne Vandamme
@@ -44,23 +41,6 @@ public class RepositoryEntityListViewPageFetcher implements EntityListViewPageFe
 		}
 
 		Iterable items = repository.findAll();
-		return new PageImpl<>( convertToList( items ) );
-	}
-
-	private <T> List<T> convertToList( Iterable<T> items ) {
-		if ( items instanceof List ) {
-			return (List<T>) items;
-		}
-
-		if ( items instanceof Collection ) {
-			return new ArrayList<>( (Collection<T>) items );
-		}
-
-		List<T> list = new ArrayList<>();
-		for ( T item : items ) {
-			list.add( item );
-		}
-
-		return list;
+		return new PageImpl<>( EntityUtils.asList( items ) );
 	}
 }
