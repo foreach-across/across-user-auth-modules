@@ -22,6 +22,7 @@ import com.foreach.across.modules.spring.security.acl.services.AclSecurityServic
 import com.foreach.across.modules.spring.security.acl.services.SecurityPrincipalAclService;
 import com.foreach.across.modules.spring.security.acl.services.SecurityPrincipalJdbcAclService;
 import com.foreach.across.modules.spring.security.acl.strategy.SecurityPrincipalSidRetrievalStrategy;
+import com.foreach.across.modules.spring.security.authority.NamedGrantedAuthority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,6 @@ import org.springframework.security.acls.jdbc.LookupStrategy;
 import org.springframework.security.acls.model.AclCache;
 import org.springframework.security.acls.model.PermissionGrantingStrategy;
 import org.springframework.security.acls.model.SidRetrievalStrategy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.sql.DataSource;
 
@@ -111,9 +111,9 @@ public class AclSecurityConfiguration
 	@Bean
 	public AclAuthorizationStrategy aclAuthorizationStrategy() {
 		AclAuthorizationStrategyImpl strategy = new AclAuthorizationStrategyImpl(
-				new SimpleGrantedAuthority( AclAuthorities.TAKE_OWNERSHIP ),
-				new SimpleGrantedAuthority( AclAuthorities.AUDIT_ACL ),
-				new SimpleGrantedAuthority( AclAuthorities.MODIFY_ACL )
+				new NamedGrantedAuthority( AclAuthorities.TAKE_OWNERSHIP ),
+				new NamedGrantedAuthority( AclAuthorities.AUDIT_ACL ),
+				new NamedGrantedAuthority( AclAuthorities.MODIFY_ACL )
 		);
 		strategy.setSidRetrievalStrategy( sidRetrievalStrategy() );
 

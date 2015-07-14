@@ -41,7 +41,7 @@ public class AclSecurityEntityAclInterceptor extends IdBasedEntityAclInterceptor
 	}
 
 	@Override
-	public void beforeDelete( AclSecurityEntity entity, boolean isSoftDelete ) {
-
+	public void afterDelete( AclSecurityEntity entity, boolean isSoftDelete ) {
+		aclSecurityService().deleteAcl( entity, true );
 	}
 }

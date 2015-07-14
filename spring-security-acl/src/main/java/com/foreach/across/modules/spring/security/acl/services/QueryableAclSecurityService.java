@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.spring.security.acl.services;
 
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import org.springframework.security.acls.model.ObjectIdentity;
 
@@ -28,6 +29,14 @@ import java.util.Collection;
  */
 public interface QueryableAclSecurityService extends AclSecurityService
 {
+	/**
+	 * Retrieve the default entity that is configured to serve as parent ACL for any ACL
+	 * created that does not have a parent specified.
+	 *
+	 * @return entity or null
+	 */
+	IdBasedEntity getDefaultParentAcl();
+
 	/**
 	 * Retrieve the list of ObjectIdentities that have an ACL that contains the at least one entry for
 	 * the given principal.  Only ACLs that contain the principal related entry directly are taken into

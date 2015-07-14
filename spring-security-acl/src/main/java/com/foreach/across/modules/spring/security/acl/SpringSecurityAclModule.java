@@ -31,6 +31,7 @@ import com.foreach.across.modules.spring.security.acl.config.AclSecurityConfigur
 import com.foreach.across.modules.spring.security.acl.config.ModuleAclSecurityConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.modules.AcrossHibernateJpaModuleConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.modules.AdminWebModuleConfiguration;
+import com.foreach.across.modules.spring.security.acl.config.modules.EntityUiModuleConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.modules.SpringSecurityInfrastructureModuleConfiguration;
 import com.foreach.across.modules.spring.security.acl.installers.AclEntityAuditableInstaller;
 import com.foreach.across.modules.spring.security.acl.installers.AclSchemaInstaller;
@@ -65,7 +66,8 @@ public class SpringSecurityAclModule extends AcrossModule implements HibernatePa
 	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
 		contextConfigurers.add( new AnnotatedClassConfigurer( AclSecurityConfiguration.class,
 		                                                      AcrossHibernateJpaModuleConfiguration.class,
-		                                                      AdminWebModuleConfiguration.class ) );
+		                                                      AdminWebModuleConfiguration.class,
+		                                                      EntityUiModuleConfiguration.class ) );
 	}
 
 	@Override

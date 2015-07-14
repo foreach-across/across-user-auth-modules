@@ -54,6 +54,11 @@ public class AclSecurityServiceImpl implements QueryableAclSecurityService
 		defaultParent = entity;
 	}
 
+	@Override
+	public IdBasedEntity getDefaultParentAcl() {
+		return defaultParent;
+	}
+
 	@Transactional(readOnly = true)
 	@Override
 	public MutableAcl getAcl( IdBasedEntity entity ) {
