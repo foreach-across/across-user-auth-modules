@@ -17,10 +17,12 @@ package com.foreach.across.modules.oauth2.config.security;
 
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
 import com.foreach.across.modules.oauth2.services.ClientOAuth2AuthenticationSerializer;
 import com.foreach.across.modules.oauth2.services.CustomTokenServices;
 import com.foreach.across.modules.oauth2.services.OAuth2StatelessJdbcTokenStore;
 import com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -34,13 +36,18 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
+import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
-@EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableAspectJAutoProxy
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter
 {
 	@Autowired
@@ -54,6 +61,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Qualifier("oAuth2ClientDetailsService")
 	private ClientDetailsService clientDetailsService;
 
+	@Autowired
+	private OAuth2ModuleSettings oAuth2ModuleSettings;
+
 	@Bean
 	public ClientOAuth2AuthenticationSerializer clientOAuth2AuthenticationSerializer() {
 		return new ClientOAuth2AuthenticationSerializer();
@@ -66,7 +76,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Bean
 	@Primary
-	public DefaultTokenServices tokenServices() {
+	public AuthorizationServerTokenServices tokenServices() {
 		DefaultTokenServices tokenServices = new CustomTokenServices();
 		tokenServices.setTokenStore( tokenStore() );
 		tokenServices.setSupportRefreshToken( true );
@@ -89,10 +99,32 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Override
 	public void configure( AuthorizationServerEndpointsConfigurer endpoints ) throws Exception {
+		Map<String, String> mapping = new HashMap<>();
+		if ( StringUtils.isNotBlank( oAuth2ModuleSettings.getCustomApprovalForm() ) ) {
+			mapping.put( "/oauth/confirm_access", "/oauth/custom_confirm_access" );
+		}
 		endpoints.tokenStore( tokenStore() )
 		         .tokenServices( tokenServices() )
-		         .userApprovalHandler( new DefaultUserApprovalHandler() )
-		         .authenticationManager( authenticationManager );
+		         .authenticationManager( authenticationManager )
+		         .getFrameworkEndpointHandlerMapping().setMappings( mapping );
+
+		if ( oAuth2ModuleSettings.isUseTokenStoreUserApprovalHandler() ) {
+			endpoints.userApprovalHandler( tokenStoreApprovalHandler() ).requestFactory( oAuth2RequestFactory() );
+		}
+		else {
+			endpoints.userApprovalHandler( new DefaultUserApprovalHandler() );
+		}
+	}
+
+	private TokenStoreUserApprovalHandler tokenStoreApprovalHandler() {
+		TokenStoreUserApprovalHandler tokenStoreUserApprovalHandler = new TokenStoreUserApprovalHandler();
+		tokenStoreUserApprovalHandler.setRequestFactory( oAuth2RequestFactory() );
+		tokenStoreUserApprovalHandler.setTokenStore( tokenStore() );
+		return tokenStoreUserApprovalHandler;
+	}
+
+	private DefaultOAuth2RequestFactory oAuth2RequestFactory() {
+		return new DefaultOAuth2RequestFactory( clientDetailsService );
 	}
 
 	@Override

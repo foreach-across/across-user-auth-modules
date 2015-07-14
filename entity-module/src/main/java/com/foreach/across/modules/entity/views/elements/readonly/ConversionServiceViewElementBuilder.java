@@ -27,7 +27,6 @@ import org.springframework.core.convert.ConversionService;
  */
 public class ConversionServiceViewElementBuilder implements ViewElementBuilder<ConversionServiceViewElement>
 {
-
 	private EntityMessageCodeResolver messageCodeResolver;
 	private ConversionService conversionService;
 	private EntityPropertyDescriptor descriptor;

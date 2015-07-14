@@ -17,18 +17,14 @@ package com.foreach.across.modules.entity.testmodules.springdata.config;
 
 import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.validators.CompanyValidator;
-import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
+import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories(
-		transactionManagerRef = HibernateJpaConfiguration.TRANSACTION_MANAGER,
-        basePackageClasses = SpringDataJpaModule.class
-)
+@EnableAcrossJpaRepositories(basePackageClasses = SpringDataJpaModule.class)
 public class ClientConfig
 {
 	@Bean

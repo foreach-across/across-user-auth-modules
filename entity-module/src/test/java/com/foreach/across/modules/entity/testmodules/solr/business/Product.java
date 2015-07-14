@@ -13,23 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.oauth2;
+package com.foreach.across.modules.entity.testmodules.solr.business;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.solr.core.mapping.Indexed;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
-public class TestOAuth2ModuleConventions extends AbstractAcrossModuleConventionsTest
+public class Product
 {
-	@Override
-	protected boolean hasSettings() {
-		return true;
-	}
+	@Id
+	@Field
+	private String simpleProperty;
 
-	@Override
-	protected AcrossModule createModule() {
-		return new OAuth2Module();
-	}
+	@Field("somePropertyName")
+	private String namedPropery;
+
+	@Field
+	private List<String> listOfValues;
+
+	@Indexed(readonly = true)
+	@Field("property_*")
+	private List<String> ignoredFromWriting;
+
+	@Field("mappedField_*")
+	private Map<String, List<String>> mappedFieldValues;
 }

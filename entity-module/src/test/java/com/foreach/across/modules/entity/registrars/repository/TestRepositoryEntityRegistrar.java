@@ -44,7 +44,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Sort;
@@ -53,7 +52,6 @@ import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
-import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -78,7 +76,7 @@ public class TestRepositoryEntityRegistrar
 	private EntityRegistry entityRegistry;
 
 	@Autowired
-	private ConversionService conversionService;
+	private ConversionService mvcConversionService;
 
 	@Autowired
 	private ClientRepository clientRepository;
@@ -195,12 +193,12 @@ public class TestRepositoryEntityRegistrar
 
 	@Test
 	public void entityConfigurationFromConversionService() {
-		EntityConfiguration clientConfiguration = conversionService.convert( "client", EntityConfiguration.class );
+		EntityConfiguration clientConfiguration = mvcConversionService.convert( "client", EntityConfiguration.class );
 
 		assertNotNull( clientConfiguration );
 		assertEquals( Client.class, clientConfiguration.getEntityType() );
 
-		EntityConfiguration notExisting = conversionService.convert( "someUnexistingEntity",
+		EntityConfiguration notExisting = mvcConversionService.convert( "someUnexistingEntity",
 		                                                             EntityConfiguration.class );
 		assertNull( notExisting );
 	}
@@ -213,13 +211,13 @@ public class TestRepositoryEntityRegistrar
 
 		clientRepository.save( client );
 
-		Client converted = conversionService.convert( "", Client.class );
+		Client converted = mvcConversionService.convert( "", Client.class );
 		assertNull( converted );
 
-		converted = conversionService.convert( 123, Client.class );
+		converted = mvcConversionService.convert( 123, Client.class );
 		assertEquals( client, converted );
 
-		converted = conversionService.convert( "123", Client.class );
+		converted = mvcConversionService.convert( "123", Client.class );
 		assertEquals( client, converted );
 	}
 
@@ -309,11 +307,6 @@ public class TestRepositoryEntityRegistrar
 	@AcrossTestWebConfiguration
 	public static class Config implements AcrossContextConfigurer
 	{
-		@Bean
-		public ConversionService conversionService() {
-			return new DefaultFormattingConversionService( true );
-		}
-
 		@Override
 		public void configure( AcrossContext context ) {
 			context.addModule( new SpringSecurityModule() );

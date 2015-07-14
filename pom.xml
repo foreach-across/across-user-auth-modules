@@ -27,6 +27,7 @@
 		<querydsl.version>3.5.1</querydsl.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<jacoco-maven-plugin.version>0.7.4.201502262128</jacoco-maven-plugin.version>
 	</properties>
 
 	<repositories>
@@ -136,6 +137,11 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin.version}</version>
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -184,7 +190,6 @@
 		<module>properties-module</module>
 		<module>spring-security-acl</module>
 		<module>entity-module</module>
-		<module>metric-module</module>
 		<module>user-module</module>
 		<module>application-info</module>
 		<module>logging-module</module>
