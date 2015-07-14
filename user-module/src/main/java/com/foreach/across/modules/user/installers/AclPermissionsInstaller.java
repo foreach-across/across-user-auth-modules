@@ -92,7 +92,8 @@ public class AclPermissionsInstaller
 	public void createPermissionsAndAddToAdminRole() {
 		// Create the individual permissions
 		permissionService.definePermission( AclAuthorities.TAKE_OWNERSHIP,
-		                                    "Allows the user to change the ownership of any ACL.",
+		                                    "Allows the user to change the ownership of any ACL.  " +
+				                                    "This permission is also required to manage ACL security entities.",
 		                                    SpringSecurityAclModule.NAME );
 		permissionService.definePermission( AclAuthorities.MODIFY_ACL,
 		                                    "Allows the user to modify the entries of any ACL.",
@@ -131,8 +132,7 @@ public class AclPermissionsInstaller
 			dto.setParent( aclSecurityEntityService.getSecurityEntityByName( "system" ) );
 
 			existing = aclSecurityEntityService.save( dto );
-			aclSecurityService.createAclWithParent( existing, aclSecurityEntityService.getSecurityEntityByName(
-					"system" ) );
+
 			aclSecurityService.allow( "manage groups", existing, AclPermission.READ, AclPermission.WRITE );
 		}
 	}

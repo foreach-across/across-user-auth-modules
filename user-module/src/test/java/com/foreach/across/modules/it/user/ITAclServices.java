@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.model.Acl;
 import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.core.Authentication;
@@ -189,6 +190,20 @@ public class ITAclServices
 		assertTrue( adminRole.hasPermission( AclAuthorities.AUDIT_ACL ) );
 		assertTrue( adminRole.hasPermission( AclAuthorities.MODIFY_ACL ) );
 		assertTrue( adminRole.hasPermission( AclAuthorities.TAKE_OWNERSHIP ) );
+
+		AclSecurityEntity system = aclSecurityEntityService.getSecurityEntityByName( "system" );
+		assertNotNull( system );
+
+		AclSecurityEntity groups = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+		assertNotNull( groups );
+		assertEquals( system, groups.getParent() );
+
+		Acl systemAcl = acl.getAcl( system );
+		assertNull( systemAcl.getParentAcl() );
+
+		// Groups ACL must have its parent set through the interceptor
+		Acl groupsAcl = acl.getAcl( groups );
+		assertEquals( systemAcl, groupsAcl.getParentAcl() );
 	}
 
 	@Test
