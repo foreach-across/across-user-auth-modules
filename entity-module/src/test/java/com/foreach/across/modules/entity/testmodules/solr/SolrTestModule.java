@@ -13,33 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.metrics;
+package com.foreach.across.modules.entity.testmodules.solr;
 
 import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.modules.debugweb.DebugWebModule;
+import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
+import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
+
+import java.util.Set;
 
 /**
- * @author Marc Vanbrabant
+ * @author Arne Vandamme
  */
-@AcrossDepends( optional = DebugWebModule.NAME )
-public class MetricModule extends AcrossModule
+public class SolrTestModule extends AcrossModule
 {
-	public static final String NAME = "MetricModule";
-	public static final String RESOURCES = "metrics";
-
-	@Override
-	public String getName() {
-		return NAME;
+	public SolrTestModule() {
 	}
 
 	@Override
-	public String getResourcesKey() {
-		return RESOURCES;
+	public String getName() {
+		return "SolrTestModule";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Provides metrics.";
+		return "Module containing a Spring Data SOLR repository.";
+	}
+
+	@Override
+	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		contextConfigurers.add( new ComponentScanConfigurer( getClass().getPackage().getName() ) );
 	}
 }

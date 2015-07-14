@@ -32,7 +32,7 @@ import org.springframework.core.convert.ConversionService;
 public class ConversionServiceViewElementBuilderFactoryAssembler implements ViewElementBuilderFactoryAssembler
 {
 	@Autowired
-	private ConversionService conversionService;
+	private ConversionService mvcConversionService;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -45,7 +45,7 @@ public class ConversionServiceViewElementBuilderFactoryAssembler implements View
 	                                                       EntityPropertyDescriptor descriptor ) {
 		ConversionServiceViewElementBuilder template = new ConversionServiceViewElementBuilder();
 		template.setMessageCodeResolver( entityConfiguration.getEntityMessageCodeResolver() );
-		template.setConversionService( conversionService );
+		template.setConversionService( mvcConversionService );
 		template.setDescriptor( descriptor );
 
 		CloningViewElementBuilderFactory<ConversionServiceViewElementBuilder> builderFactory =

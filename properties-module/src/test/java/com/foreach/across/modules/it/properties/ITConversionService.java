@@ -51,7 +51,7 @@ import static org.mockito.Mockito.mock;
 public class ITConversionService
 {
 	@Autowired
-	@Qualifier("conversionServiceOne")
+	@Qualifier("conversionService")
 	private ConversionService conversionServiceOne;
 
 	@Autowired
@@ -148,7 +148,7 @@ public class ITConversionService
 	{
 		@Bean
 		@Primary
-		public ConversionService conversionServiceOne() {
+		public ConversionService conversionService() {
 			return mock( ConversionService.class );
 		}
 

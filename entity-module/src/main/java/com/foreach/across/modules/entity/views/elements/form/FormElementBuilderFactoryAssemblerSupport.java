@@ -50,7 +50,7 @@ public abstract class FormElementBuilderFactoryAssemblerSupport<T extends FormEl
 	private final Set<String> supportedTypes = new HashSet<>();
 
 	@Autowired
-	private ConversionService conversionService;
+	private ConversionService mvcConversionService;
 
 	protected FormElementBuilderFactoryAssemblerSupport( Class<T> builderClass, String... elementTypes ) {
 		this.builderClass = builderClass;
@@ -149,7 +149,8 @@ public abstract class FormElementBuilderFactoryAssemblerSupport<T extends FormEl
 		// todo: has existing valueprinter, has existing printer (?)
 		ValueFetcher<?> valueFetcher = descriptor.getValueFetcher();
 		TypeDescriptor propertyTypeDescriptor = descriptor.getPropertyTypeDescriptor();
-		return new ConversionServiceConvertingValuePrinter<>( valueFetcher, propertyTypeDescriptor, conversionService );
+		return new ConversionServiceConvertingValuePrinter<>( valueFetcher, propertyTypeDescriptor,
+		                                                      mvcConversionService );
 	}
 
 	protected T newInstance() {

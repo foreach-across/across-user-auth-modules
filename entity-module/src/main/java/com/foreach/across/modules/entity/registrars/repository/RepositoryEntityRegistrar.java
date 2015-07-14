@@ -53,7 +53,7 @@ import java.util.Map;
  * Scans for {@link org.springframework.data.repository.Repository} implementations
  * and creates a default EntityConfiguration for them.  Works for default Spring Data
  * repositories that provide a {@link org.springframework.data.repository.core.support.RepositoryFactoryInformation}
- * bean.
+ * bean and implement the {@link RepositoryFactoryInformation#getPersistentEntity()} fully.
  *
  * @author Arne Vandamme
  */
@@ -99,6 +99,15 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 		for ( Map.Entry<String, RepositoryFactoryInformation> informationBean
 				: repositoryFactoryInformationMap.entrySet() ) {
 			RepositoryFactoryInformation repositoryFactoryInformation = informationBean.getValue();
+
+			if ( repositoryFactoryInformation.getPersistentEntity() == null ) {
+				LOG.info(
+						"Skipping Spring Data repository {} ({}) - only repositories with PersistentEntity are currently supported by the EntityModule",
+						informationBean.getKey(), repositoryFactoryInformation.getClass()
+				);
+				continue;
+			}
+
 			Class<?> entityType = ClassUtils.getUserClass(
 					repositoryFactoryInformation.getRepositoryInformation().getDomainType()
 			);

@@ -183,7 +183,7 @@ public class ITAclServices
 	}
 
 	@Test
-	public void aclPermissionsShouldHaveBeenInstaller() {
+	public void aclPermissionsShouldHaveBeenInstalled() {
 		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
 
 		assertNotNull( adminRole );
@@ -365,7 +365,7 @@ public class ITAclServices
 	}
 
 	@Test
-	public void testGroups() {
+	public void testGroupsAndAclInterceptor() {
 		logon( userOne );
 		Group group1 = new Group();
 		group1.setName( "Test-group" );

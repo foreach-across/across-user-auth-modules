@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.user.config;
+package com.foreach.across.modules.entity.query;
 
-import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
-import com.foreach.across.modules.user.UserModule;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@EnableAcrossJpaRepositories(basePackageClasses = UserModule.class)
-public class UserRepositoriesConfiguration
+/**
+ * @author Arne Vandamme
+ */
+public interface EntityQueryExpression
 {
+	EntityQueryOps getOperand();
 }

@@ -42,7 +42,7 @@ import java.util.Map;
 public class FieldsetViewElementBuilderFactoryAssembler implements ViewElementBuilderFactoryAssembler
 {
 	@Autowired
-	private ConversionService conversionService;
+	private ConversionService mvcConversionService;
 
 	@Autowired
 	private EntityPropertyRegistries entityPropertyRegistries;
@@ -112,6 +112,6 @@ public class FieldsetViewElementBuilderFactoryAssembler implements ViewElementBu
 	protected ValuePrinter createValuePrinter( EntityPropertyDescriptor descriptor ) {
 		// todo: has existing valueprinter, has existing printer (?)
 		ValueFetcher<?> valueFetcher = descriptor.getValueFetcher();
-		return new ConversionServiceConvertingValuePrinter<>( valueFetcher, conversionService );
+		return new ConversionServiceConvertingValuePrinter<>( valueFetcher, mvcConversionService );
 	}
 }
