@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryMappingMetaDataBuilder;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,8 +182,15 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 		List<Validator> candidates = new ArrayList<>();
 
 		for ( Validator validator : validatorMap.values() ) {
-			if ( validator != entityValidator && validator.supports( entityConfiguration.getEntityType() ) ) {
-				candidates.add( validator );
+			if ( validator != entityValidator ) {
+				// Add base implementation to EntityValidatorSupport instance
+				if ( validator instanceof EntityValidatorSupport ) {
+					( (EntityValidatorSupport) validator ).setEntityValidator( entityValidator );
+				}
+
+				if ( validator.supports( entityConfiguration.getEntityType() ) ) {
+					candidates.add( validator );
+				}
 			}
 		}
 
@@ -195,6 +203,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 			validatorToUse = candidates.get( 0 );
 			LOG.debug( "Auto-registering validator bean of type {} as default validator for entity {}",
 			           ClassUtils.getUserClass( validatorToUse ).getName(), entityConfiguration.getEntityType() );
+
 		}
 
 		entityConfiguration.setAttribute( Validator.class, validatorToUse );
@@ -226,7 +235,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 		// see particular issue: https://hibernate.atlassian.net/browse/HHH-5948
 		if ( repository instanceof QueryDslPredicateExecutor ) {
 			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QueryDslPredicateExecutor) repository,
-			                                                             entityConfiguration );
+			                                                       entityConfiguration );
 		}
 		else if ( repository instanceof JpaSpecificationExecutor ) {
 			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );
