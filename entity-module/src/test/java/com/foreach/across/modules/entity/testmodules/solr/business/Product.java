@@ -13,18 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements;
+package com.foreach.across.modules.entity.testmodules.solr.business;
+
+import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.solr.core.mapping.Indexed;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * Creates a {@link ViewElementBuilder} that creates a
- * specific {@link com.foreach.across.modules.entity.views.elements.ViewElement} type.
- * The factory is expected to be immutable and create a builder usually using a base builder as a template.
- * The builder itself can then be modified for a particular view before creating the actual
- * {@link com.foreach.across.modules.entity.views.elements.ViewElement}.
- *
  * @author Arne Vandamme
  */
-public interface ViewElementBuilderFactory<T extends ViewElementBuilder>
+public class Product
 {
-	T createBuilder();
+	@Id
+	@Field
+	private String simpleProperty;
+
+	@Field("somePropertyName")
+	private String namedPropery;
+
+	@Field
+	private List<String> listOfValues;
+
+	@Indexed(readonly = true)
+	@Field("property_*")
+	private List<String> ignoredFromWriting;
+
+	@Field("mappedField_*")
+	private Map<String, List<String>> mappedFieldValues;
 }

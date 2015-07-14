@@ -16,6 +16,7 @@
 package com.foreach.across.modules.spring.security.acl.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.core.context.support.AcrossModuleMessageSource;
 import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
@@ -25,7 +26,6 @@ import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntity
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * Configures intercepting the BasicRepository methods to create or delete ACLs when an entity
@@ -37,10 +37,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @Configuration
 @AcrossDepends(required = "AcrossHibernateJpaModule")
-@EnableJpaRepositories(
-		transactionManagerRef = HibernateJpaConfiguration.TRANSACTION_MANAGER,
-		basePackageClasses = SpringSecurityAclModule.class
-)
+@EnableAcrossJpaRepositories(basePackageClasses = SpringSecurityAclModule.class)
 public class AcrossHibernateJpaModuleConfiguration
 {
 	@Bean

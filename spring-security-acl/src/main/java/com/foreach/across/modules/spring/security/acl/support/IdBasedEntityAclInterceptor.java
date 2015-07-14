@@ -25,11 +25,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Base class for an interceptor hooked to repository
- * persistence methods.  Useful for creating ACLs when saving or deleting instances.
- * <p/>
+ * <p>Base class for an interceptor hooked to repository persistence methods.
+ * Useful for creating ACLs when saving or deleting instances.</p>
+ * <p>
  * Implementations will be picked up automatically by the AcrossHibernateModule or AcrossHibernateJpaModule
- * if one of them is active.
+ * if one of them is active.</p>
  *
  * @author Arne Vandamme
  */

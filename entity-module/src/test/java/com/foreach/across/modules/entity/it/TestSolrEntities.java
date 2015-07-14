@@ -17,10 +17,11 @@ package com.foreach.across.modules.entity.it;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.testmodules.solr.SolrTestModule;
+import com.foreach.across.modules.entity.testmodules.solr.repositories.ProductRepository;
 import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
@@ -43,36 +44,42 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @WebAppConfiguration
-@ContextConfiguration(classes = ITWebBootstrap.Config.class)
-public class ITWebBootstrap
+@ContextConfiguration(classes = TestSolrEntities.Config.class)
+public class TestSolrEntities
 {
-	@Autowired
-	private AcrossContextBeanRegistry beanRegistry;
+	@Autowired(required = false)
+	private ClientRepository clientRepository;
+
+	@Autowired(required = false)
+	private ProductRepository productRepository;
 
 	@Test
-	public void bootstrappedOk() {
-		assertNotNull( beanRegistry.getBeanFromModule( EntityModule.NAME, "entityCreateController" ) );
+	public void contextShouldBootstrap() {
+		assertNotNull( clientRepository );
+		assertNotNull( productRepository );
 	}
 
 	@Configuration
 	@AcrossTestWebConfiguration
-	public static class Config implements AcrossContextConfigurer
+	protected static class Config implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {
+			context.addModule( new SpringSecurityModule() );
+			context.addModule( new AdminWebModule() );
 			context.addModule( new EntityModule() );
 
 			AcrossHibernateJpaModule hibernateModule = new AcrossHibernateJpaModule();
-			hibernateModule.setHibernateProperty( "hibernate.hbm2ddl.auto", "create-drop" );
+			hibernateModule.setHibernateProperty( "hibernate.hbm2ddl.auto", "create" );
 			context.addModule( hibernateModule );
 
 			SpringDataJpaModule springDataJpaModule = new SpringDataJpaModule();
 			springDataJpaModule.setExposeFilter( new ClassBeanFilter( ClientRepository.class ) );
 			context.addModule( springDataJpaModule );
 
-
-			context.addModule( new AdminWebModule() );
-			context.addModule( new SpringSecurityModule() );
+			SolrTestModule solrTestModule = new SolrTestModule();
+			solrTestModule.setExposeFilter( new ClassBeanFilter( ProductRepository.class ) );
+			context.addModule( solrTestModule );
 		}
 	}
 }
