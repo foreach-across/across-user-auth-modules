@@ -16,13 +16,24 @@
 package com.foreach.across.modules.spring.security.acl.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
+import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.validators.AclSecurityEntityValidator;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AuthorityMatchingAllowableActions;
+import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
+import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
@@ -31,6 +42,9 @@ import org.springframework.context.annotation.Configuration;
 @AcrossDepends(required = "EntityModule")
 public class EntityUiModuleConfiguration implements EntityConfigurer
 {
+	@Autowired
+	private CurrentSecurityPrincipalProxy securityPrincipal;
+
 	@Bean
 	public AclSecurityEntityValidator aclSecurityEntityValidator( AclSecurityEntityService aclSecurityEntityService ) {
 		return new AclSecurityEntityValidator( aclSecurityEntityService );
@@ -39,9 +53,22 @@ public class EntityUiModuleConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.entity( AclSecurityEntity.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( AclAuthorities.TAKE_OWNERSHIP ) )
 		             .listView()
 		             .properties(
 				             "name", "parent.name", "createdDate", "createdBy", "lastModifiedDate", "lastModifiedBy"
 		             );
+	}
+
+	private EntityConfigurationAllowableActionsBuilder actionsBuilderForAuthority( String authority ) {
+		Map<AllowableAction, AuthorityMatcher> actionAuthorityMatcherMap = new HashMap<>();
+		actionAuthorityMatcherMap.put( AllowableAction.READ, AuthorityMatcher.allOf( authority ) );
+		actionAuthorityMatcherMap.put( AllowableAction.UPDATE, AuthorityMatcher.allOf( authority ) );
+		actionAuthorityMatcherMap.put( AllowableAction.DELETE, AuthorityMatcher.allOf( authority ) );
+		actionAuthorityMatcherMap.put( AllowableAction.CREATE, AuthorityMatcher.allOf( authority ) );
+
+		return new FixedEntityAllowableActionsBuilder(
+				AuthorityMatchingAllowableActions.forSecurityPrincipal( securityPrincipal, actionAuthorityMatcherMap )
+		);
 	}
 }

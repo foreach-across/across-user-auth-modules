@@ -19,6 +19,11 @@ import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity
 import com.foreach.across.modules.spring.security.acl.support.IdBasedEntityAclInterceptor;
 
 /**
+ * Interceptor responsible for creating the actual {@link org.springframework.security.acls.model.Acl} backing
+ * an {@link AclSecurityEntity}.  Because the {@link AclSecurityEntity} hierarchy is supposed to match the
+ * {@link org.springframework.security.acls.model.Acl} hierarchy exactly, a possible default parent Acl configured
+ * on the {@link com.foreach.across.modules.spring.security.acl.services.AclSecurityService} will be ignored.
+ *
  * @author Arne Vandamme
  */
 public class AclSecurityEntityAclInterceptor extends IdBasedEntityAclInterceptor<AclSecurityEntity>
@@ -30,14 +35,8 @@ public class AclSecurityEntityAclInterceptor extends IdBasedEntityAclInterceptor
 
 	@Override
 	public void afterCreate( AclSecurityEntity entity ) {
-		AclSecurityEntity parent = entity.getParent();
-
-		if ( parent != null ) {
-			aclSecurityService().createAclWithParent( entity, parent );
-		}
-		else {
-			aclSecurityService().createAcl( entity );
-		}
+		// Always create with parent explicitly, so a possible default ACL does not apply
+		aclSecurityService().createAclWithParent( entity, entity.getParent() );
 	}
 
 	@Override
