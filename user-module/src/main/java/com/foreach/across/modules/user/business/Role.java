@@ -27,6 +27,7 @@ import org.springframework.security.core.GrantedAuthority;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -135,8 +136,9 @@ public class Role extends SettableIdBasedEntity<Role>
 		}
 	}
 
-	public void setPermissions( Set<Permission> permissions ) {
-		this.permissions = permissions;
+	public void setPermissions( Collection<Permission> permissions ) {
+		getPermissions().clear();
+		getPermissions().addAll( permissions );
 	}
 
 	public boolean hasPermission( String name ) {

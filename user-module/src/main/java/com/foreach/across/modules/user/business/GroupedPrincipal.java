@@ -49,8 +49,9 @@ public abstract class GroupedPrincipal<T extends SettableIdBasedEntity<?>>
 		return groups;
 	}
 
-	public void setGroups( Set<Group> groups ) {
-		this.groups = groups;
+	public void setGroups( Collection<Group> groups ) {
+		getGroups().clear();
+		getGroups().addAll( groups );
 	}
 
 	public boolean isMemberOf( Group group ) {

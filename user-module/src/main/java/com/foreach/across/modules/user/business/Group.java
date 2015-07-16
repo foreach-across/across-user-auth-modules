@@ -35,6 +35,13 @@ public class Group extends BasicSecurityPrincipal<Group> implements Comparable<G
 	@Column(name = "name")
 	private String name;
 
+	public Group() {
+	}
+
+	public Group( String name ) {
+		setName( name );
+	}
+
 	public String getName() {
 		return name;
 	}

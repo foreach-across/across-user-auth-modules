@@ -141,8 +141,9 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		return roles;
 	}
 
-	public void setRoles( Set<Role> roles ) {
-		this.roles = roles;
+	public void setRoles( Collection<Role> roles ) {
+		getRoles().clear();
+		getRoles().addAll( roles );
 	}
 
 	public boolean hasRole( String authority ) {

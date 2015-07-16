@@ -19,6 +19,7 @@ import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,5 +74,18 @@ public class TestRole
 
 		matcher = AuthorityMatcher.allOf( new Role( "ROLE_ADMIN" ) );
 		assertTrue( matcher.matches( actuals ) );
+	}
+
+	@Test
+	public void roleDto() {
+		Role role = new Role( "some role" );
+		role.setPermissions( Arrays.asList( new Permission( "one" ), new Permission( "two" ) ) );
+
+		Role dto = role.toDto();
+		assertNotNull( dto );
+		assertEquals( role, dto );
+		assertEquals( role.getName(), dto.getName() );
+		assertEquals( role.getPermissions(), dto.getPermissions() );
+		assertNotSame( role.getPermissions(), dto.getPermissions() );
 	}
 }
