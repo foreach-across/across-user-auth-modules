@@ -16,13 +16,14 @@
 package com.foreach.across.modules.oauth2.business;
 
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
 @Embeddable
 public class OAuth2ClientScopeId implements Serializable
 {
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private OAuth2Client oAuth2Client;
 
 	@ManyToOne
