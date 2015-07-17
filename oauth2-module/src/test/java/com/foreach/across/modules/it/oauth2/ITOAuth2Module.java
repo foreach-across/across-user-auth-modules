@@ -113,7 +113,7 @@ public class ITOAuth2Module
 		clientScope.setAutoApprove( false );
 		clientScope.setOAuth2Scope( fullScope );
 		clientScope.setOAuth2Client( client );
-		client.setoAuth2ClientScopes( Collections.singleton( clientScope ) );
+		client.setOAuth2ClientScopes( Collections.singleton( clientScope ) );
 	}
 
 	private OAuth2Scope getFullScope() {
