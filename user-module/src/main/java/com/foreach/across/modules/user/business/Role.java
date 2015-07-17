@@ -24,6 +24,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -31,6 +32,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
+@NotThreadSafe
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_ROLE)
 public class Role extends SettableIdBasedEntity<Role>

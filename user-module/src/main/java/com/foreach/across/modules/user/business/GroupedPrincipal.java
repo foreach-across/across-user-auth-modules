@@ -22,6 +22,7 @@ import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.hibernate.annotations.BatchSize;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import java.util.*;
 
@@ -31,6 +32,7 @@ import java.util.*;
  *
  * @author Arne Vandamme
  */
+@NotThreadSafe
 @MappedSuperclass
 @Access(AccessType.FIELD)
 public abstract class GroupedPrincipal<T extends SettableIdBasedEntity<?>>

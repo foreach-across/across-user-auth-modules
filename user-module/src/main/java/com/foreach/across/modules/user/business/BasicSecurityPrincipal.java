@@ -25,6 +25,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import java.util.*;
 
@@ -33,6 +34,7 @@ import java.util.*;
  *
  * @author Arne Vandamme
  */
+@NotThreadSafe
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_PRINCIPAL)
 @Inheritance(strategy = InheritanceType.JOINED)
