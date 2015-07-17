@@ -25,6 +25,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import java.util.*;
 
@@ -33,6 +34,7 @@ import java.util.*;
  *
  * @author Arne Vandamme
  */
+@NotThreadSafe
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_PRINCIPAL)
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -141,8 +143,9 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		return roles;
 	}
 
-	public void setRoles( Set<Role> roles ) {
-		this.roles = roles;
+	public void setRoles( Collection<Role> roles ) {
+		getRoles().clear();
+		getRoles().addAll( roles );
 	}
 
 	public boolean hasRole( String authority ) {

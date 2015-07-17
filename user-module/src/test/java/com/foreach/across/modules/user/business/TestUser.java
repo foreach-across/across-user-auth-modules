@@ -19,8 +19,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestUser
 {
@@ -73,5 +72,25 @@ public class TestUser
 		assertTrue( userA.hasPermission( permB ) );
 		assertTrue( userB.hasPermission( permA ) );
 		assertTrue( userB.hasPermission( permB ) );
+	}
+
+	@Test
+	public void userDto() {
+		User user = new User();
+		user.setId( 123L );
+		user.setUsername( "someUser" );
+		user.setGroups( Arrays.asList( new Group( "groupOne" ), new Group( "groupTwo" ) ) );
+		user.setRoles( Arrays.asList( new Role( "one" ), new Role( "two" ) ) );
+		user.setRestrictions( Arrays.asList( UserRestriction.CREDENTIALS_EXPIRED, UserRestriction.DISABLED ) );
+
+		User dto = user.toDto();
+		assertEquals( user, dto );
+		assertEquals( user.getUsername(), dto.getUsername() );
+		assertEquals( user.getRoles(), dto.getRoles() );
+		assertNotSame( user.getRoles(), dto.getRoles() );
+		assertEquals( user.getGroups(), dto.getGroups() );
+		assertNotSame( user.getGroups(), dto.getGroups() );
+		assertEquals( user.getRestrictions(), dto.getRestrictions() );
+		assertNotSame( user.getRestrictions(), dto.getRestrictions() );
 	}
 }

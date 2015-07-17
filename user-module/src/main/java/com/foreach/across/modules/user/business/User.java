@@ -24,15 +24,17 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
+@NotThreadSafe
 @Entity
 @DiscriminatorValue("user")
 @Table(name = UserSchemaConfiguration.TABLE_USER)
@@ -144,8 +146,11 @@ public class User extends GroupedPrincipal<User> implements UserDetails, Undelet
 		return restrictions;
 	}
 
-	public void setRestrictions( Set<UserRestriction> restrictions ) {
-		this.restrictions = restrictions != null ? restrictions : Collections.<UserRestriction>emptySet();
+	public void setRestrictions( Collection<UserRestriction> restrictions ) {
+		getRestrictions().clear();
+		if ( restrictions != null ) {
+			getRestrictions().addAll( restrictions );
+		}
 	}
 
 	public boolean hasRestriction( UserRestriction restriction ) {
@@ -153,28 +158,28 @@ public class User extends GroupedPrincipal<User> implements UserDetails, Undelet
 	}
 
 	public boolean hasRestrictions() {
-		return !restrictions.isEmpty();
+		return !getRestrictions().isEmpty();
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return !restrictions.contains( UserRestriction.EXPIRED );
+		return !getRestrictions().contains( UserRestriction.EXPIRED );
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return !restrictions.contains( UserRestriction.LOCKED );
+		return !getRestrictions().contains( UserRestriction.LOCKED );
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return !restrictions.contains( UserRestriction.CREDENTIALS_EXPIRED );
+		return !getRestrictions().contains( UserRestriction.CREDENTIALS_EXPIRED );
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return !restrictions.contains( UserRestriction.DISABLED )
-				&& !restrictions.contains( UserRestriction.REQUIRES_CONFIRMATION );
+		return !getRestrictions().contains( UserRestriction.DISABLED )
+				&& !getRestrictions().contains( UserRestriction.REQUIRES_CONFIRMATION );
 	}
 
 	@Override

@@ -23,11 +23,14 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
+@NotThreadSafe
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_PERMISSION_GROUP)
 public class PermissionGroup extends SettableIdBasedEntity<PermissionGroup>
@@ -97,8 +100,9 @@ public class PermissionGroup extends SettableIdBasedEntity<PermissionGroup>
 		return permissions;
 	}
 
-	public void setPermissions( Set<Permission> permissions ) {
-		this.permissions = permissions;
+	public void setPermissions( Collection<Permission> permissions ) {
+		getPermissions().clear();
+		getPermissions().addAll( permissions );
 	}
 
 	@Override
