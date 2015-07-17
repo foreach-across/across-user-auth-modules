@@ -39,11 +39,10 @@ import javax.validation.metadata.BeanDescriptor;
 import java.util.*;
 
 /**
- * Creates a {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry} for a
- * {@link org.springframework.data.repository.core.support.RepositoryFactoryInformation} bean.
- * <p/>
- * Puts every EntityPropertyRegistry in the central registry so properties of associated entities
- * can be determined as well.
+ * <p>Creates a {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry} for a
+ * {@link org.springframework.data.repository.core.support.RepositoryFactoryInformation} bean.</p>
+ * <p>Puts every EntityPropertyRegistry in the central registry so properties of associated entities
+ * can be determined as well.</p>
  */
 public class RepositoryEntityPropertyRegistryBuilder
 {
