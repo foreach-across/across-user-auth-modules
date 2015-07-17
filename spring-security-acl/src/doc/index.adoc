@@ -1,0 +1,91 @@
+= SpringSecurityAclModule
+:toc:
+
+== General information
+
+=== Artifact
+[source,xml,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>across-standard-modules</groupId>
+			<artifactId>spring-security-acl</artifactId>
+		</dependency>
+	</dependencies>
+----
+
+=== Module dependencies
+
+.Module dependencies
+|===
+|Module |Type |Description
+
+|`SpringSecurityModule`
+|required
+|Provides the basic security infrastructure.
+
+|`AcrossHibernateJpaModule`
+|optional
+|Activates support for ACL security entities.
+
+|`EntityModule`
+|optional
+|Enables the management forms for ACL security entities.
+
+|===
+
+=== Module settings
+This module has no specific settings.
+
+== About the SpringSecurityAclModule
+The `SpringSecurityAclModule` enables Access Control Lists for managing permissions.  The core service for working
+with the ACLs is the `AclSecurityService` and supports management of ACLs attached to `IdBasedEntity` instances,
+seamlessly integrating with other standard modules.
+
+=== Default parent ACL
+The `AclSecurityService` optionally allows setting a default parent ACL (in the form of the `IdBasedEntity`
+that owns the ACL).  The default parent is attached to any newly created ACL that does not have an explicit parent
+specified.
+
+=== ACL security entities
+The `SpringSecurityAclModule` packs a domain model for ACL security entities.  These are abstract database entities
+that serve no other purpose than attaching an ACL to them.  They optionally take another security entity as parent,
+whose ACL will then also be the parent ACL.
+
+The ACL security entity hierarchy exactly represents the backing ACL hierarchy.  ACL security entities are usually
+only developer managed and by default require the *acl take ownership* permissions to manage them through the
+administrative interface.
+
+The standard `UserModule` provides a default installation of security entities, and sets the *system* security entity
+for the default parent ACL.
+
+=== Global permissions
+The `SpringSecurityAclModule` defines 3 global permissions, these are available as constants in the `AclAuthorities` interface.
+
+.Global permission overview
+|===
+|Permission |Description
+
+|*acl take ownership*
+|Allows the authenticated principal to take ownership of any ACL. Also the required permission to be able
+to manage ACL security entities.
+
+|*acl modify*
+|Allows the authenticated principal to modify any ACL.  This includes adding and removing ACE records but
+excludes changing ownership.
+
+|*acl audit*
+|Allows the authenticated principal to modify the auditing settings of an ACL.
+
+|===
+
+
+
+
+
+
+
+
+
+
