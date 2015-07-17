@@ -22,9 +22,11 @@ import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import java.util.*;
 
+@NotThreadSafe
 @Entity
 @DiscriminatorValue("oauth2client")
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT)
@@ -86,7 +88,7 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 	}
 
 	@Override
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	public Collection<GrantedAuthority> getAuthorities() {
 		return (Collection<GrantedAuthority>) super.getAuthorities();
 	}
@@ -96,8 +98,9 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 		return resourceIds;
 	}
 
-	public void setResourceIds( Set<String> resourceIds ) {
-		this.resourceIds = resourceIds;
+	public void setResourceIds( Collection<String> resourceIds ) {
+		getResourceIds().clear();
+		getResourceIds().addAll( resourceIds );
 	}
 
 	@Override
@@ -137,8 +140,9 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 		return authorizedGrantTypes;
 	}
 
-	public void setAuthorizedGrantTypes( Set<String> authorizedGrantTypes ) {
-		this.authorizedGrantTypes = authorizedGrantTypes;
+	public void setAuthorizedGrantTypes( Collection<String> authorizedGrantTypes ) {
+		getAuthorizedGrantTypes().clear();
+		getAuthorizedGrantTypes().addAll( authorizedGrantTypes );
 	}
 
 	@Override
@@ -146,8 +150,9 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 		return registeredRedirectUri;
 	}
 
-	public void setRegisteredRedirectUri( Set<String> registeredRedirectUri ) {
-		this.registeredRedirectUri = registeredRedirectUri;
+	public void setRegisteredRedirectUri( Collection<String> registeredRedirectUri ) {
+		getRegisteredRedirectUri().clear();
+		getRegisteredRedirectUri().addAll( registeredRedirectUri );
 	}
 
 	@Override
@@ -187,7 +192,8 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 		return oAuth2ClientScopes;
 	}
 
-	public void setOAuth2ClientScopes( Set<OAuth2ClientScope> oAuth2ClientScopes ) {
-		this.oAuth2ClientScopes = oAuth2ClientScopes;
+	public void setOAuth2ClientScopes( Collection<OAuth2ClientScope> oAuth2ClientScopes ) {
+		getOAuth2ClientScopes().clear();
+		getOAuth2ClientScopes().addAll( oAuth2ClientScopes );
 	}
 }

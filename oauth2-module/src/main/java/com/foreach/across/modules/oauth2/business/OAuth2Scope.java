@@ -18,16 +18,19 @@ package com.foreach.across.modules.oauth2.business;
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
-import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+@NotThreadSafe
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_SCOPE)
-public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope>
+public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements Comparable<OAuth2Scope>
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_oauth_scope_id")
@@ -69,7 +72,13 @@ public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope>
 		return this.oAuth2ClientScopes;
 	}
 
-	public void setOAuth2ClientScopes( Set<OAuth2ClientScope> oAuth2ClientScopes ) {
-		this.oAuth2ClientScopes = oAuth2ClientScopes;
+	public void setOAuth2ClientScopes( Collection<OAuth2ClientScope> oAuth2ClientScopes ) {
+		getOAuth2ClientScopes().clear();
+		getOAuth2ClientScopes().addAll( oAuth2ClientScopes );
+	}
+
+	@Override
+	public int compareTo( OAuth2Scope o ) {
+		return ObjectUtils.compare( getName(), o != null ? o.getName() : null );
 	}
 }

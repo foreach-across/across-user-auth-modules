@@ -16,6 +16,7 @@
 package com.foreach.across.modules.oauth2.business;
 
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
+import org.apache.commons.lang3.ObjectUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -23,11 +24,12 @@ import java.util.Objects;
 
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT_SCOPE)
-@AssociationOverrides({
-		                      @AssociationOverride(name = "pk.oAuth2Client",
-		                                           joinColumns = @JoinColumn(name = "client_id")),
-		                      @AssociationOverride(name = "pk.oAuth2Scope",
-		                                           joinColumns = @JoinColumn(name = "scope_id")) })
+@AssociationOverrides(
+		{
+				@AssociationOverride(name = "pk.oAuth2Client", joinColumns = @JoinColumn(name = "client_id")),
+				@AssociationOverride(name = "pk.oAuth2Scope", joinColumns = @JoinColumn(name = "scope_id"))
+		}
+)
 public class OAuth2ClientScope implements Comparable, Serializable
 {
 	@EmbeddedId
@@ -55,11 +57,11 @@ public class OAuth2ClientScope implements Comparable, Serializable
 
 	@Transient
 	public OAuth2Scope getOAuth2Scope() {
-		return this.getPk().getOAuth2Scope();
+		return getPk().getOAuth2Scope();
 	}
 
 	public void setOAuth2Scope( OAuth2Scope oAuth2Scope ) {
-		this.getPk().setOAuth2Scope( oAuth2Scope );
+		getPk().setOAuth2Scope( oAuth2Scope );
 	}
 
 	public boolean isAutoApprove() {
@@ -92,6 +94,6 @@ public class OAuth2ClientScope implements Comparable, Serializable
 	@Override
 	public int compareTo( Object o ) {
 		OAuth2ClientScope that = (OAuth2ClientScope) o;
-		return this.getOAuth2Scope().getName().compareTo( that.getOAuth2Scope().getName() );
+		return ObjectUtils.compare( getOAuth2Scope(), that != null ? that.getOAuth2Scope() : null );
 	}
 }
