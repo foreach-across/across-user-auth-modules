@@ -45,6 +45,8 @@ public class TestEntityViewElementUtils
 		);
 
 		assertSame( SOME_ENTITY, currentEntity( ctx ) );
+		assertSame( SOME_ENTITY, currentEntity( ctx, String.class ) );
+		assertNull( currentEntity( ctx, Integer.class ) );
 	}
 
 	@Test
@@ -58,5 +60,7 @@ public class TestEntityViewElementUtils
 		ctx = new EntityViewElementBuilderContext<>( view );
 
 		assertSame( SOME_ENTITY, currentEntity( ctx ) );
+		assertSame( SOME_ENTITY, currentEntity( ctx, String.class ) );
+		assertNull( currentEntity( ctx, Integer.class ) );
 	}
 }

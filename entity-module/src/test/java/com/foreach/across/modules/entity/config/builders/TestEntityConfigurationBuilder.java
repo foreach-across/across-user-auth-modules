@@ -23,10 +23,10 @@ import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityListView;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.data.domain.Persistable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,13 +66,6 @@ public class TestEntityConfigurationBuilder
 		entityRegistry.register( company );
 
 		builder = entities.entity( Client.class );
-
-		reset( company );
-	}
-
-	@After
-	public void after() {
-		verifyZeroInteractions( company );
 	}
 
 	@Test
@@ -126,6 +119,7 @@ public class TestEntityConfigurationBuilder
 		builder.apply( entityRegistry, beanFactory );
 
 		verify( client ).setHidden( true );
+		verify( company, never() ).setHidden( true );
 	}
 
 	@Test
@@ -134,6 +128,19 @@ public class TestEntityConfigurationBuilder
 		builder.apply( entityRegistry, beanFactory );
 
 		verify( client ).setHidden( false );
+		verify( company, never() ).setHidden( false );
+	}
+
+	@Test
+	public void assignableToBuilder() {
+		EntityConfigurationBuilder<Persistable> persistableBuilder
+				= entities.assignableTo( Persistable.class )
+				          .hide();
+
+		persistableBuilder.apply( entityRegistry, beanFactory );
+
+		verify( client ).setHidden( true );
+		verify( company ).setHidden( true );
 	}
 
 	@Test
