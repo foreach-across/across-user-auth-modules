@@ -23,6 +23,8 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.newviews.ViewElementLookupRegistry;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -39,12 +41,14 @@ import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.test.AcrossTestWebConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Persistable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -74,11 +78,24 @@ public class TestCustomizingEntityConfiguration
 
 	@Test
 	public void clientShouldBeRegistered() {
-//		assertEquals( 3, entityRegistry.getEntities().size() );
 		assertTrue( entityRegistry.contains( Client.class ) );
 
 		EntityConfiguration configuration = entityRegistry.getEntityConfiguration( Client.class );
 		assertNotNull( configuration );
+	}
+
+	@Test
+	public void allPersistableEntitiesShouldHaveCustomViewElementBuilderForId() {
+		for ( EntityConfiguration configuration : entityRegistry.getEntities() ) {
+			if ( Persistable.class.isAssignableFrom( configuration.getEntityType() ) ) {
+				ViewElementLookupRegistry lookupRegistry
+						= configuration.getPropertyRegistry().getProperty( "id" )
+						               .getAttribute( ViewElementLookupRegistry.class );
+
+				assertNotNull( lookupRegistry );
+				assertNotNull( lookupRegistry.getViewElementBuilder( ViewElementMode.LIST_VALUE ) );
+			}
+		}
 	}
 
 	@Test
@@ -114,7 +131,8 @@ public class TestCustomizingEntityConfiguration
 		assertNotNull( viewFactory );
 		assertTrue( viewFactory instanceof SimpleEntityViewFactorySupport );
 
-		ConfigurablePropertiesEntityViewFactorySupport common = (ConfigurablePropertiesEntityViewFactorySupport) viewFactory;
+		ConfigurablePropertiesEntityViewFactorySupport common =
+				(ConfigurablePropertiesEntityViewFactorySupport) viewFactory;
 		assertEquals( "th/someTemplate", common.getTemplate() );
 
 		EntityPropertyDescriptor calculated = common.getPropertyRegistry().getProperty( "calculated" );
@@ -159,7 +177,7 @@ public class TestCustomizingEntityConfiguration
 	protected static class ModuleConfig implements EntityConfigurer
 	{
 		@Override
-		@SuppressWarnings( "unchecked" )
+		@SuppressWarnings("unchecked")
 		public void configure( EntitiesConfigurationBuilder configuration ) {
 			configuration.attribute( EntityLinkBuilder.class, mock( EntityConfigurationLinkBuilder.class ) );
 
@@ -171,10 +189,18 @@ public class TestCustomizingEntityConfiguration
 			             .template( "th/someTemplate" )
 			             .properties()
 			             .property( "calculated" ).displayName( "Calculated" ).and()
-			             .property( "group-membership" ).displayName( "Group membership").spelValueFetcher( "groups.size()" ).and()
+			             .property( "group-membership" )
+			             .displayName( "Group membership" )
+			             .spelValueFetcher( "groups.size()" ).and()
 			             .and()
 			             .and()
-			             .view( "some-other-view" ).factory( mock( ConfigurablePropertiesEntityViewFactorySupport.class ) );
+			             .view( "some-other-view" ).factory( mock(
+					ConfigurablePropertiesEntityViewFactorySupport.class ) );
+
+			configuration.assignableTo( Persistable.class )
+			             .properties()
+			             .property( "id" )
+			             .viewElementBuilder( ViewElementMode.LIST_VALUE, mock( ViewElementBuilder.class ) );
 		}
 	}
 }

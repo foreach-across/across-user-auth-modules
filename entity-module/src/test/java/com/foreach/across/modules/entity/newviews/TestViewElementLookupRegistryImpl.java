@@ -38,6 +38,11 @@ public class TestViewElementLookupRegistryImpl
 	}
 
 	@Test
+	public void lookupRegistryIsCacheableByDefault() {
+		assertTrue( new ViewElementLookupRegistryImpl().isDefaultCacheable() );
+	}
+
+	@Test
 	public void typeIsAlwaysStored() {
 		assertFalse( registry.isCacheable( CONTROL ) );
 		assertNull( registry.getViewElementType( CONTROL ) );
@@ -62,16 +67,16 @@ public class TestViewElementLookupRegistryImpl
 		assertNull( registry.getViewElementBuilder( CONTROL ) );
 		assertNull( registry.getViewElementBuilder( LABEL ) );
 
-		assertFalse( registry.setViewElementBuilder( CONTROL, builder ) );
-		assertFalse( registry.setViewElementBuilder( LABEL, builder ) );
+		assertFalse( registry.cacheViewElementBuilder( CONTROL, builder ) );
+		assertFalse( registry.cacheViewElementBuilder( LABEL, builder ) );
 		assertNull( registry.getViewElementBuilder( CONTROL ) );
 		assertNull( registry.getViewElementBuilder( LABEL ) );
 
 		registry.setCacheable( CONTROL, true );
 		assertTrue( registry.isCacheable( CONTROL ) );
 		assertFalse( registry.isCacheable( LABEL ) );
-		assertTrue( registry.setViewElementBuilder( CONTROL, builder ) );
-		assertFalse( registry.setViewElementBuilder( LABEL, builder ) );
+		assertTrue( registry.cacheViewElementBuilder( CONTROL, builder ) );
+		assertFalse( registry.cacheViewElementBuilder( LABEL, builder ) );
 		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
 		assertNull( registry.getViewElementBuilder( LABEL ) );
 	}
@@ -86,8 +91,8 @@ public class TestViewElementLookupRegistryImpl
 		assertNull( registry.getViewElementBuilder( CONTROL ) );
 		assertNull( registry.getViewElementBuilder( LABEL ) );
 
-		assertTrue( registry.setViewElementBuilder( CONTROL, builder ) );
-		assertTrue( registry.setViewElementBuilder( LABEL, builder ) );
+		assertTrue( registry.cacheViewElementBuilder( CONTROL, builder ) );
+		assertTrue( registry.cacheViewElementBuilder( LABEL, builder ) );
 		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
 		assertSame( builder, registry.getViewElementBuilder( LABEL ) );
 
@@ -98,8 +103,8 @@ public class TestViewElementLookupRegistryImpl
 		assertNull( registry.getViewElementBuilder( CONTROL ) );
 		assertSame( builder, registry.getViewElementBuilder( LABEL ) );
 
-		assertFalse( registry.setViewElementBuilder( CONTROL, builder ) );
-		assertTrue( registry.setViewElementBuilder( LABEL, builder ) );
+		assertFalse( registry.cacheViewElementBuilder( CONTROL, builder ) );
+		assertTrue( registry.cacheViewElementBuilder( LABEL, builder ) );
 
 		assertNull( registry.getViewElementBuilder( CONTROL ) );
 		assertSame( builder, registry.getViewElementBuilder( LABEL ) );
@@ -110,7 +115,7 @@ public class TestViewElementLookupRegistryImpl
 		ViewElementBuilder builder = mock( ViewElementBuilder.class );
 		registry.setCacheable( CONTROL, true );
 		registry.setViewElementType( CONTROL, BootstrapUiElements.BUTTON );
-		registry.setViewElementBuilder( CONTROL, builder );
+		registry.cacheViewElementBuilder( CONTROL, builder );
 
 		assertEquals( BootstrapUiElements.BUTTON, registry.getViewElementType( CONTROL ) );
 		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
@@ -120,7 +125,7 @@ public class TestViewElementLookupRegistryImpl
 		assertEquals( BootstrapUiElements.BUTTON, registry.getViewElementType( CONTROL ) );
 		assertNull( registry.getViewElementBuilder( CONTROL ) );
 
-		registry.setViewElementBuilder( CONTROL, builder );
+		registry.cacheViewElementBuilder( CONTROL, builder );
 		assertEquals( BootstrapUiElements.BUTTON, registry.getViewElementType( CONTROL ) );
 		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
 
@@ -128,7 +133,17 @@ public class TestViewElementLookupRegistryImpl
 		assertEquals( BootstrapUiElements.BUTTON, registry.getViewElementType( CONTROL ) );
 		assertNull( registry.getViewElementBuilder( CONTROL ) );
 
-		assertFalse( registry.setViewElementBuilder( CONTROL, builder ) );
+		assertFalse( registry.cacheViewElementBuilder( CONTROL, builder ) );
+	}
+
+	@Test
+	public void fixedViewElementBuilder() {
+		ViewElementBuilder builder = mock( ViewElementBuilder.class );
+		registry.setViewElementBuilder( CONTROL, builder );
+
+		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
+		registry.reset( CONTROL );
+		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
 	}
 
 	@Test
@@ -141,13 +156,13 @@ public class TestViewElementLookupRegistryImpl
 		other.setCacheable( LABEL, false );
 		other.setViewElementType( LIST_LABEL, "button" );
 		other.setViewElementType( LIST_VALUE, "button" );
-		other.setViewElementBuilder( ViewElementMode.VALUE, mock( ViewElementBuilder.class ) );
+		other.cacheViewElementBuilder( ViewElementMode.VALUE, mock( ViewElementBuilder.class ) );
 
 		registry.setCacheable( LABEL, true );
 		registry.setCacheable( FORM_WRITE, false );
 		registry.setViewElementType( LIST_CONTROL, "boem" );
 		registry.setViewElementType( LIST_VALUE, "bla" );
-		registry.setViewElementBuilder( FORM_READ, mock( ViewElementBuilder.class ) );
+		registry.cacheViewElementBuilder( FORM_READ, mock( ViewElementBuilder.class ) );
 
 		registry.mergeInto( other );
 
