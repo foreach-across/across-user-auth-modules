@@ -24,9 +24,13 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Test;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -34,19 +38,30 @@ import java.util.Date;
 @ContextConfiguration(classes = TestAuditablePropertyViewElementBuilder.Config.class)
 public class TestAuditablePropertyViewElementBuilder extends AbstractViewElementTemplateTest
 {
+	private final Date dateCreated = new Date();
+	private final Date dateLastModified = new Date( System.currentTimeMillis() + 1000 );
+
 	@Test
 	public void test() {
 		AuditablePropertyViewElementBuilder builder = new AuditablePropertyViewElementBuilder();
 
+		ConversionService conversionService = mock( ConversionService.class );
+		when( conversionService.convert( dateCreated, String.class ) ).thenReturn( "creationDate" );
+		when( conversionService.convert( dateLastModified, String.class ) ).thenReturn( "modificationDate" );
+
+		builder.setConversionService( conversionService );
+
 		Entity entity = new Entity();
 		entity.setCreatedBy( "admin" );
+		entity.setCreatedDate( dateCreated );
 		entity.setLastModifiedBy( "system" );
+		entity.setLastModifiedDate( dateLastModified );
 
 		ViewElementBuilderContextImpl builderContext = new ViewElementBuilderContextImpl();
-		builderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, null );
+		builderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, entity );
 
 		renderAndExpect( builder.build( builderContext ),
-		                 "2015/06/21 13:55:66 by <u>admin</u>" );
+		                 "creationDate by admin" );
 	}
 
 	static class Entity implements Auditable<String>
