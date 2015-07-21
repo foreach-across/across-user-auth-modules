@@ -114,10 +114,7 @@ public class RepositoryEntityViewsBuilder
 		}
 
 		if ( Auditable.class.isAssignableFrom( entityConfiguration.getEntityType() ) ) {
-			defaultProperties.add( "createdDate" );
-			defaultProperties.add( "createdBy" );
 			defaultProperties.add( "lastModifiedDate" );
-			defaultProperties.add( "lastModifiedBy" );
 		}
 
 		viewFactory.setPropertyFilter( EntityPropertyFilters.includeOrdered( defaultProperties ) );
@@ -140,8 +137,8 @@ public class RepositoryEntityViewsBuilder
 			return new Sort( propertyName );
 		}
 
-		if ( defaultProperties.contains( "createdDate" ) ) {
-			return new Sort( Sort.Direction.DESC, "createdDate" );
+		if ( defaultProperties.contains( "lastModifiedDate" ) ) {
+			return new Sort( Sort.Direction.DESC, "lastModifiedDate" );
 		}
 
 		return null;

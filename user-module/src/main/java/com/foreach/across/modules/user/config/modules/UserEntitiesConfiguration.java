@@ -72,10 +72,7 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 						"displayName",
 						"group-membership",
 						"role-membership",
-						"createdDate",
-						"createdBy",
-						"lastModifiedDate",
-						"lastModifiedBy"
+						"lastModifiedDate"
 				)
 				.property( "group-membership" ).displayName( "Groups" ).spelValueFetcher( "groups.size()" ).and()
 				.property( "role-membership" ).displayName( "Roles" ).spelValueFetcher( "roles.size()" );
