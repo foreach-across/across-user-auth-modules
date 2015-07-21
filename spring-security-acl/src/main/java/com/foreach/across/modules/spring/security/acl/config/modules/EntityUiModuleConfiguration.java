@@ -55,9 +55,7 @@ public class EntityUiModuleConfiguration implements EntityConfigurer
 		configuration.entity( AclSecurityEntity.class )
 		             .allowableActionsBuilder( actionsBuilderForAuthority( AclAuthorities.TAKE_OWNERSHIP ) )
 		             .listView()
-		             .properties(
-				             "name", "parent.name", "createdDate", "createdBy", "lastModifiedDate", "lastModifiedBy"
-		             );
+		             .properties( "name", "parent.name", "lastModifiedDate" );
 	}
 
 	private EntityConfigurationAllowableActionsBuilder actionsBuilderForAuthority( String authority ) {
