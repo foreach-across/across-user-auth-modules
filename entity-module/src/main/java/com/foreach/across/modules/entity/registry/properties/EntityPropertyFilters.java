@@ -17,103 +17,159 @@ package com.foreach.across.modules.entity.registry.properties;
 
 import java.util.*;
 
+/**
+ * Utility class for creating {@link EntityPropertyFilter} instances.
+ *
+ * @see EntityPropertyComparators
+ */
 public final class EntityPropertyFilters
 {
-	public static EntityPropertyFilter NoOp = new EntityPropertyFilter.Exclusive()
+	/**
+	 * No-op filter that does not filter at all but includes all properties.
+	 */
+	public static EntityPropertyFilter NOOP = new EntityPropertyFilter()
 	{
 		@Override
 		public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
 			return true;
 		}
+	};
 
+	/**
+	 * Only properties where {@link EntityPropertyDescriptor#isReadable()} returns {@code true}.
+	 */
+	public static EntityPropertyFilter READABLE = new EntityPropertyFilter()
+	{
 		@Override
-		public Collection<String> getPropertyNames() {
-			return Collections.emptyList();
+		public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
+			return descriptor.isReadable();
+		}
+	};
+
+	/**
+	 * Only properties where {@link EntityPropertyDescriptor#isHidden()} returns {@code false}.
+	 * This is usually the default configured on a {@link EntityPropertyRegistry}.
+	 */
+	public static EntityPropertyFilter NOT_HIDDEN = new EntityPropertyFilter()
+	{
+		@Override
+		public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
+			return !descriptor.isHidden();
 		}
 	};
 
 	private EntityPropertyFilters() {
 	}
 
+	/**
+	 * @param propertyNames of properties to be included
+	 * @return {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters.Inclusive} instance
+	 */
 	public static EntityPropertyFilter include( String... propertyNames ) {
-		return new InclusivePropertyFilter( Arrays.asList( propertyNames ) );
+		return new Inclusive( Arrays.asList( propertyNames ) );
 	}
 
+	/**
+	 * @param propertyNames of properties to be included
+	 * @return {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters.Inclusive} instance
+	 */
 	public static EntityPropertyFilter include( Collection<String> propertyNames ) {
-		return new InclusivePropertyFilter( propertyNames );
+		return new Inclusive( propertyNames );
 	}
 
-	public static EntityPropertyFilter includeOrdered( String... propertyNames ) {
-		return new OrderedIncludingEntityPropertyFilter( propertyNames );
-	}
-
-	public static EntityPropertyFilter includeOrdered( Collection<String> propertyNames ) {
-		return new OrderedIncludingEntityPropertyFilter( propertyNames );
-	}
-
+	/**
+	 * @param propertyNames of properties to be excluded
+	 * @return {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters.Exclusive} instance
+	 */
 	public static EntityPropertyFilter exclude( String... propertyNames ) {
 		return exclude( Arrays.asList( propertyNames ) );
 	}
 
+	/**
+	 * @param propertyNames of properties to be excluded
+	 * @return {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters.Exclusive} instance
+	 */
 	public static EntityPropertyFilter exclude( Collection<String> propertyNames ) {
-		final Set<String> excluded = new HashSet<>( propertyNames );
-
-		return new EntityPropertyFilter.Exclusive()
-		{
-			@Override
-			public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
-				return !excluded.contains( descriptor.getName() );
-			}
-
-			@Override
-			public Collection<String> getPropertyNames() {
-				return excluded;
-			}
-		};
+		return new Exclusive( propertyNames );
 	}
 
-	public static Comparator<EntityPropertyDescriptor> order( String... propertyNames ) {
-		return new EntityPropertyOrder( propertyNames );
-	}
-
-	public static class InclusivePropertyFilter implements EntityPropertyFilter.Inclusive
-	{
-		private final Set<String> propertyNames = new HashSet<>();
-
-		public InclusivePropertyFilter( Collection<String> propertyNames ) {
-			this.propertyNames.addAll( propertyNames );
+	/**
+	 * @param candidates filters to be included (nulls will be ignored)
+	 * @return {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters.Composite} instance
+	 */
+	public static EntityPropertyFilter composite( EntityPropertyFilter... candidates ) {
+		List<EntityPropertyFilter> filters = new ArrayList<>( candidates.length );
+		for ( EntityPropertyFilter candidate : candidates ) {
+			if ( candidate != null ) {
+				filters.add( candidate );
+			}
 		}
 
-		public Set<String> getPropertyNames() {
-			return propertyNames;
+		return new Composite( filters );
+	}
+
+	/**
+	 * Filter built around a {@link HashSet} containing the property names that should be included.
+	 * This is the default implementation of the generic interface
+	 * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyFilter.Inclusive}.
+	 */
+	public static class Inclusive extends HashSet<String> implements EntityPropertyFilter.Inclusive
+	{
+		public Inclusive() {
+		}
+
+		public Inclusive( Collection<? extends String> c ) {
+			super( c );
 		}
 
 		@Override
 		public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
-			return propertyNames.contains( descriptor.getName() );
+			return contains( descriptor.getName() );
 		}
 	}
 
-	public static class OrderedIncludingEntityPropertyFilter
-			extends EntityPropertyOrder
-			implements EntityPropertyFilter.Inclusive
+	/**
+	 * Filter built around a {@link HashSet} containing the property names that should <strong>not</strong>
+	 * be included.
+	 */
+	public static class Exclusive extends HashSet<String> implements EntityPropertyFilter
 	{
-		public OrderedIncludingEntityPropertyFilter( String... ordered ) {
-			super( ordered );
+		public Exclusive() {
 		}
 
-		public OrderedIncludingEntityPropertyFilter( Collection<String> ordered ) {
-			super( ordered );
-		}
-
-		@Override
-		public Collection<String> getPropertyNames() {
-			return getOrder().keySet();
+		public Exclusive( Collection<? extends String> c ) {
+			super( c );
 		}
 
 		@Override
 		public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
-			return getOrder().containsKey( descriptor.getName() );
+			return !contains( descriptor.getName() );
+		}
+	}
+
+	/**
+	 * Simple composite that requires all member filters to include a property before this filter includes it.
+	 */
+	public static class Composite implements EntityPropertyFilter
+	{
+		private final Collection<EntityPropertyFilter> filters;
+
+		public Composite( EntityPropertyFilter... filters ) {
+			this.filters = Arrays.asList( filters );
+		}
+
+		public Composite( Collection<EntityPropertyFilter> filters ) {
+			this.filters = filters;
+		}
+
+		@Override
+		public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
+			for ( EntityPropertyFilter filter : filters ) {
+				if ( !filter.shouldInclude( descriptor ) ) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }

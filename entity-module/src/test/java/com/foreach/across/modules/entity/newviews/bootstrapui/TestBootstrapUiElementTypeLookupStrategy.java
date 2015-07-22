@@ -73,19 +73,6 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
-	public void hiddenTypeShouldNeverBeDisplayed() {
-		when( descriptor.isHidden() ).thenReturn( true );
-		assertNull( lookup( ViewElementMode.FORM_READ ) );
-		assertNull( lookup( ViewElementMode.FORM_WRITE ) );
-		assertNull( lookup( ViewElementMode.CONTROL ) );
-		assertNull( lookup( ViewElementMode.LIST_CONTROL ) );
-		assertNull( lookup( ViewElementMode.LABEL ) );
-		assertNull( lookup( ViewElementMode.LIST_LABEL ) );
-		assertNull( lookup( ViewElementMode.VALUE ) );
-		assertNull( lookup( ViewElementMode.LIST_VALUE ) );
-	}
-
-	@Test
 	public void formGroupIsReturnedForFormModes() {
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_WRITE ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Integer.class, ViewElementMode.FORM_WRITE ) );
@@ -108,7 +95,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
-	public void nullIsReturnedForformModeWriteWhenNotWritable() {
+	public void nullIsReturnedForFormModeWriteWhenNotWritable() {
 		when( descriptor.isWritable() ).thenReturn( false );
 
 		assertNull( lookup( String.class, ViewElementMode.FORM_WRITE ) );

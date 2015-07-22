@@ -111,7 +111,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	 * @return list of {@link EntityPropertyDescriptor}s
 	 */
 	protected List<EntityPropertyDescriptor> getPropertyDescriptors( EntityConfiguration entityConfiguration ) {
-		EntityPropertyFilter filter = getPropertyFilter() != null ? getPropertyFilter() : EntityPropertyFilters.NoOp;
+		EntityPropertyFilter filter = getPropertyFilter() != null ? getPropertyFilter() : EntityPropertyFilters.NOOP;
 		EntityPropertyRegistry registry = getPropertyRegistry( entityConfiguration );
 
 		if ( getPropertyComparator() != null ) {

@@ -53,7 +53,7 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	public Collection<EntityPropertyDescriptor> getRegisteredDescriptors() {
 		Map<String, EntityPropertyDescriptor> actual = new HashMap<>();
 
-		for ( EntityPropertyDescriptor descriptor: super.getRegisteredDescriptors() ) {
+		for ( EntityPropertyDescriptor descriptor : super.getRegisteredDescriptors() ) {
 			actual.put( descriptor.getName(), descriptor );
 		}
 
@@ -72,15 +72,15 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	}
 
 	@Override
-	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
-		super.setDefaultOrder( EntityPropertyOrder.composite( defaultOrder, parent.getDefaultOrder() ) );
-	}
-
-	@Override
 	public Comparator<EntityPropertyDescriptor> getDefaultOrder() {
 		Comparator<EntityPropertyDescriptor> configured = super.getDefaultOrder();
 
 		return configured != null ? configured : parent.getDefaultOrder();
+	}
+
+	@Override
+	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
+		super.setDefaultOrder( EntityPropertyComparators.composite( defaultOrder, parent.getDefaultOrder() ) );
 	}
 
 	@Override
