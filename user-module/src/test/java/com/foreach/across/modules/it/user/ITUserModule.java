@@ -39,7 +39,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.persistence.EntityManagerFactory;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -63,6 +65,9 @@ public class ITUserModule
 
 	@Autowired
 	private AcrossContextInfo acrossContextInfo;
+
+	@Autowired
+	private EntityManagerFactory entityManagerFactory;
 
 	@Test
 	public void verifyBootstrapped() {
@@ -260,8 +265,41 @@ public class ITUserModule
 		assertEquals( 1, found.size() );
 		assertTrue( found.contains( userInBoth ) );
 
-		found = userService.findUsers( user.groups.contains( groupThree ).and( user.groups.contains( groupOne ) ));
+		found = userService.findUsers( user.groups.contains( groupThree ).and( user.groups.contains( groupOne ) ) );
 		assertTrue( found.isEmpty() );
+	}
+
+	@Test
+	public void rolesInGroups() throws Exception {
+		Role role = new Role( "test role" );
+		role.setName( "roleName" );
+		roleService.save( role );
+		Group groupOne = new Group();
+		groupOne.setName( RandomStringUtils.randomAlphanumeric( 20 ) );
+		groupOne.addRole( role );
+		groupOne = groupService.save( groupOne );
+		assertEquals( 1, groupOne.getRoles().size() );
+	}
+
+	@Test
+	public void restrictionsOnUser() throws Exception {
+		User userWithRestriction = new User();
+		userWithRestriction.setUsername( "userWithRestriction@email.com" );
+		userWithRestriction.setEmail( "userWithRestriction@email.com" );
+		userWithRestriction.setPassword( "test password" );
+		userWithRestriction.setFirstName( "Test" );
+		userWithRestriction.setLastName( "User 2" );
+		userWithRestriction.setDisplayName( "Display name for test user" );
+		assertEquals( 0, userWithRestriction.getRestrictions().size() );
+		User saved = userService.save( userWithRestriction ).toDto();
+		saved.setRestrictions( Collections.singleton( UserRestriction.REQUIRES_CONFIRMATION ) );
+		saved = userService.save( saved );
+
+		Long id = saved.getId();
+		assertEquals( 1, saved.getRestrictions().size() );
+		User user = userService.getUserById( id );
+		assertNotSame( userWithRestriction, user );
+		assertEquals( 1, user.getRestrictions().size() );
 	}
 
 	@Configuration

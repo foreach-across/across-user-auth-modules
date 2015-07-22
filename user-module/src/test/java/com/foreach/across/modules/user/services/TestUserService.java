@@ -280,7 +280,6 @@ public class TestUserService
 		verify( userRepository ).save( argument.capture() );
 
 		User savedUser = argument.getValue();
-		assertSame( existing, savedUser );
 		assertEquals( "other", savedUser.getUsername() );
 		assertEquals( "other@email.com", savedUser.getEmail() );
 		assertEquals( "my-existing-password", savedUser.getPassword() );

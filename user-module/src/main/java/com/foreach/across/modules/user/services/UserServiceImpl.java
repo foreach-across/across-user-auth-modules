@@ -129,6 +129,9 @@ public class UserServiceImpl implements UserService
 				throw new UserModuleException(
 						"Attempt to update user with id " + existingUserId + " but that user does not exist" );
 			}
+			String currentPassword = user.getPassword();
+			user = user.toDto();
+			user.setPassword( currentPassword );
 		}
 
 		if ( useEmailAsUsername ) {

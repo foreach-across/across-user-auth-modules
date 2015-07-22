@@ -52,7 +52,7 @@ public class GroupServiceImpl implements GroupService
 
 	@Override
 	public Group save( Group groupDto ) {
-		return BasicServiceHelper.save( groupDto, groupRepository );
+		return groupRepository.save( groupDto );
 	}
 
 	@Override
