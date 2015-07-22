@@ -61,7 +61,9 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	private EntityListViewPageFetcher pageFetcher;
 
 	public EntityListViewFactory() {
-		setPropertyFilter( EntityPropertyFilters.READABLE );
+		setPropertyFilter(
+				EntityPropertyFilters.composite( EntityPropertyFilters.NOT_HIDDEN, EntityPropertyFilters.READABLE )
+		);
 	}
 
 	public EntityListViewPageFetcher getPageFetcher() {
