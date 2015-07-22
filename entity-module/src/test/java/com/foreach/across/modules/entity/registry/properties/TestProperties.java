@@ -1,7 +1,21 @@
-package com.foreach.across.modules.entity.generators.label;
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryBuilder;
-import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
@@ -97,7 +111,7 @@ public class TestProperties
 	}
 
 	@Test
-	public void defaultFilterIsAlwaysApplied() {
+	public void defaultFilterIsApplied() {
 		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
 		registry.setDefaultFilter( EntityPropertyFilters.exclude( "class" ) );
 
@@ -111,10 +125,11 @@ public class TestProperties
 
 		descriptors = registry.getProperties( EntityPropertyFilters.exclude( "id", "displayName" ) );
 
-		assertEquals( 3, descriptors.size() );
+		assertEquals( 4, descriptors.size() );
 		assertEquals( "name", descriptors.get( 0 ).getName() );
 		assertEquals( "address", descriptors.get( 1 ).getName() );
 		assertEquals( "someValue", descriptors.get( 2 ).getName() );
+		assertEquals( "class", descriptors.get( 3 ).getName() );
 	}
 
 	@Test
@@ -122,7 +137,7 @@ public class TestProperties
 		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
 		List<EntityPropertyDescriptor> descriptors = registry.getProperties(
 				EntityPropertyFilters.include( "name", "id", "displayName" ),
-				EntityPropertyFilters.order( "displayName", "id", "name" )
+				EntityPropertyComparators.ordered( "displayName", "id", "name" )
 		);
 
 		assertEquals( 3, descriptors.size() );
@@ -132,24 +147,12 @@ public class TestProperties
 	}
 
 	@Test
-	public void orderedIncludeFilter() {
-		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
-		List<EntityPropertyDescriptor> descriptors = registry.getProperties(
-				EntityPropertyFilters.includeOrdered( "name", "id", "displayName" )
-		);
-
-		assertEquals( 3, descriptors.size() );
-		assertEquals( "name", descriptors.get( 0 ).getName() );
-		assertEquals( "id", descriptors.get( 1 ).getName() );
-		assertEquals( "displayName", descriptors.get( 2 ).getName() );
-	}
-
-	@Test
 	public void includeNestedProperties() {
 		EntityPropertyRegistry registry = entityPropertyRegistries.getRegistry( Customer.class );
 
 		List<EntityPropertyDescriptor> descriptors = registry.getProperties(
-				EntityPropertyFilters.includeOrdered( "name", "address.street" )
+				EntityPropertyFilters.include( "name", "address.street" ),
+				EntityPropertyComparators.ordered( "name", "address.street" )
 		);
 
 		assertEquals( 2, descriptors.size() );

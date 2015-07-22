@@ -1,3 +1,18 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
@@ -42,22 +57,6 @@ public class RepositoryEntityViewsBuilder
 
 		viewFactory.setPropertyRegistry( registry );
 		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
-
-		if ( Auditable.class.isAssignableFrom( entityConfiguration.getEntityType() ) ) {
-			LinkedList<String> excludedProperties = new LinkedList<>();
-			excludedProperties.add( "createdDate" );
-			excludedProperties.add( "createdBy" );
-			excludedProperties.add( "lastModifiedDate" );
-			excludedProperties.add( "lastModifiedBy" );
-
-			EntityPropertyFilter existingFilter = registry.getDefaultFilter();
-
-			if ( existingFilter instanceof EntityPropertyFilter.Exclusive ) {
-				excludedProperties.addAll( existingFilter.getPropertyNames() );
-			}
-
-			registry.setDefaultFilter( EntityPropertyFilters.exclude( excludedProperties ) );
-		}
 
 		entityConfiguration.registerView( EntityFormView.CREATE_VIEW_NAME, viewFactory );
 	}
@@ -114,10 +113,11 @@ public class RepositoryEntityViewsBuilder
 		}
 
 		if ( Auditable.class.isAssignableFrom( entityConfiguration.getEntityType() ) ) {
-			defaultProperties.add( "lastModifiedDate" );
+			defaultProperties.add( "lastModified" );
 		}
 
-		viewFactory.setPropertyFilter( EntityPropertyFilters.includeOrdered( defaultProperties ) );
+		viewFactory.setPropertyFilter( EntityPropertyFilters.include( defaultProperties ) );
+		viewFactory.setPropertyComparator( EntityPropertyComparators.ordered( defaultProperties ) );
 		viewFactory.setDefaultSort( determineDefaultSort( defaultProperties ) );
 
 		entityConfiguration.registerView( EntityListView.VIEW_NAME, viewFactory );
@@ -135,10 +135,6 @@ public class RepositoryEntityViewsBuilder
 
 		if ( propertyName != null ) {
 			return new Sort( propertyName );
-		}
-
-		if ( defaultProperties.contains( "lastModifiedDate" ) ) {
-			return new Sort( Sort.Direction.DESC, "lastModifiedDate" );
 		}
 
 		return null;

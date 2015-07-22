@@ -26,7 +26,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
@@ -34,7 +33,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	private final EntityPropertyRegistries registries;
 	private final Class<?> entityType;
 
-	private EntityPropertyOrder declarationOrder = null;
+	private EntityPropertyComparators.Ordered declarationOrder = null;
 
 	public DefaultEntityPropertyRegistry( Class<?> entityType ) {
 		this( entityType, null );
@@ -55,7 +54,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		super.setDefaultOrder( declarationOrder );
 	}
 
-	private EntityPropertyOrder buildDeclarationOrder( Map<String, PropertyDescriptor> scannedDescriptors ) {
+	private EntityPropertyComparators.Ordered buildDeclarationOrder( Map<String, PropertyDescriptor> scannedDescriptors ) {
 		final Map<String, Integer> order = new HashMap<>();
 
 		ReflectionUtils.doWithFields( entityType, new ReflectionUtils.FieldCallback()
@@ -119,17 +118,12 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			}
 		}
 
-		return new EntityPropertyOrder( order );
+		return new EntityPropertyComparators.Ordered( order );
 	}
 
 	@Override
 	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
-		super.setDefaultOrder( EntityPropertyOrder.composite( defaultOrder, declarationOrder ) );
-	}
-
-	@Override
-	public List<EntityPropertyDescriptor> getProperties() {
-		return getProperties( EntityPropertyFilters.NoOp );
+		super.setDefaultOrder( EntityPropertyComparators.composite( defaultOrder, declarationOrder ) );
 	}
 
 	@Override

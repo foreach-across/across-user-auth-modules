@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element
 import com.foreach.across.modules.entity.newviews.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
@@ -58,6 +59,10 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	private Sort defaultSort;
 	private Collection<String> sortableProperties;
 	private EntityListViewPageFetcher pageFetcher;
+
+	public EntityListViewFactory() {
+		setPropertyFilter( EntityPropertyFilters.READABLE );
+	}
 
 	public EntityListViewPageFetcher getPageFetcher() {
 		return pageFetcher;

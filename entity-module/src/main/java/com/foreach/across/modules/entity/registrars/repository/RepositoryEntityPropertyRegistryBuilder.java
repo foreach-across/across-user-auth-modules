@@ -19,8 +19,6 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
-import com.foreach.across.modules.hibernate.business.Auditable;
-import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
 import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
@@ -28,7 +26,6 @@ import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
@@ -36,7 +33,9 @@ import org.springframework.data.repository.core.support.RepositoryFactoryInforma
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.validation.metadata.BeanDescriptor;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * <p>Creates a {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry} for a
@@ -46,7 +45,6 @@ import java.util.*;
  */
 public class RepositoryEntityPropertyRegistryBuilder
 {
-
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityPropertyRegistryBuilder.class );
 
 	private final BeanMetaDataManager metaDataManager = new BeanMetaDataManager(
@@ -64,6 +62,8 @@ public class RepositoryEntityPropertyRegistryBuilder
 		MutableEntityPropertyRegistry registry =
 				(MutableEntityPropertyRegistry) entityPropertyRegistries.getRegistry( entityType );
 
+		registry.setDefaultOrder( new EntityPropertyComparators.Ordered() );
+
 		setBeanDescriptor( entityConfiguration );
 
 		// add @Embedded
@@ -73,7 +73,6 @@ public class RepositoryEntityPropertyRegistryBuilder
 
 		configureSortableProperties( registry, persistentEntity );
 		configureDefaultFilter( entityType, registry );
-		configureDefaultOrder( entityType, registry );
 		configureKnownDescriptors( entityType, registry );
 
 		entityConfiguration.setPropertyRegistry( registry );
@@ -84,53 +83,29 @@ public class RepositoryEntityPropertyRegistryBuilder
 			List<String> excludedProps = new LinkedList<>();
 			excludedProps.add( "class" );
 
-			if ( Persistable.class.isAssignableFrom( entityType ) ) {
-				excludedProps.add( "new" );
-			}
-
-			if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
-				excludedProps.add( "newEntityId" );
-			}
+//			if ( Persistable.class.isAssignableFrom( entityType ) ) {
+//				excludedProps.add( "new" );
+//			}
+//
+//			if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
+//				excludedProps.add( "newEntityId" );
+//			}
 
 			registry.setDefaultFilter( EntityPropertyFilters.exclude( excludedProps ) );
 		}
 	}
 
-	private void configureDefaultOrder( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
-		Map<String, Integer> propertiesOrder = new HashMap<>();
-
-		if ( Auditable.class.isAssignableFrom( entityType ) ) {
-			propertiesOrder.put( "createdDate", 1 );
-			propertiesOrder.put( "createdBy", 2 );
-			propertiesOrder.put( "lastModifiedDate", 3 );
-			propertiesOrder.put( "lastModifiedBy", 4 );
-		}
-
-		registry.setDefaultOrder( new EntityPropertyOrder( propertiesOrder ) );
-	}
-
 	private void configureKnownDescriptors( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
 
-		if ( Persistable.class.isAssignableFrom( entityType ) ) {
-			registry.getMutableProperty( "id" ).setHidden( true );
-		}
-
-		if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
-			MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( "newEntityId" );
-			mutable.setReadable( false );
-			mutable.setHidden( true );
-		}
-
-		if ( Auditable.class.isAssignableFrom( entityType ) ) {
-			registry.getMutableProperty( "createdDate" ).setDisplayName( "Created" );
-			registry.getMutableProperty( "lastModifiedDate" ).setDisplayName( "Last modified" );
-
-			// Auditable properties are set automatically, should not be set through entity
-			registry.getMutableProperty( "createdBy" ).setWritable( false );
-			registry.getMutableProperty( "createdDate" ).setWritable( false );
-			registry.getMutableProperty( "lastModifiedBy" ).setWritable( false );
-			registry.getMutableProperty( "lastModifiedDate" ).setWritable( false );
-		}
+//		if ( Persistable.class.isAssignableFrom( entityType ) ) {
+//			registry.getMutableProperty( "id" ).setHidden( true );
+//		}
+//
+//		if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
+//			MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( "newEntityId" );
+//			mutable.setReadable( false );
+//			mutable.setHidden( true );
+//		}
 	}
 
 	private void initializePersistentEntity( MutableEntityPropertyRegistry registry,

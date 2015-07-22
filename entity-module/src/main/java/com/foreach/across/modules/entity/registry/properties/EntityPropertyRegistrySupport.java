@@ -30,23 +30,18 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	private Comparator<EntityPropertyDescriptor> defaultOrder = null;
 
 	@Override
-	public void setDefaultFilter( EntityPropertyFilter filter ) {
-		defaultFilter = filter;
-	}
-
-	@Override
 	public EntityPropertyFilter getDefaultFilter() {
 		return defaultFilter;
 	}
 
 	@Override
-	public void setDefaultOrder( String... propertyNames ) {
-		setDefaultOrder( new EntityPropertyOrder( propertyNames ) );
+	public void setDefaultFilter( EntityPropertyFilter filter ) {
+		defaultFilter = filter;
 	}
 
 	@Override
-	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
-		this.defaultOrder = defaultOrder;
+	public void setDefaultOrder( String... propertyNames ) {
+		setDefaultOrder( new EntityPropertyComparators.Ordered( propertyNames ) );
 	}
 
 	@Override
@@ -55,18 +50,17 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	}
 
 	@Override
+	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
+		this.defaultOrder = defaultOrder;
+	}
+
+	@Override
 	public List<EntityPropertyDescriptor> getProperties() {
-		return getProperties( EntityPropertyFilters.NoOp );
+		return getProperties( getDefaultFilter() );
 	}
 
 	@Override
 	public List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter ) {
-		Assert.notNull( filter );
-
-		if ( filter instanceof EntityPropertyFilters.OrderedIncludingEntityPropertyFilter ) {
-			return getProperties( filter, (EntityPropertyFilters.OrderedIncludingEntityPropertyFilter) filter );
-		}
-
 		return fetchProperties( filter, getDefaultOrder() );
 	}
 
@@ -76,33 +70,30 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 		Assert.notNull( filter );
 		Assert.notNull( comparator );
 
-		return fetchProperties( filter, EntityPropertyOrder.composite( comparator, getDefaultOrder() ) );
+		return fetchProperties( filter, EntityPropertyComparators.composite( comparator, getDefaultOrder() ) );
 	}
 
 	private List<EntityPropertyDescriptor> fetchProperties( EntityPropertyFilter filter,
 	                                                        Comparator<EntityPropertyDescriptor> comparator ) {
+		EntityPropertyFilter filterToUse = filter != null ? filter : getDefaultFilter();
+
+		if ( filterToUse == null ) {
+			filterToUse = EntityPropertyFilters.NOOP;
+		}
+
 		List<EntityPropertyDescriptor> filtered = new ArrayList<>();
 
-		if ( filter instanceof EntityPropertyFilter.Inclusive ) {
-			EntityPropertyFilter.Inclusive inclusiveFilter = (EntityPropertyFilter.Inclusive) filter;
-
-			for ( String propertyName : inclusiveFilter.getPropertyNames() ) {
-				EntityPropertyDescriptor candidate = getProperty( propertyName );
-
-				if ( candidate != null && inclusiveFilter.shouldInclude( candidate ) ) {
-					filtered.add( candidate );
+		if ( filterToUse instanceof EntityPropertyFilter.Inclusive ) {
+			for ( String propertyName : ( (EntityPropertyFilter.Inclusive) filterToUse ) ) {
+				EntityPropertyDescriptor descriptor = getProperty( propertyName );
+				if ( descriptor != null ) {
+					filtered.add( descriptor );
 				}
 			}
 		}
 		else {
-			EntityPropertyFilter first = getDefaultFilter();
-
-			if ( first == null ) {
-				first = EntityPropertyFilters.NoOp;
-			}
-
 			for ( EntityPropertyDescriptor candidate : getRegisteredDescriptors() ) {
-				if ( first.shouldInclude( candidate ) && filter.shouldInclude( candidate ) ) {
+				if ( filterToUse.shouldInclude( candidate ) ) {
 					filtered.add( candidate );
 				}
 			}
