@@ -260,8 +260,20 @@ public class ITUserModule
 		assertEquals( 1, found.size() );
 		assertTrue( found.contains( userInBoth ) );
 
-		found = userService.findUsers( user.groups.contains( groupThree ).and( user.groups.contains( groupOne ) ));
+		found = userService.findUsers( user.groups.contains( groupThree ).and( user.groups.contains( groupOne ) ) );
 		assertTrue( found.isEmpty() );
+	}
+
+	@Test
+	public void rolesInGroups() throws Exception {
+		Role role = new Role( "test role" );
+		role.setName( "roleName" );
+		roleService.save( role );
+		Group groupOne = new Group();
+		groupOne.setName( RandomStringUtils.randomAlphanumeric( 20 ) );
+		groupOne.addRole( role );
+		groupOne = groupService.save( groupOne );
+		assertEquals( 1, groupOne.getRoles().size() );
 	}
 
 	@Configuration
