@@ -21,7 +21,6 @@ import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderServic
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilter;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.elements.ViewElementBuilder;
@@ -111,14 +110,19 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	 * @return list of {@link EntityPropertyDescriptor}s
 	 */
 	protected List<EntityPropertyDescriptor> getPropertyDescriptors( EntityConfiguration entityConfiguration ) {
-		EntityPropertyFilter filter = getPropertyFilter() != null ? getPropertyFilter() : EntityPropertyFilters.NOOP;
+		EntityPropertyFilter filter = getPropertyFilter();
+		Comparator<EntityPropertyDescriptor> comparator = getPropertyComparator();
+
 		EntityPropertyRegistry registry = getPropertyRegistry( entityConfiguration );
 
-		if ( getPropertyComparator() != null ) {
-			return registry.getProperties( filter, getPropertyComparator() );
+		if ( filter == null ) {
+			filter = registry.getDefaultFilter();
+		}
+		if ( comparator == null ) {
+			comparator = registry.getDefaultOrder();
 		}
 
-		return registry.getProperties( filter );
+		return registry.getProperties( filter, comparator );
 	}
 
 	/**
@@ -157,7 +161,6 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 
 		return builders;
 	}
-
 
 	protected abstract com.foreach.across.modules.web.ui.ViewElements buildViewElements(
 			V viewCreationContext,

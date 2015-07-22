@@ -43,6 +43,8 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		this.entityType = entityType;
 		this.registries = registries;
 
+		super.setDefaultFilter( EntityPropertyFilters.NOT_HIDDEN );
+
 		Map<String, PropertyDescriptor> scannedDescriptors = new HashMap<>();
 
 		for ( PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors( entityType ) ) {
