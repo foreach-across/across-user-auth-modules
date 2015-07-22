@@ -129,6 +129,8 @@ public class UserServiceImpl implements UserService
 				throw new UserModuleException(
 						"Attempt to update user with id " + existingUserId + " but that user does not exist" );
 			}
+
+			user = user.toDto();
 		}
 
 		if ( useEmailAsUsername ) {
