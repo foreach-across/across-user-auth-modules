@@ -117,6 +117,6 @@ public class TestEntityListViewBuilder
 		assertNotNull( viewFactory );
 
 		assertNotNull( viewFactory.getPropertyFilter() );
-		assertEquals( EntityPropertyFilters.includeOrdered( "one", "two" ), viewFactory.getPropertyFilter() );
+		assertEquals( EntityPropertyFilters.include( "one", "two" ), viewFactory.getPropertyFilter() );
 	}
 }

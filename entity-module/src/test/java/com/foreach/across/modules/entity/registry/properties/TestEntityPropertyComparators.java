@@ -1,8 +1,20 @@
-package com.foreach.across.modules.entity.generators.label;
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyOrder;
-import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.BeanUtils;
@@ -14,7 +26,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestEntityPropertyOrder
+public class TestEntityPropertyComparators
 {
 	private List<EntityPropertyDescriptor> descriptors;
 
@@ -29,7 +41,7 @@ public class TestEntityPropertyOrder
 
 	@Test
 	public void singleFilter() {
-		Collections.sort( descriptors, new EntityPropertyOrder( null, "id", "name", "value", "class" ) );
+		Collections.sort( descriptors, new EntityPropertyComparators.Ordered( null, "id", "name", "value", "class" ) );
 
 		assertEquals( "id", descriptors.get( 0 ).getName() );
 		assertEquals( "name", descriptors.get( 1 ).getName() );
@@ -39,8 +51,9 @@ public class TestEntityPropertyOrder
 
 	@Test
 	public void compositeFilter() {
-		EntityPropertyOrder defaultOrder =  new EntityPropertyOrder( null, "id", "name", "value", "class" );
-		Collections.sort( descriptors, EntityPropertyOrder.composite( new EntityPropertyOrder( "value", "name" ), defaultOrder ) );
+		EntityPropertyComparators.Ordered defaultOrder =  new EntityPropertyComparators.Ordered( null, "id", "name", "value", "class" );
+		Collections.sort( descriptors, EntityPropertyComparators.composite(
+				new EntityPropertyComparators.Ordered( "value", "name" ), defaultOrder ) );
 
 		assertEquals( "value", descriptors.get( 0 ).getName() );
 		assertEquals( "name", descriptors.get( 1 ).getName() );
