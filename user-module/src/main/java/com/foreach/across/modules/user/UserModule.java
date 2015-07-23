@@ -41,18 +41,12 @@ import org.apache.commons.lang3.StringUtils;
 public class UserModule extends AcrossModule implements HibernatePackageConfiguringModule, HasSchemaConfiguration
 {
 	public static final String NAME = "UserModule";
-	public static final String RESOURCES = "user";
 
 	private final SchemaConfiguration schemaConfiguration = new UserSchemaConfiguration();
 
 	@Override
 	public String getName() {
 		return NAME;
-	}
-
-	@Override
-	public String getResourcesKey() {
-		return RESOURCES;
 	}
 
 	@Override

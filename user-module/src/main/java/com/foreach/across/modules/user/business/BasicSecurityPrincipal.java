@@ -20,7 +20,7 @@ import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
-import com.foreach.across.modules.user.converters.FieldUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -87,7 +87,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 	}
 
 	protected final void setPrincipalName( String principalName ) {
-		this.principalName = FieldUtils.lowerCase( principalName );
+		this.principalName = StringUtils.lowerCase( principalName );
 	}
 
 	@Override

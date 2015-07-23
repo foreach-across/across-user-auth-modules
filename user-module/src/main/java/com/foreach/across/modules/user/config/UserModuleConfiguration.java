@@ -15,41 +15,34 @@
  */
 package com.foreach.across.modules.user.config;
 
+import com.foreach.across.core.context.support.AcrossModuleMessageSource;
+import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.services.*;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-public class UserServicesConfiguration
+@EnableAcrossJpaRepositories(basePackageClasses = UserModule.class)
+public class UserModuleConfiguration
 {
-	private static final Logger LOG = LoggerFactory.getLogger( UserServicesConfiguration.class );
+	private static final Logger LOG = LoggerFactory.getLogger( UserModuleConfiguration.class );
 
 	@Autowired
 	private UserModuleSettings settings;
 
-	/*
-	@PostConstruct
-	void registerConverters() {
-		if ( conversionService != null ) {
-			LOG.debug( "ConfigurableConversionService found - auto-registering user converters " );
-
-			conversionService.addConverter( new ObjectToRoleConverter( conversionService, roleService() ) );
-			conversionService.addConverter( new ObjectToPermissionConverter( conversionService, permissionService() ) );
-			conversionService.addConverter( new ObjectToUserConverter( conversionService, userService() ) );
-			conversionService.addConverter( new ObjectToGroupConverter( conversionService, groupService() ) );
-		}
-		else {
-			LOG.debug( "No ConfigurableConversionService found - unable to auto-register user converters" );
-		}
+	@Bean
+	public MessageSource messageSource() {
+		return new AcrossModuleMessageSource();
 	}
-	*/
 
 	@Bean
 	public PermissionService permissionService() {

@@ -66,27 +66,27 @@ public class AclPermissionsInstaller
 
 	@InstallerMethod
 	public void install() {
-		createPermissionsAndAddToAdminRole();
-		createEntitiesAndAcls();
+		MachinePrincipal system = machinePrincipalService.getMachinePrincipalByName( "system" );
+
+		try (CloseableAuthentication ignored = securityPrincipalService.authenticate( system )) {
+			createPermissionsAndAddToAdminRole();
+			createEntitiesAndAcls();
+		}
 	}
 
 	public void createEntitiesAndAcls() {
-		MachinePrincipal system = machinePrincipalService.getMachinePrincipalByName( "system" );
+		AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" );
 
-		try (CloseableAuthentication authenticated = securityPrincipalService.authenticate( system )) {
-			AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" );
+		if ( systemAcl == null ) {
+			AclSecurityEntity dto = new AclSecurityEntity();
+			dto.setName( "system" );
 
-			if ( systemAcl == null ) {
-				AclSecurityEntity dto = new AclSecurityEntity();
-				dto.setName( "system" );
-
-				systemAcl = aclSecurityEntityService.save( dto );
-			}
-
-			aclSecurityService.setDefaultParentAcl( systemAcl );
-
-			createGroupsAclSecurityEntity();
+			systemAcl = aclSecurityEntityService.save( dto );
 		}
+
+		aclSecurityService.setDefaultParentAcl( systemAcl );
+
+		createGroupsAclSecurityEntity();
 	}
 
 	public void createPermissionsAndAddToAdminRole() {

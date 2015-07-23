@@ -18,6 +18,8 @@ package com.foreach.across.modules.user.installers;
 import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
+import com.foreach.across.modules.spring.security.infrastructure.services.CloseableAuthentication;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserAuthorities;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.MachinePrincipal;
@@ -49,15 +51,21 @@ public class DefaultUserInstaller implements UserAuthorities
 	@Autowired
 	private MachinePrincipalService machinePrincipalService;
 
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
+
 	@InstallerMethod
 	public void install() {
-		createSystemAccount();
-		createPermissionGroups();
-		createPermissionsAndRoles();
-		createUser();
+		MachinePrincipal machine = createSystemAccount();
+
+		try (CloseableAuthentication ignored = securityPrincipalService.authenticate( machine )) {
+			createPermissionGroups();
+			createPermissionsAndRoles();
+			createUser();
+		}
 	}
 
-	private void createSystemAccount() {
+	private MachinePrincipal createSystemAccount() {
 		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" );
 
 		if ( machine == null ) {
@@ -66,6 +74,8 @@ public class DefaultUserInstaller implements UserAuthorities
 
 			machinePrincipalService.save( dto );
 		}
+
+		return machine;
 	}
 
 	private void createPermissionGroups() {
