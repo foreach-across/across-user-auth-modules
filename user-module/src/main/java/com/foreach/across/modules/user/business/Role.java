@@ -122,6 +122,13 @@ public class Role extends SettableIdBasedEntity<Role>
 		return permissions;
 	}
 
+	public void setPermissions( Collection<Permission> permissions ) {
+		getPermissions().clear();
+		if ( permissions != null ) {
+			getPermissions().addAll( permissions );
+		}
+	}
+
 	public void addPermission( String... names ) {
 		Permission[] permissions = new Permission[names.length];
 
@@ -136,11 +143,6 @@ public class Role extends SettableIdBasedEntity<Role>
 		for ( Permission permission : permissions ) {
 			getPermissions().add( permission );
 		}
-	}
-
-	public void setPermissions( Collection<Permission> permissions ) {
-		getPermissions().clear();
-		getPermissions().addAll( permissions );
 	}
 
 	public boolean hasPermission( String name ) {
