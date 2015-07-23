@@ -27,7 +27,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 /**
- * Represents a SecurityPrincipal identity that is like a user account, but no physical person.
+ * Represents a SecurityPrincipal identity that is like a user account, but not a physical person.
  *
  * @author Arne Vandamme
  */

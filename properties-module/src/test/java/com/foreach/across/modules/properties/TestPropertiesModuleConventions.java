@@ -13,12 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.query;
+package com.foreach.across.modules.properties;
+
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
 /**
  * @author Arne Vandamme
  */
-public interface EntityQueryExpression
+public class TestPropertiesModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	EntityQueryOps getOperand();
+	@Override
+	protected boolean hasSettings() {
+		return true;
+	}
+
+	@Override
+	protected AcrossModule createModule() {
+		return new PropertiesModule();
+	}
 }

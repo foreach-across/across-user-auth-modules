@@ -19,8 +19,10 @@ import com.foreach.across.core.context.support.AcrossModuleMessageSource;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleSettings;
+import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import com.foreach.across.modules.user.services.*;
 import com.foreach.across.modules.user.validators.GroupValidator;
+import com.foreach.across.modules.user.validators.MachinePrincipalValidator;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +65,11 @@ public class UserModuleConfiguration
 	@Bean
 	public GroupService groupService() {
 		return new GroupServiceImpl();
+	}
+
+	@Bean
+	public MachinePrincipalValidator machinePrincipalValidator( MachinePrincipalRepository machinePrincipalRepository ) {
+		return new MachinePrincipalValidator( machinePrincipalRepository );
 	}
 
 	@Bean
