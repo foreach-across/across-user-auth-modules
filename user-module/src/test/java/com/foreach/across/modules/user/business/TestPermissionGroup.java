@@ -18,6 +18,7 @@ package com.foreach.across.modules.user.business;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
 import static org.junit.Assert.*;
@@ -25,10 +26,22 @@ import static org.junit.Assert.*;
 public class TestPermissionGroup
 {
 	@Test
+	public void nullValuesAreSameAsEmpty() {
+		PermissionGroup permissionGroup = new PermissionGroup();
+		permissionGroup.setPermissions( Collections.singleton( new Permission( "one" ) ) );
+
+		assertFalse( permissionGroup.getPermissions().isEmpty() );
+
+		permissionGroup.setPermissions( null );
+		assertTrue( permissionGroup.getPermissions().isEmpty() );
+	}
+
+	@Test
 	public void permissionGroupDto() {
 		PermissionGroup permissionGroup = new PermissionGroup();
 		permissionGroup.setName( "group name" );
-		permissionGroup.setPermissions( new HashSet<>( Arrays.asList( new Permission( "one" ), new Permission( "two" ) ) ) );
+		permissionGroup.setPermissions( new HashSet<>( Arrays.asList( new Permission( "one" ), new Permission(
+				"two" ) ) ) );
 
 		PermissionGroup dto = permissionGroup.toDto();
 		assertNotNull( dto );

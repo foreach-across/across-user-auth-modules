@@ -18,6 +18,7 @@ package com.foreach.across.modules.user.business;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -72,6 +73,33 @@ public class TestUser
 		assertTrue( userA.hasPermission( permB ) );
 		assertTrue( userB.hasPermission( permA ) );
 		assertTrue( userB.hasPermission( permB ) );
+	}
+
+	@Test
+	public void nullValuesAreSameAsEmpty() {
+		User user = new User();
+		user.setRoles( Collections.singleton( new Role( "one" ) ) );
+		user.setGroups( Collections.singleton( new Group( "group one" ) ) );
+		user.setRestrictions( Collections.singleton( UserRestriction.EXPIRED ) );
+
+		assertFalse( user.getRoles().isEmpty() );
+		assertFalse( user.getGroups().isEmpty() );
+		assertFalse( user.getRestrictions().isEmpty() );
+
+		user.setRoles( null );
+		assertTrue( user.getRoles().isEmpty() );
+		assertFalse( user.getGroups().isEmpty() );
+		assertFalse( user.getRestrictions().isEmpty() );
+
+		user.setGroups( null );
+		assertTrue( user.getRoles().isEmpty() );
+		assertTrue( user.getGroups().isEmpty() );
+		assertFalse( user.getRestrictions().isEmpty() );
+
+		user.setRestrictions( null );
+		assertTrue( user.getRoles().isEmpty() );
+		assertTrue( user.getGroups().isEmpty() );
+		assertTrue( user.getRestrictions().isEmpty() );
 	}
 
 	@Test

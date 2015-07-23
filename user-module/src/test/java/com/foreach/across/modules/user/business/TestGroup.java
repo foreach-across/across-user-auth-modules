@@ -18,15 +18,26 @@ package com.foreach.across.modules.user.business;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
  */
 public class TestGroup
 {
+	@Test
+	public void nullValuesForRolesIsSameAsEmpty() {
+		Group group = new Group();
+		group.setRoles( Collections.singleton( new Role( "one" ) ) );
+
+		assertFalse( group.getRoles().isEmpty() );
+
+		group.setRoles( null );
+		assertTrue( group.getRoles().isEmpty() );
+	}
+
 	@Test
 	public void groupDto() {
 		Group group = new Group();

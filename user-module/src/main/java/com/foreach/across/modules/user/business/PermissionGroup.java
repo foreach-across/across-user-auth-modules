@@ -102,7 +102,9 @@ public class PermissionGroup extends SettableIdBasedEntity<PermissionGroup>
 
 	public void setPermissions( Collection<Permission> permissions ) {
 		getPermissions().clear();
-		getPermissions().addAll( permissions );
+		if ( permissions != null ) {
+			getPermissions().addAll( permissions );
+		}
 	}
 
 	@Override

@@ -18,15 +18,33 @@ package com.foreach.across.modules.user.business;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
  */
 public class TestMachinePrincipal
 {
+	@Test
+	public void nullValuesAreSameAsEmpty() {
+		MachinePrincipal machinePrincipal = new MachinePrincipal();
+		machinePrincipal.setRoles( Collections.singleton( new Role( "one" ) ) );
+		machinePrincipal.setGroups( Collections.singleton( new Group( "group one" ) ) );
+
+		assertFalse( machinePrincipal.getRoles().isEmpty() );
+		assertFalse( machinePrincipal.getGroups().isEmpty() );
+
+		machinePrincipal.setRoles( null );
+		assertTrue( machinePrincipal.getRoles().isEmpty() );
+		assertFalse( machinePrincipal.getGroups().isEmpty() );
+
+		machinePrincipal.setGroups( null );
+		assertTrue( machinePrincipal.getRoles().isEmpty() );
+		assertTrue( machinePrincipal.getGroups().isEmpty() );
+	}
+
 	@Test
 	public void machinePrincipalDto() {
 		MachinePrincipal machinePrincipal = new MachinePrincipal();

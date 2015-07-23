@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -74,6 +75,17 @@ public class TestRole
 
 		matcher = AuthorityMatcher.allOf( new Role( "ROLE_ADMIN" ) );
 		assertTrue( matcher.matches( actuals ) );
+	}
+
+	@Test
+	public void nullValuesAreSameAsEmpty() {
+		Role role = new Role( "some role" );
+		role.setPermissions( Collections.singleton( new Permission( "one" ) ) );
+
+		assertFalse( role.getPermissions().isEmpty() );
+
+		role.setPermissions( null );
+		assertTrue( role.getPermissions().isEmpty() );
 	}
 
 	@Test
