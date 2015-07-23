@@ -19,15 +19,66 @@ import com.foreach.across.modules.user.business.Role;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
  */
 public class TestOAuth2Client
 {
+	@Test
+	public void nullValuesAreSameAsEmpty() {
+		OAuth2Client client = new OAuth2Client();
+		client.setRoles( Collections.singleton( new Role( "one" ) ) );
+		client.setAuthorizedGrantTypes( Collections.singleton( "semi" ) );
+		client.setRegisteredRedirectUri( Collections.singleton( "http://urltwo" ) );
+		client.setResourceIds( Collections.singleton( "movies" ) );
+		client.setOAuth2ClientScopes( Collections.singleton( new OAuth2ClientScope() ) );
+
+		assertFalse( client.getRoles().isEmpty() );
+		assertFalse( client.getAuthorizedGrantTypes().isEmpty() );
+		assertFalse( client.getRegisteredRedirectUri().isEmpty() );
+		assertFalse( client.getResourceIds().isEmpty() );
+		assertFalse( client.getOAuth2ClientScopes().isEmpty() );
+
+		client.setRoles( null );
+		assertTrue( client.getRoles().isEmpty() );
+		assertFalse( client.getAuthorizedGrantTypes().isEmpty() );
+		assertFalse( client.getRegisteredRedirectUri().isEmpty() );
+		assertFalse( client.getResourceIds().isEmpty() );
+		assertFalse( client.getOAuth2ClientScopes().isEmpty() );
+
+		client.setAuthorizedGrantTypes( null );
+		assertTrue( client.getRoles().isEmpty() );
+		assertTrue( client.getAuthorizedGrantTypes().isEmpty() );
+		assertFalse( client.getRegisteredRedirectUri().isEmpty() );
+		assertFalse( client.getResourceIds().isEmpty() );
+		assertFalse( client.getOAuth2ClientScopes().isEmpty() );
+
+		client.setRegisteredRedirectUri( null );
+		assertTrue( client.getRoles().isEmpty() );
+		assertTrue( client.getAuthorizedGrantTypes().isEmpty() );
+		assertTrue( client.getRegisteredRedirectUri().isEmpty() );
+		assertFalse( client.getResourceIds().isEmpty() );
+		assertFalse( client.getOAuth2ClientScopes().isEmpty() );
+
+		client.setResourceIds( null );
+		assertTrue( client.getRoles().isEmpty() );
+		assertTrue( client.getAuthorizedGrantTypes().isEmpty() );
+		assertTrue( client.getRegisteredRedirectUri().isEmpty() );
+		assertTrue( client.getResourceIds().isEmpty() );
+		assertFalse( client.getOAuth2ClientScopes().isEmpty() );
+
+		client.setOAuth2ClientScopes( null );
+		assertTrue( client.getRoles().isEmpty() );
+		assertTrue( client.getAuthorizedGrantTypes().isEmpty() );
+		assertTrue( client.getRegisteredRedirectUri().isEmpty() );
+		assertTrue( client.getResourceIds().isEmpty() );
+		assertTrue( client.getOAuth2ClientScopes().isEmpty() );
+	}
+
 	@Test
 	public void oauth2ClientDto() {
 		OAuth2Client client = new OAuth2Client();

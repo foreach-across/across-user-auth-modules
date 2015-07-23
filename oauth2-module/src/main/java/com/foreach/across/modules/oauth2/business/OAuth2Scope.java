@@ -74,7 +74,9 @@ public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements C
 
 	public void setOAuth2ClientScopes( Collection<OAuth2ClientScope> oAuth2ClientScopes ) {
 		getOAuth2ClientScopes().clear();
-		getOAuth2ClientScopes().addAll( oAuth2ClientScopes );
+		if ( oAuth2ClientScopes != null ) {
+			getOAuth2ClientScopes().addAll( oAuth2ClientScopes );
+		}
 	}
 
 	@Override

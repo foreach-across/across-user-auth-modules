@@ -100,7 +100,9 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 
 	public void setResourceIds( Collection<String> resourceIds ) {
 		getResourceIds().clear();
-		getResourceIds().addAll( resourceIds );
+		if ( resourceIds != null ) {
+			getResourceIds().addAll( resourceIds );
+		}
 	}
 
 	@Override
@@ -142,7 +144,9 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 
 	public void setAuthorizedGrantTypes( Collection<String> authorizedGrantTypes ) {
 		getAuthorizedGrantTypes().clear();
-		getAuthorizedGrantTypes().addAll( authorizedGrantTypes );
+		if ( authorizedGrantTypes != null ) {
+			getAuthorizedGrantTypes().addAll( authorizedGrantTypes );
+		}
 	}
 
 	@Override
@@ -152,7 +156,9 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 
 	public void setRegisteredRedirectUri( Collection<String> registeredRedirectUri ) {
 		getRegisteredRedirectUri().clear();
-		getRegisteredRedirectUri().addAll( registeredRedirectUri );
+		if ( registeredRedirectUri != null ) {
+			getRegisteredRedirectUri().addAll( registeredRedirectUri );
+		}
 	}
 
 	@Override
@@ -194,6 +200,8 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 
 	public void setOAuth2ClientScopes( Collection<OAuth2ClientScope> oAuth2ClientScopes ) {
 		getOAuth2ClientScopes().clear();
-		getOAuth2ClientScopes().addAll( oAuth2ClientScopes );
+		if ( oAuth2ClientScopes != null ) {
+			getOAuth2ClientScopes().addAll( oAuth2ClientScopes );
+		}
 	}
 }

@@ -18,15 +18,26 @@ package com.foreach.across.modules.oauth2.business;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
  */
 public class TestOAuth2Scope
 {
+	@Test
+	public void nullValuesAreSameAsEmpty() {
+		OAuth2Scope scope = new OAuth2Scope();
+		scope.setOAuth2ClientScopes( Collections.singleton( new OAuth2ClientScope() ) );
+
+		assertFalse( scope.getOAuth2ClientScopes().isEmpty() );
+
+		scope.setOAuth2ClientScopes( null );
+		assertTrue( scope.getOAuth2ClientScopes().isEmpty() );
+	}
+
 	@Test
 	public void oauth2ScopeDto() {
 		OAuth2Scope scope = new OAuth2Scope();
