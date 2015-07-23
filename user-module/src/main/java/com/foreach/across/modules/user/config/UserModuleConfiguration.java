@@ -20,6 +20,7 @@ import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcross
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.services.*;
+import com.foreach.across.modules.user.validators.GroupValidator;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,11 @@ public class UserModuleConfiguration
 	@Bean
 	public RoleService roleService() {
 		return new RoleServiceImpl();
+	}
+
+	@Bean
+	public GroupValidator groupValidator() {
+		return new GroupValidator( groupService() );
 	}
 
 	@Bean

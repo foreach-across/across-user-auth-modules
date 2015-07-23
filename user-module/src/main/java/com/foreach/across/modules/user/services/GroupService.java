@@ -17,6 +17,9 @@ package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.GroupProperties;
+import com.mysema.query.types.Predicate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Collection;
 
@@ -42,4 +45,10 @@ public interface GroupService
 	void deleteProperties( long groupId );
 
 	Collection<Group> getGroupsWithPropertyValue( String propertyName, Object propertyValue );
+
+	Collection<Group> findGroups( Predicate predicate );
+
+	Page<Group> findGroups( Predicate predicate, Pageable pageable );
+
+	Group findGroup( Predicate predicate );
 }

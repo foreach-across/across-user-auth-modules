@@ -16,11 +16,13 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
-import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.GroupProperties;
 import com.foreach.across.modules.user.repositories.GroupRepository;
+import com.mysema.query.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,5 +95,20 @@ public class GroupServiceImpl implements GroupService
 		}
 
 		return groupRepository.findAll( groupIds );
+	}
+
+	@Override
+	public Collection<Group> findGroups( Predicate predicate ) {
+		return (Collection<Group>) groupRepository.findAll( predicate );
+	}
+
+	@Override
+	public Page<Group> findGroups( Predicate predicate, Pageable pageable ) {
+		return groupRepository.findAll( predicate, pageable );
+	}
+
+	@Override
+	public Group findGroup( Predicate predicate ) {
+		return groupRepository.findOne( predicate );
 	}
 }

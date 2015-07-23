@@ -27,10 +27,7 @@ import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
 import com.foreach.across.modules.user.UserAuthorities;
 import com.foreach.across.modules.user.UserModule;
-import com.foreach.across.modules.user.business.Group;
-import com.foreach.across.modules.user.business.MachinePrincipal;
-import com.foreach.across.modules.user.business.Role;
-import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
 import com.foreach.across.modules.user.security.CurrentUserProxyImpl;
 import com.foreach.across.modules.user.security.UserDetailsServiceImpl;
@@ -68,6 +65,12 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) )
 		             .and()
 		             .entity( Role.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) )
+		             .and()
+		             .entity( Permission.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) )
+		             .and()
+		             .entity( PermissionGroup.class )
 		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) );
 	}
 
