@@ -226,7 +226,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 		resolver.setMessageSource( messageSource );
 		resolver.setEntityConfiguration( entityConfiguration );
 		resolver.setPrefixes( moduleInfo.getName() + ".entities." + name );
-		resolver.setFallbackCollections( EntityModule.NAME + ".entities", "" );
+		resolver.setFallbackCollections( moduleInfo.getName() + ".entities", EntityModule.NAME + ".entities", "" );
 
 		return resolver;
 	}
