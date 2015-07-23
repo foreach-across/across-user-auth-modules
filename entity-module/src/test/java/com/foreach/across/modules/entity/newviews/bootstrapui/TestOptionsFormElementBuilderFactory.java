@@ -24,7 +24,6 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -48,9 +47,6 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration(classes = TestOptionsFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
 public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<NodeViewElementSupport>
 {
-	@Autowired
-	private ConversionService conversionService;
-
 	@Override
 	protected Class getTestClass() {
 		return Validators.class;
@@ -58,7 +54,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void enumNoValidator() {
-		SelectFormElement select = assembleAndVerify( "enumNoValidator", false );
+		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
 
 		assertFalse( select.isRequired() );
 		assertFalse( select.isMultiple() );
@@ -67,7 +63,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void enumNotNullValidator() {
-		SelectFormElement select = assembleAndVerify( "enumNotNullValidator", false );
+		SelectFormElement select = assembleAndVerify( "enumNotNullValidator" );
 
 		assertTrue( select.isRequired() );
 		assertFalse( select.isMultiple() );
@@ -76,7 +72,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void enumManyToOneOptional() {
-		SelectFormElement select = assembleAndVerify( "enumManyToOneOptional", false );
+		SelectFormElement select = assembleAndVerify( "enumManyToOneOptional" );
 
 		assertFalse( select.isRequired() );
 		assertFalse( select.isMultiple() );
@@ -85,106 +81,31 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void enumManyToOneNonOptional() {
-		SelectFormElement select = assembleAndVerify( "enumManyToOneNonOptional", false );
+		SelectFormElement select = assembleAndVerify( "enumManyToOneNonOptional" );
 
 		assertTrue( select.isRequired() );
 		assertFalse( select.isMultiple() );
 		assertEquals( 1, select.size() );
 	}
-//
-//	@Test
-//	public void noValidatorNumber() {
-//		TextboxFormElement textbox = assembleAndVerify( "noValidatorNumber", false );
-//		assertEquals( TextboxFormElement.Type.TEXT, textbox.getType() );
-//		assertNull( textbox.getMaxLength() );
-//	}
-//
-//	@Test
-//	public void notNullValidator() {
-//		TextareaFormElement textarea = assembleAndVerify( "notNullValidator", true );
-//		assertNull( textarea.getMaxLength() );
-//	}
-//
-//	@Test
-//	public void notBlankValidator() {
-//		TextareaFormElement textarea = assembleAndVerify( "notBlankValidator", true );
-//		assertNull( textarea.getMaxLength() );
-//	}
-//
-//	@Test
-//	public void notEmptyValidator() {
-//		TextareaFormElement textarea = assembleAndVerify( "notEmptyValidator", true );
-//		assertNull( textarea.getMaxLength() );
-//	}
-//
-//	@Test
-//	public void sizeValidator() {
-//		TextboxFormElement textbox = assembleAndVerify( "sizeValidator", false );
-//		assertEquals( Integer.valueOf( 200 ), textbox.getMaxLength() );
-//		assertFalse( textbox instanceof TextareaFormElement );
-//	}
-//
-//	@Test
-//	public void sizeForMultiLineValidator() {
-//		TextareaFormElement textarea = assembleAndVerify( "sizeForMultiLineValidator", false );
-//		assertEquals( Integer.valueOf( 201 ), textarea.getMaxLength() );
-//	}
-//
-//	@Test
-//	public void lengthValidator() {
-//		TextboxFormElement textbox = assembleAndVerify( "lengthValidator", false );
-//		assertEquals( Integer.valueOf( 10 ), textbox.getMaxLength() );
-//		assertFalse( textbox instanceof TextareaFormElement );
-//	}
-//
-//	@Test
-//	public void combinedValidator() {
-//		TextboxFormElement textbox = assembleAndVerify( "combinedValidator", true );
-//		assertEquals( Integer.valueOf( 50 ), textbox.getMaxLength() );
-//		assertFalse( textbox instanceof TextareaFormElement );
-//	}
-
-//	@Test
-//	public void valueSetFromEntity() {
-//		when( properties.get( "noValidator" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-//		{
-//			@Override
-//			public Object getValue( Object entity ) {
-//				return "fetchedValue";
-//			}
-//		} );
-//
-//		when( conversionService.convert( eq( "fetchedValue" ), any( TypeDescriptor.class ),
-//		                                 any( TypeDescriptor.class ) ) )
-//				.thenReturn( "converted-value" );
-//
-//		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
-//
-//		TextareaFormElement textarea = assembleAndVerify( "noValidator", false );
-//		assertEquals( "converted-value", textarea.getText() );
-//	}
 
 	@SuppressWarnings("unchecked")
-	private <V> V assembleAndVerify( String propertyName, boolean required ) {
+	private <V> V assembleAndVerify( String propertyName ) {
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
 		when( builderContext.getAttribute( EntityMessageCodeResolver.class ) ).thenReturn( codeResolver );
 
 		NodeViewElementSupport control = assemble( propertyName, ViewElementMode.CONTROL );
-//		assertEquals( propertyName, control.getName() );
-//		assertEquals( "entity." + propertyName, control.getControlName() );
-//		assertFalse( control.isReadonly() );
-//		assertFalse( control.isDisabled() );
-//		assertEquals( required, control.isRequired() );
 
 		return (V) control;
 	}
 
-	private static enum TestEnum
+	@SuppressWarnings( "unused" )
+	private enum TestEnum
 	{
 		ONE,
 		TWO
 	}
 
+	@SuppressWarnings( "unused" )
 	private static class Validators
 	{
 		public TestEnum enumNoValidator;

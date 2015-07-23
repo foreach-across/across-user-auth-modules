@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder.Option;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
@@ -52,7 +52,7 @@ public class TestEntityQueryOptionIterableBuilder
 	private ViewElementBuilderContext elementBuilderContext;
 	private EntityQueryExecutor entityQueryExecutor;
 
-	private Map<String, Option> options = new HashMap<>();
+	private Map<String, OptionFormElementBuilder> options = new HashMap<>();
 
 	@Before
 	@SuppressWarnings("unchecked")
@@ -221,11 +221,11 @@ public class TestEntityQueryOptionIterableBuilder
 	private void build( boolean verify ) {
 		options.clear();
 
-		Iterable<Option> iterable = iterableBuilder.buildOptions( elementBuilderContext );
+		Iterable<OptionFormElementBuilder> iterable = iterableBuilder.buildOptions( elementBuilderContext );
 
-		List<Option> optionsInOrder = new ArrayList<>( 3 );
+		List<OptionFormElementBuilder> optionsInOrder = new ArrayList<>( 3 );
 
-		for ( Option option : iterable ) {
+		for ( OptionFormElementBuilder option : iterable ) {
 			optionsInOrder.add( option );
 			options.put( option.getLabel(), option );
 		}

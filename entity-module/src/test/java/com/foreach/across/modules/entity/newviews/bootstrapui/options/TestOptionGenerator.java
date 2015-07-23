@@ -16,8 +16,8 @@
 package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder.Option;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
@@ -36,10 +36,14 @@ import static org.junit.Assert.assertEquals;
 public class TestOptionGenerator
 {
 	private final OptionIterableBuilder noneSelected
-			= new FixedOptionIterableBuilder( new Option().label( "bbb" ), new Option().label( "aaa" ) );
+			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ),
+			                                  new OptionFormElementBuilder().label( "aaa" )
+	);
 
 	private final OptionIterableBuilder withSelected
-			= new FixedOptionIterableBuilder( new Option().label( "bbb" ), new Option().label( "aaa" ).selected() );
+			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ),
+			                                  new OptionFormElementBuilder().label( "aaa" ).selected()
+	);
 
 	private OptionGenerator generator;
 	private OptionsFormElementBuilder options;
@@ -103,7 +107,7 @@ public class TestOptionGenerator
 	public void customEmptyOptionIsUsed() {
 		options.select();
 
-		generator.setEmptyOption( new Option().label( "myemptyoption" ) );
+		generator.setEmptyOption( new OptionFormElementBuilder().label( "myemptyoption" ) );
 		generator.setOptions( noneSelected );
 
 		List<SelectFormElement.Option> generated = build();
