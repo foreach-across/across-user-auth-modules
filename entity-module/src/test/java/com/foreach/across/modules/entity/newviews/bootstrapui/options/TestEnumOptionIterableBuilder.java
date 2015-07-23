@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder.Option;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
@@ -39,18 +39,10 @@ import static org.mockito.Mockito.when;
  */
 public class TestEnumOptionIterableBuilder
 {
-	enum Counter
-	{
-		ONE,
-		TWO,
-		THREE
-	}
-
 	private EnumOptionIterableBuilder iterableBuilder;
 	private ValueFetcher<String> valueFetcher;
 	private ViewElementBuilderContext elementBuilderContext;
-
-	private Map<Counter, Option> options = new HashMap<>();
+	private Map<Counter, OptionFormElementBuilder> options = new HashMap<>();
 
 	@Before
 	@SuppressWarnings("unchecked")
@@ -170,11 +162,11 @@ public class TestEnumOptionIterableBuilder
 	private void build() {
 		options.clear();
 
-		Iterable<Option> iterable = iterableBuilder.buildOptions( elementBuilderContext );
+		Iterable<OptionFormElementBuilder> iterable = iterableBuilder.buildOptions( elementBuilderContext );
 
-		List<Option> optionsInOrder = new ArrayList<>( 3 );
+		List<OptionFormElementBuilder> optionsInOrder = new ArrayList<>( 3 );
 
-		for ( Option option : iterable ) {
+		for ( OptionFormElementBuilder option : iterable ) {
 			optionsInOrder.add( option );
 			options.put( Counter.valueOf( (String) option.getValue() ), option );
 		}
@@ -189,5 +181,12 @@ public class TestEnumOptionIterableBuilder
 
 		assertEquals( EntityUtils.generateDisplayName( Counter.THREE.name() ), optionsInOrder.get( 2 ).getLabel() );
 		assertEquals( Counter.THREE.name(), optionsInOrder.get( 2 ).getValue() );
+	}
+
+	enum Counter
+	{
+		ONE,
+		TWO,
+		THREE
 	}
 }
