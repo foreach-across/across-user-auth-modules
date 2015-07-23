@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContex
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -41,27 +42,57 @@ public class TestAuditablePropertyViewElementBuilder extends AbstractViewElement
 	private final Date dateCreated = new Date();
 	private final Date dateLastModified = new Date( System.currentTimeMillis() + 1000 );
 
-	@Test
-	public void test() {
-		AuditablePropertyViewElementBuilder builder = new AuditablePropertyViewElementBuilder();
+	private ConversionService conversionService;
+	private Entity entity;
+	private AuditablePropertyViewElementBuilder builder;
+	private ViewElementBuilderContextImpl builderContext;
 
-		ConversionService conversionService = mock( ConversionService.class );
+	@Before
+	public void before() {
+		builder = new AuditablePropertyViewElementBuilder();
+
+		conversionService = mock( ConversionService.class );
 		when( conversionService.convert( dateCreated, String.class ) ).thenReturn( "creationDate" );
 		when( conversionService.convert( dateLastModified, String.class ) ).thenReturn( "modificationDate" );
 
 		builder.setConversionService( conversionService );
 
-		Entity entity = new Entity();
+		entity = new Entity();
 		entity.setCreatedBy( "admin" );
 		entity.setCreatedDate( dateCreated );
 		entity.setLastModifiedBy( "system" );
 		entity.setLastModifiedDate( dateLastModified );
 
-		ViewElementBuilderContextImpl builderContext = new ViewElementBuilderContextImpl();
+		builderContext = new ViewElementBuilderContextImpl();
 		builderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, entity );
+	}
 
-		renderAndExpect( builder.build( builderContext ),
-		                 "creationDate by admin" );
+	@Test
+	public void creationDateWithPrincipal() {
+		expect( "creationDate by admin" );
+	}
+
+	@Test
+	public void modificationDateWithPrincipal() {
+		builder.setForLastModifiedProperty( true );
+		expect( "modificationDate by system" );
+	}
+
+	@Test
+	public void creationDateWithoutPrincipal() {
+		entity.setCreatedBy( null );
+		expect( "creationDate" );
+	}
+
+	@Test
+	public void modificationDateWithoutPrincipal() {
+		builder.setForLastModifiedProperty( true );
+		entity.setLastModifiedBy( null );
+		expect( "modificationDate" );
+	}
+
+	private void expect( String output ) {
+		renderAndExpect( builder.build( builderContext ), output );
 	}
 
 	static class Entity implements Auditable<String>
