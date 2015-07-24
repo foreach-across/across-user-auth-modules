@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.installers;
+package com.foreach.across.modules.entity.views.elements.form.select;
 
-import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.core.annotations.Installer;
-import com.foreach.across.modules.hibernate.installers.AuditableSchemaInstaller;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * @author Andy Somers
+ * Interface for implementation that creates select options.
+ *
+ * @author Arne Vandamme
  */
-@AcrossDepends(required = "AcrossHibernateJpaModule")
-@Installer(description = "Adds the auditable columns to the acl_entity table", version = 1)
-public class AclEntityAuditableInstaller extends AuditableSchemaInstaller
+public interface SelectOptionGenerator
 {
-	@Override
-	protected Collection<String> getTableNames() {
-		return Collections.singleton( "acl_entity" );
-	}
+	Collection<SelectOption> generateOptions( EntityMessageCodeResolver codeResolver );
 }
