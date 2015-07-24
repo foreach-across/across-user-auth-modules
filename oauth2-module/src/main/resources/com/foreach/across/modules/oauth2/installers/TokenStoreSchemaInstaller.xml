@@ -65,5 +65,20 @@
 			<column name="authentication" type="java.sql.Types.BLOB"/>
 		</createTable>
 	</changeSet>
+	
+	<changeSet id="201507241413" author="wtx">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="oauth_code" />
+			</not>
+		</preConditions>
+		
+		<comment>Creates oauth_code table.</comment>
+		
+		<createTable tableName="oauth_code">
+			<column name="code" type="java.sql.Types.VARCHAR(255)" />
+			<column name="authentication" type="java.sql.Types.BLOB" />
+		</createTable>
+	</changeSet>
 
 </databaseChangeLog>
