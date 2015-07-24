@@ -45,6 +45,14 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 	 */
 	public static final String USE_TOKEN_STORE_USER_APPROVAL_HANDLER = "OAuth2Module.useTokenStoreUserApprovalHandler";
 
+	/**
+	 * Specifies whether the authorization process should use a jdbcAuthorizationCodeService instead of the default
+	 * inMemoryAuthorizationCodeService
+	 * <p/>
+	 * False/True
+	 */
+	public static final String USE_JDBC_AUTHORIZATION_CODE_SERVICE = "OAuth2Module.useJdbcAuthorizationCodeServices";
+
 	@Override
 	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
 		registry.register( CUSTOM_APPROVAL_FORM, String.class, "",
@@ -56,6 +64,9 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 		registry.register( USE_TOKEN_STORE_USER_APPROVAL_HANDLER, Boolean.class, false,
 		                   "Specifies whether the authentication process should use a tokenStoreUserApprovalHandler " +
 				                   "instead of the defaultUserApprovalHandler." );
+		registry.register( USE_JDBC_AUTHORIZATION_CODE_SERVICE, Boolean.class, false, "Specifies whether the " +
+				"authorization process should use a jdbcAuthorizationCodeService instead of the default " +
+				" inMemoryAuthorizationCodeService");
 	}
 
 	public String getCustomApprovalForm() {
@@ -68,5 +79,9 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 
 	public boolean isUseTokenStoreUserApprovalHandler() {
 		return getProperty( USE_TOKEN_STORE_USER_APPROVAL_HANDLER, Boolean.class );
+	}
+
+	public boolean isUseJdbcAuthorizationCodeService() {
+		return getProperty( USE_JDBC_AUTHORIZATION_CODE_SERVICE, Boolean.class );
 	}
 }
