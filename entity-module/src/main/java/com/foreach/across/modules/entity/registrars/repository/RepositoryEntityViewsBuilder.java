@@ -101,6 +101,7 @@ public class RepositoryEntityViewsBuilder
 				label.setName( "#generatedLabel" );
 				label.setDisplayName( "Generated label" );
 				label.setValueFetcher( new SpelValueFetcher( "toString()" ) );
+				label.setHidden( true );
 
 				registry.register( label );
 			}
