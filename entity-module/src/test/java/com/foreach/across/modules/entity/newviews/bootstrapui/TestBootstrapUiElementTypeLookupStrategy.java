@@ -98,9 +98,9 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	public void nullIsReturnedForFormModeWriteWhenNotWritable() {
 		when( descriptor.isWritable() ).thenReturn( false );
 
-		assertNull( lookup( String.class, ViewElementMode.FORM_WRITE ) );
-		assertNull( lookup( Integer.class, ViewElementMode.FORM_WRITE ) );
-		assertNull( lookup( int.class, ViewElementMode.FORM_WRITE ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_WRITE ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Integer.class, ViewElementMode.FORM_WRITE ) );
+		assertEquals( BootstrapUiElements.TEXT, lookup( int.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Integer.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( int.class, ViewElementMode.FORM_READ ) );
