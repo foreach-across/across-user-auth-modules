@@ -19,8 +19,9 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import org.junit.Test;
+import org.springframework.beans.BeanUtils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
@@ -41,6 +42,46 @@ public class TestSimpleEntityPropertyDescriptor
 		assertEquals( "street", merged.getName() );
 		assertEquals( "Address", merged.getDisplayName() );
 		assertEquals( "street", merged.getAttribute( EntityAttributes.SORTABLE_PROPERTY ) );
+	}
 
+	@Test
+	public void writableProperty() {
+		SimpleEntityPropertyDescriptor descriptor = SimpleEntityPropertyDescriptor.forPropertyDescriptor(
+				BeanUtils.getPropertyDescriptor( Instance.class, "name" ), Instance.class
+		);
+
+		assertTrue( descriptor.isReadable() );
+		assertTrue( descriptor.isWritable() );
+		assertFalse( descriptor.isHidden() );
+	}
+
+	@Test
+	public void nonWritablePropertyIsHiddenByDefault() {
+		SimpleEntityPropertyDescriptor descriptor = SimpleEntityPropertyDescriptor.forPropertyDescriptor(
+				BeanUtils.getPropertyDescriptor( Instance.class, "readonly" ), Instance.class
+		);
+
+		assertTrue( descriptor.isReadable() );
+		assertFalse( descriptor.isWritable() );
+		assertTrue( descriptor.isHidden() );
+	}
+
+	@SuppressWarnings( "unused" )
+	private static class Instance
+	{
+		private String name;
+		private int readonly;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName( String name ) {
+			this.name = name;
+		}
+
+		public int getReadonly() {
+			return readonly;
+		}
 	}
 }

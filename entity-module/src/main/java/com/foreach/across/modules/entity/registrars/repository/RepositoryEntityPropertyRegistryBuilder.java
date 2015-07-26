@@ -91,8 +91,10 @@ public class RepositoryEntityPropertyRegistryBuilder
 //				excludedProps.add( "newEntityId" );
 //			}
 
-			registry.setDefaultFilter( EntityPropertyFilters.exclude( excludedProps ) );
+			//registry.setDefaultFilter( EntityPropertyFilters.exclude( excludedProps ) );
 		}
+
+		registry.getMutableProperty( "class" ).setHidden( true );
 	}
 
 	private void configureKnownDescriptors( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
