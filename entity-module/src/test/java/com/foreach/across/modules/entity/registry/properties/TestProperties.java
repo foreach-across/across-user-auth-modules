@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -41,9 +42,13 @@ public class TestProperties
 	public void propertiesAreDetected() {
 		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
 
-		List<EntityPropertyDescriptor> descriptors = registry.getProperties();
-
+		Collection<EntityPropertyDescriptor> descriptors = registry.getRegisteredDescriptors();
 		assertEquals( 6, descriptors.size() );
+
+		// Properties class, id and displayName are hidden
+		descriptors = registry.getProperties();
+		assertEquals( 3, descriptors.size() );
+
 		assertTrue( registry.contains( "id" ) );
 		assertTrue( registry.contains( "name" ) );
 		assertTrue( registry.contains( "displayName" ) );
@@ -57,7 +62,7 @@ public class TestProperties
 		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
 		registry.setDefaultOrder( "name", "displayName", "someValue", "class", "id" );
 
-		List<EntityPropertyDescriptor> descriptors = registry.getProperties();
+		List<EntityPropertyDescriptor> descriptors = registry.getProperties( EntityPropertyFilters.NOOP );
 
 		assertEquals( 6, descriptors.size() );
 		assertEquals( "name", descriptors.get( 0 ).getName() );
@@ -72,7 +77,7 @@ public class TestProperties
 	public void defaultOrderIsAccordingToDeclarationIfNotSpecified() {
 		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
 
-		List<EntityPropertyDescriptor> descriptors = registry.getProperties();
+		List<EntityPropertyDescriptor> descriptors = registry.getProperties( EntityPropertyFilters.NOOP );
 		assertEquals( 6, descriptors.size() );
 
 		assertEquals( "name", descriptors.get( 0 ).getName() );

@@ -165,7 +165,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeSupport implements 
 		descriptor.setWritable( property.getWriteMethod() != null );
 		descriptor.setReadable( property.getReadMethod() != null );
 
-		if ( !descriptor.isWritable() ) {
+		if ( !descriptor.isWritable() || !descriptor.isReadable() ) {
 			descriptor.setHidden( true );
 		}
 
