@@ -21,6 +21,8 @@ import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropert
 import org.junit.Test;
 import org.springframework.beans.BeanUtils;
 
+import java.util.Date;
+
 import static org.junit.Assert.*;
 
 /**
@@ -45,7 +47,7 @@ public class TestSimpleEntityPropertyDescriptor
 	}
 
 	@Test
-	public void writableProperty() {
+	public void readableAndWritableProperty() {
 		SimpleEntityPropertyDescriptor descriptor = SimpleEntityPropertyDescriptor.forPropertyDescriptor(
 				BeanUtils.getPropertyDescriptor( Instance.class, "name" ), Instance.class
 		);
@@ -66,11 +68,23 @@ public class TestSimpleEntityPropertyDescriptor
 		assertTrue( descriptor.isHidden() );
 	}
 
+	@Test
+	public void nonReadablePropertyIsHiddenByDefault() {
+		SimpleEntityPropertyDescriptor descriptor = SimpleEntityPropertyDescriptor.forPropertyDescriptor(
+				BeanUtils.getPropertyDescriptor( Instance.class, "writeonly" ), Instance.class
+		);
+
+		assertFalse( descriptor.isReadable() );
+		assertTrue( descriptor.isWritable() );
+		assertTrue( descriptor.isHidden() );
+	}
+
 	@SuppressWarnings( "unused" )
 	private static class Instance
 	{
 		private String name;
 		private int readonly;
+		private Date writeonly;
 
 		public String getName() {
 			return name;
@@ -82,6 +96,10 @@ public class TestSimpleEntityPropertyDescriptor
 
 		public int getReadonly() {
 			return readonly;
+		}
+
+		public void setWriteonly( Date writeonly ) {
+			this.writeonly = writeonly;
 		}
 	}
 }
