@@ -20,19 +20,13 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.PersistentEntityFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.data.repository.support.CrudInvokerUtils;
 import org.springframework.format.Printer;
-import org.springframework.format.support.DefaultFormattingConversionService;
 
-import javax.annotation.PostConstruct;
 import java.util.Locale;
 
 /**
@@ -40,27 +34,8 @@ import java.util.Locale;
  */
 public class RepositoryEntityModelBuilder
 {
-	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityModelBuilder.class );
-
-	private static final Printer<Object> DEFAULT_PRINTER = new Printer<Object>()
-	{
-		@Override
-		public String print( Object object, Locale locale ) {
-			return object != null ? object.toString() : "";
-		}
-	};
-
-	@Autowired(required = false)
+	@Autowired
 	private ConversionService mvcConversionService;
-
-	@PostConstruct
-	protected void createDefaultConversionService() {
-		if ( mvcConversionService == null ) {
-			LOG.info(
-					"No ConversionService found for the EntityModule - creating default conversion service for entity labels." );
-			mvcConversionService = new DefaultFormattingConversionService();
-		}
-	}
 
 	@SuppressWarnings("unchecked")
 	public <T> void buildEntityModel( MutableEntityConfiguration<T> entityConfiguration ) {
@@ -83,42 +58,19 @@ public class RepositoryEntityModelBuilder
 	}
 
 	private Printer createLabelPrinter( EntityPropertyRegistry propertyRegistry ) {
-		EntityPropertyDescriptor descriptor = null;
-
-		if ( propertyRegistry != null ) {
-			descriptor = propertyRegistry.getProperty( "#generatedLabel" );
-			if ( descriptor == null ) {
-				descriptor = propertyRegistry.getProperty( "name" );
-			}
-			if ( descriptor == null ) {
-				descriptor = propertyRegistry.getProperty( "title" );
-			}
-
-			if ( descriptor == null ) {
-				SimpleEntityPropertyDescriptor label = new SimpleEntityPropertyDescriptor();
-				label.setName( "#generatedLabel" );
-				label.setDisplayName( "Generated label" );
-				label.setValueFetcher( new SpelValueFetcher( "toString()" ) );
-
-				propertyRegistry.register( label );
-
-				descriptor = label;
-			}
-		}
-
-		if ( descriptor != null ) {
-			return new ConvertedValuePrinter( descriptor );
-		}
-
-		return DEFAULT_PRINTER;
+		return new ConvertedValuePrinter(
+				mvcConversionService, propertyRegistry.getProperty( EntityPropertyRegistry.LABEL )
+		);
 	}
 
 	private class ConvertedValuePrinter implements Printer
 	{
-
+		private final ConversionService conversionService;
 		private final EntityPropertyDescriptor descriptor;
 
-		ConvertedValuePrinter( EntityPropertyDescriptor descriptor ) {
+		public ConvertedValuePrinter( ConversionService conversionService,
+		                              EntityPropertyDescriptor descriptor ) {
+			this.conversionService = conversionService;
 			this.descriptor = descriptor;
 		}
 
@@ -126,8 +78,7 @@ public class RepositoryEntityModelBuilder
 		@Override
 		public String print( Object object, Locale locale ) {
 			Object value = descriptor.getValueFetcher().getValue( object );
-
-			return mvcConversionService.convert( value, String.class );
+			return value != null ? conversionService.convert( value, String.class ) : "";
 		}
 	}
 
