@@ -16,9 +16,11 @@
 package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.MergingEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.*;
-import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import org.springframework.beans.factory.BeanFactory;
@@ -88,26 +90,7 @@ public class RepositoryEntityViewsBuilder
 		viewFactory.setPageFetcher( new RepositoryEntityListViewPageFetcher( repository ) );
 
 		LinkedList<String> defaultProperties = new LinkedList<>();
-		if ( registry.contains( "name" ) ) {
-			defaultProperties.add( "name" );
-		}
-		if ( registry.contains( "title" ) ) {
-			defaultProperties.add( "title" );
-		}
-
-		if ( defaultProperties.isEmpty() ) {
-			if ( !registry.contains( "#generatedLabel" ) ) {
-				SimpleEntityPropertyDescriptor label = new SimpleEntityPropertyDescriptor();
-				label.setName( "#generatedLabel" );
-				label.setDisplayName( "Generated label" );
-				label.setValueFetcher( new SpelValueFetcher( "toString()" ) );
-				label.setHidden( true );
-
-				registry.register( label );
-			}
-
-			defaultProperties.add( "#generatedLabel" );
-		}
+		defaultProperties.add( EntityPropertyRegistry.LABEL );
 
 		if ( SecurityPrincipal.class.isAssignableFrom( entityConfiguration.getEntityType() ) ) {
 			defaultProperties.addFirst( "principalName" );
