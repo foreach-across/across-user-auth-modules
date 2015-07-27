@@ -46,7 +46,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.CrudRepository;
@@ -273,7 +272,8 @@ public class TestRepositoryEntityRegistrar
 		assertNotNull( viewFactory.getPageFetcher() );
 		assertEquals( 50, viewFactory.getPageSize() );
 		assertNull( viewFactory.getSortableProperties() );
-		assertEquals( new Sort( "name" ), viewFactory.getDefaultSort() );
+		assertNull( viewFactory.getDefaultSort() );
+		//assertEquals( new Sort( "name" ), viewFactory.getDefaultSort() );
 	}
 
 	@Test

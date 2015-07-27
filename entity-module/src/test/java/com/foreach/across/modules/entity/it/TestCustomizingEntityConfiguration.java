@@ -31,6 +31,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
 import com.foreach.across.modules.entity.views.EntityListView;
@@ -149,6 +150,22 @@ public class TestCustomizingEntityConfiguration
 		assertNotNull( configuration.getViewFactory( "some-other-view" ) );
 	}
 
+	@Test
+	public void customizedClientLabel() {
+		EntityConfiguration config = entityRegistry.getEntityConfiguration( Client.class );
+		assertEquals( "fixed", config.getLabel( new Client() ) );
+	}
+
+	@Test
+	public void customizedPersistableLabel() {
+		EntityConfiguration config = entityRegistry.getEntityConfiguration( Company.class );
+		Company c = new Company();
+		assertEquals( "false", config.getLabel( c ) );
+
+		c.setNew( true );
+		assertEquals( "true", config.getLabel( c ) );
+	}
+
 	@Configuration
 	@AcrossTestWebConfiguration
 	protected static class Config implements AcrossContextConfigurer
@@ -181,8 +198,15 @@ public class TestCustomizingEntityConfiguration
 		public void configure( EntitiesConfigurationBuilder configuration ) {
 			configuration.attribute( EntityLinkBuilder.class, mock( EntityConfigurationLinkBuilder.class ) );
 
+			configuration.assignableTo( Persistable.class )
+			             .label( "new" )
+			             .properties()
+			             .property( "id" )
+			             .viewElementBuilder( ViewElementMode.LIST_VALUE, mock( ViewElementBuilder.class ) );
+
 			configuration.entity( Client.class )
 			             .properties()
+			             .label( "someprop" ).and()
 			             .property( "someprop" ).displayName( "Some property" ).spelValueFetcher( "'fixed'" )
 			             .and().and()
 			             .view( "some-extra-view" )
@@ -194,13 +218,8 @@ public class TestCustomizingEntityConfiguration
 			             .spelValueFetcher( "groups.size()" ).and()
 			             .and()
 			             .and()
-			             .view( "some-other-view" ).factory( mock(
-					ConfigurablePropertiesEntityViewFactorySupport.class ) );
-
-			configuration.assignableTo( Persistable.class )
-			             .properties()
-			             .property( "id" )
-			             .viewElementBuilder( ViewElementMode.LIST_VALUE, mock( ViewElementBuilder.class ) );
+			             .view( "some-other-view" )
+			             .factory( mock( ConfigurablePropertiesEntityViewFactorySupport.class ) );
 		}
 	}
 }
