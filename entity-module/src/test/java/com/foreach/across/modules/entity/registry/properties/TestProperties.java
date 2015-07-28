@@ -49,6 +49,11 @@ public class TestProperties
 		descriptors = registry.getProperties();
 		assertEquals( 3, descriptors.size() );
 
+		//registry.select( "*" )
+		//registry.select( "**")
+		//registry.select( "id", "name" )
+		//registry.select( "*", "~displayName")
+
 		assertTrue( registry.contains( "id" ) );
 		assertTrue( registry.contains( "name" ) );
 		assertTrue( registry.contains( "displayName" ) );

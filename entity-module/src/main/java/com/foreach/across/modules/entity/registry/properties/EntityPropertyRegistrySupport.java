@@ -26,8 +26,22 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 {
 	private final Map<String, EntityPropertyDescriptor> descriptorMap = new HashMap<>();
 
+	private final EntityPropertySelectorExecutor selectorExecutor;
+
 	private EntityPropertyFilter defaultFilter;
 	private Comparator<EntityPropertyDescriptor> defaultOrder = null;
+
+	private EntityPropertyRegistries centralRegistry;
+
+	protected EntityPropertyRegistrySupport( EntityPropertyRegistries registries ) {
+		centralRegistry = registries;
+		selectorExecutor = new EntityPropertySelectorExecutor( this, registries );
+	}
+
+	@Override
+	public EntityPropertyRegistries getCentralRegistry() {
+		return centralRegistry;
+	}
 
 	@Override
 	public EntityPropertyFilter getDefaultFilter() {
@@ -104,6 +118,11 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 		}
 
 		return filtered;
+	}
+
+	@Override
+	public List<EntityPropertyDescriptor> select( EntityPropertySelector selector ) {
+		return selectorExecutor.select( selector );
 	}
 
 	/**
