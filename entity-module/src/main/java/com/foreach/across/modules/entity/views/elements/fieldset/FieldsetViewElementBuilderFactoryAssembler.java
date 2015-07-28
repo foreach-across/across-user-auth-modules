@@ -80,8 +80,7 @@ public class FieldsetViewElementBuilderFactoryAssembler implements ViewElementBu
 		template.setValuePrinter( createValuePrinter( descriptor ) );
 
 		// Set the properties
-		PropertyPersistenceMetadata metadata = descriptor.getAttribute( EntityAttributes.PROPERTY_PERSISTENCE_METADATA,
-		                                                                PropertyPersistenceMetadata.class );
+		PropertyPersistenceMetadata metadata = descriptor.getAttribute( PropertyPersistenceMetadata.class );
 
 		List<String> properties = new ArrayList<>();
 

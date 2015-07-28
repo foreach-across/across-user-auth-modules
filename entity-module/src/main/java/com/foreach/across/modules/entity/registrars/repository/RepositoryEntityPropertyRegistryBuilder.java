@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.registrars.repository;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.*;
-import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
 import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
@@ -30,8 +29,6 @@ import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
 import javax.validation.metadata.BeanDescriptor;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -68,8 +65,6 @@ public class RepositoryEntityPropertyRegistryBuilder
 
 		// add @Embedded
 		PersistentEntity<?, ?> persistentEntity = repositoryFactoryInformation.getPersistentEntity();
-		initializePersistentEntity( registry, persistentEntity );
-		configureEmbeddedProperties( registry, persistentEntity );
 
 		configureSortableProperties( registry, persistentEntity );
 		configureDefaultFilter( entityType, registry );
@@ -108,43 +103,6 @@ public class RepositoryEntityPropertyRegistryBuilder
 //			mutable.setReadable( false );
 //			mutable.setHidden( true );
 //		}
-	}
-
-	private void initializePersistentEntity( MutableEntityPropertyRegistry registry,
-	                                         PersistentEntity<?, ?> persistentEntity ) {
-		for ( EntityPropertyDescriptor descriptor : registry.getRegisteredDescriptors() ) {
-			PersistentProperty persistentProperty = persistentEntity.getPersistentProperty( descriptor.getName() );
-			if ( persistentProperty != null ) {
-				MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
-				if ( mutable != null ) {
-					mutable.setAttribute( PersistentProperty.class, persistentProperty );
-					// todo: remove
-					if ( persistentProperty.isAnnotationPresent( Embedded.class )
-							|| persistentProperty.isAnnotationPresent( EmbeddedId.class ) ) {
-						mutable.setAttribute( EntityAttributes.PROPERTY_PERSISTENCE_METADATA,
-						                      new PropertyPersistenceMetadata() );
-					}
-				}
-			}
-		}
-	}
-
-	private void configureEmbeddedProperties( MutableEntityPropertyRegistry registry,
-	                                          PersistentEntity<?, ?> persistentEntity ) {
-		LOG.trace( "Finding embedded properties for entity {}", persistentEntity.getType() );
-		for ( EntityPropertyDescriptor descriptor : registry.getRegisteredDescriptors() ) {
-			PersistentProperty persistentProperty = persistentEntity.getPersistentProperty( descriptor.getName() );
-			if ( persistentProperty != null && ( persistentProperty.isAnnotationPresent( Embedded.class )
-					|| persistentProperty.isAnnotationPresent( EmbeddedId.class ) ) ) {
-				LOG.trace( "Setting persisted property {} as embedded", persistentProperty.getName() );
-				MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
-				if ( mutable != null ) {
-					PropertyPersistenceMetadata propertyPersistenceMetadata = mutable.getAttribute(
-							EntityAttributes.PROPERTY_PERSISTENCE_METADATA, PropertyPersistenceMetadata.class );
-					propertyPersistenceMetadata.setEmbedded( true );
-				}
-			}
-		}
 	}
 
 	private void configureSortableProperties( MutableEntityPropertyRegistry registry,

@@ -13,13 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.modules.entity.testmodules.springdata.business;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import javax.persistence.Embeddable;
 
-@Exposed
-public interface ClientRepository extends IdBasedEntityJpaRepository<Client>
+/**
+ * @author Arne Vandamme
+ */
+@Embeddable
+public class Phone
 {
+	private String area;
+	private String number;
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea( String area ) {
+		this.area = area;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber( String number ) {
+		this.number = number;
+	}
 }
