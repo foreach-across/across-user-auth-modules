@@ -13,24 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.it.properties.definingmodule.installers;
-
-import com.foreach.across.core.annotations.Installer;
-import com.foreach.across.modules.properties.installers.RevisionBasedEntityPropertiesInstaller;
+package com.foreach.across.modules.entity.query;
 
 /**
  * @author Arne Vandamme
  */
-@Installer(description = "Creates revision properties table", version = 1)
-public class RevisionPropertiesInstaller extends RevisionBasedEntityPropertiesInstaller
+public interface EntityQueryExpression
 {
-	@Override
-	protected String getTableName() {
-		return "revision_properties";
-	}
-
-	@Override
-	protected String getKeyColumnName() {
-		return "revision_id";
-	}
+	EntityQueryOps getOperand();
 }
