@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.query;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -46,5 +47,24 @@ public class TestEntityQuery
 
 		assertEquals( "(name = 'someName' and city != 217 and (email contains 'emailOne' or email = 'emailTwo'))",
 		              query.toString() );
+	}
+
+	@Test
+	public void simpleToAndFromJson() throws Exception {
+		EntityQuery query = new EntityQuery( EntityQueryOps.AND );
+		query.add( new EntityQueryCondition( "name", EntityQueryOps.EQ, "someName" ) );
+		query.add( new EntityQueryCondition( "city", EntityQueryOps.NEQ, 217 ) );
+
+		EntityQuery subQuery = EntityQuery.or(
+				new EntityQueryCondition( "email", EntityQueryOps.CONTAINS, "emailOne" ),
+				new EntityQueryCondition( "email", EntityQueryOps.EQ, "emailTwo" )
+		);
+		query.add( subQuery );
+
+		String value = new ObjectMapper().writeValueAsString( query );
+
+		EntityQuery q = new ObjectMapper().readValue( value, EntityQuery.class );
+		assertEquals( "(name = 'someName' and city != 217 and (email contains 'emailOne' or email = 'emailTwo'))",
+		              q.toString() );
 	}
 }
