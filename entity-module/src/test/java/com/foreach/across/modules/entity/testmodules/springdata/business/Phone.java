@@ -13,14 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.table;
+package com.foreach.across.modules.entity.testmodules.springdata.business;
 
-import java.util.Map;
+import javax.persistence.Embeddable;
 
 /**
  * @author Arne Vandamme
  */
-public interface TableRowProcessor
+@Embeddable
+public class Phone
 {
-	Map<String, String> attributes( Object entity );
+	private String area;
+	private String number;
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea( String area ) {
+		this.area = area;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber( String number ) {
+		this.number = number;
+	}
 }

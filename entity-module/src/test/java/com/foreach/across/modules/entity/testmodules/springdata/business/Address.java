@@ -13,16 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.table;
+package com.foreach.across.modules.entity.testmodules.springdata.business;
 
-import com.foreach.across.modules.entity.views.elements.ViewElement;
-
-import java.util.Map;
+import javax.persistence.Embeddable;
 
 /**
  * @author Arne Vandamme
  */
-public interface TableCellProcessor
+@Embeddable
+public class Address
 {
-	Map<String, String> attributes( ViewElement column, Object entity );
+	private String street;
+	private int zipCode;
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet( String street ) {
+		this.street = street;
+	}
+
+	public int getZipCode() {
+		return zipCode;
+	}
+
+	public void setZipCode( int zipCode ) {
+		this.zipCode = zipCode;
+	}
 }

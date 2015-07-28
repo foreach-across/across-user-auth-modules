@@ -15,9 +15,11 @@
  */
 package com.foreach.across.modules.entity.testmodules.springdata.repositories;
 
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 
+@Exposed
 public interface ClientRepository extends IdBasedEntityJpaRepository<Client>
 {
 }

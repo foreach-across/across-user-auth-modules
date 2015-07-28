@@ -42,6 +42,9 @@ public class Company implements Persistable<String>
 	@ManyToOne
 	private Group group;
 
+	@Embedded
+	private Address address = new Address();
+
 	@Override
 	public String getId() {
 		return id;
@@ -86,6 +89,14 @@ public class Company implements Persistable<String>
 
 	public void setGroup( Group group ) {
 		this.group = group;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress( Address address ) {
+		this.address = address;
 	}
 
 	@Override
