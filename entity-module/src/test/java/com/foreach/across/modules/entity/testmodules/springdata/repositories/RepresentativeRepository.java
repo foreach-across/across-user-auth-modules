@@ -17,10 +17,11 @@ package com.foreach.across.modules.entity.testmodules.springdata.repositories;
 
 import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
  * @author Andy Somers
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>
+public interface RepresentativeRepository extends JpaRepository<Representative, String>, JpaSpecificationExecutor<Representative>
 {
 }

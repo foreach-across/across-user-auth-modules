@@ -39,6 +39,9 @@ public class Company implements Persistable<String>
 	@ManyToMany
 	private Set<Representative> representatives = new HashSet<>();
 
+	@ManyToOne
+	private Group group;
+
 	@Override
 	public String getId() {
 		return id;
@@ -75,6 +78,14 @@ public class Company implements Persistable<String>
 
 	public void setRepresentatives( Set<Representative> representatives ) {
 		this.representatives = representatives;
+	}
+
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup( Group group ) {
+		this.group = group;
 	}
 
 	@Override
