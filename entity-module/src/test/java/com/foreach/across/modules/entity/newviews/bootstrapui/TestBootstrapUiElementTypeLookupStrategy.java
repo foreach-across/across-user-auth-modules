@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.newviews.ViewElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
 import com.foreach.common.test.MockedLoader;
@@ -156,6 +157,21 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.TEXTBOX, lookup( AtomicInteger.class, ViewElementMode.LIST_CONTROL ) );
 		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Long.class, ViewElementMode.LIST_CONTROL ) );
 		assertEquals( BootstrapUiElements.TEXTBOX, lookup( BigDecimal.class, ViewElementMode.LIST_CONTROL ) );
+	}
+
+	@Test
+	public void fieldsetForEmbeddedTypes() {
+		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
+		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
+
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( AtomicInteger.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( AtomicInteger.class, ViewElementMode.FORM_WRITE ) );
+
+		metadata.setEmbedded( true );
+
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( AtomicInteger.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( AtomicInteger.class, ViewElementMode.FORM_WRITE ) );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
 	}
 
 	@Ignore

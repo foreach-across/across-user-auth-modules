@@ -15,14 +15,17 @@
  */
 package com.foreach.across.modules.entity.registry.properties.meta;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+
 /**
- * @author niels
- * @since 4/02/2015
+ * Contains persistence related metadata that is not present in {@link org.springframework.data.mapping.PersistentProperty}.
+ * Usually if an {@link EntityPropertyDescriptor} has this attribute, it also has a
+ * {@link org.springframework.data.mapping.PersistentProperty} attribute.
+ *
+ * @author Niels Doucet, Arne Vandamme
  */
-@Deprecated
 public class PropertyPersistenceMetadata
 {
-
 	private boolean embedded;
 
 	public void setEmbedded( boolean embedded ) {
@@ -31,5 +34,18 @@ public class PropertyPersistenceMetadata
 
 	public boolean isEmbedded() {
 		return embedded;
+	}
+
+	/**
+	 * Verify if a {@link EntityPropertyDescriptor} has a {@link PropertyPersistenceMetadata} attribute
+	 * where {@link #isEmbedded()} returns {@code true}.
+	 *
+	 * @param descriptor to check
+	 * @return true if the property is an embedded type
+	 */
+	public static boolean isEmbeddedProperty( EntityPropertyDescriptor descriptor ) {
+		PropertyPersistenceMetadata metadata = descriptor.getAttribute( PropertyPersistenceMetadata.class );
+
+		return metadata != null && metadata.isEmbedded();
 	}
 }

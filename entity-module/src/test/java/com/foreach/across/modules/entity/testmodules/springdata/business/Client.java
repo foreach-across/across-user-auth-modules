@@ -48,6 +48,14 @@ public class Client extends SettableIdBasedEntity<Client>
 	@OneToMany(mappedBy = "id.client")
 	private Set<ClientGroup> groups;
 
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable
+	private Set<String> aliases;
+
+	@ElementCollection
+	@CollectionTable
+	private Set<Phone> phones;
+
 	public Client() {
 	}
 
@@ -94,5 +102,21 @@ public class Client extends SettableIdBasedEntity<Client>
 
 	public void setGroups( Set<ClientGroup> groups ) {
 		this.groups = groups;
+	}
+
+	public Set<String> getAliases() {
+		return aliases;
+	}
+
+	public void setAliases( Set<String> aliases ) {
+		this.aliases = aliases;
+	}
+
+	public Set<Phone> getPhones() {
+		return phones;
+	}
+
+	public void setPhones( Set<Phone> phones ) {
+		this.phones = phones;
 	}
 }

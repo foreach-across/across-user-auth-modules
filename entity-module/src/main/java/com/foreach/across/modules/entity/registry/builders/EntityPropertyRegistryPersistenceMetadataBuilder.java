@@ -15,27 +15,30 @@
  */
 package com.foreach.across.modules.entity.registry.builders;
 
+import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.context.MappingContext;
-import org.springframework.stereotype.Component;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Adds {@link org.springframework.data.mapping.context.MappingContext},
- * {@link org.springframework.data.mapping.PersistentEntity} and {@link org.springframework.data.mapping.PersistentProperty}
- * information to a entity properties.
+ * Adds {@link org.springframework.data.mapping.PersistentProperty} and {@link PropertyPersistenceMetadata} attributes
+ * to entity properties, based on the configured {@link MappingContext}s.
  *
  * @author Arne Vandamme
  */
-@Component
-public class EntityPropertyRegistryMappingMetaDataBuilder implements EntityPropertyRegistryBuilder
+@OrderInModule(2)
+public class EntityPropertyRegistryPersistenceMetadataBuilder implements EntityPropertyRegistryBuilder
 {
 	private Set<MappingContext> mappingContexts = new LinkedHashSet<>();
 
@@ -49,7 +52,7 @@ public class EntityPropertyRegistryMappingMetaDataBuilder implements EntityPrope
 
 	@Override
 	public void buildRegistry( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
-		for ( MappingContext<?,?> mappingContext : mappingContexts ) {
+		for ( MappingContext<?, ?> mappingContext : mappingContexts ) {
 			if ( mappingContext.hasPersistentEntityFor( entityType ) ) {
 				PersistentEntity entity = mappingContext.getPersistentEntity( entityType );
 
@@ -61,6 +64,15 @@ public class EntityPropertyRegistryMappingMetaDataBuilder implements EntityPrope
 
 						if ( mutable != null ) {
 							mutable.setAttribute( PersistentProperty.class, persistentProperty );
+
+							PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
+							metadata.setEmbedded( isEmbedded( persistentProperty ) );
+
+							mutable.setAttribute( PropertyPersistenceMetadata.class, metadata );
+
+							if ( mutable.isHidden() && mutable.isReadable() && metadata.isEmbedded() ) {
+								mutable.setHidden( false );
+							}
 						}
 					}
 				}
@@ -71,4 +83,9 @@ public class EntityPropertyRegistryMappingMetaDataBuilder implements EntityPrope
 		}
 	}
 
+	private boolean isEmbedded( PersistentProperty persistentProperty ) {
+		return persistentProperty.isAnnotationPresent( Embedded.class )
+				|| persistentProperty.isAnnotationPresent( EmbeddedId.class )
+				|| persistentProperty.isAnnotationPresent( ElementCollection.class );
+	}
 }

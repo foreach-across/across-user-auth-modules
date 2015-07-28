@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.registry.builders;
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
-import org.springframework.core.Ordered;
 
 /**
  * Responsible for creating the default
@@ -26,7 +25,7 @@ import org.springframework.core.Ordered;
  *
  * @author Arne Vandamme
  */
-@OrderInModule(Ordered.HIGHEST_PRECEDENCE)
+@OrderInModule(1)
 public class EntityPropertyRegistryLabelPropertyBuilder implements EntityPropertyRegistryBuilder
 {
 	@Override
