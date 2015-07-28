@@ -21,8 +21,10 @@ import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslUtils;
 import com.foreach.across.modules.entity.registrars.repository.TestRepositoryEntityRegistrar;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Group;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.CompanyRepository;
+import com.foreach.across.modules.entity.testmodules.springdata.repositories.GroupRepository;
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.RepresentativeRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,10 +62,17 @@ public class TestEntityQueryQueryDslUtils
 	@Autowired
 	private CompanyRepository companyRepository;
 
+	@Autowired
+	private GroupRepository groupRepository;
+
 	@Before
 	public void insertTestData() {
 		if ( !inserted ) {
 			inserted = true;
+
+			Group groupOne = new Group( "groupOne" );
+			Group groupTwo = new Group( "groupTwo" );
+			groupRepository.save( Arrays.asList( groupOne, groupTwo ) );
 
 			john = new Representative( "john", "John" );
 			joe = new Representative( "joe", "Joe" );
@@ -74,12 +83,30 @@ public class TestEntityQueryQueryDslUtils
 			one = new Company( "one" );
 			two = new Company( "two" );
 			three = new Company( "three" );
+
+			one.setGroup( groupOne );
+			two.setGroup( groupOne );
+			three.setGroup( groupTwo );
+
 			one.setRepresentatives( Collections.singleton( john ) );
 			two.setRepresentatives( new HashSet<>( Arrays.asList( john, joe, peter ) ) );
 			three.setRepresentatives( Collections.singleton( peter ) );
 
 			companyRepository.save( Arrays.asList( one, two, three ) );
 		}
+	}
+
+	@Test
+	public void companyByGroup() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "group.name", EntityQueryOps.EQ, "groupOne" ) );
+		List<Company> found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class )
+		);
+
+		assertEquals( 2, found.size() );
+		assertTrue( found.contains( one ) );
+		assertTrue( found.contains( two ) );
+		assertFalse( found.contains( three ) );
 	}
 
 	@Test

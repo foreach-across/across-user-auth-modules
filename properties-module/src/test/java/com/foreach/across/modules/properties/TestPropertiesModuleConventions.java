@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.modules.properties;
 
-import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>, JpaSpecificationExecutor<Representative>
+public class TestPropertiesModuleConventions extends AbstractAcrossModuleConventionsTest
 {
+	@Override
+	protected boolean hasSettings() {
+		return true;
+	}
+
+	@Override
+	protected AcrossModule createModule() {
+		return new PropertiesModule();
+	}
 }
