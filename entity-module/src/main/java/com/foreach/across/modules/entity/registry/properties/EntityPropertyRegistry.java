@@ -35,6 +35,8 @@ public interface EntityPropertyRegistry
 	 */
 	boolean contains( String propertyName );
 
+	EntityPropertyRegistries getCentralRegistry();
+
 	// todo: move to mutable
 	void register( MutableEntityPropertyDescriptor descriptor );
 
@@ -46,6 +48,8 @@ public interface EntityPropertyRegistry
 
 	List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter,
 	                                              Comparator<EntityPropertyDescriptor> comparator );
+
+	List<EntityPropertyDescriptor> select( EntityPropertySelector selector );
 
 	void setDefaultOrder( String... propertyNames );
 

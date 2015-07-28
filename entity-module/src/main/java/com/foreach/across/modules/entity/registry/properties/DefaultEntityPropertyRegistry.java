@@ -30,7 +30,6 @@ import java.util.Map;
 
 public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 {
-	private final EntityPropertyRegistries registries;
 	private final Class<?> entityType;
 
 	private EntityPropertyComparators.Ordered declarationOrder = null;
@@ -40,8 +39,9 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	}
 
 	public DefaultEntityPropertyRegistry( Class<?> entityType, EntityPropertyRegistries registries ) {
+		super( registries );
+
 		this.entityType = entityType;
-		this.registries = registries;
 
 		super.setDefaultFilter( EntityPropertyFilters.NOT_HIDDEN );
 
@@ -132,7 +132,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	public EntityPropertyDescriptor getProperty( String propertyName ) {
 		EntityPropertyDescriptor descriptor = super.getProperty( propertyName );
 
-		if ( descriptor == null && registries != null ) {
+		if ( descriptor == null && getCentralRegistry() != null ) {
 			// Find a registered shizzle
 			String rootProperty = findRootProperty( propertyName );
 
@@ -140,7 +140,8 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				EntityPropertyDescriptor rootDescriptor = super.getProperty( rootProperty );
 
 				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-					EntityPropertyRegistry subRegistry = registries.getRegistry( rootDescriptor.getPropertyType() );
+					EntityPropertyRegistry subRegistry = getCentralRegistry().getRegistry(
+							rootDescriptor.getPropertyType() );
 
 					if ( subRegistry != null ) {
 						EntityPropertyDescriptor childDescriptor = subRegistry

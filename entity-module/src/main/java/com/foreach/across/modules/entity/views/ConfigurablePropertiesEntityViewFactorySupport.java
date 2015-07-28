@@ -22,11 +22,13 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilter;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.elements.ViewElementBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +53,12 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	protected EntityViewElementBuilderService viewElementBuilderService;
 
 	private EntityPropertyRegistry propertyRegistry;
+	private EntityPropertySelector propertySelector = new EntityPropertySelector( EntityPropertySelector.ALL );
+
+	@Deprecated
 	private EntityPropertyFilter propertyFilter;
+
+	@Deprecated
 	private Comparator<EntityPropertyDescriptor> propertyComparator;
 
 	public EntityPropertyRegistry getPropertyRegistry() {
@@ -63,6 +70,18 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	 */
 	public void setPropertyRegistry( EntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
+	}
+
+	public EntityPropertySelector getPropertySelector() {
+		return propertySelector;
+	}
+
+	/**
+	 * Set the {@link EntityPropertySelector} that specifies which properties should be selected.
+	 */
+	public void setPropertySelector( EntityPropertySelector propertySelector ) {
+		Assert.notNull( propertySelector );
+		this.propertySelector = propertySelector;
 	}
 
 	public EntityPropertyFilter getPropertyFilter() {
@@ -122,7 +141,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 			comparator = registry.getDefaultOrder();
 		}
 
-		return registry.getProperties( filter, comparator );
+		return registry.select( propertySelector );
 	}
 
 	/**

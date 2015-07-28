@@ -30,6 +30,7 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	private EntityPropertyRegistry parent;
 
 	public MergingEntityPropertyRegistry( EntityPropertyRegistry parent ) {
+		super( parent.getCentralRegistry() );
 		this.parent = parent;
 	}
 
