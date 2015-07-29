@@ -31,6 +31,7 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class EntityCrudRepositoryOptionGenerator implements SelectOptionGenerator
 {
 	private final EntityConfiguration entityConfiguration;

@@ -22,6 +22,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public interface TableCellProcessor
 {
 	Map<String, String> attributes( ViewElement column, Object entity );

@@ -24,6 +24,7 @@ import java.util.Collections;
  * @author Arne Vandamme
  * @see com.foreach.across.modules.entity.views.thymeleaf.EntityModuleDialect
  */
+@Deprecated
 public class ViewElementsHelper
 {
 	/**

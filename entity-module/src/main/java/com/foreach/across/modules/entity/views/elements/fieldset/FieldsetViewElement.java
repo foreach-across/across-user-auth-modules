@@ -29,6 +29,7 @@ import java.util.Map;
  * Represents a described group of other {@link com.foreach.across.modules.entity.views.elements.ViewElement}
  * instances.
  */
+@Deprecated
 public class FieldsetViewElement extends ViewElements implements ViewElement
 {
 	public static final String TYPE = CommonViewElements.FIELDSET;

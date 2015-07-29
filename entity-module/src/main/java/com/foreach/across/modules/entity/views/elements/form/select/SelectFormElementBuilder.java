@@ -21,6 +21,7 @@ import org.springframework.util.Assert;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class SelectFormElementBuilder extends FormElementBuilderSupport<SelectFormElement>
 {
 	private SelectOptionGenerator optionGenerator;

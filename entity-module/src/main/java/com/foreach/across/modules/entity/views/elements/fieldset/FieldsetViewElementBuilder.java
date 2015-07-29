@@ -30,6 +30,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class FieldsetViewElementBuilder implements ViewElementBuilder<FieldsetViewElement>
 {
 	private String name, label, labelCode, customTemplate;

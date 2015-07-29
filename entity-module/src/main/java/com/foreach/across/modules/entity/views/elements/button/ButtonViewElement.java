@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.views.elements.ViewElementSupport;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class ButtonViewElement extends ViewElementSupport
 {
 	public static class Style {

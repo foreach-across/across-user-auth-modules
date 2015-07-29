@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.elements.container;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class ColumnsViewElement extends ContainerViewElement
 {
 	public ColumnsViewElement() {

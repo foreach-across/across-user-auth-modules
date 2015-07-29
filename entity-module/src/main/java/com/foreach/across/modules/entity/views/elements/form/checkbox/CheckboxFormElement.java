@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.views.elements.form.FormElementSupport;
 /**
  * Represents a HTML "checkbox" input type.
  */
+@Deprecated
 public class CheckboxFormElement extends FormElementSupport
 {
 	public static final String TYPE = CommonViewElements.CHECKBOX;

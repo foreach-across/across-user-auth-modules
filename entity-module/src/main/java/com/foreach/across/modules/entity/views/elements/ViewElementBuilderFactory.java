@@ -24,6 +24,7 @@ package com.foreach.across.modules.entity.views.elements;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public interface ViewElementBuilderFactory<T extends ViewElementBuilder>
 {
 	T createBuilder();

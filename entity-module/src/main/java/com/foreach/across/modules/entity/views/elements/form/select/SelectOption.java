@@ -22,6 +22,7 @@ import java.util.Collection;
 /**
  * Represents a single option in the select.
  */
+@Deprecated
 public class SelectOption implements Comparable<SelectOption>
 {
 	private String label, value;

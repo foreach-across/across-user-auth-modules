@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public interface ViewElementBuilderFactoryAssembler
 {
 	/**

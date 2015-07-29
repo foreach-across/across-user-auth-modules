@@ -23,6 +23,7 @@ import org.springframework.core.convert.TypeDescriptor;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class ConversionServiceViewElement implements ViewElement
 {
 	private final EntityMessageCodeResolver messageCodeResolver;

@@ -29,7 +29,7 @@ import java.lang.annotation.Annotation;
 
 /**
  * @author Arne Vandamme
- */
+ */@Deprecated
 public class TextboxFormElementBuilderFactoryAssembler
 		extends FormElementBuilderFactoryAssemblerSupport<TextboxFormElementBuilder>
 {

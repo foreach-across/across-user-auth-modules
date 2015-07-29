@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -78,6 +79,7 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 		return fetchProperties( filter, getDefaultOrder() );
 	}
 
+	@Deprecated
 	@Override
 	public List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter,
 	                                                     Comparator<EntityPropertyDescriptor> comparator ) {
@@ -107,7 +109,7 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 		}
 		else {
 			for ( EntityPropertyDescriptor candidate : getRegisteredDescriptors() ) {
-				if ( filterToUse.shouldInclude( candidate ) ) {
+				if ( !isNestedProperty( candidate.getName() ) && filterToUse.shouldInclude( candidate ) ) {
 					filtered.add( candidate );
 				}
 			}
@@ -123,6 +125,10 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	@Override
 	public List<EntityPropertyDescriptor> select( EntityPropertySelector selector ) {
 		return selectorExecutor.select( selector );
+	}
+
+	private boolean isNestedProperty( String name ) {
+		return StringUtils.contains( name, "." );
 	}
 
 	/**

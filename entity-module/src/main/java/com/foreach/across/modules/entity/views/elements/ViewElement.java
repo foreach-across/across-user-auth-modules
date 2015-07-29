@@ -21,6 +21,7 @@ package com.foreach.across.modules.entity.views.elements;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public interface ViewElement
 {
 	/**

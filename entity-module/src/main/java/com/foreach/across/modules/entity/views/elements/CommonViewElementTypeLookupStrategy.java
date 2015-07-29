@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class CommonViewElementTypeLookupStrategy implements ViewElementTypeLookupStrategy
 {
 	@Autowired

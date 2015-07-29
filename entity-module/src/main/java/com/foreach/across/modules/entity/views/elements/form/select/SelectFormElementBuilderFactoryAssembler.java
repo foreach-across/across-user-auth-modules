@@ -32,6 +32,7 @@ import java.util.Collection;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class SelectFormElementBuilderFactoryAssembler
 		extends FormElementBuilderFactoryAssemblerSupport<SelectFormElementBuilder>
 {

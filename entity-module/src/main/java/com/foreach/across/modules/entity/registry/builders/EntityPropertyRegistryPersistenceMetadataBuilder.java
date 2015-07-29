@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersis
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.util.ClassUtils;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
@@ -84,8 +85,15 @@ public class EntityPropertyRegistryPersistenceMetadataBuilder implements EntityP
 	}
 
 	private boolean isEmbedded( PersistentProperty persistentProperty ) {
-		return persistentProperty.isAnnotationPresent( Embedded.class )
+		boolean hasAnnotation = persistentProperty.isAnnotationPresent( Embedded.class )
 				|| persistentProperty.isAnnotationPresent( EmbeddedId.class )
 				|| persistentProperty.isAnnotationPresent( ElementCollection.class );
+
+
+		return hasAnnotation && !isBaseType( persistentProperty.getActualType() );
+	}
+
+	private boolean isBaseType(Class<?> clazz) {
+		return String.class.equals( clazz ) || ClassUtils.isPrimitiveOrWrapper( clazz );
 	}
 }

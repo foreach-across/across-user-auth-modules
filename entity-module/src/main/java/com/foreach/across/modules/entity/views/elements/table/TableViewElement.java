@@ -25,6 +25,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class TableViewElement extends ViewElementSupport
 {
 	private TableHeaderViewElement header;

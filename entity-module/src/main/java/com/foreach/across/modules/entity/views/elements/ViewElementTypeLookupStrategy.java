@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public interface ViewElementTypeLookupStrategy
 {
 	/**

@@ -24,6 +24,7 @@ import java.util.Collection;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public interface SelectOptionGenerator
 {
 	Collection<SelectOption> generateOptions( EntityMessageCodeResolver codeResolver );

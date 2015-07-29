@@ -23,6 +23,7 @@ import java.util.Collection;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class SelectFormElement extends FormElementSupport
 {
 	public static final String TYPE = CommonViewElements.SELECT;

@@ -26,6 +26,7 @@ import org.springframework.beans.BeanUtils;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class CloningViewElementBuilderFactory<T extends ViewElementBuilder>
 		implements ViewElementBuilderFactory<T>
 {
