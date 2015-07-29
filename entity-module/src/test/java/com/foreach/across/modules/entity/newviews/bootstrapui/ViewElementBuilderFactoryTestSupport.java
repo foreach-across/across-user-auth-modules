@@ -98,8 +98,9 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 				when( descriptor.getPropertyTypeDescriptor() ).thenReturn( typeDescriptor );
 
 				when( codeResolver.getMessageWithFallback(
-						"properties." + field.getName(), StringUtils.lowerCase( propertyName )
-				) )
+						      eq( "properties." + field.getName() ), any( String.class )
+				      )
+				)
 						.thenReturn( "resolved: " + StringUtils.lowerCase( propertyName ) );
 
 				properties.put( propertyName, descriptor );

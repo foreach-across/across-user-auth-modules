@@ -23,6 +23,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class TableHeaderViewElement extends ViewElementSupport
 {
 	private TableHeaderCellProcessor cellProcessor;

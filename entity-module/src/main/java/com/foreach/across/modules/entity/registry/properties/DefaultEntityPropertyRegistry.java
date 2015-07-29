@@ -133,7 +133,6 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		EntityPropertyDescriptor descriptor = super.getProperty( propertyName );
 
 		if ( descriptor == null && getCentralRegistry() != null ) {
-			// Find a registered shizzle
 			String rootProperty = findRootProperty( propertyName );
 
 			if ( rootProperty != null ) {

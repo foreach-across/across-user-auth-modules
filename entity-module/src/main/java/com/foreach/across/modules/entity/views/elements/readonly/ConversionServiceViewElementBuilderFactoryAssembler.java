@@ -29,6 +29,7 @@ import org.springframework.core.convert.ConversionService;
 /**
  * @author Andy Somers
  */
+@Deprecated
 public class ConversionServiceViewElementBuilderFactoryAssembler implements ViewElementBuilderFactoryAssembler
 {
 	@Autowired

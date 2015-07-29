@@ -21,6 +21,7 @@ import org.springframework.util.Assert;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class ViewElementSupport implements ViewElement
 {
 	private String elementType;

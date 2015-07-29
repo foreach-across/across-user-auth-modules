@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderS
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class CheckboxFormElementBuilder extends FormElementBuilderSupport<CheckboxFormElement>
 {
 	public CheckboxFormElementBuilder() {

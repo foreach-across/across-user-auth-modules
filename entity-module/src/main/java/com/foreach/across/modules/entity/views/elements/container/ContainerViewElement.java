@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.views.elements.ViewElements;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class ContainerViewElement extends ViewElements implements ViewElement
 {
 	public static final String TYPE = CommonViewElements.CONTAINER;

@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.entity.testmodules.springdata.business;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.Embeddable;
 
 /**
@@ -23,7 +25,9 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Address
 {
+	@Length(max = 100)
 	private String street;
+
 	private int zipCode;
 
 	public String getStreet() {

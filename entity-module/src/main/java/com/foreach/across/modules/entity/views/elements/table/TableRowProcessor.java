@@ -20,6 +20,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public interface TableRowProcessor
 {
 	Map<String, String> attributes( Object entity );

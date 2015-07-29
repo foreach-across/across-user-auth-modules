@@ -39,6 +39,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class FieldsetViewElementBuilderFactoryAssembler implements ViewElementBuilderFactoryAssembler
 {
 	@Autowired
@@ -93,8 +94,8 @@ public class FieldsetViewElementBuilderFactoryAssembler implements ViewElementBu
 				}
 			}
 		}
-		else if ( descriptor.hasAttribute( EntityAttributes.PROPERTY_GROUP ) ) {
-			Collection<String> memberNamesInOrder = descriptor.getAttribute( EntityAttributes.PROPERTY_GROUP,
+		else if ( descriptor.hasAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR ) ) {
+			Collection<String> memberNamesInOrder = descriptor.getAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR,
 			                                                                 Collection.class );
 
 			properties.addAll( memberNamesInOrder );
