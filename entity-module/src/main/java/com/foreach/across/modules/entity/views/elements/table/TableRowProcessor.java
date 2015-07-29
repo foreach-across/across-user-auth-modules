@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements;
+package com.foreach.across.modules.entity.views.elements.table;
+
+import java.util.Map;
 
 /**
- * Creates a {@link ViewElementBuilder} that creates a
- * specific {@link com.foreach.across.modules.entity.views.elements.ViewElement} type.
- * The factory is expected to be immutable and create a builder usually using a base builder as a template.
- * The builder itself can then be modified for a particular view before creating the actual
- * {@link com.foreach.across.modules.entity.views.elements.ViewElement}.
- *
  * @author Arne Vandamme
  */
 @Deprecated
-public interface ViewElementBuilderFactory<T extends ViewElementBuilder>
+public interface TableRowProcessor
 {
-	T createBuilder();
+	Map<String, String> attributes( Object entity );
 }

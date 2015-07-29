@@ -160,7 +160,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
-	public void fieldsetForEmbeddedTypes() {
+	public void fieldsetForEmbeddedTypesWhenFormElementsRequested() {
 		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
 		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
 
@@ -171,7 +171,20 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 		assertEquals( BootstrapUiElements.FIELDSET, lookup( AtomicInteger.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FIELDSET, lookup( AtomicInteger.class, ViewElementMode.FORM_WRITE ) );
+	}
+
+	@Test
+	public void nullForEmbeddedTypesIfNotAFormElement() {
+		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
+		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
+
 		assertEquals( BootstrapUiElements.TEXTBOX, lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
+
+		metadata.setEmbedded( true );
+
+		assertNull( lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
+		assertNull( lookup( AtomicInteger.class, ViewElementMode.LIST_LABEL ) );
+		assertNull( lookup( AtomicInteger.class, ViewElementMode.LIST_VALUE ) );
 	}
 
 	@Ignore

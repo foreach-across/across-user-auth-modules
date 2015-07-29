@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.elements;
 /**
  * @author Andy Somers
  */
+@Deprecated
 public enum ViewElementMode
 {
 	FOR_READING, FOR_WRITING

@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public interface ViewElementBuilder<T extends ViewElement>
 {
 	/**

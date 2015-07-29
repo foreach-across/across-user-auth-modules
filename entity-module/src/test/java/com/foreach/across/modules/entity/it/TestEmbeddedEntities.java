@@ -18,7 +18,13 @@ package com.foreach.across.modules.entity.it;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistries;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
@@ -28,30 +34,29 @@ import com.foreach.across.modules.entity.testmodules.springdata.business.ClientG
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
+import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@WebAppConfiguration
 @ContextConfiguration(classes = TestEmbeddedEntities.Config.class)
-public class TestEmbeddedEntities
+public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 {
 	@Autowired
+	private EntityRegistry entityRegistry;
+
+	@Autowired
 	private EntityPropertyRegistries entityPropertyRegistries;
+
+	@Autowired
+	private EntityViewElementBuilderService viewElementBuilderService;
 
 	@Test
 	public void persistenceMetadataShouldBeSet() {
@@ -64,15 +69,47 @@ public class TestEmbeddedEntities
 		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "id" ) ) );
 
 		registry = entityPropertyRegistries.getRegistry( Client.class );
-		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "aliases" ) ) );
 		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "phones" ) ) );
+
+	}
+
+	@Test
+	public void primitiveTypesShouldBehaveAsNonEmbedded() {
+		EntityPropertyRegistry registry = entityPropertyRegistries.getRegistry( Client.class );
+		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "aliases" ) ) );
+	}
+
+	@Test
+	public void fieldsetForAddress() {
+		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( Company.class );
+		EntityPropertyDescriptor address = entityConfiguration.getPropertyRegistry().getProperty( "address" );
+
+		FieldsetFormElement fieldset = (FieldsetFormElement) viewElementBuilderService
+				.getElementBuilder( entityConfiguration, address, ViewElementMode.FORM_WRITE )
+				.build( new ViewElementBuilderContextImpl() );
+
+		assertNotNull( fieldset );
+
+		renderAndExpect(
+				fieldset,
+				"<fieldset name='address'>" +
+						"<legend>Address</legend>" +
+						"<div class='form-group'>" +
+						"<label for='entity.address.street' class='control-label'>Street</label>" +
+						"<input type='text' class='form-control' name='entity.address.street' id='entity.address.street' maxlength='100' />" +
+						"</div>" +
+						"<div class='form-group'>" +
+						"<label for='entity.address.zipCode' class='control-label'>Zip code</label>" +
+						"<input type='text' class='form-control' name='entity.address.zipCode' id='entity.address.zipCode' />" +
+						"</div>" +
+						"</fieldset>"
+		);
 	}
 
 	// view for: Element collection of primitive
 	// view for: Element collection of custom type
 
 	@Configuration
-	@AcrossTestWebConfiguration
 	protected static class Config implements AcrossContextConfigurer
 	{
 		@Override

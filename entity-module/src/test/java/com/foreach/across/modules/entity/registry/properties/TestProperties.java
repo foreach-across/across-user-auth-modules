@@ -49,11 +49,6 @@ public class TestProperties
 		descriptors = registry.getProperties();
 		assertEquals( 3, descriptors.size() );
 
-		//registry.select( "*" )
-		//registry.select( "**")
-		//registry.select( "id", "name" )
-		//registry.select( "*", "~displayName")
-
 		assertTrue( registry.contains( "id" ) );
 		assertTrue( registry.contains( "name" ) );
 		assertTrue( registry.contains( "displayName" ) );
@@ -215,6 +210,17 @@ public class TestProperties
 		assertEquals( "some name (123)", fetch( registry, customer, "displayName" ) );
 		assertEquals( "my street", fetch( registry, customer, "address.street" ) );
 		assertEquals( 9, fetch( registry, customer, "address.size()" ) );
+	}
+
+	@Test
+	public void wildcardShouldNeverReturnNested() {
+		EntityPropertyRegistry registry = entityPropertyRegistries.getRegistry( Customer.class );
+		MutableEntityPropertyDescriptor descriptor
+				= (MutableEntityPropertyDescriptor) registry.getProperty( "address.street" );
+		registry.register( descriptor );
+
+		List<EntityPropertyDescriptor> descriptors = registry.select( new EntityPropertySelector( "*" ) );
+		assertFalse( descriptors.contains( descriptor ) );
 	}
 
 	@SuppressWarnings("unchecked")
