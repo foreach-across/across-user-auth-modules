@@ -19,13 +19,17 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -41,6 +45,10 @@ public class TestEntityAssociationBuilder
 		entities = new EntitiesConfigurationBuilder();
 		entityRegistry = new EntityRegistryImpl();
 		beanFactory = mock( AutowireCapableBeanFactory.class );
+
+		EntityPropertyRegistryFactory registryFactory = mock( EntityPropertyRegistryFactory.class );
+		when( registryFactory.getOrCreate( any( Class.class ) ) ).thenReturn( mock( EntityPropertyRegistry.class ) );
+		when( beanFactory.getBean( EntityPropertyRegistryFactory.class ) ).thenReturn( registryFactory );
 	}
 
 	@Test
