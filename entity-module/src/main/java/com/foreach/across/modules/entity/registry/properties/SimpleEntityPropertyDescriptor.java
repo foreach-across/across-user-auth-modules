@@ -15,32 +15,32 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.core.support.AttributeSupport;
-import com.foreach.across.modules.entity.util.EntityUtils;
-import com.foreach.across.modules.entity.views.support.MethodValueFetcher;
+import com.foreach.across.core.support.AttributeOverridingSupport;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
-import org.springframework.beans.BeanUtils;
-import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.util.Assert;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-
-public class SimpleEntityPropertyDescriptor extends AttributeSupport implements MutableEntityPropertyDescriptor
+public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport implements MutableEntityPropertyDescriptor
 {
+	private final EntityPropertyDescriptor parent;
+
 	private String name, displayName;
-	private boolean readable, writable, hidden;
+	private Boolean readable, writable, hidden;
 
 	private ValueFetcher valueFetcher;
 	private Class<?> propertyType;
 	private TypeDescriptor propertyTypeDescriptor;
 
-	public SimpleEntityPropertyDescriptor() {
+	public SimpleEntityPropertyDescriptor( String name ) {
+		this( name, null );
 	}
 
-	public SimpleEntityPropertyDescriptor( String name ) {
+	public SimpleEntityPropertyDescriptor( String name, EntityPropertyDescriptor parent ) {
+		Assert.notNull( name );
 		this.name = name;
+		this.parent = parent;
+
+		setParent( parent );
 	}
 
 	/**
@@ -51,13 +51,9 @@ public class SimpleEntityPropertyDescriptor extends AttributeSupport implements 
 		return name;
 	}
 
-	public void setName( String name ) {
-		this.name = name;
-	}
-
 	@Override
 	public String getDisplayName() {
-		return displayName;
+		return displayName != null ? displayName : ( parent != null ? parent.getDisplayName() : null );
 	}
 
 	@Override
@@ -67,7 +63,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeSupport implements 
 
 	@Override
 	public boolean isReadable() {
-		return readable;
+		return readable != null ? readable : ( parent != null && parent.isReadable() );
 	}
 
 	@Override
@@ -77,7 +73,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeSupport implements 
 
 	@Override
 	public boolean isWritable() {
-		return writable;
+		return writable != null ? writable : ( parent != null && parent.isWritable() );
 	}
 
 	@Override
@@ -87,7 +83,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeSupport implements 
 
 	@Override
 	public boolean isHidden() {
-		return hidden;
+		return hidden != null ? hidden : ( parent != null && parent.isHidden() );
 	}
 
 	@Override
@@ -96,17 +92,8 @@ public class SimpleEntityPropertyDescriptor extends AttributeSupport implements 
 	}
 
 	@Override
-	public void setValueFetcher( ValueFetcher<?> valueFetcher ) {
-		this.valueFetcher = valueFetcher;
-
-		if ( valueFetcher != null ) {
-			readable = true;
-		}
-	}
-
-	@Override
 	public Class<?> getPropertyType() {
-		return propertyType;
+		return propertyType != null ? propertyType : ( parent != null ? parent.getPropertyType() : null );
 	}
 
 	@Override
@@ -115,7 +102,8 @@ public class SimpleEntityPropertyDescriptor extends AttributeSupport implements 
 	}
 
 	public TypeDescriptor getPropertyTypeDescriptor() {
-		return propertyTypeDescriptor;
+		return propertyTypeDescriptor != null
+				? propertyTypeDescriptor : ( parent != null ? parent.getPropertyTypeDescriptor() : null );
 	}
 
 	public void setPropertyTypeDescriptor( TypeDescriptor propertyTypeDescriptor ) {
@@ -124,74 +112,16 @@ public class SimpleEntityPropertyDescriptor extends AttributeSupport implements 
 
 	@Override
 	public ValueFetcher getValueFetcher() {
-		return valueFetcher;
+		return valueFetcher != null
+				? valueFetcher : ( parent != null ? parent.getValueFetcher() : null );
 	}
 
 	@Override
-	public EntityPropertyDescriptor merge( EntityPropertyDescriptor other ) {
-		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor();
-		BeanUtils.copyProperties( this, descriptor );
+	public void setValueFetcher( ValueFetcher<?> valueFetcher ) {
+		this.valueFetcher = valueFetcher;
 
-		descriptor.setWritable( other.isWritable() );
-		descriptor.setReadable( other.isReadable() );
-
-		if ( other.getPropertyType() != null ) {
-			descriptor.setPropertyType( other.getPropertyType() );
+		if ( readable == null && parent == null && valueFetcher != null ) {
+			readable = true;
 		}
-		if ( other.getPropertyTypeDescriptor() != null ) {
-			descriptor.setPropertyTypeDescriptor( other.getPropertyTypeDescriptor() );
-		}
-		if ( other.getValueFetcher() != null ) {
-			descriptor.setValueFetcher( other.getValueFetcher() );
-		}
-		if ( other.getName() != null ) {
-			descriptor.setName( other.getName() );
-		}
-		if ( other.getDisplayName() != null ) {
-			descriptor.setDisplayName( other.getDisplayName() );
-		}
-
-		descriptor.setAttributes( other.attributeMap() );
-
-		return descriptor;
-	}
-
-	public static SimpleEntityPropertyDescriptor forProperty( Property property ) {
-		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor();
-		descriptor.setName( property.getName() );
-
-		descriptor.setDisplayName( EntityUtils.generateDisplayName( property.getName() ) );
-
-		descriptor.setWritable( property.getWriteMethod() != null );
-		descriptor.setReadable( property.getReadMethod() != null );
-
-		if ( !descriptor.isWritable() || !descriptor.isReadable() ) {
-			descriptor.setHidden( true );
-		}
-
-		descriptor.setPropertyType( property.getType() );
-		descriptor.setPropertyTypeDescriptor( new TypeDescriptor( property ) );
-
-		if ( descriptor.isReadable() ) {
-			descriptor.setValueFetcher( new MethodValueFetcher( property.getReadMethod() ) );
-		}
-
-		return descriptor;
-
-	}
-
-	public static SimpleEntityPropertyDescriptor forPropertyDescriptor( PropertyDescriptor prop, Class<?> entityType ) {
-		Method writeMethod = prop.getWriteMethod();
-		Method readMethod = prop.getReadMethod();
-		Property property = new Property( entityType, readMethod, writeMethod, prop.getName() );
-		SimpleEntityPropertyDescriptor descriptor = forProperty( property );
-
-		if ( StringUtils.equals( prop.getName(), prop.getDisplayName() ) ) {
-			descriptor.setDisplayName( EntityUtils.generateDisplayName( prop.getName() ) );
-		}
-		else {
-			descriptor.setDisplayName( prop.getDisplayName() );
-		}
-		return descriptor;
 	}
 }

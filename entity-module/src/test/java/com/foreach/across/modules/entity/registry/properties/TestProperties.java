@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -32,15 +33,15 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = { TestProperties.Configuration.class })
+@ContextConfiguration(loader = MockedLoader.class, classes = { TestProperties.Config.class })
 public class TestProperties
 {
 	@Autowired
-	private EntityPropertyRegistries entityPropertyRegistries;
+	private EntityPropertyRegistryFactoryImpl entityPropertyRegistryFactory;
 
 	@Test
 	public void propertiesAreDetected() {
-		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 
 		Collection<EntityPropertyDescriptor> descriptors = registry.getRegisteredDescriptors();
 		assertEquals( 6, descriptors.size() );
@@ -59,7 +60,7 @@ public class TestProperties
 
 	@Test
 	public void defaultOrderCanBeSpecified() {
-		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 		registry.setDefaultOrder( "name", "displayName", "someValue", "class", "id" );
 
 		List<EntityPropertyDescriptor> descriptors = registry.getProperties( EntityPropertyFilters.NOOP );
@@ -75,7 +76,7 @@ public class TestProperties
 
 	@Test
 	public void defaultOrderIsAccordingToDeclarationIfNotSpecified() {
-		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 
 		List<EntityPropertyDescriptor> descriptors = registry.getProperties( EntityPropertyFilters.NOOP );
 		assertEquals( 6, descriptors.size() );
@@ -90,7 +91,7 @@ public class TestProperties
 
 	@Test
 	public void customIncludeFilterKeepsTheDefaultOrder() {
-		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 		List<EntityPropertyDescriptor> descriptors = registry.getProperties(
 				EntityPropertyFilters.include( "name", "id", "displayName" )
 		);
@@ -103,7 +104,7 @@ public class TestProperties
 
 	@Test
 	public void customExcludeFilterKeepsTheDefaultOrder() {
-		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 		List<EntityPropertyDescriptor> descriptors = registry.getProperties(
 				EntityPropertyFilters.exclude( "id", "displayName" )
 		);
@@ -117,7 +118,7 @@ public class TestProperties
 
 	@Test
 	public void defaultFilterIsApplied() {
-		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 		registry.setDefaultFilter( EntityPropertyFilters.exclude( "class" ) );
 
 		List<EntityPropertyDescriptor> descriptors = registry.getProperties();
@@ -139,7 +140,7 @@ public class TestProperties
 
 	@Test
 	public void filterWithCustomOrder() {
-		EntityPropertyRegistry registry = new DefaultEntityPropertyRegistry( Customer.class, null );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 		List<EntityPropertyDescriptor> descriptors = registry.getProperties(
 				EntityPropertyFilters.include( "name", "id", "displayName" ),
 				EntityPropertyComparators.ordered( "displayName", "id", "name" )
@@ -153,7 +154,7 @@ public class TestProperties
 
 	@Test
 	public void includeNestedProperties() {
-		EntityPropertyRegistry registry = entityPropertyRegistries.getRegistry( Customer.class );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 
 		List<EntityPropertyDescriptor> descriptors = registry.getProperties(
 				EntityPropertyFilters.include( "name", "address.street" ),
@@ -167,7 +168,7 @@ public class TestProperties
 
 	@Test
 	public void valueFetchersAreCreated() {
-		EntityPropertyRegistry registry = entityPropertyRegistries.getRegistry( Customer.class );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 
 		Customer customer = new Customer();
 		customer.setName( "some name" );
@@ -188,11 +189,10 @@ public class TestProperties
 
 	@Test
 	public void customPropertyAndValueFetcher() {
-		EntityPropertyRegistry parent = entityPropertyRegistries.getRegistry( Customer.class );
-		EntityPropertyRegistry registry = new MergingEntityPropertyRegistry( parent );
+		EntityPropertyRegistry parent = entityPropertyRegistryFactory.create( Customer.class );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.createWithParent( parent );
 
-		SimpleEntityPropertyDescriptor calculated = new SimpleEntityPropertyDescriptor();
-		calculated.setName( "address.size()" );
+		SimpleEntityPropertyDescriptor calculated = new SimpleEntityPropertyDescriptor( "address.size()" );
 		calculated.setValueFetcher( new SpelValueFetcher( "address.size()" ) );
 		registry.register( calculated );
 
@@ -214,7 +214,7 @@ public class TestProperties
 
 	@Test
 	public void wildcardShouldNeverReturnNested() {
-		EntityPropertyRegistry registry = entityPropertyRegistries.getRegistry( Customer.class );
+		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 		MutableEntityPropertyDescriptor descriptor
 				= (MutableEntityPropertyDescriptor) registry.getProperty( "address.street" );
 		registry.register( descriptor );
@@ -298,12 +298,17 @@ public class TestProperties
 		}
 	}
 
-	@org.springframework.context.annotation.Configuration
-	public static class Configuration
+	@Configuration
+	public static class Config
 	{
 		@Bean
-		public EntityPropertyRegistries entityPropertyRegistries() {
-			return new EntityPropertyRegistries();
+		public EntityPropertyRegistryFactoryImpl entityPopertyRegistryFactory() {
+			return new EntityPropertyRegistryFactoryImpl();
+		}
+
+		@Bean
+		public EntityPropertyDescriptorFactory entityPropertyDescriptorFactory() {
+			return new EntityPropertyDescriptorFactoryImpl();
 		}
 
 		@Bean

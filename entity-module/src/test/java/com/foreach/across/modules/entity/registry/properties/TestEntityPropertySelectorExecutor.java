@@ -43,7 +43,7 @@ public class TestEntityPropertySelectorExecutor
 
 	@Before
 	public void setUp() throws Exception {
-		EntityPropertyRegistries registries = new EntityPropertyRegistries();
+		EntityPropertyRegistryFactoryImpl registries = new EntityPropertyRegistryFactoryImpl();
 		propertyRegistry = mock( EntityPropertyRegistry.class );
 		productRegistry = mock( EntityPropertyRegistry.class );
 

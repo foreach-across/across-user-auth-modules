@@ -19,7 +19,7 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.MergingEntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
@@ -41,6 +41,9 @@ public class RepositoryEntityViewsBuilder
 	@Autowired
 	private BeanFactory beanFactory;
 
+	@Autowired
+	private EntityPropertyRegistryFactory propertyRegistryFactory;
+
 	public void buildViews( MutableEntityConfiguration entityConfiguration ) {
 		buildCreateView( entityConfiguration );
 		buildUpdateView( entityConfiguration );
@@ -53,9 +56,8 @@ public class RepositoryEntityViewsBuilder
 		EntityFormViewFactory viewFactory = beanFactory.getBean( EntityFormViewFactory.class );
 		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.CREATE_VIEW_NAME, "entityViews" );
 
-		EntityPropertyRegistry registry = new MergingEntityPropertyRegistry(
-				entityConfiguration.getPropertyRegistry()
-		);
+		EntityPropertyRegistry registry
+				= propertyRegistryFactory.createWithParent( entityConfiguration.getPropertyRegistry() );
 
 		viewFactory.setPropertyRegistry( registry );
 		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
@@ -67,9 +69,8 @@ public class RepositoryEntityViewsBuilder
 		EntityFormViewFactory viewFactory = beanFactory.getBean( EntityFormViewFactory.class );
 		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.UPDATE_VIEW_NAME, "entityViews" );
 
-		EntityPropertyRegistry registry = new MergingEntityPropertyRegistry(
-				entityConfiguration.getPropertyRegistry()
-		);
+		EntityPropertyRegistry registry
+				= propertyRegistryFactory.createWithParent( entityConfiguration.getPropertyRegistry() );
 
 		viewFactory.setPropertyRegistry( registry );
 		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
@@ -81,9 +82,8 @@ public class RepositoryEntityViewsBuilder
 		EntityListViewFactory viewFactory = beanFactory.getBean( EntityListViewFactory.class );
 		viewFactory.setMessagePrefixes( "entityViews.listView", "entityViews" );
 
-		EntityPropertyRegistry registry = new MergingEntityPropertyRegistry(
-				entityConfiguration.getPropertyRegistry()
-		);
+		EntityPropertyRegistry registry
+				= propertyRegistryFactory.createWithParent( entityConfiguration.getPropertyRegistry() );
 
 		viewFactory.setPropertyRegistry( registry );
 		viewFactory.setTemplate( EntityListView.VIEW_TEMPLATE );

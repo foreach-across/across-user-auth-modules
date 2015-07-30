@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,33 +29,53 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
-public class EntityPropertyRegistries
+public class EntityPropertyRegistryFactoryImpl implements EntityPropertyRegistryFactory
 {
+	private final Map<Class<?>, EntityPropertyRegistry> registries = new HashMap<>();
+
 	@RefreshableCollection(includeModuleInternals = true, incremental = true)
 	private Collection<EntityPropertyRegistryBuilder> registryBuilders;
 
-	private final Map<Class<?>, EntityPropertyRegistry> registries = new HashMap<>();
+	@Autowired
+	private EntityPropertyDescriptorFactory descriptorFactory;
 
-	public EntityPropertyRegistry getRegistry( Class<?> entityType ) {
-		return getRegistry( entityType, true );
-	}
+	@Override
+	public EntityPropertyRegistry getOrCreate( Class<?> entityType ) {
+		EntityPropertyRegistry registry = get( entityType );
 
-	public EntityPropertyRegistry getRegistry( Class<?> entityType, boolean createIfNotFound ) {
-		EntityPropertyRegistry registry = registries.get( entityType );
-
-		if ( registry == null && createIfNotFound ) {
-			DefaultEntityPropertyRegistry newRegistry = new DefaultEntityPropertyRegistry( entityType, this );
-
-			for ( EntityPropertyRegistryBuilder builder : registryBuilders ) {
-				builder.buildRegistry( entityType, newRegistry );
-			}
-
-			registries.put( entityType, newRegistry );
-
-			registry = newRegistry;
+		if ( registry == null ) {
+			registry = create( entityType );
+			registries.put( entityType, registry );
 		}
 
 		return registry;
+	}
+
+	/**
+	 * Create a new - detached - registry.
+	 *
+	 * @param entityType for which to create the entity
+	 * @return new instance
+	 */
+	public EntityPropertyRegistry create( Class<?> entityType ) {
+		DefaultEntityPropertyRegistry newRegistry
+				= new DefaultEntityPropertyRegistry( entityType, this, descriptorFactory );
+
+		for ( EntityPropertyRegistryBuilder builder : registryBuilders ) {
+			builder.buildRegistry( entityType, newRegistry );
+		}
+
+		return newRegistry;
+	}
+
+	@Override
+	public EntityPropertyRegistry get( Class<?> entityType ) {
+		return registries.get( entityType );
+	}
+
+	@Override
+	public EntityPropertyRegistry createWithParent( EntityPropertyRegistry entityPropertyRegistry ) {
+		return new MergingEntityPropertyRegistry( entityPropertyRegistry, this, descriptorFactory );
 	}
 
 	public void add( Class<?> entityType, EntityPropertyRegistry registry ) {

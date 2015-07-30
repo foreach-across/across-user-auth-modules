@@ -21,7 +21,6 @@ import com.foreach.across.modules.entity.business.FormPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.MergingEntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.elements.*;
 import org.slf4j.Logger;
@@ -88,26 +87,6 @@ public class EntityFormService
 				= getOrCreateBuilderFactory( entityConfiguration, entityPropertyRegistry, descriptor, mode );
 
 		return builderFactory != null ? builderFactory.createBuilder() : null;
-	}
-
-	public ViewElement createViewElement( EntityConfiguration entityConfiguration,
-	                                      EntityPropertyDescriptor descriptor,
-	                                      EntityMessageCodeResolver messageCodeResolver,
-	                                      ViewElementMode mode ) {
-
-		EntityPropertyRegistry registry = new MergingEntityPropertyRegistry(
-				entityConfiguration.getPropertyRegistry()
-		);
-
-		ViewElementBuilder builder = createBuilder( entityConfiguration, registry, descriptor, mode );
-
-		if ( builder != null ) {
-			builder.setMessageCodeResolver( messageCodeResolver );
-
-			return builder.createViewElement( null );
-		}
-
-		return null;
 	}
 
 	public ViewElementBuilderFactory getOrCreateBuilderFactory(

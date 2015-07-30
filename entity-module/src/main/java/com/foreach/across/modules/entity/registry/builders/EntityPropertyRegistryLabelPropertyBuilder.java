@@ -28,10 +28,14 @@ import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 @OrderInModule(1)
 public class EntityPropertyRegistryLabelPropertyBuilder implements EntityPropertyRegistryBuilder
 {
+	public static void copyPropertyToLabel( EntityPropertyDescriptor property, MutableEntityPropertyDescriptor label ) {
+		label.setValueFetcher( property.getValueFetcher() );
+		label.setAttributes( property.attributeMap() );
+	}
+
 	@Override
 	public void buildRegistry( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
-		SimpleEntityPropertyDescriptor label = new SimpleEntityPropertyDescriptor();
-		label.setName( EntityPropertyRegistry.LABEL );
+		SimpleEntityPropertyDescriptor label = new SimpleEntityPropertyDescriptor( EntityPropertyRegistry.LABEL );
 		label.setDisplayName( "Label" );
 		label.setValueFetcher( new SpelValueFetcher( "toString()" ) );
 		label.setReadable( true );
@@ -58,10 +62,5 @@ public class EntityPropertyRegistryLabelPropertyBuilder implements EntityPropert
 		}
 
 		return registry.getProperty( propertyName );
-	}
-
-	public static void copyPropertyToLabel( EntityPropertyDescriptor property, MutableEntityPropertyDescriptor label ) {
-		label.setValueFetcher( property.getValueFetcher() );
-		label.setAttributes( property.attributeMap() );
 	}
 }
