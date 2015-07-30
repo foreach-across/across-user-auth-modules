@@ -45,13 +45,4 @@ public interface EntityPropertyDescriptor extends ReadableAttributes
 	 * @return Associated instance that can fetch the property value from an instance.
 	 */
 	ValueFetcher getValueFetcher();
-
-	/**
-	 * Creates a new instance that is the result of merging the other descriptor into this one:
-	 * properties set on the other descriptor will override this one.
-	 *
-	 * @param other EntityPropertyDescriptor to be merged into this one.
-	 * @return New descriptor representing the merged instance.
-	 */
-	EntityPropertyDescriptor merge( EntityPropertyDescriptor other );
 }

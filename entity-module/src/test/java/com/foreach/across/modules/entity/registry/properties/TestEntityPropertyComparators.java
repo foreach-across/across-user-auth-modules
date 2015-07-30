@@ -34,8 +34,10 @@ public class TestEntityPropertyComparators
 	public void reset() {
 		descriptors = new ArrayList<>();
 
+		EntityPropertyDescriptorFactory descriptorFactory = new EntityPropertyDescriptorFactoryImpl();
+
 		for ( PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors( Customer.class ) ) {
-			descriptors.add( SimpleEntityPropertyDescriptor.forPropertyDescriptor( descriptor, Customer.class ) );
+			descriptors.add( descriptorFactory.create( descriptor, Customer.class ) );
 		}
 	}
 

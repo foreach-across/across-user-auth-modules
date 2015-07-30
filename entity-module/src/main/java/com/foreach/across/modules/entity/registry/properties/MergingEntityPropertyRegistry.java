@@ -29,8 +29,10 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 {
 	private EntityPropertyRegistry parent;
 
-	public MergingEntityPropertyRegistry( EntityPropertyRegistry parent ) {
-		super( parent.getCentralRegistry() );
+	public MergingEntityPropertyRegistry( EntityPropertyRegistry parent,
+	                                      EntityPropertyRegistryFactory registryFactory,
+	                                      EntityPropertyDescriptorFactory descriptorFactory ) {
+		super( registryFactory, descriptorFactory );
 		this.parent = parent;
 	}
 
@@ -40,14 +42,21 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 	@Override
 	public EntityPropertyDescriptor getProperty( String propertyName ) {
-		EntityPropertyDescriptor parentProperty = parent.getProperty( propertyName );
 		EntityPropertyDescriptor localProperty = super.getProperty( propertyName );
 
-		if ( parentProperty != null && localProperty != null ) {
-			return parentProperty.merge( localProperty );
+		if ( localProperty == null ) {
+			EntityPropertyDescriptor parentProperty = parent.getProperty( propertyName );
+
+			if ( parentProperty != null ) {
+				MutableEntityPropertyDescriptor mutable
+						= getDescriptorFactory().createWithParent( propertyName, parentProperty );
+				register( mutable );
+
+				localProperty = mutable;
+			}
 		}
 
-		return localProperty != null ? localProperty : parentProperty;
+		return localProperty;
 	}
 
 	@Override
@@ -61,11 +70,12 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		for ( EntityPropertyDescriptor descriptor : parent.getRegisteredDescriptors() ) {
 			EntityPropertyDescriptor local = actual.get( descriptor.getName() );
 
-			if ( local != null ) {
-				actual.put( descriptor.getName(), descriptor.merge( local ) );
-			}
-			else {
-				actual.put( descriptor.getName(), descriptor );
+			if ( local == null ) {
+				MutableEntityPropertyDescriptor mutable
+						= getDescriptorFactory().createWithParent( descriptor.getName(), descriptor );
+				register( mutable );
+
+				actual.put( mutable.getName(), mutable );
 			}
 		}
 

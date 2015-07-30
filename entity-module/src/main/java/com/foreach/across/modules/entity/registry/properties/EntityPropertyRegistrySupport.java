@@ -32,16 +32,23 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	private EntityPropertyFilter defaultFilter;
 	private Comparator<EntityPropertyDescriptor> defaultOrder = null;
 
-	private EntityPropertyRegistries centralRegistry;
+	private EntityPropertyRegistryFactory registryFactory;
+	private EntityPropertyDescriptorFactory descriptorFactory;
 
-	protected EntityPropertyRegistrySupport( EntityPropertyRegistries registries ) {
-		centralRegistry = registries;
-		selectorExecutor = new EntityPropertySelectorExecutor( this, registries );
+	protected EntityPropertyRegistrySupport( EntityPropertyRegistryFactory registryFactory,
+	                                         EntityPropertyDescriptorFactory descriptorFactory ) {
+		this.registryFactory = registryFactory;
+		this.descriptorFactory = descriptorFactory;
+
+		selectorExecutor = new EntityPropertySelectorExecutor( this, registryFactory );
 	}
 
-	@Override
-	public EntityPropertyRegistries getCentralRegistry() {
-		return centralRegistry;
+	protected EntityPropertyDescriptorFactory getDescriptorFactory() {
+		return descriptorFactory;
+	}
+
+	protected EntityPropertyRegistryFactory getRegistryFactory() {
+		return registryFactory;
 	}
 
 	@Override

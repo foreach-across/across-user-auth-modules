@@ -49,7 +49,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 	);
 
 	@Autowired
-	private EntityPropertyRegistries entityPropertyRegistries;
+	private EntityPropertyRegistryFactory entityPropertyRegistryFactory;
 
 	public <T> void buildEntityPropertyRegistry( MutableEntityConfiguration<T> entityConfiguration ) {
 		Class<T> entityType = entityConfiguration.getEntityType();
@@ -57,7 +57,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 				= entityConfiguration.getAttribute( RepositoryFactoryInformation.class );
 
 		MutableEntityPropertyRegistry registry =
-				(MutableEntityPropertyRegistry) entityPropertyRegistries.getRegistry( entityType );
+				(MutableEntityPropertyRegistry) entityPropertyRegistryFactory.getOrCreate( entityType );
 
 		registry.setDefaultOrder( new EntityPropertyComparators.Ordered() );
 

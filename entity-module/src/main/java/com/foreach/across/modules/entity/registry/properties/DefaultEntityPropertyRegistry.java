@@ -34,12 +34,10 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 	private EntityPropertyComparators.Ordered declarationOrder = null;
 
-	public DefaultEntityPropertyRegistry( Class<?> entityType ) {
-		this( entityType, null );
-	}
-
-	public DefaultEntityPropertyRegistry( Class<?> entityType, EntityPropertyRegistries registries ) {
-		super( registries );
+	public DefaultEntityPropertyRegistry( Class<?> entityType,
+	                                      EntityPropertyRegistryFactory registryFactory,
+	                                      EntityPropertyDescriptorFactory descriptorFactory ) {
+		super( registryFactory, descriptorFactory );
 
 		this.entityType = entityType;
 
@@ -48,7 +46,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		Map<String, PropertyDescriptor> scannedDescriptors = new HashMap<>();
 
 		for ( PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors( entityType ) ) {
-			register( SimpleEntityPropertyDescriptor.forPropertyDescriptor( descriptor, entityType ) );
+			register( getDescriptorFactory().create( descriptor, entityType ) );
 			scannedDescriptors.put( descriptor.getName(), descriptor );
 		}
 
@@ -132,14 +130,14 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	public EntityPropertyDescriptor getProperty( String propertyName ) {
 		EntityPropertyDescriptor descriptor = super.getProperty( propertyName );
 
-		if ( descriptor == null && getCentralRegistry() != null ) {
+		if ( descriptor == null && getRegistryFactory() != null ) {
 			String rootProperty = findRootProperty( propertyName );
 
 			if ( rootProperty != null ) {
 				EntityPropertyDescriptor rootDescriptor = super.getProperty( rootProperty );
 
 				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-					EntityPropertyRegistry subRegistry = getCentralRegistry().getRegistry(
+					EntityPropertyRegistry subRegistry = getRegistryFactory().getOrCreate(
 							rootDescriptor.getPropertyType() );
 
 					if ( subRegistry != null ) {
@@ -162,8 +160,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	private EntityPropertyDescriptor buildNestedDescriptor( String name,
 	                                                        EntityPropertyDescriptor parent,
 	                                                        EntityPropertyDescriptor child ) {
-		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor();
-		descriptor.setName( name );
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
 		descriptor.setDisplayName( child.getDisplayName() );
 		descriptor.setPropertyType( child.getPropertyType() );
 		descriptor.setPropertyTypeDescriptor( child.getPropertyTypeDescriptor() );

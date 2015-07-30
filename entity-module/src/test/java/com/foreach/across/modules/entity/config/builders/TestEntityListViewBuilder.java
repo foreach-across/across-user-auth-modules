@@ -19,6 +19,8 @@ import com.foreach.across.modules.entity.config.builders.configuration.ListViewB
 import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
@@ -62,6 +64,11 @@ public class TestEntityListViewBuilder
 		clientProperties = mock( MutableEntityPropertyRegistry.class );
 		beanFactory = mock( AutowireCapableBeanFactory.class );
 		when( beanFactory.getBean( EntityListViewFactory.class ) ).thenReturn( new EntityListViewFactory() );
+
+		EntityPropertyRegistryFactory registryFactory = mock( EntityPropertyRegistryFactory.class );
+		when( registryFactory.createWithParent( any( EntityPropertyRegistry.class ) ) ).thenReturn( mock(
+				EntityPropertyRegistry.class ) );
+		when( beanFactory.getBean( EntityPropertyRegistryFactory.class ) ).thenReturn( registryFactory );
 
 		client = mock( MutableEntityConfiguration.class );
 		when( client.getEntityType() ).thenReturn( Client.class );

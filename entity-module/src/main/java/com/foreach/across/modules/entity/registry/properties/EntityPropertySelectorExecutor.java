@@ -25,10 +25,10 @@ import java.util.*;
 public class EntityPropertySelectorExecutor
 {
 	private EntityPropertyRegistry current;
-	private EntityPropertyRegistries propertyRegistries;
+	private EntityPropertyRegistryFactory propertyRegistries;
 
 	public EntityPropertySelectorExecutor( EntityPropertyRegistry current,
-	                                       EntityPropertyRegistries propertyRegistries ) {
+	                                       EntityPropertyRegistryFactory propertyRegistries ) {
 		this.current = current;
 		this.propertyRegistries = propertyRegistries;
 	}
@@ -92,7 +92,7 @@ public class EntityPropertySelectorExecutor
 		EntityPropertyDescriptor descriptor = current.getProperty( propertyName );
 
 		if ( descriptor.getPropertyType() != null ) {
-			EntityPropertyRegistry registry = propertyRegistries.getRegistry( descriptor.getPropertyType(), true );
+			EntityPropertyRegistry registry = propertyRegistries.getOrCreate( descriptor.getPropertyType() );
 
 			List<EntityPropertyDescriptor> subProperties = registry.select(
 					new EntityPropertySelector( selectorString )

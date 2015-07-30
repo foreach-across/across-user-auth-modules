@@ -18,8 +18,8 @@ package com.foreach.across.modules.entity.views.elements.fieldset;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistries;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.views.elements.CloningViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.elements.CommonViewElements;
@@ -46,7 +46,7 @@ public class FieldsetViewElementBuilderFactoryAssembler implements ViewElementBu
 	private ConversionService mvcConversionService;
 
 	@Autowired
-	private EntityPropertyRegistries entityPropertyRegistries;
+	private EntityPropertyRegistryFactory entityPropertyRegistryFactory;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -86,7 +86,8 @@ public class FieldsetViewElementBuilderFactoryAssembler implements ViewElementBu
 		List<String> properties = new ArrayList<>();
 
 		if ( metadata != null && metadata.isEmbedded() ) {
-			EntityPropertyRegistry subRegistry = entityPropertyRegistries.getRegistry( descriptor.getPropertyType() );
+			EntityPropertyRegistry subRegistry = entityPropertyRegistryFactory.getOrCreate(
+					descriptor.getPropertyType() );
 
 			for ( EntityPropertyDescriptor subDescriptor : subRegistry.getProperties() ) {
 				if ( subDescriptor.isWritable() ) {
