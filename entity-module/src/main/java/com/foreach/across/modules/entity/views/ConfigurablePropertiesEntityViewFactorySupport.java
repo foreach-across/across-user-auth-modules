@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilte
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.views.elements.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,17 +160,17 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 
 	/**
 	 * Creates a {@link ViewElementBuilder} for every property for the given mode.
-	 * If a given descriptor does not create a valid {@link com.foreach.across.modules.web.ui.ViewElementBuilder},
+	 * If a given descriptor does not create a valid {@link ViewElementBuilder},
 	 * a null entry will be inserted in the resulting list.
 	 *
 	 * @param viewElementMode for the builders
 	 * @return collection of builders
 	 */
-	protected Collection<com.foreach.across.modules.web.ui.ViewElementBuilder> getViewElementBuilders(
+	protected Collection<ViewElementBuilder> getViewElementBuilders(
 			EntityConfiguration entityConfiguration,
 			Collection<EntityPropertyDescriptor> descriptors,
 			com.foreach.across.modules.entity.newviews.ViewElementMode viewElementMode ) {
-		List<com.foreach.across.modules.web.ui.ViewElementBuilder> builders = new ArrayList<>( descriptors.size() );
+		List<ViewElementBuilder> builders = new ArrayList<>( descriptors.size() );
 
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
 			builders.add(

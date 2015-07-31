@@ -42,11 +42,11 @@ public abstract class SingleEntityViewFactory<V extends ViewCreationContext, T e
 
 	/**
 	 * Set the mode for which the {@link com.foreach.across.modules.web.ui.ViewElement}s should be created.
-	 * Defaults to {@link com.foreach.across.modules.entity.newviews.ViewElementMode#FORM_READ}.
+	 * Defaults to {@link ViewElementMode#FORM_READ}.
 	 *
 	 * @param viewElementMode to generate controls for
 	 */
-	protected void setViewElementMode( com.foreach.across.modules.entity.newviews.ViewElementMode viewElementMode ) {
+	protected void setViewElementMode( ViewElementMode viewElementMode ) {
 		this.viewElementMode = viewElementMode;
 	}
 
@@ -60,8 +60,8 @@ public abstract class SingleEntityViewFactory<V extends ViewCreationContext, T e
 		List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
 
 		ContainerViewElementBuilder container = bootstrapUi.container();
-		Collection<ViewElementBuilder> builders =
-				getViewElementBuilders( entityConfiguration, descriptors, viewElementMode );
+		Collection<ViewElementBuilder> builders
+				= getViewElementBuilders( entityConfiguration, descriptors, viewElementMode );
 
 		for ( ViewElementBuilder builder : builders ) {
 			if ( builder != null ) {

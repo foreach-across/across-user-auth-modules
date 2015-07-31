@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.web.ui.ViewElements;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -45,11 +46,11 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 	}
 
 	@Override
-	protected com.foreach.across.modules.web.ui.ViewElements buildViewElements( V viewCreationContext,
-	                                                                            EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext,
-	                                                                            EntityMessageCodeResolver messageCodeResolver ) {
-		com.foreach.across.modules.web.ui.ViewElements elements =
-				super.buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver );
+	protected ViewElements buildViewElements( V viewCreationContext,
+	                                          EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext,
+	                                          EntityMessageCodeResolver messageCodeResolver ) {
+		ViewElements elements
+				= super.buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver );
 
 		EntityLinkBuilder linkBuilder = viewElementBuilderContext.getEntityView().getEntityLinkBuilder();
 		EntityMessages messages = viewElementBuilderContext.getEntityView().getEntityMessages();

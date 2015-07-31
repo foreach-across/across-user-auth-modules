@@ -88,7 +88,7 @@ public class WebViewProcessorAdapter<U extends EntityView>
 		applyCustomPostProcessing( creationContext, view );
 
 		extendViewModel( view );
-		modifyViewElements( view.getEntityProperties() );
+		//modifyViewElements( view.getEntityProperties() );
 	}
 
 	protected void applyCustomPostProcessing( WebViewCreationContext creationContext, U view ) {
