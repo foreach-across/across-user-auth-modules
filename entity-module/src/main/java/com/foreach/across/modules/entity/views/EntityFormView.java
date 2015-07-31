@@ -28,7 +28,6 @@ public class EntityFormView extends EntityView
 
 	// Will contain the original (unmodified) entity for which the form is being rendered
 	public static final String ATTRIBUTE_ORIGINAL_ENTITY = "originalEntity";
-	public static final String ATTRIBUTE_FORM_ACTION = "formAction";
 
 	public EntityFormView( ModelMap model ) {
 		super( model );
@@ -48,15 +47,5 @@ public class EntityFormView extends EntityView
 	public boolean isUpdate() {
 		Object original = getOriginalEntity();
 		return original != null;
-	}
-
-	@Deprecated
-	public String getFormAction() {
-		return getAttribute( ATTRIBUTE_FORM_ACTION );
-	}
-
-	@Deprecated
-	public void setFormAction( String action ) {
-		addAttribute( ATTRIBUTE_FORM_ACTION, action );
 	}
 }

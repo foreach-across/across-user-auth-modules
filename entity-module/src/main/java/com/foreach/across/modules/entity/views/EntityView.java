@@ -17,10 +17,10 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.views.elements.ViewElements;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.ui.ViewElements;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -33,7 +33,7 @@ import java.util.Map;
  * Has a {@link com.foreach.across.modules.entity.views.EntityView#getTemplate()} method that refers to the rendering
  * template; as such it can be seen as an alternative to {@link org.springframework.web.servlet.ModelAndView} without
  * putting dependencies on Spring mvc.
- * <p/>
+ * <p>
  * The backing model can be (partially) prefilled and passed in externally.  Default
  * {@link com.foreach.across.modules.entity.views.SimpleEntityViewFactorySupport} implementations use the model as
  * communication channel for data attributes between preparation and creation steps of a
@@ -49,7 +49,6 @@ public class EntityView implements Model
 	public static final String ATTRIBUTE_ENTITY_CONFIGURATION = "entityConfiguration";
 	public static final String ATTRIBUTE_ENTITY_LINKS = "entityLinks";
 	public static final String ATTRIBUTE_MESSAGES = "messages";
-	public static final String ATTRIBUTE_PROPERTIES = "properties";
 	public static final String ATTRIBUTE_VIEW_ELEMENTS = "viewElements";
 	public static final String ATTRIBUTE_ENTITY_MENU = "entityMenu";
 	public static final String ATTRIBUTE_PAGE_TITLE = "pageTitle";
@@ -114,22 +113,11 @@ public class EntityView implements Model
 		model.addAttribute( ATTRIBUTE_MESSAGES, messages );
 	}
 
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public ViewElements getEntityProperties() {
-		return getAttribute( ATTRIBUTE_PROPERTIES );
-	}
-
-	@Deprecated
-	public void setEntityProperties( ViewElements entityProperties ) {
-		model.put( ATTRIBUTE_PROPERTIES, entityProperties );
-	}
-
-	public com.foreach.across.modules.web.ui.ViewElements getViewElements() {
+	public ViewElements getViewElements() {
 		return getAttribute( ATTRIBUTE_VIEW_ELEMENTS );
 	}
 
-	public void setViewElements( com.foreach.across.modules.web.ui.ViewElements viewElements ) {
+	public void setViewElements( ViewElements viewElements ) {
 		model.put( ATTRIBUTE_VIEW_ELEMENTS, viewElements );
 	}
 
@@ -154,20 +142,20 @@ public class EntityView implements Model
 		addAttribute( ATTRIBUTE_PARENT_ENTITY, entity );
 	}
 
-	public void setPageTitle( String pageTitle ) {
-		model.put( ATTRIBUTE_PAGE_TITLE, pageTitle );
-	}
-
 	public String getPageTitle() {
 		return getAttribute( ATTRIBUTE_PAGE_TITLE );
 	}
 
-	public void setEntityMenu( Menu menu ) {
-		model.put( ATTRIBUTE_ENTITY_MENU, menu );
+	public void setPageTitle( String pageTitle ) {
+		model.put( ATTRIBUTE_PAGE_TITLE, pageTitle );
 	}
 
 	public Menu getEntityMenu() {
 		return getAttribute( ATTRIBUTE_ENTITY_MENU );
+	}
+
+	public void setEntityMenu( Menu menu ) {
+		model.put( ATTRIBUTE_ENTITY_MENU, menu );
 	}
 
 	@SuppressWarnings("unchecked")

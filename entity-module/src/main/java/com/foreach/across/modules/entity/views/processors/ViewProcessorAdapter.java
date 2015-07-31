@@ -57,7 +57,7 @@ public class ViewProcessorAdapter<T extends ViewCreationContext, U extends Entit
 	public final void postProcess( T creationContext, U view ) {
 		applyCustomPostProcessing( creationContext, view );
 
-		modifyViewElements( view.getEntityProperties() );
+		//modifyViewElements( view.getEntityProperties() );
 	}
 
 	protected void applyCustomPostProcessing( T creationContext, U view ) {
