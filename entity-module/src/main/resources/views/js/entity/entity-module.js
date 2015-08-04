@@ -154,4 +154,11 @@ $( document ).ready( function () {
     $( '[data-tbl-type="paged"]' ).each( function () {
         document.tablePager = new TablePager( $( this ) );
     } );
+
+    $('.input-group.date' ).datetimepicker( { locale: 'en-gb', format:'HH:mm', showClear: true }).on( 'dp.change', function( e ) {
+        $('input[type=hidden]', $(this) ).attr('value', moment( e.date ).unix() );
+        //alert( $(this) + "-" + e.date );
+    });/*.each( function() {
+       alert($(this ).datetimepicker());
+    });*/
 } );
