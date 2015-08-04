@@ -26,7 +26,6 @@ import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,10 +186,9 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertNull( lookup( AtomicInteger.class, ViewElementMode.LIST_VALUE ) );
 	}
 
-	@Ignore
 	@Test
 	public void dateTypeForDates() throws Exception {
-		//assertEquals( BootstrapUiElements.DATE, lookup( Date.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.CONTROL ) );
 	}
 
 	@Test
