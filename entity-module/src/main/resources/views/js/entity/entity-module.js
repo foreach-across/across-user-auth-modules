@@ -155,8 +155,10 @@ $( document ).ready( function () {
         document.tablePager = new TablePager( $( this ) );
     } );
 
-    $('.input-group.date' ).datetimepicker( { locale: 'en-gb', format:'HH:mm', showClear: true }).on( 'dp.change', function( e ) {
-        $('input[type=hidden]', $(this) ).attr('value', moment( e.date ).unix() );
+    $('.input-group.date' ).datetimepicker(
+            { locale: 'en-gb', format:'DD/MM/YYYY HH:mm', extraFormats:['x'], showClear: true, datepickerInput:'#_entity\\.day' }
+    ).on( 'dp.change', function( e ) {
+        $('input[type=hidden]', $(this) ).attr('value', moment( e.date ).format( "YYYY-MM-DD HH:mm:ss" ) );
         //alert( $(this) + "-" + e.date );
     });/*.each( function() {
        alert($(this ).datetimepicker());
