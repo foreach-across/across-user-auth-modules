@@ -31,6 +31,7 @@ import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
+import com.foreach.across.modules.web.ui.ViewElements;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -127,9 +128,9 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	}
 
 	@Override
-	protected com.foreach.across.modules.web.ui.ViewElements buildViewElements( V viewCreationContext,
-	                                                                            EntityViewElementBuilderContext<EntityListView> viewElementBuilderContext,
-	                                                                            EntityMessageCodeResolver messageCodeResolver ) {
+	protected ViewElements buildViewElements( V viewCreationContext,
+	                                          EntityViewElementBuilderContext<EntityListView> viewElementBuilderContext,
+	                                          EntityMessageCodeResolver messageCodeResolver ) {
 		EntityListView view = viewElementBuilderContext.getEntityView();
 		final EntityLinkBuilder linkBuilder = view.getEntityLinkBuilder();
 
