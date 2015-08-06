@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.user;
+package com.foreach.across.modules.it.properties.extendingmodule.installers;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+import com.foreach.across.core.annotations.Installer;
+import com.foreach.across.modules.properties.installers.EntityPropertiesInstaller;
 
 /**
  * @author Arne Vandamme
  */
-public class TestUserModuleConventions extends AbstractAcrossModuleConventionsTest
+@Installer(description = "Creates client properties table", version = 1)
+public class ClientPropertiesInstaller extends EntityPropertiesInstaller
 {
 	@Override
-	protected boolean hasSettings() {
-		return true;
+	protected String getTableName() {
+		return "client_properties";
 	}
 
 	@Override
-	protected AcrossModule createModule() {
-		return new UserModule();
+	protected String getKeyColumnName() {
+		return "client_id";
 	}
 }
