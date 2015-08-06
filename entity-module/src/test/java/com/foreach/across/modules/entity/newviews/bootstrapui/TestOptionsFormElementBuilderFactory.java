@@ -20,7 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @ContextConfiguration(classes = TestOptionsFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
-public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<NodeViewElementSupport>
+public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<AbstractNodeViewElement>
 {
 	@Override
 	protected Class getTestClass() {
@@ -93,19 +93,19 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
 		when( builderContext.getAttribute( EntityMessageCodeResolver.class ) ).thenReturn( codeResolver );
 
-		NodeViewElementSupport control = assemble( propertyName, ViewElementMode.CONTROL );
+		AbstractNodeViewElement control = assemble( propertyName, ViewElementMode.CONTROL );
 
 		return (V) control;
 	}
 
-	@SuppressWarnings( "unused" )
+	@SuppressWarnings("unused")
 	private enum TestEnum
 	{
 		ONE,
 		TWO
 	}
 
-	@SuppressWarnings( "unused" )
+	@SuppressWarnings("unused")
 	private static class Validators
 	{
 		public TestEnum enumNoValidator;
