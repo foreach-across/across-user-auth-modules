@@ -20,6 +20,7 @@ import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserRestriction;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,6 +60,7 @@ public class User extends GroupedPrincipal<User> implements UserDetails, Undelet
 	@Column(name = "display_name")
 	private String displayName;
 
+	@Email
 	@Size(max = 255)
 	@Column(name = "email")
 	private String email;
