@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.newviews.util;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.web.ui.IteratorItemStatsImpl;
-import com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import org.junit.Test;
 import org.springframework.ui.ModelMap;
 
