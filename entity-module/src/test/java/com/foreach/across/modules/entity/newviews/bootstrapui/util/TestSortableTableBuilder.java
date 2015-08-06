@@ -213,8 +213,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		expect( "empty" );
 
 		tableBuilder.setNoResultsElementBuilder(
-				new NodeViewElementBuilder()
-						.tagName( "div" )
+				new NodeViewElementBuilder( "div" )
 						.add( new TextViewElement( "empty" ) )
 		);
 		expect( "<div>empty</div>" );

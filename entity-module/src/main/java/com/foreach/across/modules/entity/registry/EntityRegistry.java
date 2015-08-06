@@ -34,4 +34,6 @@ public interface EntityRegistry
 	<T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType );
 
 	<T> EntityConfiguration<T> getEntityConfiguration( String entityName );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( T entity );
 }

@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderS
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class HiddenFormElementBuilder extends FormElementBuilderSupport<HiddenFormElement>
 {
 	public HiddenFormElementBuilder() {
