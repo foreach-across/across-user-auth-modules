@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.common.test.MockedLoader;
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -123,6 +124,28 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
+	public void preferredTypeCanBeSet() {
+		when( properties.get( "noValidator" ).hasAttribute( TextboxFormElement.Type.class ) ).thenReturn( true );
+		when( properties.get( "noValidator" ).getAttribute( TextboxFormElement.Type.class ) )
+				.thenReturn( TextboxFormElement.Type.DATETIME );
+
+		TextboxFormElement textbox = assembleAndVerify( "noValidator", false );
+		assertEquals( TextboxFormElement.Type.DATETIME, textbox.getType() );
+	}
+
+	@Test
+	public void emailType() {
+		TextboxFormElement textbox = assembleAndVerify( "email", false );
+		assertEquals( TextboxFormElement.Type.EMAIL, textbox.getType() );
+	}
+
+	@Test
+	public void passwordTypeByName() {
+		TextboxFormElement textbox = assembleAndVerify( "password", false );
+		assertEquals( TextboxFormElement.Type.PASSWORD, textbox.getType() );
+	}
+
+	@Test
 	public void valueSetFromEntity() {
 		when( properties.get( "noValidator" ).getValueFetcher() ).thenReturn( new ValueFetcher()
 		{
@@ -181,6 +204,11 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 		@NotBlank
 		@Size(max = 50)
 		public String combinedValidator;
+
+		@Email
+		public String email;
+
+		public String password;
 	}
 
 	@Configuration
