@@ -155,12 +155,33 @@ $( document ).ready( function () {
         document.tablePager = new TablePager( $( this ) );
     } );
 
-    $('.input-group.date' ).datetimepicker(
-            { locale: 'en-gb', format:'DD/MM/YYYY HH:mm', extraFormats:['x'], showClear: true, datepickerInput:'#_entity\\.day' }
-    ).on( 'dp.change', function( e ) {
-        $('input[type=hidden]', $(this) ).attr('value', moment( e.date ).format( "YYYY-MM-DD HH:mm:ss" ) );
-        //alert( $(this) + "-" + e.date );
-    });/*.each( function() {
-       alert($(this ).datetimepicker());
-    });*/
+    /**
+     * Find and activate all date time pickers.
+     */
+    $( '.js-form-datetimepicker' ).each( function () {
+        var configuration = $( this ).data( 'datetimepicker' );
+
+        $( this ).datetimepicker( configuration )
+                .on( 'dp.change', function ( e ) {
+                         var exchangeValue = e.date ? moment( e.date ).format( configuration.extraFormats[0] ) : '';
+                         $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
+                     } );
+    } );
+
+    //.
+    //datetimepicker(
+    //        {
+    //            locale: 'en-gb',
+    //            format: 'DD/MM/YYYY HH:mm',
+    //            extraFormats: ['x'],
+    //            showClear: true,
+    //            datepickerInput: '#_entity\\.day'
+    //        }
+    //).on( 'dp.change', function ( e ) {
+    //          $( 'input[type=hidden]', $( this ) ).attr( 'value', moment( e.date ).format( "YYYY-MM-DD HH:mm:ss" ) );
+    //          //alert( $(this) + "-" + e.date );
+    //      } );
+    /*.each( function() {
+     alert($(this ).datetimepicker());
+     });*/
 } );
