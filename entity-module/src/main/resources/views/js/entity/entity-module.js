@@ -160,10 +160,13 @@ $( document ).ready( function () {
      */
     $( '.js-form-datetimepicker' ).each( function () {
         var configuration = $( this ).data( 'datetimepicker' );
+        var exportFormat = configuration.exportFormat;
+
+        delete configuration.exportFormat
 
         $( this ).datetimepicker( configuration )
                 .on( 'dp.change', function ( e ) {
-                         var exchangeValue = e.date ? moment( e.date ).format( configuration.extraFormats[0] ) : '';
+                         var exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
                          $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
                      } );
     } );
