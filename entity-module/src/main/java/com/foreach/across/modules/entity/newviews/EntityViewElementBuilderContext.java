@@ -13,23 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.properties;
+package com.foreach.across.modules.entity.newviews;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 
 /**
  * @author Arne Vandamme
  */
-public class TestPropertiesModuleConventions extends AbstractAcrossModuleConventionsTest
+public class EntityViewElementBuilderContext<T extends EntityView> extends ViewElementBuilderContextImpl
 {
-	@Override
-	protected boolean hasSettings() {
-		return true;
+	public static final String ENTITY = "entity";
+
+	private final T entityView;
+
+	public EntityViewElementBuilderContext( T view ) {
+		super( view );
+
+		this.entityView = view;
+
+		setAttribute( ENTITY, view.getEntity() );
 	}
 
-	@Override
-	protected AcrossModule createModule() {
-		return new PropertiesModule();
+	public T getEntityView() {
+		return entityView;
 	}
 }
