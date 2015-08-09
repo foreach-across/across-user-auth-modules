@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderF
 /**
  * @author Andy Somers
  */
+@Deprecated
 public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
 {
 	public DateFormElementBuilderFactoryAssembler() {

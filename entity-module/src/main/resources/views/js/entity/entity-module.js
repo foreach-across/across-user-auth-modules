@@ -154,37 +154,4 @@ $( document ).ready( function () {
     $( '[data-tbl-type="paged"]' ).each( function () {
         document.tablePager = new TablePager( $( this ) );
     } );
-
-    /**
-     * Find and activate all date time pickers.
-     */
-    $( '.js-form-datetimepicker' ).each( function () {
-        var configuration = $( this ).data( 'datetimepicker' );
-        var exportFormat = configuration.exportFormat;
-
-        delete configuration.exportFormat
-
-        $( this ).datetimepicker( configuration )
-                .on( 'dp.change', function ( e ) {
-                         var exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
-                         $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
-                     } );
-    } );
-
-    //.
-    //datetimepicker(
-    //        {
-    //            locale: 'en-gb',
-    //            format: 'DD/MM/YYYY HH:mm',
-    //            extraFormats: ['x'],
-    //            showClear: true,
-    //            datepickerInput: '#_entity\\.day'
-    //        }
-    //).on( 'dp.change', function ( e ) {
-    //          $( 'input[type=hidden]', $( this ) ).attr( 'value', moment( e.date ).format( "YYYY-MM-DD HH:mm:ss" ) );
-    //          //alert( $(this) + "-" + e.date );
-    //      } );
-    /*.each( function() {
-     alert($(this ).datetimepicker());
-     });*/
 } );

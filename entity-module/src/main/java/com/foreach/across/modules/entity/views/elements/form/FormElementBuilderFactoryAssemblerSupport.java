@@ -43,6 +43,7 @@ import java.util.Set;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class FormElementBuilderFactoryAssemblerSupport<T extends FormElementBuilderSupport>
 		implements ViewElementBuilderFactoryAssembler
 {

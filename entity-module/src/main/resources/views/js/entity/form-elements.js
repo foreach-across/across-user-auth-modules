@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 $(document).ready(function() {
-    $('.js-form-element-datepicker').each(function(){
-        var datepickerConfig = $( this ).data( 'datepicker-config' );
-        if ( !datepickerConfig ) {
-            datepickerConfig = {};
-        }
-        datepickerConfig['constrainInput'] = false;
-        $( this ).datepicker( datepickerConfig );
-
-        var datepickerLocale = $( this ).data( 'datepicker-locale' );
-        if ( datepickerLocale ) {
-            var datepickerRegional = $.datepicker.regional[datepickerLocale];
-            $( this ).datepicker( "option", datepickerRegional );
-        }
-    });
+    //$('.js-form-element-datepicker').each(function(){
+    //    var datepickerConfig = $( this ).data( 'datepicker-config' );
+    //    if ( !datepickerConfig ) {
+    //        datepickerConfig = {};
+    //    }
+    //    datepickerConfig['constrainInput'] = false;
+    //    $( this ).datepicker( datepickerConfig );
+    //
+    //    var datepickerLocale = $( this ).data( 'datepicker-locale' );
+    //    if ( datepickerLocale ) {
+    //        var datepickerRegional = $.datepicker.regional[datepickerLocale];
+    //        $( this ).datepicker( "option", datepickerRegional );
+    //    }
+    //});
 
     $('[data-dependson]').each(function(){
         var dependsonConfig = $(this).data('dependson');

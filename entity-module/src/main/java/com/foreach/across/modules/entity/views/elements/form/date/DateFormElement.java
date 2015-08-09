@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.views.elements.form.FormElementSupport;
 /**
  * @author Andy Somers
  */
+@Deprecated
 public class DateFormElement extends FormElementSupport
 {
 	public static final String TYPE = CommonViewElements.DATE;
