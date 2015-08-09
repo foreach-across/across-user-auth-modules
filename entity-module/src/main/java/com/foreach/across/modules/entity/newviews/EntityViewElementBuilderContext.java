@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.newviews;
 
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 
@@ -33,6 +34,21 @@ public class EntityViewElementBuilderContext<T extends EntityView> extends ViewE
 		this.entityView = view;
 
 		setAttribute( ENTITY, view.getEntity() );
+	}
+
+	public EntityMessageCodeResolver getEntityMessageCodeResolver() {
+		return getAttribute( EntityMessageCodeResolver.class );
+	}
+
+	/**
+	 * Set the {@link EntityMessageCodeResolver} for this builder context.  This is an alias to calling
+	 * {@link #setAttribute(Class, Object)} with {@code EntityMessageCodeResolver.class} as attribute name.
+	 * A valid {@link EntityMessageCodeResolver} is expected for most element building.
+	 *
+	 * @param entityMessageCodeResolver instance
+	 */
+	public void setEntityMessageCodeResolver( EntityMessageCodeResolver entityMessageCodeResolver ) {
+		setAttribute( EntityMessageCodeResolver.class, entityMessageCodeResolver );
 	}
 
 	public T getEntityView() {

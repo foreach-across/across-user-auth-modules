@@ -18,13 +18,16 @@ package com.foreach.across.modules.entity.views;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilter;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.web.resource.WebResourceUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +122,10 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	}
 
 	protected EntityViewElementBuilderContext<T> createEntityViewElementBuilderContext( T view ) {
-		return new EntityViewElementBuilderContext<>( view );
+		EntityViewElementBuilderContext<T> builderContext = new EntityViewElementBuilderContext<>( view );
+		builderContext.setWebResourceRegistry( WebResourceUtils.currentRegistry() );
+
+		return builderContext;
 	}
 
 	/**
@@ -169,7 +175,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	protected Collection<ViewElementBuilder> getViewElementBuilders(
 			EntityConfiguration entityConfiguration,
 			Collection<EntityPropertyDescriptor> descriptors,
-			com.foreach.across.modules.entity.newviews.ViewElementMode viewElementMode ) {
+			ViewElementMode viewElementMode ) {
 		List<ViewElementBuilder> builders = new ArrayList<>( descriptors.size() );
 
 		for ( EntityPropertyDescriptor descriptor : descriptors ) {
@@ -181,7 +187,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		return builders;
 	}
 
-	protected abstract com.foreach.across.modules.web.ui.ViewElements buildViewElements(
+	protected abstract ViewElements buildViewElements(
 			V viewCreationContext,
 			EntityViewElementBuilderContext<T> viewElementBuilderContext,
 			EntityMessageCodeResolver messageCodeResolver

@@ -24,6 +24,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class FormElementBuilderSupport<T extends FormElementSupport> extends ViewElementBuilderSupport<T>
 {
 	private boolean required;
