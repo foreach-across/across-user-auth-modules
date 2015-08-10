@@ -37,6 +37,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
 import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
+import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
@@ -113,6 +114,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		}
 		else {
 			endpoints.userApprovalHandler( new DefaultUserApprovalHandler() );
+		}
+
+		if ( oAuth2ModuleSettings.isUseJdbcAuthorizationCodeService() ) {
+			endpoints.authorizationCodeServices( new JdbcAuthorizationCodeServices( dataSource ) );
 		}
 	}
 

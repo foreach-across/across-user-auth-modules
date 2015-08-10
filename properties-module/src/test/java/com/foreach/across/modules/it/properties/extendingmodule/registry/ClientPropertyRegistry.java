@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.oauth2.installers;
+package com.foreach.across.modules.it.properties.extendingmodule.registry;
 
-import com.foreach.across.core.annotations.Installer;
-import com.foreach.across.core.installers.AcrossLiquibaseInstaller;
-import com.foreach.across.core.installers.InstallerPhase;
+import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
+import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
 
-@Installer(
-		description = "Creates the database schema for all token stores.",
-		phase = InstallerPhase.BeforeContextBootstrap,
-		version = 2
-)
-public class TokenStoreSchemaInstaller extends AcrossLiquibaseInstaller
+/**
+ * @author Arne Vandamme
+ */
+public class ClientPropertyRegistry extends EntityPropertiesRegistry
 {
+	public ClientPropertyRegistry( EntityPropertiesDescriptor descriptor ) {
+		super( descriptor );
+	}
 }
