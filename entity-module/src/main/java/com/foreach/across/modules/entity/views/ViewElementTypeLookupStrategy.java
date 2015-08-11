@@ -15,27 +15,21 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import org.springframework.ui.ModelMap;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 
 /**
- * Base implementation for viewing properties of a single entity.
+ * Strategy interface that looks up the most fitting
+ * {@link com.foreach.across.modules.entity.views.elements.ViewElement} type to create.
  *
  * @author Arne Vandamme
  */
-public class EntityViewViewFactory extends SingleEntityViewFactory<ViewCreationContext, EntityView>
+public interface ViewElementTypeLookupStrategy
 {
-	@Override
-	public ViewElementMode getViewElementMode() {
-		return super.getViewElementMode();
-	}
-
-	@Override
-	public void setViewElementMode( ViewElementMode viewElementMode ) {
-		super.setViewElementMode( viewElementMode );
-	}
-
-	@Override
-	protected EntityView createEntityView( ModelMap model ) {
-		return new EntityView( model );
-	}
+	/**
+	 * @return element type or null if none could be determined.
+	 */
+	String findElementType( EntityConfiguration entityConfiguration,
+	                        EntityPropertyDescriptor descriptor,
+	                        ViewElementMode viewElementMode );
 }

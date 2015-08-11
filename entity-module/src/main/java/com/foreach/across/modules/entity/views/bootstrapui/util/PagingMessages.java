@@ -13,29 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
+package com.foreach.across.modules.entity.views.bootstrapui.util;
 
-import org.springframework.ui.ModelMap;
+import org.springframework.data.domain.Page;
 
 /**
- * Base implementation for viewing properties of a single entity.
- *
  * @author Arne Vandamme
  */
-public class EntityViewViewFactory extends SingleEntityViewFactory<ViewCreationContext, EntityView>
+public interface PagingMessages
 {
-	@Override
-	public ViewElementMode getViewElementMode() {
-		return super.getViewElementMode();
-	}
+	String pagerText( Page currentPage, Object... args );
 
-	@Override
-	public void setViewElementMode( ViewElementMode viewElementMode ) {
-		super.setViewElementMode( viewElementMode );
-	}
+	String nextPage( Page currentPage, Object... args );
 
-	@Override
-	protected EntityView createEntityView( ModelMap model ) {
-		return new EntityView( model );
-	}
+	String page( Page currentPage, Object... args );
+
+	String ofPages( Page currentPage, Object... args );
+
+	String previousPage( Page currentPage, Object... args );
+
+	String resultsFound( Page currentPage, Object... args );
 }
