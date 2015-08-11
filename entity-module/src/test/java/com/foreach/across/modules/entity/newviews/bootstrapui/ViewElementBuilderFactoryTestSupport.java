@@ -121,11 +121,6 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 
 	protected abstract Class getTestClass();
 
-	@Deprecated
-	protected <V extends T> V assemble( String propertyName ) {
-		return assemble( properties.get( propertyName ), null );
-	}
-
 	protected <V extends T> V assemble( String propertyName, ViewElementMode viewElementMode ) {
 		return assemble( properties.get( propertyName ), viewElementMode );
 	}
