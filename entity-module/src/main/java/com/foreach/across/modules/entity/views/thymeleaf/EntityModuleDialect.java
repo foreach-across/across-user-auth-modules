@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.thymeleaf;
 
-import com.foreach.across.modules.entity.views.elements.ViewElementsHelper;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.dialect.IExpressionEnhancingDialect;
@@ -30,6 +29,7 @@ import java.util.Set;
  * @author niels
  * @since 6/02/2015
  */
+@Deprecated
 public class EntityModuleDialect extends AbstractDialect implements IExpressionEnhancingDialect
 {
 	public static final String UTILITY_ELEMENTS = "elements";
@@ -57,7 +57,7 @@ public class EntityModuleDialect extends AbstractDialect implements IExpressionE
 	@Override
 	public Map<String, Object> getAdditionalExpressionObjects( IProcessingContext processingContext ) {
 		Map<String, Object> objects = new HashMap<>();
-		objects.put( UTILITY_ELEMENTS, new ViewElementsHelper() );
+		//objects.put( UTILITY_ELEMENTS, new ViewElementsHelper() );
 
 		return objects;
 	}
