@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.newviews.bootstrapui.elements.builder;
+package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;

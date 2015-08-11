@@ -20,8 +20,6 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
-import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -32,6 +30,8 @@ import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaMod
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.testmodules.springdata.business.ClientGroup;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.newviews.bootstrapui;
+package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
-import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;

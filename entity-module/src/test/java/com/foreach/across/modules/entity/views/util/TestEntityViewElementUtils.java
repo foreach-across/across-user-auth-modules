@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.newviews.util;
+package com.foreach.across.modules.entity.views.util;
 
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.IteratorItemStatsImpl;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import org.junit.Test;
 import org.springframework.ui.ModelMap;
 
-import static com.foreach.across.modules.entity.newviews.util.EntityViewElementUtils.currentEntity;
+import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 

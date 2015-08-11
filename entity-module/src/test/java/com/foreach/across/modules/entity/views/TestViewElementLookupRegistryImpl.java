@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.newviews;
+package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.foreach.across.modules.entity.newviews.ViewElementMode.*;
+import static com.foreach.across.modules.entity.views.ViewElementMode.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
