@@ -19,7 +19,7 @@ import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.ViewCreationContext;
-import com.foreach.across.modules.entity.views.elements.ViewElements;
+import com.foreach.across.modules.web.ui.ViewElements;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.DataBinder;
 
