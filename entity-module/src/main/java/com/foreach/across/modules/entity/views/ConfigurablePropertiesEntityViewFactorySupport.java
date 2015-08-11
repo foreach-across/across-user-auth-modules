@@ -16,9 +16,6 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
-import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilter;

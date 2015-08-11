@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.views.support;
 
-import com.foreach.across.modules.entity.newviews.bootstrapui.util.PagingMessages;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.bootstrapui.util.PagingMessages;
 import org.springframework.data.domain.Page;
 
 /**

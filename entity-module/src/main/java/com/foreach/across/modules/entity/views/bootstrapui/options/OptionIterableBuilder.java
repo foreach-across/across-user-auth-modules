@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
+package com.foreach.across.modules.entity.views.bootstrapui.options;
 
-import org.springframework.ui.ModelMap;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 
 /**
- * Base implementation for viewing properties of a single entity.
+ * Interface for delegating building of {@link OptionFormElementBuilder} items until
+ * a {@link ViewElementBuilderContext} is available.  Responsible for creating an {@link Iterable}.
  *
  * @author Arne Vandamme
+ * @see OptionGenerator
+ * @see EnumOptionIterableBuilder
+ * @see EntityQueryOptionIterableBuilder
  */
-public class EntityViewViewFactory extends SingleEntityViewFactory<ViewCreationContext, EntityView>
+public interface OptionIterableBuilder
 {
-	@Override
-	public ViewElementMode getViewElementMode() {
-		return super.getViewElementMode();
-	}
-
-	@Override
-	public void setViewElementMode( ViewElementMode viewElementMode ) {
-		super.setViewElementMode( viewElementMode );
-	}
-
-	@Override
-	protected EntityView createEntityView( ModelMap model ) {
-		return new EntityView( model );
-	}
+	Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext );
 }
