@@ -19,7 +19,6 @@ import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.modules.adminweb.AdminWebModule;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
@@ -46,6 +45,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.CrudRepository;
@@ -176,10 +176,10 @@ public class TestRepositoryEntityRegistrar
 		assertEquals( displayName, descriptor.getDisplayName() );
 
 		if ( sortable ) {
-			assertEquals( propertyName, descriptor.getAttribute( EntityAttributes.SORTABLE_PROPERTY ) );
+			assertEquals( propertyName, descriptor.getAttribute( Sort.Order.class ).getProperty() );
 		}
 		else {
-			assertFalse( descriptor.hasAttribute( EntityAttributes.SORTABLE_PROPERTY ) );
+			assertFalse( descriptor.hasAttribute( Sort.Order.class ) );
 		}
 
 		if ( hasValidators ) {
@@ -198,7 +198,7 @@ public class TestRepositoryEntityRegistrar
 		assertEquals( Client.class, clientConfiguration.getEntityType() );
 
 		EntityConfiguration notExisting = mvcConversionService.convert( "someUnexistingEntity",
-		                                                             EntityConfiguration.class );
+		                                                                EntityConfiguration.class );
 		assertNull( notExisting );
 	}
 

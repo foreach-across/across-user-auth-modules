@@ -21,7 +21,6 @@ import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.Style;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.ViewHelpers;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -33,15 +32,11 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
@@ -114,7 +109,9 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.setPagingMessages( messages );
 
 		when( descriptor.getName() ).thenReturn( "propertyOne" );
-		when( descriptor.getAttribute( EntityAttributes.SORTABLE_PROPERTY, String.class ) ).thenReturn( "sortOnMe" );
+
+		Sort.Order order = new Sort.Order( "sortOnMe" );
+		when( descriptor.getAttribute( Sort.Order.class ) ).thenReturn( order );
 
 		when( viewElementBuilderService.getElementBuilder( entityConfiguration, descriptor,
 		                                                   ViewElementMode.LIST_LABEL ) )
@@ -159,9 +156,14 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	}
 
 	@Test
-	@Ignore
 	public void secondPageResults() {
-		Pageable pageable = new PageRequest( 1, 20 );
+		Sort sort = new Sort( Arrays.asList(
+				new Sort.Order( Sort.Direction.ASC, "one" ),
+				new Sort.Order( Sort.Direction.DESC, "two" ),
+				new Sort.Order( Sort.Direction.DESC, "three" )
+		) );
+
+		Pageable pageable = new PageRequest( 1, 20, sort );
 		Page page = new PageImpl<>( Arrays.asList( "één", "twee" ), pageable, 57 );
 
 		tableBuilder.setTableName( "entityList" );
@@ -174,7 +176,8 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 						"<div class='table-responsive'>" +
 						"<table class='table table-hover' " +
 						"data-tbl='entityList' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-						"data-tbl-current-page='1' data-tbl-total-pages='3' data-tbl-size='20'>" +
+						"data-tbl-current-page='1' data-tbl-total-pages='3' data-tbl-size='20' " +
+						"data-tbl-sort='[{\"prop\":\"one\",\"dir\":\"ASC\"},{\"prop\":\"two\",\"dir\":\"DESC\"},{\"prop\":\"three\",\"dir\":\"DESC\"}]'>" +
 						"<thead>" +
 						"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 						"</thead>" +
@@ -185,8 +188,22 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 						"</table>" +
 						"</div>" +
 						"</div>" +
+						"<div class=\"panel-footer\">" +
+						"<div class=\"pager-form form-inline text-center\">" +
+						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"0\" class=\"btn btn-link\">" +
+						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-step-backward\"></span>" +
+						"</a>" +
+						"<label class=\"control-label\"><span></span><input type=\"text\"\n" +
+						"\t\tclass=\"form-control\" value=\"2\" data-tbl=\"entityList\" data-tbl-page-selector=\"selector\" /></label>" +
+						"<span></span>" +
+						"<a data-tbl=\"entityList\" href=\"#\" class=\"total-pages-link\" data-tbl-page=\"2\">3</a>" +
+						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"2\" class=\"btn btn-link\">" +
+						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-step-forward\"></span>" +
+						"</a>" +
+						"</div></div>" +
 						"</div>"
 		);
+
 	}
 
 	@Test

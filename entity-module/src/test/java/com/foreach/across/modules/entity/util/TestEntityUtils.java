@@ -15,15 +15,73 @@
  */
 package com.foreach.across.modules.entity.util;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import org.junit.Test;
+import org.springframework.data.domain.Sort;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
  */
 public class TestEntityUtils
 {
+	@Test
+	public void unmodifiedSortIsReturned() {
+		Sort sort = new Sort( Arrays.asList(
+				new Sort.Order( Sort.Direction.ASC, "nullsFirst" ),
+				new Sort.Order( Sort.Direction.DESC, "nullsLast" ),
+				new Sort.Order( Sort.Direction.ASC, "nullHandlingFixed" ),
+				new Sort.Order( Sort.Direction.DESC, "ignoreCase" ),
+				new Sort.Order( Sort.Direction.ASC, "unmodified" )
+		) );
+
+		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
+		assertEquals( sort, EntityUtils.translateSort( sort, propertyRegistry ) );
+	}
+
+	@Test
+	public void translateSort() {
+		Sort sort = new Sort( Arrays.asList(
+				new Sort.Order( Sort.Direction.ASC, "nullsFirst" ),
+				new Sort.Order( Sort.Direction.DESC, "nullsLast" ),
+				new Sort.Order( Sort.Direction.ASC, "nullHandlingFixed" ),
+				new Sort.Order( Sort.Direction.DESC, "ignoreCase" ),
+				new Sort.Order( Sort.Direction.ASC, "unmodified" )
+		) );
+
+		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
+		register( propertyRegistry, "nullsFirst", new Sort.Order( "prop-nullsFirst" ) );
+		register( propertyRegistry, "nullsLast", new Sort.Order( "prop-nullsLast" ) );
+		register( propertyRegistry, "nullHandlingFixed", new Sort.Order( "prop-nullHandlingFixed" ).nullsLast() );
+		register( propertyRegistry, "ignoreCase", new Sort.Order( "prop-ignoreCase" ).ignoreCase() );
+
+		Sort translated = EntityUtils.translateSort( sort, propertyRegistry );
+
+		assertEquals(
+				new Sort( Arrays.asList(
+						new Sort.Order( Sort.Direction.ASC, "prop-nullsFirst", Sort.NullHandling.NULLS_FIRST ),
+						new Sort.Order( Sort.Direction.DESC, "prop-nullsLast", Sort.NullHandling.NULLS_LAST ),
+						new Sort.Order( Sort.Direction.ASC, "prop-nullHandlingFixed", Sort.NullHandling.NULLS_LAST ),
+						new Sort.Order( Sort.Direction.DESC, "prop-ignoreCase", Sort.NullHandling.NULLS_LAST )
+								.ignoreCase(),
+						new Sort.Order( Sort.Direction.ASC, "unmodified" )
+				) ),
+				translated
+		);
+	}
+
+	private void register( EntityPropertyRegistry propertyRegistry, String name, Sort.Order order ) {
+		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
+		when( descriptor.getAttribute( Sort.Order.class ) ).thenReturn( order );
+		when( propertyRegistry.getProperty( name ) ).thenReturn( descriptor );
+	}
+
 	@Test
 	public void createDisplayName() {
 		assertEquals( "Name", EntityUtils.generateDisplayName( "name" ) );
