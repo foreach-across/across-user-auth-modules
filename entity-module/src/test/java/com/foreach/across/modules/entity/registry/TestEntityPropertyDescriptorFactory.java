@@ -15,10 +15,10 @@
  */
 package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.*;
 import org.junit.Test;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Sort;
 
 import java.util.Date;
 
@@ -35,14 +35,14 @@ public class TestEntityPropertyDescriptorFactory
 	public void createWithParent() {
 		SimpleEntityPropertyDescriptor one = new SimpleEntityPropertyDescriptor( "address" );
 		one.setDisplayName( "Address" );
-		one.setAttribute( EntityAttributes.SORTABLE_PROPERTY, "address" );
+		one.setAttribute( Sort.Order.class, new Sort.Order( "address" ) );
 
 		MutableEntityPropertyDescriptor merged = descriptorFactory.createWithParent( "street", one );
-		merged.setAttribute( EntityAttributes.SORTABLE_PROPERTY, "street" );
+		merged.setAttribute( Sort.Order.class, new Sort.Order( "street" ) );
 
 		assertEquals( "street", merged.getName() );
 		assertEquals( "Address", merged.getDisplayName() );
-		assertEquals( "street", merged.getAttribute( EntityAttributes.SORTABLE_PROPERTY ) );
+		assertEquals( new Sort.Order( "street" ), merged.getAttribute( Sort.Order.class ) );
 	}
 
 	@Test
