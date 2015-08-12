@@ -115,7 +115,15 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 	}
 
 	public String getNamePlural( Locale locale ) {
-		return getMessage( "name.plural", getNameSingular( locale ) + "s", locale );
+		return getMessage( "name.plural", generatePlural( getNameSingular( locale ) ), locale );
+	}
+
+	private String generatePlural( String name ) {
+		if ( name.endsWith( "y" ) ) {
+			return StringUtils.removeEnd( name, "y" ) + "ies";
+		}
+
+		return name + "s";
 	}
 
 	public String getNamePluralInline( Locale locale ) {

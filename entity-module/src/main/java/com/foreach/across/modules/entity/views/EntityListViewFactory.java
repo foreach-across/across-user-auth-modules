@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityListActionsProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntitySummaryViewActionProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
@@ -195,7 +196,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			existing = new PageRequest( 0, getPageSize(), getDefaultSort() );
 		}
 
-		return existing;
+		return EntityUtils.translateSort( existing, getPropertyRegistry( view.getEntityConfiguration() ) );
 	}
 
 	@Override

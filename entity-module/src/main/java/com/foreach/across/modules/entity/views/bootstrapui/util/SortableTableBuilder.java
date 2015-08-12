@@ -15,12 +15,12 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui.util;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
@@ -29,6 +29,7 @@ import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import java.util.*;
 
@@ -67,8 +68,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	public static String DATA_ATTR_PAGE_SIZE = "data-tbl-size";
 	public static String DATA_ATTR_SORT = "data-tbl-sort";
 	public static String DATA_ATTR_SORT_PROPERTY = "data-tbl-sort-property";
+
 	protected final EntityViewElementBuilderService viewElementBuilderService;
 	protected final BootstrapUiFactory bootstrapUi;
+
 	private String tableName = "sortableTable";
 	private EntityConfiguration entityConfiguration;
 	private Collection<String> sortableProperties;
@@ -80,6 +83,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	private ViewElementBuilderSupport.ElementOrBuilder noResultsElement;
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors = new ArrayList<>();
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors = new ArrayList<>();
+
 	@Autowired
 	public SortableTableBuilder( EntityViewElementBuilderService viewElementBuilderService,
 	                             BootstrapUiFactory bootstrapUi ) {
@@ -203,7 +207,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 	/**
 	 * Limit the properties that can be sorted on by specifiying them explicitly.  If the collection
-	 * is null then all properties that have a {@link EntityAttributes#SORTABLE_PROPERTY} attribute will
+	 * is null then all properties that have a {@link org.springframework.data.domain.Sort.Order} attribute will
 	 * be sortable.
 	 *
 	 * @param sortableProperties collection of property names that can be sorted on
@@ -273,9 +277,23 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		attributes.put( DATA_ATTR_CURRENT_PAGE, currentPage.getNumber() );
 		attributes.put( DATA_ATTR_PAGES, currentPage.getTotalPages() );
 		attributes.put( DATA_ATTR_PAGE_SIZE, currentPage.getSize() );
-		attributes.put( DATA_ATTR_SORT, currentPage.getSort() );
+		attributes.put( DATA_ATTR_SORT, convertSortAttribute( currentPage.getSort() ) );
 
 		return attributes;
+	}
+
+	protected List<OrderPair> convertSortAttribute( Sort sort ) {
+		if ( sort == null ) {
+			return null;
+		}
+
+		List<OrderPair> orderPairs = new ArrayList<>();
+
+		for ( Sort.Order order : sort ) {
+			orderPairs.add( new OrderPair( order.getProperty(), order.getDirection().name() ) );
+		}
+
+		return orderPairs;
 	}
 
 	protected void createTableHeader( TableViewElementBuilder table ) {
@@ -314,7 +332,8 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 	protected String determineSortableProperty( EntityPropertyDescriptor descriptor ) {
 		if ( sortableProperties == null || sortableProperties.contains( descriptor.getName() ) ) {
-			return descriptor.getAttribute( EntityAttributes.SORTABLE_PROPERTY, String.class );
+			Sort.Order order = descriptor.getAttribute( Sort.Order.class );
+			return order != null ? order.getProperty() : null;
 		}
 
 		return null;
@@ -463,8 +482,33 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	}
 
 	/**
+	 * Simple class for JSON serializing sortable properties.
+	 */
+	public static class OrderPair
+	{
+		@JsonProperty(value = "prop")
+		private String property;
+
+		@JsonProperty(value = "dir")
+		private String direction;
+
+		public OrderPair( String property, String direction ) {
+			this.property = property;
+			this.direction = direction;
+		}
+
+		public String getProperty() {
+			return property;
+		}
+
+		public String getDirection() {
+			return direction;
+		}
+	}
+
+	/**
 	 * Sets the position of the item being processed (in an
-	 * {@link com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext}) as the
+	 * {@link IteratorViewElementBuilderContext}) as the
 	 * text of a {@link TextViewElement}.
 	 */
 	public static class ResultNumberProcessor implements ViewElementPostProcessor<TextViewElement>

@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.registry.builders;
 
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
@@ -27,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.data.domain.Sort;
 
 import java.util.Collections;
 import java.util.Map;
@@ -49,7 +49,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 			MutableEntityPropertyDescriptor label = (MutableEntityPropertyDescriptor) invocation.getArguments()[0];
 			assertNotNull( label );
 			assertEquals( "Label", label.getDisplayName() );
-			assertEquals( "test", label.getAttribute( EntityAttributes.SORTABLE_PROPERTY ) );
+			assertEquals( new Sort.Order( "test" ), label.getAttribute( Sort.Order.class ) );
 			assertSame( EXISTING.getValueFetcher(), label.getValueFetcher() );
 			assertNull( label.getPropertyType() );
 			assertNull( label.getPropertyTypeDescriptor() );
@@ -67,8 +67,8 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 
 		Mockito.<Class<?>>when( EXISTING.getPropertyType() ).thenReturn( Integer.class );
 
-		Map<String, Object> attributes = Collections.singletonMap( EntityAttributes.SORTABLE_PROPERTY,
-		                                                           (Object) "test" );
+		Map<String, Object> attributes = Collections.singletonMap( Sort.Order.class.getName(), new Sort.Order(
+				"test" ) );
 		when( EXISTING.attributeMap() ).thenReturn( attributes );
 		when( EXISTING.getValueFetcher() ).thenReturn( valueFetcher );
 		when( EXISTING.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( Integer.class ) );
