@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -67,7 +67,7 @@ public class TestEntityListViewBuilder
 
 		EntityPropertyRegistryFactory registryFactory = mock( EntityPropertyRegistryFactory.class );
 		when( registryFactory.createWithParent( any( EntityPropertyRegistry.class ) ) ).thenReturn( mock(
-				EntityPropertyRegistry.class ) );
+				MutableEntityPropertyRegistry.class ) );
 		when( beanFactory.getBean( EntityPropertyRegistryFactory.class ) ).thenReturn( registryFactory );
 
 		client = mock( MutableEntityConfiguration.class );

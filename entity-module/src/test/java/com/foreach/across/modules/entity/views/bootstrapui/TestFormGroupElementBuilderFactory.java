@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -61,12 +61,12 @@ public class TestFormGroupElementBuilderFactory extends ViewElementBuilderFactor
 
 		ViewElementBuilder controlBuilder = new TextboxFormElementBuilder().required();
 		when( viewElementBuilderService
-				      .getElementBuilder( entityConfiguration, properties.get( "text" ), ViewElementMode.CONTROL ) )
+				      .getElementBuilder( properties.get( "text" ), ViewElementMode.CONTROL ) )
 				.thenReturn( controlBuilder );
 
 		ViewElementBuilder labelBuilder = new LabelFormElementBuilder();
 		when( viewElementBuilderService
-				      .getElementBuilder( entityConfiguration, properties.get( "text" ), ViewElementMode.LABEL ) )
+				      .getElementBuilder( properties.get( "text" ), ViewElementMode.LABEL ) )
 				.thenReturn( labelBuilder );
 
 		FormGroupElement group = assembleAndVerify( "text", true );
@@ -79,12 +79,12 @@ public class TestFormGroupElementBuilderFactory extends ViewElementBuilderFactor
 
 		ViewElementBuilder controlBuilder = new TextboxFormElementBuilder().required();
 		when( viewElementBuilderService
-				      .getElementBuilder( entityConfiguration, properties.get( "text" ), ViewElementMode.CONTROL ) )
+				      .getElementBuilder( properties.get( "text" ), ViewElementMode.CONTROL ) )
 				.thenReturn( controlBuilder );
 
 		ViewElementBuilder labelBuilder = new LabelFormElementBuilder();
 		when( viewElementBuilderService
-				      .getElementBuilder( entityConfiguration, properties.get( "text" ), ViewElementMode.LABEL ) )
+				      .getElementBuilder( properties.get( "text" ), ViewElementMode.LABEL ) )
 				.thenReturn( labelBuilder );
 
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );

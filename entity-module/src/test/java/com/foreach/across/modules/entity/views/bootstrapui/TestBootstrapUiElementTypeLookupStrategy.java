@@ -232,7 +232,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
 
 		assertEquals( BootstrapUiElements.MULTI_CHECKBOX,
-		              strategy.findElementType( entityConfiguration, descriptor, ViewElementMode.CONTROL ) );
+		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
 	}
 
 	@Test
@@ -250,7 +250,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
 
 		assertEquals( BootstrapUiElements.MULTI_CHECKBOX,
-		              strategy.findElementType( entityConfiguration, descriptor, ViewElementMode.CONTROL ) );
+		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
 	}
 
 	@Test
@@ -262,11 +262,11 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@SuppressWarnings("unchecked")
 	private String lookup( Class propertyType, ViewElementMode mode ) {
 		when( descriptor.getPropertyType() ).thenReturn( propertyType );
-		return strategy.findElementType( entityConfiguration, descriptor, mode );
+		return strategy.findElementType( descriptor, mode );
 	}
 
 	private String lookup( ViewElementMode mode ) {
-		return strategy.findElementType( entityConfiguration, descriptor, mode );
+		return strategy.findElementType( descriptor, mode );
 	}
 
 	@Configuration

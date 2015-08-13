@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -82,7 +82,7 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_READ );
 		assertNotNull( fieldset );
 		verify( registry ).select( selector );
-		verify( viewElementBuilderService ).getElementBuilder( entityConfiguration, member, ViewElementMode.FORM_READ );
+		verify( viewElementBuilderService ).getElementBuilder( member, ViewElementMode.FORM_READ );
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_READ );
 		assertNotNull( fieldset );
 		verify( registry ).select( selector );
-		verify( viewElementBuilderService ).getElementBuilder( entityConfiguration, member, ViewElementMode.FORM_READ );
+		verify( viewElementBuilderService ).getElementBuilder( member, ViewElementMode.FORM_READ );
 	}
 
 	private static class Instance
