@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,9 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
@@ -77,8 +75,6 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 	@Override
 	protected TextboxFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                          EntityPropertyRegistry entityPropertyRegistry,
-	                                                          EntityConfiguration entityConfiguration,
 	                                                          ViewElementMode viewElementMode ) {
 		TextboxFormElementBuilder textboxBuilder
 				= bootstrapUi.textbox()
@@ -135,12 +131,10 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	{
 		@Override
 		public void process( EntityPropertyDescriptor propertyDescriptor,
-		                     EntityPropertyRegistry entityPropertyRegistry,
-		                     EntityConfiguration entityConfiguration,
 		                     ViewElementMode viewElementMode,
 		                     TextboxFormElementBuilder builder ) {
 			if ( !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
-				super.process( propertyDescriptor, entityPropertyRegistry, entityConfiguration, viewElementMode,
+				super.process( propertyDescriptor, viewElementMode,
 				               builder );
 			}
 		}
@@ -164,8 +158,6 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	{
 		@Override
 		public void process( EntityPropertyDescriptor propertyDescriptor,
-		                     EntityPropertyRegistry entityPropertyRegistry,
-		                     EntityConfiguration entityConfiguration,
 		                     ViewElementMode viewElementMode,
 		                     TextboxFormElementBuilder builder ) {
 			if ( !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {

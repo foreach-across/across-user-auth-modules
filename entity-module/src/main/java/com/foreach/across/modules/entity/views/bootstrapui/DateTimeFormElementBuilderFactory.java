@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,9 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory.TextboxPlaceholderProcessor;
@@ -68,11 +66,9 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 
 	@Override
 	public DateTimeFormElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                 EntityPropertyRegistry entityPropertyRegistry,
-	                                                 EntityConfiguration entityConfiguration,
 	                                                 ViewElementMode viewElementMode ) {
 		DateTimeFormElementBuilder builder = super.createBuilder(
-				propertyDescriptor, entityPropertyRegistry, entityConfiguration, viewElementMode
+				propertyDescriptor, viewElementMode
 		);
 
 		// Apply custom configuration
@@ -96,8 +92,6 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 
 	@Override
 	protected DateTimeFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                           EntityPropertyRegistry entityPropertyRegistry,
-	                                                           EntityConfiguration entityConfiguration,
 	                                                           ViewElementMode viewElementMode ) {
 
 		return bootstrapUi

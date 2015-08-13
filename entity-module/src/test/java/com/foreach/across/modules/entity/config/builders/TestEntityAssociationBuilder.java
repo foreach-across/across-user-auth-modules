@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,8 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -47,7 +47,8 @@ public class TestEntityAssociationBuilder
 		beanFactory = mock( AutowireCapableBeanFactory.class );
 
 		EntityPropertyRegistryFactory registryFactory = mock( EntityPropertyRegistryFactory.class );
-		when( registryFactory.getOrCreate( any( Class.class ) ) ).thenReturn( mock( EntityPropertyRegistry.class ) );
+		when( registryFactory.getOrCreate( any( Class.class ) ) )
+				.thenReturn( mock( MutableEntityPropertyRegistry.class ) );
 		when( beanFactory.getBean( EntityPropertyRegistryFactory.class ) ).thenReturn( registryFactory );
 	}
 

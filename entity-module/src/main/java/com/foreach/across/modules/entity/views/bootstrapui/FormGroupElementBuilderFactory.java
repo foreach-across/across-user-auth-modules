@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,9 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
@@ -60,8 +58,6 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 	@Override
 	protected FormGroupElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                        EntityPropertyRegistry entityPropertyRegistry,
-	                                                        EntityConfiguration entityConfiguration,
 	                                                        ViewElementMode viewElementMode ) {
 		ViewElementMode controlMode = ViewElementMode.CONTROL;
 
@@ -70,7 +66,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		}
 
 		ViewElementBuilder controlBuilder = entityViewElementBuilderService.getElementBuilder(
-				entityConfiguration, propertyDescriptor, controlMode
+				propertyDescriptor, controlMode
 		);
 
 		DescriptionTextPostProcessor descriptionTextPostProcessor
@@ -107,7 +103,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		}
 		else {
 			ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder(
-					entityConfiguration, propertyDescriptor, ViewElementMode.LABEL
+					propertyDescriptor, ViewElementMode.LABEL
 			);
 
 			LabelFormElementBuilder labelBuilder = bootstrapUi.label().text( labelText );

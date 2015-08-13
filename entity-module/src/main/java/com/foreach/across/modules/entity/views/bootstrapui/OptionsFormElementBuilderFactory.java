@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +22,6 @@ import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EntityQueryOptionIterableBuilder;
@@ -73,8 +72,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Override
 	@SuppressWarnings("unchecked")
 	protected OptionsFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor,
-	                                                          EntityPropertyRegistry entityPropertyRegistry,
-	                                                          EntityConfiguration entityConfiguration,
 	                                                          ViewElementMode viewElementMode ) {
 
 		boolean isCollection = isCollection( descriptor );

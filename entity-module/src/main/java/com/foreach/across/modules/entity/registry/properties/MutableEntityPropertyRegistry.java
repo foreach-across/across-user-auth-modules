@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,5 +20,14 @@ package com.foreach.across.modules.entity.registry.properties;
  */
 public interface MutableEntityPropertyRegistry extends EntityPropertyRegistry
 {
+	/**
+	 * Attach a descriptor to this registry.  A descriptor can only be attached to a
+	 * single registry, so the {@link EntityPropertyDescriptor#getPropertyRegistry()} should return {@code null}
+	 * on the descriptor you try to register.
+	 *
+	 * @param descriptor instance
+	 */
+	void register( MutableEntityPropertyDescriptor descriptor );
+
 	MutableEntityPropertyDescriptor getMutableProperty( String propertyName );
 }

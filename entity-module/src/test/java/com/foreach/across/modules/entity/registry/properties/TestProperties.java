@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -189,8 +189,8 @@ public class TestProperties
 
 	@Test
 	public void customPropertyAndValueFetcher() {
-		EntityPropertyRegistry parent = entityPropertyRegistryFactory.create( Customer.class );
-		EntityPropertyRegistry registry = entityPropertyRegistryFactory.createWithParent( parent );
+		MutableEntityPropertyRegistry parent = entityPropertyRegistryFactory.create( Customer.class );
+		MutableEntityPropertyRegistry registry = entityPropertyRegistryFactory.createWithParent( parent );
 
 		SimpleEntityPropertyDescriptor calculated = new SimpleEntityPropertyDescriptor( "address.size()" );
 		calculated.setValueFetcher( new SpelValueFetcher( "address.size()" ) );
@@ -214,7 +214,7 @@ public class TestProperties
 
 	@Test
 	public void wildcardShouldNeverReturnNested() {
-		EntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
+		MutableEntityPropertyRegistry registry = entityPropertyRegistryFactory.create( Customer.class );
 		MutableEntityPropertyDescriptor descriptor
 				= (MutableEntityPropertyDescriptor) registry.getProperty( "address.street" );
 		registry.register( descriptor );

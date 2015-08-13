@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,12 +15,12 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
  * Strategy interface that looks up the most fitting
- * {@link com.foreach.across.modules.entity.views.elements.ViewElement} type to create.
+ * {@link ViewElement} type to create.
  *
  * @author Arne Vandamme
  */
@@ -29,7 +29,5 @@ public interface ViewElementTypeLookupStrategy
 	/**
 	 * @return element type or null if none could be determined.
 	 */
-	String findElementType( EntityConfiguration entityConfiguration,
-	                        EntityPropertyDescriptor descriptor,
-	                        ViewElementMode viewElementMode );
+	String findElementType( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode );
 }

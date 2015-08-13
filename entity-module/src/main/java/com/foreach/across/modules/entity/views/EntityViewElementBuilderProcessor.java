@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,9 +15,7 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 
 /**
@@ -31,15 +29,11 @@ public interface EntityViewElementBuilderProcessor<T extends ViewElementBuilder>
 	/**
 	 * Process the builder instance.
 	 *
-	 * @param propertyDescriptor     for which the builder is being created
-	 * @param entityPropertyRegistry that owns the property descriptor
-	 * @param entityConfiguration    entity configuration context (can be null)
-	 * @param viewElementMode        mode for which the builder is being created
-	 * @param builder                builder instance already created
+	 * @param propertyDescriptor for which the builder is being created
+	 * @param viewElementMode    mode for which the builder is being created
+	 * @param builder            builder instance already created
 	 */
 	void process( EntityPropertyDescriptor propertyDescriptor,
-	              EntityPropertyRegistry entityPropertyRegistry,
-	              EntityConfiguration entityConfiguration,
 	              ViewElementMode viewElementMode,
 	              T builder );
 }

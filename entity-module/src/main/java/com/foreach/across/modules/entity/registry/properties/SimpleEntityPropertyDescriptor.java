@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +30,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	private ValueFetcher valueFetcher;
 	private Class<?> propertyType;
 	private TypeDescriptor propertyTypeDescriptor;
+	private EntityPropertyRegistry propertyRegistry;
 
 	public SimpleEntityPropertyDescriptor( String name ) {
 		this( name, null );
@@ -123,5 +124,15 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 		if ( readable == null && parent == null && valueFetcher != null ) {
 			readable = true;
 		}
+	}
+
+	@Override
+	public EntityPropertyRegistry getPropertyRegistry() {
+		return propertyRegistry;
+	}
+
+	@Override
+	public void setPropertyRegistry( EntityPropertyRegistry propertyRegistry ) {
+		this.propertyRegistry = propertyRegistry;
 	}
 }

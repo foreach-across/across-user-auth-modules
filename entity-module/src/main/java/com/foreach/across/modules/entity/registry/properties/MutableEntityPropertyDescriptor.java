@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +24,13 @@ import org.springframework.core.convert.TypeDescriptor;
  */
 public interface MutableEntityPropertyDescriptor extends EntityPropertyDescriptor, WritableAttributes
 {
+	/**
+	 * Set the registry this property descriptor belongs to.
+	 *
+	 * @param propertyRegistry instance
+	 */
+	void setPropertyRegistry( EntityPropertyRegistry propertyRegistry );
+
 	void setDisplayName( String displayName );
 
 	void setReadable( boolean readable );

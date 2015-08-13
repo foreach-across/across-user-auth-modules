@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,10 +17,8 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FieldsetFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -56,8 +54,6 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 
 	@Override
 	protected FieldsetFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                           EntityPropertyRegistry entityPropertyRegistry,
-	                                                           EntityConfiguration entityConfiguration,
 	                                                           ViewElementMode viewElementMode ) {
 		FieldsetFormElementBuilder fieldset
 				= bootstrapUi.fieldset()
@@ -65,19 +61,17 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 				             .legend()
 				             .text( propertyDescriptor.getDisplayName() )
 				             .postProcessor(
-						             new TextCodeResolverPostProcessor<FieldsetFormElement.Legend>(
-								             "properties." + propertyDescriptor.getName(),
-								             entityConfiguration.getEntityMessageCodeResolver()
-						             )
+						             new TextCodeResolverPostProcessor<>( "properties." + propertyDescriptor.getName() )
 				             )
 				             .and();
 
 		EntityPropertySelector selector = retrieveMembersSelector( propertyDescriptor );
+		EntityPropertyRegistry propertyRegistry = propertyDescriptor.getPropertyRegistry();
 
-		if ( selector != null ) {
-			for ( EntityPropertyDescriptor member : entityPropertyRegistry.select( selector ) ) {
+		if ( selector != null && propertyRegistry != null ) {
+			for ( EntityPropertyDescriptor member : propertyRegistry.select( selector ) ) {
 				ViewElementBuilder memberBuilder = entityViewElementBuilderService.getElementBuilder(
-						entityConfiguration, member, viewElementMode
+						member, viewElementMode
 				);
 
 				if ( memberBuilder != null ) {
