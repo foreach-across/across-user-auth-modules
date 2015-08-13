@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,13 +17,10 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueTextPostProcessor;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -48,13 +45,10 @@ public class TextViewElementBuilderFactory extends EntityViewElementBuilderFacto
 
 	@Override
 	protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                       EntityPropertyRegistry entityPropertyRegistry,
-	                                                       EntityConfiguration entityConfiguration,
 	                                                       ViewElementMode viewElementMode ) {
 		return bootstrapUi.text()
 		                  .postProcessor(
-				                  new EntityPropertyValueTextPostProcessor<TextViewElement>( conversionService,
-				                                                                         propertyDescriptor )
+				                  new EntityPropertyValueTextPostProcessor<>( conversionService, propertyDescriptor )
 		                  );
 	}
 }

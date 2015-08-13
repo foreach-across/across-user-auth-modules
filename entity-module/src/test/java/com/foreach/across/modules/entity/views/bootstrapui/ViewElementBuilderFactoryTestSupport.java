@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -76,6 +76,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
 
 		when( entityConfiguration.getEntityMessageCodeResolver() ).thenReturn( codeResolver );
+		when( builderContext.getAttribute( EntityMessageCodeResolver.class ) ).thenReturn( codeResolver );
 
 		if ( properties.isEmpty() ) {
 			BeanMetaDataManager manager = new BeanMetaDataManager(
@@ -90,6 +91,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 				PropertyDescriptor validationDescriptor = beanDescriptor.getConstraintsForProperty( field.getName() );
 
 				EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
+				when( descriptor.getPropertyRegistry() ).thenReturn( registry );
 				when( descriptor.getName() ).thenReturn( propertyName );
 				when( descriptor.getDisplayName() ).thenReturn( StringUtils.lowerCase( propertyName ) );
 				when( descriptor.getAttribute( PropertyDescriptor.class ) ).thenReturn( validationDescriptor );
@@ -128,7 +130,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	@SuppressWarnings("unchecked")
 	protected <V extends T> V assemble( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
 		return (V) builderFactory
-				.createBuilder( descriptor, registry, entityConfiguration, viewElementMode )
+				.createBuilder( descriptor, viewElementMode )
 				.build( builderContext );
 	}
 

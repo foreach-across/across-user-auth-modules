@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,9 +15,7 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 
 import java.util.ArrayList;
@@ -38,24 +36,16 @@ public abstract class EntityViewElementBuilderFactorySupport<T extends ViewEleme
 	@Override
 	@SuppressWarnings("unchecked")
 	public T createBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                        EntityPropertyRegistry entityPropertyRegistry,
-	                        EntityConfiguration entityConfiguration,
 	                        ViewElementMode viewElementMode ) {
-		T builder = createInitialBuilder(
-				propertyDescriptor, entityPropertyRegistry, entityConfiguration, viewElementMode
-		);
+		T builder = createInitialBuilder( propertyDescriptor, viewElementMode );
 
 		for ( EntityViewElementBuilderProcessor<T> processor : processors ) {
-			processor.process(
-					propertyDescriptor, entityPropertyRegistry, entityConfiguration, viewElementMode, builder
-			);
+			processor.process( propertyDescriptor, viewElementMode, builder );
 		}
 
 		return builder;
 	}
 
 	protected abstract T createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                           EntityPropertyRegistry entityPropertyRegistry,
-	                                           EntityConfiguration entityConfiguration,
 	                                           ViewElementMode viewElementMode );
 }

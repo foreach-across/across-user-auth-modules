@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +18,7 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlPostProcessor;
@@ -45,8 +43,6 @@ public class CheckboxFormElementBuilderFactory implements EntityViewElementBuild
 
 	@Override
 	public OptionFormElementBuilder createBuilder( EntityPropertyDescriptor descriptor,
-	                                               EntityPropertyRegistry entityPropertyRegistry,
-	                                               EntityConfiguration entityConfiguration,
 	                                               ViewElementMode viewElementMode ) {
 		return bootstrapUi.checkbox()
 		                  .name( descriptor.getName() )
@@ -54,11 +50,6 @@ public class CheckboxFormElementBuilderFactory implements EntityViewElementBuild
 		                  .value( "on" )
 		                  .postProcessor( new EntityPropertyControlPostProcessor<>() )
 		                  .postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
-		                  .postProcessor(
-				                  new TextCodeResolverPostProcessor<>(
-						                  "properties." + descriptor.getName(),
-						                  entityConfiguration.getEntityMessageCodeResolver()
-				                  )
-		                  );
+		                  .postProcessor( new TextCodeResolverPostProcessor<>( "properties." + descriptor.getName() ) );
 	}
 }

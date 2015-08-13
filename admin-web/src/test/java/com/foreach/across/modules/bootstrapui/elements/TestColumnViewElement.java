@@ -13,23 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.registry.properties;
+package com.foreach.across.modules.bootstrapui.elements;
+
+import org.junit.Test;
 
 /**
  * @author Arne Vandamme
  */
-public interface EntityPropertyRegistryFactory
+public class TestColumnViewElement extends AbstractBootstrapViewElementTest
 {
-	EntityPropertyRegistry getOrCreate( Class<?> entityType );
+	@Test
+	public void simple() {
+		ColumnViewElement column = new ColumnViewElement();
 
-	EntityPropertyRegistry get( Class<?> entityType );
+		renderAndExpect(
+				column,
+				"<div></div>"
+		);
+	}
 
-	/**
-	 * Creates a new registry that uses the existing as parent.  Will usually return a
-	 * {@link MergingEntityPropertyRegistry} where the property descriptors are also inherited.
-	 *
-	 * @param entityPropertyRegistry that is the parent
-	 * @return new registry instance for the parent source
-	 */
-	EntityPropertyRegistry createWithParent( EntityPropertyRegistry entityPropertyRegistry );
+	@Test
+	public void deviceLayouts() {
+		ColumnViewElement column = new ColumnViewElement();
+		column.addLayout( Grid.Device.MEDIUM.width( Grid.Width.HALF ) );
+		column.addLayout( Grid.Device.XS.hidden() );
+
+		renderAndExpect(
+				column,
+				"<div class='col-md-6 hidden-xs'></div>"
+		);
+	}
 }
