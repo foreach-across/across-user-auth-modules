@@ -20,8 +20,6 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -42,7 +40,7 @@ public class EntityViewElementBuilderHelpers
 	/**
 	 * Create a new batch builder for a given entity.  Requires an {@link EntityConfiguration} to exist for that
 	 * entity type.  The default {@link com.foreach.across.modules.entity.support.EntityMessageCodeResolver} for
-	 * the configuration will be used.
+	 * the configuration will be used.  The entity will be set as {@link EntityView#ATTRIBUTE_ENTITY} attribute.
 	 *
 	 * @param entity instance, should not be null
 	 * @return batch instance
@@ -50,19 +48,29 @@ public class EntityViewElementBuilderHelpers
 	public <V> EntityViewElementBatch<V> createBatchForEntity( V entity ) {
 		Assert.notNull( entity );
 
+		EntityViewElementBatch<V> batch = createBatchForEntityType( (Class<V>) ClassUtils.getUserClass( entity ) );
+		batch.setEntity( entity );
+
+		return batch;
+	}
+
+	/**
+	 * Create a new batch builder for a given entity.  Requires an {@link EntityConfiguration} to exist for that
+	 * entity type.  The default {@link com.foreach.across.modules.entity.support.EntityMessageCodeResolver} for
+	 * the configuration will be used.
+	 *
+	 * @param entityType should not be null
+	 * @return batch instance
+	 */
+	public <V> EntityViewElementBatch<V> createBatchForEntityType( Class<V> entityType ) {
+		Assert.notNull( entityType );
+
 		EntityViewElementBatch<V> batch = new EntityViewElementBatch<>( builderService );
-		EntityConfiguration entityConfiguration
-				= entityRegistry.getEntityConfiguration( ClassUtils.getUserClass( entity ) );
-		batch.setEntityConfiguration( entityConfiguration );
+		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( entityType );
 		batch.setPropertyRegistry( entityConfiguration.getPropertyRegistry() );
 		batch.setPropertySelector( new EntityPropertySelector( EntityPropertySelector.ALL ) );
 
-		ViewElementBuilderContext builderContext = new ViewElementBuilderContextImpl();
-		builderContext.setAttribute( EntityMessageCodeResolver.class,
-		                             entityConfiguration.getEntityMessageCodeResolver() );
-		builderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, entity );
-
-		batch.setViewElementBuilderContext( builderContext );
+		batch.setAttribute( EntityMessageCodeResolver.class, entityConfiguration.getEntityMessageCodeResolver() );
 
 		return batch;
 	}

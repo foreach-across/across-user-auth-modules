@@ -27,7 +27,6 @@ import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBui
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlPostProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,8 +125,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 								datetime.getConfiguration().setLocale( localeContext.getLocale() );
 							}
 						}
-				)
-				.postProcessor( new EntityPropertyControlPostProcessor<>() );
+				);
 	}
 
 	/**

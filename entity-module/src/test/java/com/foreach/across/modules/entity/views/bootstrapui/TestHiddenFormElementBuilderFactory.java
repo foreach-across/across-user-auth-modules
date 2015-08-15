@@ -117,7 +117,7 @@ public class TestHiddenFormElementBuilderFactory extends ViewElementBuilderFacto
 	private <V> V assembleAndVerify( String propertyName ) {
 		HiddenFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
 		assertEquals( propertyName, control.getName() );
-		assertEquals( "entity." + propertyName, control.getControlName() );
+		assertEquals( propertyName, control.getControlName() );
 		assertFalse( control.isDisabled() );
 
 		return (V) control;

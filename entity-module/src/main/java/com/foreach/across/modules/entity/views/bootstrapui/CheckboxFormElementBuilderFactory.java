@@ -21,7 +21,6 @@ import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElement
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueCheckboxPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.TextCodeResolverPostProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,6 @@ public class CheckboxFormElementBuilderFactory implements EntityViewElementBuild
 		                  .name( descriptor.getName() )
 		                  .text( descriptor.getDisplayName() )
 		                  .value( "on" )
-		                  .postProcessor( new EntityPropertyControlPostProcessor<>() )
 		                  .postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
 		                  .postProcessor( new TextCodeResolverPostProcessor<>( "properties." + descriptor.getName() ) );
 	}
