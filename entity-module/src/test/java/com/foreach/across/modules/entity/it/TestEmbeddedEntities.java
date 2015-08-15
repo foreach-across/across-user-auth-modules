@@ -95,12 +95,12 @@ public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 				"<fieldset name='address'>" +
 						"<legend>Address</legend>" +
 						"<div class='form-group'>" +
-						"<label for='entity.address.street' class='control-label'>Street</label>" +
-						"<input type='text' class='form-control' name='entity.address.street' id='entity.address.street' maxlength='100' />" +
+						"<label for='address.street' class='control-label'>Street</label>" +
+						"<input type='text' class='form-control' name='address.street' id='address.street' maxlength='100' />" +
 						"</div>" +
 						"<div class='form-group'>" +
-						"<label for='entity.address.zipCode' class='control-label'>Zip code</label>" +
-						"<input type='text' class='form-control' name='entity.address.zipCode' id='entity.address.zipCode' />" +
+						"<label for='address.zipCode' class='control-label'>Zip code</label>" +
+						"<input type='text' class='form-control' name='address.zipCode' id='address.zipCode' />" +
 						"</div>" +
 						"</fieldset>"
 		);

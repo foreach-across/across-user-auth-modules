@@ -29,7 +29,6 @@ import com.foreach.across.modules.entity.views.bootstrapui.options.EnumOptionIte
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlPostProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +84,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		OptionsFormElementBuilder options
 				= bootstrapUi.options()
 				             .name( descriptor.getName() )
-				             .controlName( EntityPropertyControlPostProcessor.PREFIX + descriptor.getName() );
+				             .controlName( descriptor.getName() );
 
 		OptionGenerator optionGenerator = new OptionGenerator();
 		optionGenerator.setSorted( true );

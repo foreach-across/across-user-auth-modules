@@ -134,7 +134,7 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 	private <V> V assembleAndVerify( String propertyName, boolean required ) {
 		CheckboxFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
 		assertEquals( propertyName, control.getName() );
-		assertEquals( "entity." + propertyName, control.getControlName() );
+		assertEquals( propertyName, control.getControlName() );
 		assertEquals( "resolved: " + propertyName, control.getText() );
 		assertFalse( control.isReadonly() );
 		assertFalse( control.isDisabled() );

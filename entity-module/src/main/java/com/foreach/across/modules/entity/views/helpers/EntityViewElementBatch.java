@@ -15,15 +15,16 @@
  */
 package com.foreach.across.modules.entity.views.helpers;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -40,14 +41,12 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
-public class EntityViewElementBatch<T>
+public class EntityViewElementBatch<T> extends ViewElementBuilderContextImpl
 {
 	private final EntityViewElementBuilderService viewElementBuilderService;
 
-	private ViewElementBuilderContext viewElementBuilderContext;
 	private EntityPropertyRegistry propertyRegistry;
 	private EntityPropertySelector propertySelector;
-	private EntityConfiguration entityConfiguration;
 
 	private ViewElementMode viewElementMode;
 
@@ -58,16 +57,12 @@ public class EntityViewElementBatch<T>
 		this.viewElementBuilderService = viewElementBuilderService;
 	}
 
-	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
-		this.entityConfiguration = entityConfiguration;
-	}
-
 	public void setPropertyRegistry( EntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
 	}
 
-	public void setViewElementBuilderContext( ViewElementBuilderContext viewElementBuilderContext ) {
-		this.viewElementBuilderContext = viewElementBuilderContext;
+	public void setParentViewElementBuilderContext( ViewElementBuilderContext viewElementBuilderContext ) {
+		setParent( viewElementBuilderContext );
 	}
 
 	public void setPropertySelector( EntityPropertySelector propertySelector ) {
@@ -76,6 +71,15 @@ public class EntityViewElementBatch<T>
 
 	public void setViewElementMode( ViewElementMode viewElementMode ) {
 		this.viewElementMode = viewElementMode;
+	}
+
+	/**
+	 * Set the entity that should be used for the next build.
+	 *
+	 * @param entity instance
+	 */
+	public void setEntity( T entity ) {
+		setAttribute( EntityView.ATTRIBUTE_ENTITY, entity );
 	}
 
 	/**
@@ -121,7 +125,7 @@ public class EntityViewElementBatch<T>
 		}
 
 		ViewElementBuilder builder = getViewElementBuilder( descriptor, builderHint );
-		return builder != null ? builder.build( viewElementBuilderContext ) : null;
+		return builder != null ? builder.build( this ) : null;
 	}
 
 	private ViewElementBuilder getViewElementBuilder( EntityPropertyDescriptor descriptor, Object builderHint ) {
