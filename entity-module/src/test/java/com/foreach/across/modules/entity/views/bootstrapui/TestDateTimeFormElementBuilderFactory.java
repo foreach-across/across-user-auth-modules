@@ -156,7 +156,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	private <V> V assembleAndVerify( String propertyName, boolean required ) {
 		DateTimeFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
 		assertEquals( propertyName, control.getName() );
-		assertEquals( "entity." + propertyName, control.getControlName() );
+		assertEquals( propertyName, control.getControlName() );
 		assertFalse( control.isReadonly() );
 		assertFalse( control.isDisabled() );
 		assertEquals( required, control.isRequired() );
