@@ -21,28 +21,24 @@ import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.convert.ConversionException;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.context.i18n.LocaleContextHolder;
+
+import java.util.Locale;
 
 /**
  * Responsible for fetching the property value and setting it as text property on a {@link ConfigurableTextViewElement}.
  */
-public class EntityPropertyValueTextPostProcessor<T extends ConfigurableTextViewElement>
+public abstract class AbstractValueTextPostProcessor<T extends ConfigurableTextViewElement>
 		implements ViewElementPostProcessor<T>
 {
-	private static final Logger LOG = LoggerFactory.getLogger( EntityPropertyValueTextPostProcessor.class );
-	private static final TypeDescriptor STRING_TYPE = TypeDescriptor.valueOf( String.class );
-
-	private final ConversionService conversionService;
 	private final EntityPropertyDescriptor propertyDescriptor;
 
-	public EntityPropertyValueTextPostProcessor( ConversionService conversionService,
-	                                             EntityPropertyDescriptor propertyDescriptor ) {
-		this.conversionService = conversionService;
+	protected AbstractValueTextPostProcessor( EntityPropertyDescriptor propertyDescriptor ) {
 		this.propertyDescriptor = propertyDescriptor;
+	}
+
+	public EntityPropertyDescriptor getPropertyDescriptor() {
+		return propertyDescriptor;
 	}
 
 	@Override
@@ -53,19 +49,12 @@ public class EntityPropertyValueTextPostProcessor<T extends ConfigurableTextView
 
 		if ( entity != null && valueFetcher != null ) {
 			Object propertyValue = valueFetcher.getValue( entity );
-			TypeDescriptor sourceType = propertyDescriptor.getPropertyTypeDescriptor();
 
-			if ( sourceType == null && propertyValue != null ) {
-				sourceType = TypeDescriptor.forObject( propertyValue );
-			}
-
-			try {
-				String text = (String) conversionService.convert( propertyValue, sourceType, STRING_TYPE );
-				element.setText( text );
-			}
-			catch ( ConversionException ce ) {
-				LOG.warn( "Unable to convert {} to string", sourceType, ce );
+			if ( propertyValue != null ) {
+				element.setText( print( propertyValue, LocaleContextHolder.getLocale() ) );
 			}
 		}
 	}
+
+	protected abstract String print( Object value, Locale locale );
 }

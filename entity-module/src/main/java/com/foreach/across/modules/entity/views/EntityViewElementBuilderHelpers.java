@@ -17,13 +17,23 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.AbstractValueTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormatValueTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PrinterValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.format.Printer;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import java.text.Format;
 
 /**
  * @author Arne Vandamme
@@ -36,6 +46,30 @@ public class EntityViewElementBuilderHelpers
 
 	@Autowired
 	private EntityRegistry entityRegistry;
+
+	@Autowired
+	private ConversionService mvcConversionService;
+
+	/**
+	 * Create a {@link com.foreach.across.modules.web.ui.ViewElementPostProcessor} for a single
+	 * {@link EntityPropertyDescriptor} that will convert a property value to text for a
+	 * {@link com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement}.  The actual implementation
+	 * depends on the presence of attributes on the descriptor.
+	 *
+	 * @param descriptor for which to create default post processor
+	 * @return default postprocessor
+	 */
+	public <V extends ConfigurableTextViewElement> AbstractValueTextPostProcessor<V> createDefaultValueTextPostProcessor(
+			EntityPropertyDescriptor descriptor ) {
+		if ( descriptor.hasAttribute( Printer.class ) ) {
+			return new PrinterValueTextPostProcessor<>( descriptor, descriptor.getAttribute( Printer.class ) );
+		}
+		if ( descriptor.hasAttribute( Format.class ) ) {
+			return new FormatValueTextPostProcessor<>( descriptor, descriptor.getAttribute( Format.class ) );
+		}
+
+		return new ConversionServiceValueTextPostProcessor<>( descriptor, mvcConversionService );
+	}
 
 	/**
 	 * Create a new batch builder for a given entity.  Requires an {@link EntityConfiguration} to exist for that

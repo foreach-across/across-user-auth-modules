@@ -15,18 +15,25 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.AbstractValueTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.NumericValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +53,14 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Autowired
 	private BootstrapUiFactory bootstrapUi;
 
+	@Autowired
+	private EntityViewElementBuilderService viewElementBuilderService;
+
+	@Autowired
+	private EntityViewElementBuilderHelpers viewElementBuilderHelpers;
+
 	private final ControlBuilderFactory controlBuilderFactory = new ControlBuilderFactory();
+	private final ValueBuilderFactory valueBuilderFactory = new ValueBuilderFactory();
 
 	private boolean defaultForceWhitespaceAroundSign;
 
@@ -62,17 +76,60 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 	@Override
 	public boolean supports( String viewElementType ) {
-		return false;
+		return BootstrapUiElements.NUMERIC.equals( viewElementType );
 	}
 
 	@Override
-	protected NumericFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                          ViewElementMode viewElementMode ) {
-		if ( ViewElementMode.isControl( viewElementMode ) ) {
+	protected ViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
+	                                                   ViewElementMode viewElementMode ) {
+		if ( ViewElementMode.isControl( viewElementMode ) && propertyDescriptor.isWritable() ) {
 			return controlBuilderFactory.createBuilder( propertyDescriptor, viewElementMode );
 		}
 
-		return null;
+		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode );
+	}
+
+	/**
+	 * Responsible for creating the value element that also supports the {@link NumericFormElementConfiguration}
+	 * that was specified on the control.
+	 */
+	private class ValueBuilderFactory extends EntityViewElementBuilderFactorySupport<TextViewElementBuilder>
+	{
+		@Override
+		public boolean supports( String viewElementType ) {
+			return true;
+		}
+
+		@Override
+		protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
+		                                                       ViewElementMode viewElementMode ) {
+			AbstractValueTextPostProcessor valueTextPostProcessor
+					= viewElementBuilderHelpers.createDefaultValueTextPostProcessor( propertyDescriptor );
+
+			if ( valueTextPostProcessor instanceof ConversionServiceValueTextPostProcessor ) {
+				NumericFormElementConfiguration config = null;
+
+				if ( propertyDescriptor.isWritable() ) {
+					ViewElementBuilder control = viewElementBuilderService.getElementBuilder(
+							propertyDescriptor, ViewElementMode.CONTROL
+					);
+
+					if ( control instanceof NumericFormElementBuilder ) {
+						config = ( (NumericFormElementBuilder) control ).getConfiguration();
+					}
+				}
+
+				if ( config == null ) {
+					config = controlBuilderFactory.determineBaseConfiguration( propertyDescriptor );
+				}
+
+				if ( config != null ) {
+					valueTextPostProcessor = new NumericValueTextPostProcessor<>( propertyDescriptor, config );
+				}
+			}
+
+			return bootstrapUi.text().postProcessor( valueTextPostProcessor );
+		}
 	}
 
 	/**
@@ -115,11 +172,12 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 					);
 		}
 
-		private NumericFormElementConfiguration determineBaseConfiguration( EntityPropertyDescriptor descriptor ) {
+		public NumericFormElementConfiguration determineBaseConfiguration( EntityPropertyDescriptor descriptor ) {
 			NumericFormElementConfiguration configuration = null;
 
 			if ( descriptor.hasAttribute( NumericFormElementConfiguration.class ) ) {
-				NumericFormElementConfiguration base = descriptor.getAttribute( NumericFormElementConfiguration.class );
+				NumericFormElementConfiguration base = descriptor.getAttribute(
+						NumericFormElementConfiguration.class );
 				configuration = new NumericFormElementConfiguration( base );
 			}
 			else if ( descriptor.hasAttribute( Currency.class ) ) {
