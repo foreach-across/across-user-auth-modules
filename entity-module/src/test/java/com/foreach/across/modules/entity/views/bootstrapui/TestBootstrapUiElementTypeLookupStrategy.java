@@ -145,17 +145,21 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Test
 	public void textboxTypeForPrimitives() {
 		assertEquals( BootstrapUiElements.TEXTBOX, lookup( String.class, ViewElementMode.CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Integer.class, ViewElementMode.CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( int.class, ViewElementMode.CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Long.class, ViewElementMode.CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( BigDecimal.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.TEXTBOX, lookup( String.class, ViewElementMode.LIST_CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Integer.class, ViewElementMode.LIST_CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( int.class, ViewElementMode.LIST_CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( AtomicInteger.class, ViewElementMode.LIST_CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Long.class, ViewElementMode.LIST_CONTROL ) );
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( BigDecimal.class, ViewElementMode.LIST_CONTROL ) );
+	}
+
+	@Test
+	public void numericTypeForNumerics() {
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( Integer.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( int.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( Long.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( BigDecimal.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( Integer.class, ViewElementMode.LIST_CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( int.class, ViewElementMode.LIST_CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( AtomicInteger.class, ViewElementMode.LIST_CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( Long.class, ViewElementMode.LIST_CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( BigDecimal.class, ViewElementMode.LIST_CONTROL ) );
 	}
 
 	@Test
@@ -177,7 +181,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
 		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
 
-		assertEquals( BootstrapUiElements.TEXTBOX, lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
 
 		metadata.setEmbedded( true );
 

@@ -100,7 +100,7 @@ public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 						"</div>" +
 						"<div class='form-group'>" +
 						"<label for='address.zipCode' class='control-label'>Zip code</label>" +
-						"<input type='text' class='form-control' name='address.zipCode' id='address.zipCode' />" +
+						"<input type='text' class='form-control numeric' name='address.zipCode' id='address.zipCode' />" +
 						"</div>" +
 						"</fieldset>"
 		);
