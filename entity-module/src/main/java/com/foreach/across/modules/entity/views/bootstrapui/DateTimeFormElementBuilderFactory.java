@@ -23,10 +23,10 @@ import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormEleme
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory.TextboxPlaceholderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +66,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	@Override
 	public DateTimeFormElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                 ViewElementMode viewElementMode ) {
-		DateTimeFormElementBuilder builder = super.createBuilder(
-				propertyDescriptor, viewElementMode
-		);
+		DateTimeFormElementBuilder builder = super.createBuilder( propertyDescriptor, viewElementMode );
 
 		// Apply custom configuration
 		DateTimeFormElementConfiguration configuration = propertyDescriptor.getAttribute(
@@ -97,10 +95,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 				.datetime()
 				.name( propertyDescriptor.getName() )
 				.controlName( propertyDescriptor.getName() )
-				.control(
-						bootstrapUi.textbox()
-						           .postProcessor( new TextboxPlaceholderProcessor( propertyDescriptor ) )
-				)
+				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) )
 				.postProcessor(
 						( builderContext, datetime ) ->
 						{

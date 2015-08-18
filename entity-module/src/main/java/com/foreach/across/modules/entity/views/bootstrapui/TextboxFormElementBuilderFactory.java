@@ -20,16 +20,13 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueTextPostProcessor;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import org.apache.commons.lang3.StringUtils;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +79,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 				             .postProcessor(
 						             new EntityPropertyValueTextPostProcessor<>( conversionService, propertyDescriptor )
 				             )
-				             .postProcessor( new TextboxPlaceholderProcessor( propertyDescriptor ) );
+				             .postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
 
 		if ( propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
 			textboxBuilder.type( propertyDescriptor.getAttribute( TextboxFormElement.Type.class ) );
@@ -92,33 +89,6 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		return textboxBuilder;
-	}
-
-	/**
-	 * Resolves placeholder text for a property.
-	 */
-	public static class TextboxPlaceholderProcessor implements ViewElementPostProcessor<TextboxFormElement>
-	{
-		private final EntityPropertyDescriptor propertyDescriptor;
-
-		public TextboxPlaceholderProcessor( EntityPropertyDescriptor propertyDescriptor ) {
-			this.propertyDescriptor = propertyDescriptor;
-		}
-
-		@Override
-		public void postProcess( ViewElementBuilderContext builderContext, TextboxFormElement element ) {
-			EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
-
-			if ( codeResolver != null ) {
-				String placeholder = codeResolver.getMessageWithFallback(
-						"properties." + propertyDescriptor.getName() + "[placeholder]", ""
-				);
-
-				if ( !StringUtils.isBlank( placeholder ) ) {
-					element.setPlaceholder( placeholder );
-				}
-			}
-		}
 	}
 
 	/**
@@ -132,8 +102,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		                     ViewElementMode viewElementMode,
 		                     TextboxFormElementBuilder builder ) {
 			if ( !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
-				super.process( propertyDescriptor, viewElementMode,
-				               builder );
+				super.process( propertyDescriptor, viewElementMode, builder );
 			}
 		}
 
