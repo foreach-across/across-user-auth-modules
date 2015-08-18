@@ -38,8 +38,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	private EntityRegistry entityRegistry;
 
 	@Override
-	public String findElementType( EntityPropertyDescriptor descriptor,
-	                               ViewElementMode viewElementMode ) {
+	public String findElementType( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
 		boolean isForWriting
 				= ViewElementMode.FORM_WRITE.equals( viewElementMode ) || ViewElementMode.isControl( viewElementMode );
 
@@ -106,13 +105,17 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 					}
 				}
 
-				if ( ClassUtils.isAssignable( Boolean.class, propertyType )
-						|| ClassUtils.isAssignable( AtomicBoolean.class, propertyType ) ) {
+				if ( ClassUtils.isAssignable( propertyType, Boolean.class )
+						|| ClassUtils.isAssignable( propertyType, AtomicBoolean.class ) ) {
 					return BootstrapUiElements.CHECKBOX;
 				}
 
-				if ( ClassUtils.isAssignable( Date.class, propertyType ) ) {
+				if ( ClassUtils.isAssignable( propertyType, Date.class ) ) {
 					return BootstrapUiElements.DATETIME;
+				}
+
+				if ( ClassUtils.isAssignable( propertyType, Number.class ) ) {
+					return BootstrapUiElements.NUMERIC;
 				}
 
 				return BootstrapUiElements.TEXTBOX;
