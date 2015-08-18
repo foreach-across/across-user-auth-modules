@@ -21,16 +21,15 @@ import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 
 import javax.validation.constraints.Size;
 import javax.validation.metadata.ConstraintDescriptor;
@@ -45,7 +44,7 @@ import java.util.Map;
 public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<TextboxFormElementBuilder>
 {
 	@Autowired
-	private ConversionService conversionService;
+	private EntityViewElementBuilderHelpers viewElementBuilderHelpers;
 
 	@Autowired
 	private BootstrapUiFactory bootstrapUi;
@@ -72,14 +71,12 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Override
 	protected TextboxFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                          ViewElementMode viewElementMode ) {
-		TextboxFormElementBuilder textboxBuilder
-				= bootstrapUi.textbox()
-				             .name( propertyDescriptor.getName() )
-				             .controlName( propertyDescriptor.getName() )
-				             .postProcessor(
-						             new EntityPropertyValueTextPostProcessor<>( conversionService, propertyDescriptor )
-				             )
-				             .postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
+		TextboxFormElementBuilder textboxBuilder = bootstrapUi
+				.textbox()
+				.name( propertyDescriptor.getName() )
+				.controlName( propertyDescriptor.getName() )
+				.postProcessor( viewElementBuilderHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
+				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
 
 		if ( propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
 			textboxBuilder.type( propertyDescriptor.getAttribute( TextboxFormElement.Type.class ) );

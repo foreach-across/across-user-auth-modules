@@ -100,7 +100,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_WRITE ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Integer.class, ViewElementMode.FORM_WRITE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( int.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( int.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Integer.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( int.class, ViewElementMode.FORM_READ ) );
@@ -109,19 +109,23 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Test
 	public void textTypeForReadonlyValues() {
 		assertEquals( BootstrapUiElements.TEXT, lookup( String.class, ViewElementMode.VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( Integer.class, ViewElementMode.VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( int.class, ViewElementMode.VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( AtomicInteger.class, ViewElementMode.VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( Long.class, ViewElementMode.VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( BigDecimal.class, ViewElementMode.VALUE ) );
 		assertEquals( BootstrapUiElements.TEXT, lookup( Date.class, ViewElementMode.VALUE ) );
 		assertEquals( BootstrapUiElements.TEXT, lookup( String.class, ViewElementMode.LIST_VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( Integer.class, ViewElementMode.LIST_VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( int.class, ViewElementMode.LIST_VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( AtomicInteger.class, ViewElementMode.LIST_VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( Long.class, ViewElementMode.LIST_VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( BigDecimal.class, ViewElementMode.LIST_VALUE ) );
 		assertEquals( BootstrapUiElements.TEXT, lookup( Date.class, ViewElementMode.LIST_VALUE ) );
+	}
+
+	@Test
+	public void numericForReadonlyNumericValues() {
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( Integer.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( int.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( AtomicInteger.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( Long.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( BigDecimal.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( Integer.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( int.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( AtomicInteger.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( Long.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.NUMERIC, lookup( BigDecimal.class, ViewElementMode.LIST_VALUE ) );
 	}
 
 	@Test

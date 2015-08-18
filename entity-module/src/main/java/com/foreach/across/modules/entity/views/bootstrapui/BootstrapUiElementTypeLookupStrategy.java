@@ -77,17 +77,23 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			return null;
 		}
 
-		if ( ViewElementMode.isValue( viewElementMode ) ) {
-			return BootstrapUiElements.TEXT;
-		}
-
 		if ( ViewElementMode.isLabel( viewElementMode ) ) {
 			return BootstrapUiElements.LABEL;
 		}
 
-		if ( descriptor.isWritable() ) {
-			Class propertyType = descriptor.getPropertyType();
+		Class propertyType = descriptor.getPropertyType();
 
+		if ( propertyType != null ) {
+			if ( ClassUtils.isAssignable( propertyType, Number.class ) ) {
+				return BootstrapUiElements.NUMERIC;
+			}
+		}
+
+		if ( ViewElementMode.isValue( viewElementMode ) ) {
+			return BootstrapUiElements.TEXT;
+		}
+
+		if ( descriptor.isWritable() ) {
 			if ( propertyType != null ) {
 				if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) ) {
 					return BootstrapUiElements.MULTI_CHECKBOX;
@@ -112,10 +118,6 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 				if ( ClassUtils.isAssignable( propertyType, Date.class ) ) {
 					return BootstrapUiElements.DATETIME;
-				}
-
-				if ( ClassUtils.isAssignable( propertyType, Number.class ) ) {
-					return BootstrapUiElements.NUMERIC;
 				}
 
 				return BootstrapUiElements.TEXTBOX;

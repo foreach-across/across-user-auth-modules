@@ -19,11 +19,10 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueTextPostProcessor;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 
 /**
  * Creates a text value element for a given property.
@@ -33,10 +32,10 @@ import org.springframework.core.convert.ConversionService;
 public class TextViewElementBuilderFactory extends EntityViewElementBuilderFactorySupport<TextViewElementBuilder>
 {
 	@Autowired
-	private ConversionService conversionService;
+	private BootstrapUiFactory bootstrapUi;
 
 	@Autowired
-	private BootstrapUiFactory bootstrapUi;
+	private EntityViewElementBuilderHelpers viewElementBuilderHelpers;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -46,9 +45,8 @@ public class TextViewElementBuilderFactory extends EntityViewElementBuilderFacto
 	@Override
 	protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                       ViewElementMode viewElementMode ) {
-		return bootstrapUi.text()
-		                  .postProcessor(
-				                  new EntityPropertyValueTextPostProcessor<>( conversionService, propertyDescriptor )
-		                  );
+		return bootstrapUi
+				.text()
+				.postProcessor( viewElementBuilderHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) );
 	}
 }

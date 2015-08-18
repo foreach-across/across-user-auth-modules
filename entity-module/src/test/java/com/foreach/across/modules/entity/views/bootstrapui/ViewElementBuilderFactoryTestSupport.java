@@ -96,6 +96,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 				when( descriptor.getDisplayName() ).thenReturn( StringUtils.lowerCase( propertyName ) );
 				when( descriptor.getAttribute( PropertyDescriptor.class ) ).thenReturn( validationDescriptor );
 				when( descriptor.getPropertyType() ).thenReturn( (Class) field.getType() );
+				when( descriptor.isWritable() ).thenReturn( true );
 				TypeDescriptor typeDescriptor = new TypeDescriptor( field );
 				when( descriptor.getPropertyTypeDescriptor() ).thenReturn( typeDescriptor );
 

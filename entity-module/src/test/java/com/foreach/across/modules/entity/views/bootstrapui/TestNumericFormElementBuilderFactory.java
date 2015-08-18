@@ -19,6 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
@@ -166,17 +167,6 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 
 		@NumberFormat(style = NumberFormat.Style.PERCENT)
 		public BigDecimal percent;
-//
-//		@Future
-//		@Temporal(TemporalType.TIMESTAMP)
-//		public Date datetimeWithFuture;
-//
-//		@Past
-//		@Temporal(TemporalType.TIME)
-//		public Date timeWithPast;
-//
-//		@Temporal(TemporalType.DATE)
-//		public Date date;
 	}
 
 	@Configuration
@@ -191,6 +181,11 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 		@Bean
 		public BootstrapUiFactory bootstrapUiFactory() {
 			return new BootstrapUiFactoryImpl();
+		}
+
+		@Bean
+		public EntityViewElementBuilderHelpers viewElementBuilderHelpers() {
+			return new EntityViewElementBuilderHelpers();
 		}
 	}
 }
