@@ -21,7 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
@@ -247,8 +247,8 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 		}
 
 		@Bean
-		public EntityViewElementBuilderHelpers viewElementBuilderHelpers() {
-			return new EntityViewElementBuilderHelpers();
+		public EntityViewElementBuilderFactoryHelper builderFactoryHelper() {
+			return new EntityViewElementBuilderFactoryHelper();
 		}
 	}
 }
