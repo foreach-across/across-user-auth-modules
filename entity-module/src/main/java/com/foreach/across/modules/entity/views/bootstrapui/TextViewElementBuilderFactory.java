@@ -18,8 +18,8 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class TextViewElementBuilderFactory extends EntityViewElementBuilderFacto
 	private BootstrapUiFactory bootstrapUi;
 
 	@Autowired
-	private EntityViewElementBuilderHelpers viewElementBuilderHelpers;
+	private EntityViewElementBuilderFactoryHelper builderFactoryHelper;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -47,6 +47,6 @@ public class TextViewElementBuilderFactory extends EntityViewElementBuilderFacto
 	                                                       ViewElementMode viewElementMode ) {
 		return bootstrapUi
 				.text()
-				.postProcessor( viewElementBuilderHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) );
+				.postProcessor( builderFactoryHelper.createDefaultValueTextPostProcessor( propertyDescriptor ) );
 	}
 }

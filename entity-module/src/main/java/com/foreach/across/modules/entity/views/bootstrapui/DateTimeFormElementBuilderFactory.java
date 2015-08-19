@@ -21,17 +21,22 @@ import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfig
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.AbstractValueTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.DateTimeValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContext;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.mapping.PersistentProperty;
 
 import javax.persistence.Temporal;
@@ -41,22 +46,24 @@ import javax.validation.constraints.Past;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
-public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<DateTimeFormElementBuilder>
+public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {
 	@Autowired
 	private BootstrapUiFactory bootstrapUi;
 
-	public DateTimeFormElementBuilderFactory() {
-		addProcessor( new FormControlRequiredBuilderProcessor<>() );
-		addProcessor( new TemporalAnnotationProcessor() );
-		addProcessor( new PastAndFutureValidationProcessor() );
-	}
+	@Autowired
+	private EntityViewElementBuilderService viewElementBuilderService;
+
+	@Autowired
+	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
+
+	private final ControlBuilderFactory controlBuilderFactory = new ControlBuilderFactory();
+	private final ValueBuilderFactory valueBuilderFactory = new ValueBuilderFactory();
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -64,63 +71,126 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	}
 
 	@Override
-	public DateTimeFormElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                 ViewElementMode viewElementMode ) {
-		DateTimeFormElementBuilder builder = super.createBuilder( propertyDescriptor, viewElementMode );
-
-		// Apply custom configuration
-		DateTimeFormElementConfiguration configuration = propertyDescriptor.getAttribute(
-				DateTimeFormElementConfiguration.class );
-
-		if ( configuration != null ) {
-			builder.format( configuration.getFormat() ).configuration( configuration );
-		}
-		else {
-			configuration = builder.getConfiguration();
-			configuration.setShowClearButton( !Boolean.TRUE.equals( builder.getRequired() ) );
-
-			if ( propertyDescriptor.hasAttribute( Format.class ) ) {
-				builder.format( propertyDescriptor.getAttribute( Format.class ) );
-			}
+	protected ViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
+	                                                   ViewElementMode viewElementMode ) {
+		if ( ViewElementMode.isControl( viewElementMode ) && propertyDescriptor.isWritable() ) {
+			return controlBuilderFactory.createBuilder( propertyDescriptor, viewElementMode );
 		}
 
-		return builder;
+		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode );
 	}
 
-	@Override
-	protected DateTimeFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                           ViewElementMode viewElementMode ) {
+	/**
+	 * Responsible for creating the value element that also supports the {@link DateTimeFormElementConfiguration}
+	 * that was specified on the control.
+	 */
+	private class ValueBuilderFactory extends EntityViewElementBuilderFactorySupport<TextViewElementBuilder>
+	{
+		@Override
+		public boolean supports( String viewElementType ) {
+			return true;
+		}
 
-		return bootstrapUi
-				.datetime()
-				.name( propertyDescriptor.getName() )
-				.controlName( propertyDescriptor.getName() )
-				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) )
-				.postProcessor(
-						( builderContext, datetime ) ->
-						{
-							Object entity = EntityViewElementUtils.currentEntity( builderContext );
-							ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
+		@Override
+		protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
+		                                                       ViewElementMode viewElementMode ) {
+			AbstractValueTextPostProcessor valueTextPostProcessor
+					= builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor );
 
-							if ( entity != null && valueFetcher != null ) {
-								Date propertyValue = (Date) valueFetcher.getValue( entity );
+			if ( valueTextPostProcessor instanceof ConversionServiceValueTextPostProcessor ) {
+				DateTimeFormElementConfiguration config = null;
 
-								if ( propertyValue != null ) {
-									datetime.setValue( propertyValue );
+				if ( propertyDescriptor.isWritable() ) {
+					ViewElementBuilder control = viewElementBuilderService.getElementBuilder(
+							propertyDescriptor, ViewElementMode.CONTROL
+					);
+
+					if ( control instanceof DateTimeFormElementBuilder ) {
+						config = ( (DateTimeFormElementBuilder) control ).getConfiguration();
+					}
+				}
+
+				if ( config == null ) {
+					DateTimeFormElementBuilder created
+							= controlBuilderFactory.createBuilder( propertyDescriptor, ViewElementMode.CONTROL );
+
+					config = created.getConfiguration();
+				}
+
+				if ( config != null ) {
+					valueTextPostProcessor = new DateTimeValueTextPostProcessor<>( propertyDescriptor, config );
+				}
+			}
+
+			return bootstrapUi.text().postProcessor( valueTextPostProcessor );
+		}
+	}
+
+	/**
+	 * Responsible for creating the actual control.
+	 */
+	private class ControlBuilderFactory extends EntityViewElementBuilderFactorySupport<DateTimeFormElementBuilder>
+	{
+		public ControlBuilderFactory() {
+			addProcessor( new FormControlRequiredBuilderProcessor<>() );
+			addProcessor( new TemporalAnnotationProcessor() );
+			addProcessor( new PastAndFutureValidationProcessor() );
+		}
+
+		@Override
+		public boolean supports( String viewElementType ) {
+			return true;
+		}
+
+		@Override
+		public DateTimeFormElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor,
+		                                                 ViewElementMode viewElementMode ) {
+			DateTimeFormElementBuilder builder = super.createBuilder( propertyDescriptor, viewElementMode );
+
+			// Apply custom configuration
+			DateTimeFormElementConfiguration configuration = propertyDescriptor.getAttribute(
+					DateTimeFormElementConfiguration.class );
+
+			if ( configuration != null ) {
+				builder.format( configuration.getFormat() ).configuration( configuration );
+			}
+			else {
+				configuration = builder.getConfiguration();
+				configuration.setShowClearButton( !Boolean.TRUE.equals( builder.getRequired() ) );
+
+				if ( propertyDescriptor.hasAttribute( Format.class ) ) {
+					builder.format( propertyDescriptor.getAttribute( Format.class ) );
+				}
+			}
+
+			return builder;
+		}
+
+		@Override
+		protected DateTimeFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
+		                                                           ViewElementMode viewElementMode ) {
+
+			return bootstrapUi
+					.datetime()
+					.name( propertyDescriptor.getName() )
+					.controlName( propertyDescriptor.getName() )
+					.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) )
+					.postProcessor(
+							( builderContext, datetime ) ->
+							{
+								Object entity = EntityViewElementUtils.currentEntity( builderContext );
+								ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
+
+								if ( entity != null && valueFetcher != null ) {
+									Date propertyValue = (Date) valueFetcher.getValue( entity );
+
+									if ( propertyValue != null ) {
+										datetime.setValue( propertyValue );
+									}
 								}
 							}
-						}
-				)
-				.postProcessor(
-						( builderContext, datetime ) -> {
-							LocaleContext localeContext = LocaleContextHolder.getLocaleContext();
-
-							if ( localeContext != null && localeContext.getLocale() != null
-									&& !localeContext.getLocale().equals( Locale.ENGLISH ) ) {
-								datetime.getConfiguration().setLocale( localeContext.getLocale() );
-							}
-						}
-				);
+					);
+		}
 	}
 
 	/**

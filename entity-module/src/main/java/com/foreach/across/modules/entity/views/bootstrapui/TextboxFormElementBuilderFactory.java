@@ -20,8 +20,8 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
@@ -44,7 +44,7 @@ import java.util.Map;
 public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<TextboxFormElementBuilder>
 {
 	@Autowired
-	private EntityViewElementBuilderHelpers viewElementBuilderHelpers;
+	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
 
 	@Autowired
 	private BootstrapUiFactory bootstrapUi;
@@ -75,7 +75,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 				.textbox()
 				.name( propertyDescriptor.getName() )
 				.controlName( propertyDescriptor.getName() )
-				.postProcessor( viewElementBuilderHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
+				.postProcessor( builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
 				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
 
 		if ( propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {

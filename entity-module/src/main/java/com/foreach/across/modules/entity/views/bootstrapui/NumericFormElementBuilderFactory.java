@@ -21,8 +21,8 @@ import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfigu
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
@@ -57,7 +57,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private EntityViewElementBuilderService viewElementBuilderService;
 
 	@Autowired
-	private EntityViewElementBuilderHelpers viewElementBuilderHelpers;
+	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
 
 	private final ControlBuilderFactory controlBuilderFactory = new ControlBuilderFactory();
 	private final ValueBuilderFactory valueBuilderFactory = new ValueBuilderFactory();
@@ -104,7 +104,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 		protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 		                                                       ViewElementMode viewElementMode ) {
 			AbstractValueTextPostProcessor valueTextPostProcessor
-					= viewElementBuilderHelpers.createDefaultValueTextPostProcessor( propertyDescriptor );
+					= builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor );
 
 			if ( valueTextPostProcessor instanceof ConversionServiceValueTextPostProcessor ) {
 				NumericFormElementConfiguration config = null;
