@@ -18,7 +18,9 @@ package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 
+import java.lang.reflect.Array;
 import java.text.Format;
+import java.text.MessageFormat;
 import java.util.Locale;
 
 /**
@@ -38,6 +40,12 @@ public class FormatValueTextPostProcessor<T extends ConfigurableTextViewElement>
 
 	@Override
 	protected String print( Object value, Locale locale ) {
+		if ( format instanceof MessageFormat ) {
+			// MessageFormat expects an arry
+			if ( !Array.class.isInstance( value ) ) {
+				return format.format( new Object[] { value } );
+			}
+		}
 		return format.format( value );
 	}
 }
