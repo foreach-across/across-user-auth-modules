@@ -109,9 +109,13 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Test
 	public void textTypeForReadonlyValues() {
 		assertEquals( BootstrapUiElements.TEXT, lookup( String.class, ViewElementMode.VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( Date.class, ViewElementMode.VALUE ) );
 		assertEquals( BootstrapUiElements.TEXT, lookup( String.class, ViewElementMode.LIST_VALUE ) );
-		assertEquals( BootstrapUiElements.TEXT, lookup( Date.class, ViewElementMode.LIST_VALUE ) );
+	}
+
+	@Test
+	public void datetimeForReadonlyDateTimeValues() {
+		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.LIST_VALUE ) );
 	}
 
 	@Test

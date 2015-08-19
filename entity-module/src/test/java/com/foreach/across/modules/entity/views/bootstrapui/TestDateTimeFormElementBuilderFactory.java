@@ -17,17 +17,25 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
+import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.common.test.MockedLoader;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.format.Printer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -37,11 +45,13 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,8 +61,25 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @ContextConfiguration(classes = TestDateTimeFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
-public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<DateTimeFormElement>
+public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<ViewElement>
 {
+	private static final Date PRINT_DATE;
+
+	static {
+		try {
+			PRINT_DATE = DateUtils.parseDate( "2015-08-07 10:31:22", "yyyy-MM-dd HH:mm:ss" );
+		}
+		catch ( ParseException pe ) {
+			throw new RuntimeException( pe );
+		}
+	}
+
+	@Autowired
+	private ConversionService mvcConversionService;
+
+	@Autowired
+	private EntityViewElementBuilderService entityViewElementBuilderService;
+
 	@Override
 	protected Class getTestClass() {
 		return DateProperties.class;
@@ -60,10 +87,17 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 	@Test
 	public void withoutAnnotations() {
-		DateTimeFormElement datetime = assembleAndVerify( "withoutAnnotations", false );
-		assertEquals( Format.DATETIME, datetime.getConfiguration().getFormat() );
-		assertEquals( "en-GB", datetime.getConfiguration().get( "locale" ) );
-		assertEquals( true, datetime.getConfiguration().get( "showClear" ) );
+		LocaleContextHolder.setLocale( Locale.UK );
+
+		try {
+			DateTimeFormElement datetime = assembleAndVerify( "withoutAnnotations", false );
+			assertEquals( Format.DATETIME, datetime.getConfiguration().getFormat() );
+			assertEquals( "en-GB", datetime.getConfiguration().get( "locale" ) );
+			assertEquals( true, datetime.getConfiguration().get( "showClear" ) );
+		}
+		finally {
+			LocaleContextHolder.resetLocaleContext();
+		}
 	}
 
 	@Test
@@ -152,6 +186,52 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		}
 	}
 
+	@Test
+	public void valueOrderIsPrinterFormatDateTimeConfigurationAndConversionService() {
+		LocaleContextHolder.setLocale( Locale.UK );
+
+		try {
+			ValueFetcher valueFetcher = mock( ValueFetcher.class );
+			when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+			when( valueFetcher.getValue( any() ) ).thenReturn( PRINT_DATE );
+			when( properties.get( "required" ).getValueFetcher() ).thenReturn( valueFetcher );
+
+			TextViewElement text = assembleValue( "required" );
+			assertEquals( "07-Aug-2015 10:31", text.getText() );
+
+			DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration( Format.DATE );
+			when( properties.get( "required" ).hasAttribute( DateTimeFormElementConfiguration.class ) )
+					.thenReturn( true );
+			when( properties.get( "required" ).getAttribute( DateTimeFormElementConfiguration.class ) )
+					.thenReturn( configuration );
+			assertEquals( "07-Aug-2015", assembleValue( "required" ).getText() );
+
+			DateTimeFormElementConfiguration timeConfiguration = new DateTimeFormElementConfiguration( Format.TIME );
+			DateTimeFormElementBuilder builder = new DateTimeFormElementBuilder().configuration( timeConfiguration );
+			when( entityViewElementBuilderService.getElementBuilder(
+					properties.get( "required" ), ViewElementMode.CONTROL ) ).thenReturn( builder );
+			assertEquals( "10:31", assembleValue( "required" ).getText() );
+
+			java.text.Format format = new MessageFormat( "messageFormat" );
+			when( properties.get( "required" ).hasAttribute( java.text.Format.class ) ).thenReturn( true );
+			when( properties.get( "required" ).getAttribute( java.text.Format.class ) ).thenReturn( format );
+			assertEquals( "messageFormat", assembleValue( "required" ).getText() );
+
+			Printer printer = mock( Printer.class );
+			when( printer.print( any(), any() ) ).thenReturn( "printer" );
+			when( properties.get( "required" ).hasAttribute( Printer.class ) ).thenReturn( true );
+			when( properties.get( "required" ).getAttribute( Printer.class ) ).thenReturn( printer );
+			assertEquals( "printer", assembleValue( "required" ).getText() );
+		}
+		finally {
+			LocaleContextHolder.resetLocaleContext();
+		}
+	}
+
+	private TextViewElement assembleValue( String propertyName ) {
+		return (TextViewElement) assemble( propertyName, ViewElementMode.VALUE );
+	}
+
 	@SuppressWarnings("unchecked")
 	private <V> V assembleAndVerify( String propertyName, boolean required ) {
 		DateTimeFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
@@ -201,6 +281,11 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		@Bean
 		public ConversionService conversionService() {
 			return mock( ConversionService.class );
+		}
+
+		@Bean
+		public EntityViewElementBuilderFactoryHelper builderFactoryHelper() {
+			return new EntityViewElementBuilderFactoryHelper();
 		}
 	}
 }

@@ -87,6 +87,10 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			if ( ClassUtils.isAssignable( propertyType, Number.class ) ) {
 				return BootstrapUiElements.NUMERIC;
 			}
+
+			if ( ClassUtils.isAssignable( propertyType, Date.class ) ) {
+				return BootstrapUiElements.DATETIME;
+			}
 		}
 
 		if ( ViewElementMode.isValue( viewElementMode ) ) {
@@ -114,10 +118,6 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 				if ( ClassUtils.isAssignable( propertyType, Boolean.class )
 						|| ClassUtils.isAssignable( propertyType, AtomicBoolean.class ) ) {
 					return BootstrapUiElements.CHECKBOX;
-				}
-
-				if ( ClassUtils.isAssignable( propertyType, Date.class ) ) {
-					return BootstrapUiElements.DATETIME;
 				}
 
 				return BootstrapUiElements.TEXTBOX;
