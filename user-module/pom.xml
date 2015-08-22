@@ -59,6 +59,24 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>across-standard-modules</groupId>
+			<artifactId>across-ehcache</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>4.2.14.Final</version>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sf.ehcache</groupId>
+					<artifactId>ehcache-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>

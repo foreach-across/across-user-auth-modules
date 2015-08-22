@@ -21,6 +21,7 @@ import com.foreach.across.modules.spring.security.infrastructure.business.Abstra
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.FieldUtils;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -38,6 +39,11 @@ import java.util.*;
 @DiscriminatorColumn(
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
+)
+@org.hibernate.annotations.Cache(
+		usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
+		region = "securityPrincipalCache",
+		include = "all"
 )
 public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal
 		implements IdBasedSecurityPrincipal, Auditable<String>

@@ -33,6 +33,7 @@ public class SecurityPrincipalRepositoryImpl extends BasicRepositoryImpl<BasicSe
 	@Transactional(readOnly = true)
 	public SecurityPrincipal getPrincipalByName( String principalName ) {
 		return (BasicSecurityPrincipal) distinct()
+				.setCacheable( true )
 				.add( Restrictions.eq( "principalName", FieldUtils.lowerCase( principalName ) ) )
 				.uniqueResult();
 	}

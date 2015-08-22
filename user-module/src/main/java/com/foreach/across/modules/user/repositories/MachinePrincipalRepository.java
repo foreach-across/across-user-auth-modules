@@ -23,5 +23,4 @@ import com.foreach.across.modules.user.business.MachinePrincipal;
  */
 public interface MachinePrincipalRepository extends BasicRepository<MachinePrincipal>
 {
-	MachinePrincipal getByName( String name );
 }
