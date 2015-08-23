@@ -99,7 +99,7 @@ public class PermissionGroup
 		if ( this == o ) {
 			return true;
 		}
-		if ( o == null || getClass() != o.getClass() ) {
+		if ( o == null || !( o instanceof PermissionGroup ) ) {
 			return false;
 		}
 
