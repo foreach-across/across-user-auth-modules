@@ -40,11 +40,7 @@ import java.util.*;
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
 )
-@org.hibernate.annotations.Cache(
-		usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-		region = "securityPrincipalCache",
-		include = "all"
-)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal
 		implements IdBasedSecurityPrincipal, Auditable<String>
 {
@@ -60,6 +56,7 @@ public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal
 	)
 	private long id;
 
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@ManyToMany(fetch = FetchType.EAGER)
 	@BatchSize(size = 50)
 	@JoinTable(
@@ -70,10 +67,13 @@ public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal
 
 	@Column(name = "created_by", nullable = true)
 	private String createdBy;
+
 	@Column(name = "created_date", nullable = true)
 	private Date createdDate;
+
 	@Column(name = "last_modified_by", nullable = true)
 	private String lastModifiedBy;
+
 	@Column(name = "last_modified_date", nullable = true)
 	private Date lastModifiedDate;
 

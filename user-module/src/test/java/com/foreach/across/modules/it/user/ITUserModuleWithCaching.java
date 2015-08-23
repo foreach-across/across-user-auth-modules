@@ -23,6 +23,7 @@ import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
@@ -87,7 +88,7 @@ public class ITUserModuleWithCaching
 		}
 
 		CacheManager cacheManager = CacheManager.getCacheManager( "hibernate" );
-		Cache cache = cacheManager.getCache( "securityPrincipalCache" );
+		Cache cache = cacheManager.getCache( BasicSecurityPrincipal.class.getName() );
 		cache.flush();
 		assertEquals( 0, cache.getSize() );
 
