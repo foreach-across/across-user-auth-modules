@@ -24,10 +24,10 @@ import java.util.Objects;
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT_SCOPE)
 @AssociationOverrides({
-		                      @AssociationOverride(name = "pk.oAuth2Client",
-		                                           joinColumns = @JoinColumn(name = "client_id")),
-		                      @AssociationOverride(name = "pk.oAuth2Scope",
-		                                           joinColumns = @JoinColumn(name = "scope_id")) })
+		@AssociationOverride(name = "pk.oAuth2Client",
+				joinColumns = @JoinColumn(name = "client_id")),
+		@AssociationOverride(name = "pk.oAuth2Scope",
+				joinColumns = @JoinColumn(name = "scope_id")) })
 public class OAuth2ClientScope implements Comparable, Serializable
 {
 	@EmbeddedId
@@ -75,7 +75,7 @@ public class OAuth2ClientScope implements Comparable, Serializable
 		if ( this == o ) {
 			return true;
 		}
-		if ( o == null || getClass() != o.getClass() ) {
+		if ( o == null || !( o instanceof OAuth2ClientScope ) ) {
 			return false;
 		}
 

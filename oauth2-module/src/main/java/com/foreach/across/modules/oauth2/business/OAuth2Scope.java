@@ -22,6 +22,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -65,5 +66,23 @@ public class OAuth2Scope implements Serializable
 
 	public void setOAuth2ClientScopes( Set<OAuth2ClientScope> oAuth2ClientScopes ) {
 		this.oAuth2ClientScopes = oAuth2ClientScopes;
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( !( o instanceof OAuth2Scope ) ) {
+			return false;
+		}
+		OAuth2Scope that = (OAuth2Scope) o;
+
+		return Objects.equals( getId(), that.getId() );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( getId(), getName(), oAuth2ClientScopes );
 	}
 }
