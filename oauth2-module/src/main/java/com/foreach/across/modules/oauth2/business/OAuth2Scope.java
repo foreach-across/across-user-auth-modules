@@ -83,6 +83,6 @@ public class OAuth2Scope implements Serializable
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( getId(), getName(), oAuth2ClientScopes );
+		return Objects.hash( getId() );
 	}
 }

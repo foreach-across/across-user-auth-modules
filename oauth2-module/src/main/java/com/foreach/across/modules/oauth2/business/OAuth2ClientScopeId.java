@@ -54,12 +54,12 @@ public class OAuth2ClientScopeId implements Serializable
 			return false;
 		}
 		OAuth2ClientScopeId that = (OAuth2ClientScopeId) o;
-		return Objects.equals( oAuth2Client, that.oAuth2Client ) &&
-				Objects.equals( oAuth2Scope, that.oAuth2Scope );
+		return Objects.equals( getOAuth2Client(), that.getOAuth2Client() ) &&
+				Objects.equals( getOAuth2Scope(), that.getOAuth2Scope() );
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( oAuth2Client, oAuth2Scope );
+		return Objects.hash( getOAuth2Client(), getOAuth2Scope() );
 	}
 }

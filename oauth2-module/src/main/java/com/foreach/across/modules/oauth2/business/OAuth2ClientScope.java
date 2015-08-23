@@ -81,12 +81,12 @@ public class OAuth2ClientScope implements Comparable, Serializable
 
 		OAuth2ClientScope that = (OAuth2ClientScope) o;
 
-		return Objects.equals( pk, that.pk );
+		return Objects.equals( getPk(), that.getPk() );
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( pk );
+		return Objects.hash( getPk() );
 	}
 
 	@Override
