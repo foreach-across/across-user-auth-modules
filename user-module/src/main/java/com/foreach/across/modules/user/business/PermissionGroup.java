@@ -22,6 +22,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -114,7 +115,7 @@ public class PermissionGroup
 
 	@Override
 	public int hashCode() {
-		return name != null ? name.hashCode() : 0;
+		return Objects.hashCode( getName() );
 	}
 
 	@Override
