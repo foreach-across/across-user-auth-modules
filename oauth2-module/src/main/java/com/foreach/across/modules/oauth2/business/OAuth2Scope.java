@@ -17,6 +17,7 @@ package com.foreach.across.modules.oauth2.business;
 
 import com.foreach.across.core.database.AcrossSchemaConfiguration;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -25,15 +26,15 @@ import java.util.Set;
 
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_SCOPE)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class OAuth2Scope implements Serializable
 {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_oauth_scope_id")
 	@TableGenerator(name = "seq_oauth_scope_id", table = AcrossSchemaConfiguration.TABLE_SEQUENCES,
-	                pkColumnName = AcrossSchemaConfiguration.SEQUENCE_NAME,
-	                valueColumnName = AcrossSchemaConfiguration.SEQUENCE_VALUE, pkColumnValue = "seq_oauth_scope_id",
-	                allocationSize = 10)
+			pkColumnName = AcrossSchemaConfiguration.SEQUENCE_NAME,
+			valueColumnName = AcrossSchemaConfiguration.SEQUENCE_VALUE, pkColumnValue = "seq_oauth_scope_id",
+			allocationSize = 10)
 	private long id;
 
 	@Column(name = "name")
