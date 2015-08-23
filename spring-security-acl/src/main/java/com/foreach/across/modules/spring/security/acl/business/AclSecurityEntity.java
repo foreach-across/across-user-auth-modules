@@ -21,6 +21,7 @@ import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Represents a generic named entity that can be used for ACL control.
@@ -89,11 +90,11 @@ public class AclSecurityEntity extends AuditableEntity implements IdBasedEntity
 
 		AclSecurityEntity that = (AclSecurityEntity) o;
 
-		return id == that.id;
+		return getId() == that.getId();
 	}
 
 	@Override
 	public int hashCode() {
-		return (int) ( id ^ ( id >>> 32 ) );
+		return Objects.hashCode( getId() );
 	}
 }
