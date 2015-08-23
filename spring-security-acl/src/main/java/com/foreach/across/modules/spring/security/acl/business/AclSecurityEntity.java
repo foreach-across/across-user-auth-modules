@@ -83,7 +83,7 @@ public class AclSecurityEntity extends AuditableEntity implements IdBasedEntity
 		if ( this == o ) {
 			return true;
 		}
-		if ( o == null || getClass() != o.getClass() ) {
+		if ( !( o instanceof AclSecurityEntity ) ) {
 			return false;
 		}
 
