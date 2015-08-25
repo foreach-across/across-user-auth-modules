@@ -36,6 +36,8 @@ import java.io.Serializable;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Permission implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(generator = "seq_um_permission_id")
 	@GenericGenerator(

@@ -34,6 +34,8 @@ import java.util.TreeSet;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Role implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable, IdBasedEntity
 {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(generator = "seq_um_role_id")
 	@GenericGenerator(
