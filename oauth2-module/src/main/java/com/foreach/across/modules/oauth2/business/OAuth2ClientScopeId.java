@@ -23,6 +23,8 @@ import java.util.Objects;
 @Embeddable
 public class OAuth2ClientScopeId implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	@ManyToOne
 	private OAuth2Client oAuth2Client;
 

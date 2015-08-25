@@ -30,6 +30,8 @@ import java.util.Objects;
 				joinColumns = @JoinColumn(name = "scope_id")) })
 public class OAuth2ClientScope implements Comparable, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	@EmbeddedId
 	private OAuth2ClientScopeId pk = new OAuth2ClientScopeId();
 

@@ -30,6 +30,8 @@ import java.util.Set;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class OAuth2Scope implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_oauth_scope_id")
 	@TableGenerator(name = "seq_oauth_scope_id", table = AcrossSchemaConfiguration.TABLE_SEQUENCES,
