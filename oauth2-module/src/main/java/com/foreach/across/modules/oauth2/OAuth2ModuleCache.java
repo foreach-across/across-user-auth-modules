@@ -21,4 +21,5 @@ package com.foreach.across.modules.oauth2;
 public interface OAuth2ModuleCache
 {
 	String CLIENTS = "oauth2ClientCache";
+	String ACCESS_TOKENS_TO_AUTHENTICATION = "oauth2AuthenticationByAccessTokenCache";
 }

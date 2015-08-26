@@ -22,6 +22,7 @@ import com.foreach.across.modules.oauth2.services.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -57,6 +58,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	private ClientDetailsService clientDetailsService;
 
 	@Autowired
+	private CacheManager cacheManager;
+
+	@Autowired
 	private OAuth2ModuleSettings oAuth2ModuleSettings;
 
 	@Bean
@@ -72,7 +76,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Bean
 	@Primary
 	public DefaultTokenServices tokenServices() {
-		DefaultTokenServices tokenServices = new CustomTokenServices();
+		DefaultTokenServices tokenServices = new CustomTokenServices( cacheManager );
 		tokenServices.setTokenStore( tokenStore() );
 		tokenServices.setSupportRefreshToken( true );
 		tokenServices.setClientDetailsService( clientDetailsService );
