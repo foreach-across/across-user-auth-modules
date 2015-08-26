@@ -83,22 +83,26 @@
 
 	<changeSet id="201508260907" author="asm">
 		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="oauth_code" columnName="timestamp" />
+			<not>
+				<columnExists tableName="oauth_code" columnName="created" />
+			</not>
 		</preConditions>
-		<comment>Adds timestamp to oauth_code table.</comment>
+		<comment>Adds created to oauth_code table.</comment>
 
 		<addColumn tableName="oauth_code">
-			<column name="time_stamp" type="java.sql.Types.TIMESTAMP" />
+			<column name="created" type="java.sql.Types.TIMESTAMP" />
 		</addColumn>
 	</changeSet>
 
 	<changeSet id="201508260939" author="asm">
 		<preConditions onFail="MARK_RAN">
-			<indexExists tableName="oauth_code" indexName="ix_oauth_code_code" />
+			<not>
+				<indexExists tableName="oauth_code" indexName="ix_oauth_code_code" />
+			</not>
 		</preConditions>
 		<comment>Adds index to oauth_code table.</comment>
 
-		<createIndex tableName="oauthcode" indexName="ix_oauth_code_code">
+		<createIndex tableName="oauth_code" indexName="ix_oauth_code_code">
 			<column name="code" />
 		</createIndex>
 	</changeSet>

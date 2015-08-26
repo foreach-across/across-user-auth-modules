@@ -20,9 +20,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.SqlLobValue;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.util.SerializationUtils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.code.RandomValueAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -30,18 +31,19 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Andy Somers
  */
-public class CustomJdbcAuthorizationCodeServices extends RandomValueAuthorizationCodeServices
+public class CustomJdbcAuthorizationCodeServices implements AuthorizationCodeServices
 {
 	@Autowired
 	private List<OAuth2AuthenticationSerializer> serializers;
 
 	private static final String DEFAULT_SELECT_STATEMENT = "select code, authentication from oauth_code where code = ?";
 	private static final String DEFAULT_INSERT_STATEMENT =
-			"insert into oauth_code (code, authentication, time_stamp) values (?, ?, ?)";
+			"insert into oauth_code (code, authentication, created) values (?, ?, ?)";
 	private static final String DEFAULT_DELETE_STATEMENT = "delete from oauth_code where code = ?";
 
 	private String selectAuthenticationSql = DEFAULT_SELECT_STATEMENT;
@@ -54,41 +56,43 @@ public class CustomJdbcAuthorizationCodeServices extends RandomValueAuthorizatio
 		this.jdbcTemplate = new JdbcTemplate( dataSource );
 	}
 
-	@Override
-	protected void store( String code, OAuth2Authentication authentication ) {
+	public String createAuthorizationCode( OAuth2Authentication authentication ) {
+		String code = UUID.randomUUID().toString();
 		jdbcTemplate.update( insertAuthenticationSql,
 		                     new Object[] { code, new SqlLobValue( serializeAuthentication( authentication ) ),
 		                                    new Date() }, new int[] {
 						Types.VARCHAR, Types.BLOB, Types.TIMESTAMP } );
+		return code;
 	}
 
-	@Override
-	public OAuth2Authentication remove( String code ) {
-		OAuth2Authentication authentication;
+	public OAuth2Authentication consumeAuthorizationCode( String code ) throws InvalidGrantException {
+		OAuth2Authentication auth;
 
 		try {
-			authentication = jdbcTemplate.queryForObject( selectAuthenticationSql,
-			                                              new RowMapper<OAuth2Authentication>()
-			                                              {
-				                                              public OAuth2Authentication mapRow( ResultSet rs,
-				                                                                                  int rowNum )
-						                                              throws SQLException {
-					                                              byte[] authenticationByteStream = rs.getBytes(
-							                                              "authentication" );
-					                                              return deserializeAuthentication(
-							                                              authenticationByteStream );
-				                                              }
-			                                              }, code );
+			auth = jdbcTemplate.queryForObject( selectAuthenticationSql,
+			                                    new RowMapper<OAuth2Authentication>()
+			                                    {
+				                                    public OAuth2Authentication mapRow( ResultSet rs,
+				                                                                        int rowNum )
+						                                    throws SQLException {
+					                                    byte[] authenticationByteStream = rs.getBytes(
+							                                    "authentication" );
+					                                    return deserializeAuthentication(
+							                                    authenticationByteStream );
+				                                    }
+			                                    }, code );
 		}
 		catch ( EmptyResultDataAccessException e ) {
-			return null;
+			auth = null;
 		}
 
-		if ( authentication != null ) {
+		if ( auth != null ) {
 			jdbcTemplate.update( deleteAuthenticationSql, code );
 		}
-
-		return authentication;
+		else {
+			throw new InvalidGrantException( "Invalid authorization code: " + code );
+		}
+		return auth;
 	}
 
 	private byte[] serializeAuthentication( OAuth2Authentication authentication ) {
