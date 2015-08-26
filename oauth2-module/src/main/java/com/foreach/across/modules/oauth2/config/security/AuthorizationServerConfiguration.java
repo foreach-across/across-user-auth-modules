@@ -120,7 +120,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		}
 	}
 
-	private AuthorizationCodeServices customJdbcAuthorizationCodeServices() {
+	@Bean
+	public AuthorizationCodeServices customJdbcAuthorizationCodeServices() {
 		return new CustomJdbcAuthorizationCodeServices( dataSource );
 	}
 
