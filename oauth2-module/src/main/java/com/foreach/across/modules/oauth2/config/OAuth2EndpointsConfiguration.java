@@ -20,6 +20,7 @@ import com.foreach.across.modules.oauth2.controllers.AcrossWhitelabelApprovalEnd
 import com.foreach.across.modules.oauth2.controllers.InvalidateTokenEndpoint;
 import com.foreach.across.modules.oauth2.controllers.UserTokenEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
@@ -44,9 +45,12 @@ public class OAuth2EndpointsConfiguration
 	@Resource
 	private DataSource acrossDataSource;
 
+	@Autowired
+	private CacheManager cacheManager;
+
 	@Bean
 	public InvalidateTokenEndpoint invalidateTokenEndpoint() {
-		return new InvalidateTokenEndpoint();
+		return new InvalidateTokenEndpoint( cacheManager );
 	}
 
 	@Bean
