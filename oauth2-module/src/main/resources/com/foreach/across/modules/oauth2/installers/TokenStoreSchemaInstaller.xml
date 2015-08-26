@@ -107,4 +107,15 @@
 		</createIndex>
 	</changeSet>
 
+	<changeSet id="201508261322" author="wtx">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="oauth_access_token" indexName="ix_oauth_access_token_authentication_id" />
+			</not>
+		</preConditions>
+
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_access_token_authentication_id">
+			<column name="authentication_id" />
+		</createIndex>
+	</changeSet>
 </databaseChangeLog>
