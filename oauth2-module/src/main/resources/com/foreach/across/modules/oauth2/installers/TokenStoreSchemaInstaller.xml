@@ -81,4 +81,26 @@
 		</createTable>
 	</changeSet>
 
+	<changeSet id="201508260907" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="oauth_code" columnName="timestamp" />
+		</preConditions>
+		<comment>Adds timestamp to oauth_code table.</comment>
+
+		<addColumn tableName="oauth_code">
+			<column name="time_stamp" type="java.sql.Types.TIMESTAMP" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="201508260939" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<indexExists tableName="oauth_code" indexName="ix_oauth_code_code" />
+		</preConditions>
+		<comment>Adds index to oauth_code table.</comment>
+
+		<createIndex tableName="oauthcode" indexName="ix_oauth_code_code">
+			<column name="code" />
+		</createIndex>
+	</changeSet>
+
 </databaseChangeLog>

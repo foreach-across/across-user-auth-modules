@@ -18,10 +18,7 @@ package com.foreach.across.modules.oauth2.config.security;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
-import com.foreach.across.modules.oauth2.services.ClientOAuth2AuthenticationSerializer;
-import com.foreach.across.modules.oauth2.services.CustomTokenServices;
-import com.foreach.across.modules.oauth2.services.OAuth2StatelessJdbcTokenStore;
-import com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer;
+import com.foreach.across.modules.oauth2.services.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,7 +33,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
 import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
-import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -115,8 +112,12 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		}
 
 		if ( oAuth2ModuleSettings.isUseJdbcAuthorizationCodeService() ) {
-			endpoints.authorizationCodeServices( new JdbcAuthorizationCodeServices( dataSource ) );
+			endpoints.authorizationCodeServices( customJdbcAuthorizationCodeServices() );
 		}
+	}
+
+	private AuthorizationCodeServices customJdbcAuthorizationCodeServices() {
+		return new CustomJdbcAuthorizationCodeServices( dataSource );
 	}
 
 	private TokenStoreUserApprovalHandler tokenStoreApprovalHandler() {
