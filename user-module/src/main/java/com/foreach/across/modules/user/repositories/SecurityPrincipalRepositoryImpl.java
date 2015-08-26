@@ -16,10 +16,13 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
+import com.foreach.across.modules.spring.security.SpringSecurityCache;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.converters.FieldUtils;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class SecurityPrincipalRepositoryImpl extends BasicRepositoryImpl<BasicSecurityPrincipal> implements SecurityPrincipalRepository
 {
+	@Caching(
+			put = {
+					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
 	@Override
 	@Transactional(readOnly = true)
 	public SecurityPrincipal getPrincipalByName( String principalName ) {

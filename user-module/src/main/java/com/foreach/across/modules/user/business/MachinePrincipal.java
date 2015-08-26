@@ -41,7 +41,7 @@ public class MachinePrincipal extends GroupedPrincipal implements Comparable<Mac
 	}
 
 	public void setName( String name ) {
-		this.name = name;
+		this.name = StringUtils.lowerCase( name );
 		setPrincipalName( name );
 	}
 
