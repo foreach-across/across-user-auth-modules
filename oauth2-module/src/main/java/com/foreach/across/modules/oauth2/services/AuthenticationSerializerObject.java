@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.oauth2.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
@@ -25,6 +27,8 @@ import java.util.Set;
 
 public class AuthenticationSerializerObject<T> implements Serializable
 {
+	private static final Logger LOG = LoggerFactory.getLogger( AuthenticationSerializerObject.class );
+
 	private final String className;
 	private final T object;
 
@@ -50,6 +54,10 @@ public class AuthenticationSerializerObject<T> implements Serializable
 		this.redirectUri = oAuth2Request.getRedirectUri();
 		this.responseTypes = oAuth2Request.getResponseTypes();
 		this.extensionProperties = oAuth2Request.getExtensions();
+
+		if ( extensionProperties != null && extensionProperties.isEmpty() ) {
+			LOG.warn( "Extensions not empty: {}", extensionProperties.size() );
+		}
 	}
 
 	public String getClassName() {
