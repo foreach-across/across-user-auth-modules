@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,9 +19,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class AuthenticationSerializerObject<T> implements Serializable
 {
@@ -45,11 +43,19 @@ public class AuthenticationSerializerObject<T> implements Serializable
 		this.requestParameters = oAuth2Request.getRequestParameters();
 		this.clientId = oAuth2Request.getClientId();
 		this.approved = oAuth2Request.isApproved();
-		this.scope = oAuth2Request.getScope();
-		this.resourceIds = oAuth2Request.getResourceIds();
+		this.scope = duplicate( oAuth2Request.getScope());
+		this.resourceIds = duplicate( oAuth2Request.getResourceIds() );
 		this.redirectUri = oAuth2Request.getRedirectUri();
-		this.responseTypes = oAuth2Request.getResponseTypes();
-		this.extensionProperties = oAuth2Request.getExtensions();
+		this.responseTypes = duplicate( oAuth2Request.getResponseTypes() );
+		this.extensionProperties = duplicate( oAuth2Request.getExtensions() );
+	}
+
+	private Set<String> duplicate( Set<String> values ) {
+		return values != null ? new HashSet<>( values ) : null;
+	}
+
+	private Map<String, Serializable> duplicate( Map<String, Serializable> values ) {
+		return values != null ? new HashMap<>( values ) : null;
 	}
 
 	public String getClassName() {
