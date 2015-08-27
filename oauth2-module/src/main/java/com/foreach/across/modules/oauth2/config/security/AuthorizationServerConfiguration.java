@@ -129,6 +129,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		TokenStoreUserApprovalHandler tokenStoreUserApprovalHandler = new TokenStoreUserApprovalHandler();
 		tokenStoreUserApprovalHandler.setRequestFactory( oAuth2RequestFactory() );
 		tokenStoreUserApprovalHandler.setTokenStore( tokenStore() );
+		tokenStoreUserApprovalHandler.setClientDetailsService( clientDetailsService );
 		return tokenStoreUserApprovalHandler;
 	}
 
