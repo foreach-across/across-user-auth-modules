@@ -68,24 +68,25 @@ public class AclPermissionsInstaller
 	@InstallerMethod
 	public void install() {
 		createPermissionsAndAddToAdminRole();
-		createSystemEntity();
-		createGroupsAclSecurityEntity();
+		createEntitiesAndAcls();
 	}
 
-	public void createSystemEntity() {
+	public void createEntitiesAndAcls() {
 		MachinePrincipal system = machinePrincipalService.getMachinePrincipalByName( "system" );
 
-		try (CloseableAuthentication authenticated = securityPrincipalService.authenticate( system )) {
+		try (CloseableAuthentication ignore = securityPrincipalService.authenticate( system )) {
 			AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" );
 
-		if ( systemAcl == null ) {
-			AclSecurityEntityDto dto = new AclSecurityEntityDto();
-			dto.setName( "system" );
+			if ( systemAcl == null ) {
+				AclSecurityEntityDto dto = new AclSecurityEntityDto();
+				dto.setName( "system" );
 
 				systemAcl = aclSecurityEntityService.save( dto );
 			}
 
 			aclSecurityService.setDefaultParentAcl( systemAcl );
+
+			createGroupsAclSecurityEntity();
 		}
 	}
 
@@ -124,13 +125,14 @@ public class AclPermissionsInstaller
 	public void createGroupsAclSecurityEntity() {
 		AclSecurityEntity existing = aclSecurityEntityService.getSecurityEntityByName( "groups" );
 
-		if (existing == null) {
+		if ( existing == null ) {
 			AclSecurityEntityDto dto = new AclSecurityEntityDto();
 			dto.setName( "groups" );
 			dto.setParent( aclSecurityEntityService.getSecurityEntityByName( "system" ) );
 
 			existing = aclSecurityEntityService.save( dto );
-			aclSecurityService.createAclWithParent( existing, aclSecurityEntityService.getSecurityEntityByName( "system" ) );
+			aclSecurityService.createAclWithParent( existing, aclSecurityEntityService.getSecurityEntityByName(
+					"system" ) );
 			aclSecurityService.allow( "manage groups", existing, AclPermission.READ, AclPermission.WRITE );
 		}
 	}

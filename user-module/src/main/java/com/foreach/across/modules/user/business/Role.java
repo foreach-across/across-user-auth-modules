@@ -26,6 +26,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -103,6 +104,13 @@ public class Role implements GrantedAuthority, Comparable<GrantedAuthority>, Ser
 		return permissions;
 	}
 
+	public void setPermissions( Collection<Permission> permissions ) {
+		getPermissions().clear();
+		if ( permissions != null ) {
+			getPermissions().addAll( permissions );
+		}
+	}
+
 	public void addPermission( String... names ) {
 		Permission[] permissions = new Permission[names.length];
 
@@ -117,10 +125,6 @@ public class Role implements GrantedAuthority, Comparable<GrantedAuthority>, Ser
 		for ( Permission permission : permissions ) {
 			getPermissions().add( permission );
 		}
-	}
-
-	public void setPermissions( Set<Permission> permissions ) {
-		this.permissions = permissions;
 	}
 
 	public boolean hasPermission( String name ) {
