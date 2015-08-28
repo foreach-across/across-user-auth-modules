@@ -16,9 +16,13 @@
 package com.foreach.across.modules.spring.security.acl.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCache;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +34,65 @@ public class AclSecurityEntityRepositoryImpl
 		extends BasicRepositoryImpl<AclSecurityEntity>
 		implements AclSecurityEntityRepository
 {
+	@Caching(
+			put = {
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name", condition = "#result != null")
+			}
+	)
+	@Transactional(readOnly = true)
+	@Override
+	public AclSecurityEntity getById( long id ) {
+		return super.getById( id );
+	}
+
+	@Caching(
+			put = {
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name", condition = "#result != null")
+			}
+	)
 	@Transactional(readOnly = true)
 	@Override
 	public AclSecurityEntity getByName( String name ) {
 		return (AclSecurityEntity) distinct()
 				.add( Restrictions.eq( "name", StringUtils.lowerCase( name ) ) )
 				.uniqueResult();
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#entity.id"),
+					@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#entity.name")
+			}
+	)
+	@Transactional
+	@Override
+	public void create( AclSecurityEntity entity ) {
+		super.create( entity );
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#entity.id"),
+					@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#entity.name")
+			}
+	)
+	@Transactional
+	@Override
+	public void update( AclSecurityEntity entity ) {
+		super.update( entity );
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#entity.id"),
+					@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#entity.name")
+			}
+	)
+	@Transactional
+	@Override
+	public void delete( AclSecurityEntity entity ) {
+		super.delete( entity );
 	}
 }

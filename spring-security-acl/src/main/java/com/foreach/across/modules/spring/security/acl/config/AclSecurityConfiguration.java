@@ -16,14 +16,13 @@
 package com.foreach.across.modules.spring.security.acl.config;
 
 import com.foreach.across.core.database.DatabaseInfo;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCache;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityServiceImpl;
 import com.foreach.across.modules.spring.security.acl.services.SecurityPrincipalAclService;
 import com.foreach.across.modules.spring.security.acl.services.SecurityPrincipalJdbcAclService;
 import com.foreach.across.modules.spring.security.acl.strategy.SecurityPrincipalSidRetrievalStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -46,9 +45,7 @@ import javax.sql.DataSource;
 @Configuration
 public class AclSecurityConfiguration
 {
-	public static final String CACHE_NAME = "securityAclCache";
-
-	private static final Logger LOG = LoggerFactory.getLogger( AclSecurityConfiguration.class );
+	public static final String CACHE_NAME = SpringSecurityAclModuleCache.ACL;
 
 	@Autowired
 	private DataSource dataSource;
@@ -66,8 +63,9 @@ public class AclSecurityConfiguration
 
 	@Bean
 	public SecurityPrincipalAclService aclService() {
-		SecurityPrincipalJdbcAclService aclService = new SecurityPrincipalJdbcAclService( dataSource, lookupStrategy(),
-		                                                                        aclCache() );
+		SecurityPrincipalJdbcAclService aclService = new SecurityPrincipalJdbcAclService(
+				dataSource, lookupStrategy(), aclCache()
+		);
 
 		DatabaseInfo databaseInfo = DatabaseInfo.retrieve( dataSource );
 

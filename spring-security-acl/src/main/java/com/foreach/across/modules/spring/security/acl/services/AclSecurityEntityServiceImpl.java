@@ -16,10 +16,12 @@
 package com.foreach.across.modules.spring.security.acl.services;
 
 import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCache;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.dto.AclSecurityEntityDto;
 import com.foreach.across.modules.spring.security.acl.repositories.AclSecurityEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,11 +35,13 @@ public class AclSecurityEntityServiceImpl implements AclSecurityEntityService
 	@Autowired
 	private AclSecurityEntityRepository aclSecurityEntityRepository;
 
+	@Cacheable(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY)
 	@Override
 	public AclSecurityEntity getSecurityEntityById( long id ) {
 		return aclSecurityEntityRepository.getById( id );
 	}
 
+	@Cacheable(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY)
 	@Override
 	public AclSecurityEntity getSecurityEntityByName( String name ) {
 		return aclSecurityEntityRepository.getByName( name );
