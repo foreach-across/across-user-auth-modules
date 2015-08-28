@@ -27,8 +27,8 @@ import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
 import com.foreach.across.modules.oauth2.business.OAuth2Client;
 import com.foreach.across.modules.oauth2.services.OAuth2Service;
 import com.foreach.across.modules.properties.PropertiesModule;
-import com.foreach.across.modules.spring.security.SpringSecurityCache;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.test.AcrossTestWebConfiguration;
@@ -67,7 +67,7 @@ public class ITOAuth2ModuleWithCaching
 	private SecurityPrincipalService securityPrincipalService;
 
 	@Autowired
-	@Qualifier(SpringSecurityCache.SECURITY_PRINCIPAL)
+	@Qualifier(SpringSecurityModuleCache.SECURITY_PRINCIPAL)
 	private ConcurrentMapCache principalCache;
 
 	@Autowired
@@ -116,10 +116,10 @@ public class ITOAuth2ModuleWithCaching
 	@AcrossTestWebConfiguration
 	static class Config implements AcrossContextConfigurer
 	{
-		@Bean(name = SpringSecurityCache.SECURITY_PRINCIPAL)
+		@Bean(name = SpringSecurityModuleCache.SECURITY_PRINCIPAL)
 		@Exposed
 		public ConcurrentMapCache securityPrincipalCache() {
-			return new ConcurrentMapCache( SpringSecurityCache.SECURITY_PRINCIPAL, true );
+			return new ConcurrentMapCache( SpringSecurityModuleCache.SECURITY_PRINCIPAL, true );
 		}
 
 		@Bean(name = OAuth2ModuleCache.CLIENTS)
@@ -194,7 +194,7 @@ public class ITOAuth2ModuleWithCaching
 	{
 		@Autowired
 		public SimpleCacheManager simpleCacheManager( AcrossCompositeCacheManager cacheManager,
-		                                              @Qualifier(SpringSecurityCache.SECURITY_PRINCIPAL) ConcurrentMapCache securityPrincipalCache,
+		                                              @Qualifier(SpringSecurityModuleCache.SECURITY_PRINCIPAL) ConcurrentMapCache securityPrincipalCache,
 		                                              @Qualifier(OAuth2ModuleCache.CLIENTS) ConcurrentMapCache clientCache ) {
 			SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
 			simpleCacheManager.setCaches( Arrays.asList( securityPrincipalCache, clientCache ) );

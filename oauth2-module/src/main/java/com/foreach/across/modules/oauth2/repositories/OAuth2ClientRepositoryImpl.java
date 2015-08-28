@@ -18,7 +18,7 @@ package com.foreach.across.modules.oauth2.repositories;
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
 import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
 import com.foreach.across.modules.oauth2.business.OAuth2Client;
-import com.foreach.across.modules.spring.security.SpringSecurityCache;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -32,8 +32,8 @@ public class OAuth2ClientRepositoryImpl extends BasicRepositoryImpl<OAuth2Client
 	@Caching(
 			put = {
 					@CachePut(value = OAuth2ModuleCache.CLIENTS, key = "#result.clientId", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
 	@Transactional(readOnly = true)
@@ -45,8 +45,8 @@ public class OAuth2ClientRepositoryImpl extends BasicRepositoryImpl<OAuth2Client
 	@Caching(
 			evict = {
 					@CacheEvict(value = OAuth2ModuleCache.CLIENTS, key = "#client.clientId"),
-					@CacheEvict(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#client.id"),
-					@CacheEvict(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#client.principalName")
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#client.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#client.principalName")
 			}
 	)
 	@Transactional
@@ -58,8 +58,8 @@ public class OAuth2ClientRepositoryImpl extends BasicRepositoryImpl<OAuth2Client
 	@Caching(
 			put = {
 					@CachePut(value = OAuth2ModuleCache.CLIENTS, key = "#result.clientId", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
 	@Transactional(readOnly = true)
