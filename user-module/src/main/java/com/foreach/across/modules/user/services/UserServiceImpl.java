@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.user.services;
 
-import com.foreach.across.modules.spring.security.SpringSecurityCache;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.Group;
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService
 		return userRepository.getAll();
 	}
 
-	@Cacheable(value = SpringSecurityCache.SECURITY_PRINCIPAL)
+	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL)
 	@Override
 	public User getUserById( long id ) {
 		return userRepository.getById( id );

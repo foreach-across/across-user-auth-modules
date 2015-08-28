@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.user.services;
 
-import com.foreach.across.modules.spring.security.SpringSecurityCache;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.dto.UserDto;
@@ -39,7 +39,7 @@ public class UserModifiedNotifier
 			evict = {
 					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #original.username", condition = "#original.username != #update.username"),
 					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #original.email", condition = "#original.email != #update.email"),
-					@CacheEvict(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#original.principalName", condition = "#original.principalName != #update.principalName")
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#original.principalName", condition = "#original.principalName != #update.principalName")
 			}
 	)
 	public void update( UserDto original, UserDto update ) {

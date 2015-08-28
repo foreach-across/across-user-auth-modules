@@ -16,7 +16,7 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
-import com.foreach.across.modules.spring.security.SpringSecurityCache;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.converters.FieldUtils;
@@ -34,8 +34,8 @@ public class SecurityPrincipalRepositoryImpl extends BasicRepositoryImpl<BasicSe
 {
 	@Caching(
 			put = {
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
 	@Override

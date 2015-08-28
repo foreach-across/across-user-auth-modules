@@ -16,7 +16,7 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
-import com.foreach.across.modules.spring.security.SpringSecurityCache;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
@@ -38,8 +38,8 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 	@Caching(
 			put = {
 					@CachePut(value = UserModuleCache.USERS, key = "'username:' +#result.username", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
 	@Transactional(readOnly = true)
@@ -51,8 +51,8 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 	@Caching(
 			put = {
 					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
 	@Transactional(readOnly = true)
@@ -75,8 +75,8 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 	@Caching(
 			put = {
 					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
 	@Transactional(readOnly = true)
@@ -91,8 +91,8 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 			evict = {
 					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #user.username"),
 					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #user.email"),
-					@CacheEvict(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#user.id"),
-					@CacheEvict(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#user.principalName")
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.principalName")
 			}
 	)
 	@Transactional
@@ -105,8 +105,8 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 			evict = {
 					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #user.username"),
 					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #user.email"),
-					@CacheEvict(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#user.id"),
-					@CacheEvict(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#user.principalName")
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.principalName")
 			}
 	)
 	@Transactional
@@ -119,8 +119,8 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 			evict = {
 					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #user.username"),
 					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #user.email"),
-					@CacheEvict(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#user.id"),
-					@CacheEvict(value = SpringSecurityCache.SECURITY_PRINCIPAL, key = "#user.principalName")
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.principalName")
 			}
 	)
 	@Transactional
