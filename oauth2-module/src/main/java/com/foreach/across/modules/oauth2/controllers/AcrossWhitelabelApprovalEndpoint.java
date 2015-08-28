@@ -28,7 +28,7 @@ import java.util.Map;
 
 @RestController
 @SessionAttributes("authorizationRequest")
-public class AcrossWhitelabelApprovalEndpoint// extends WhitelabelApprovalEndpoint
+public class AcrossWhitelabelApprovalEndpoint
 {
 	@Autowired
 	private WhitelabelApprovalEndpoint whitelabelApprovalEndpoint;
@@ -36,11 +36,12 @@ public class AcrossWhitelabelApprovalEndpoint// extends WhitelabelApprovalEndpoi
 	@Autowired
 	private OAuth2ModuleSettings oAuth2ModuleSettings;
 
-	@RequestMapping("/oauth/custom_confirm_access")
+	@RequestMapping("/oauth/confirm_access_external")
 	public void getAccessConfirmation( Map<String, Object> model,
-	                                           HttpServletRequest request, HttpServletResponse response  ) throws Exception {
+	                                   HttpServletRequest request, HttpServletResponse response ) throws Exception {
 		whitelabelApprovalEndpoint.getAccessConfirmation( model, request );
 		String confirmFormRedirectUrl = oAuth2ModuleSettings.getCustomApprovalForm();
-		response.sendRedirect( confirmFormRedirectUrl + (confirmFormRedirectUrl.contains( "?" ) ? "&" : "?") + request.getQueryString() );
+		response.sendRedirect( confirmFormRedirectUrl + ( confirmFormRedirectUrl.contains( "?" ) ? "&" : "?" ) + request
+				.getQueryString() );
 	}
 }
