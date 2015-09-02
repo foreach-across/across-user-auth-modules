@@ -18,7 +18,6 @@ package com.foreach.across.modules.spring.security.acl.repositories;
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCache;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -56,7 +55,7 @@ public class AclSecurityEntityRepositoryImpl
 	@Override
 	public AclSecurityEntity getByName( String name ) {
 		return (AclSecurityEntity) distinct()
-				.add( Restrictions.eq( "name", StringUtils.lowerCase( name ) ) )
+				.add( Restrictions.eq( "name", name ) )
 				.uniqueResult();
 	}
 

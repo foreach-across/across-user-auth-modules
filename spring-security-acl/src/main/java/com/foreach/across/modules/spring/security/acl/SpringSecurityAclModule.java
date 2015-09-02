@@ -23,6 +23,7 @@ import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
 import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
+import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.HasHibernatePackageProvider;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageProvider;
@@ -97,7 +98,8 @@ public class SpringSecurityAclModule extends AcrossModule implements HasHibernat
 
 	@Override
 	public Object[] getInstallers() {
-		return new Object[] { AclSchemaInstaller.class,
+		return new Object[] { AcrossSequencesInstaller.class,
+		                      AclSchemaInstaller.class,
 		                      AclEntityAuditableInstaller.class };
 	}
 }
