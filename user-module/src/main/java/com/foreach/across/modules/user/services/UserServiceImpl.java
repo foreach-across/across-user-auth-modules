@@ -85,19 +85,19 @@ public class UserServiceImpl implements UserService
 		return userRepository.getAll();
 	}
 
-	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL)
+	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public User getUserById( long id ) {
 		return userRepository.getById( id );
 	}
 
-	@Cacheable(value = UserModuleCache.USERS, key = "'email:' + #email")
+	@Cacheable(value = UserModuleCache.USERS, key = "'email:' + #email", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public User getUserByEmail( String email ) {
 		return userRepository.getByEmail( email );
 	}
 
-	@Cacheable(value = UserModuleCache.USERS, key = "'username:' + #username")
+	@Cacheable(value = UserModuleCache.USERS, key = "'username:' + #username", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public User getUserByUsername( String username ) {
 		return userRepository.getByUsername( username );

@@ -16,10 +16,10 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.dto.MachinePrincipalDto;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
-import com.foreach.across.modules.user.repositories.SecurityPrincipalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +36,7 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 	private MachinePrincipalRepository machinePrincipalRepository;
 
 	@Autowired
-	private SecurityPrincipalRepository securityPrincipalRepository;
+	private SecurityPrincipalService securityPrincipalService;
 
 	@Override
 	public Collection<MachinePrincipal> getMachinePrincipals() {
@@ -50,7 +50,7 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 
 	@Override
 	public MachinePrincipal getMachinePrincipalByName( String name ) {
-		return (MachinePrincipal) securityPrincipalRepository.getPrincipalByName( name );
+		return (MachinePrincipal) securityPrincipalService.getPrincipalByName( name );
 	}
 
 	@Transactional
