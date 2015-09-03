@@ -23,5 +23,6 @@ public interface UserModuleCache
 	String USERS = "userCache";
 	String USER_PROPERTIES = "userPropertiesCache";
 
+	String GROUPS = "groupCache";
 	String GROUP_PROPERTIES = "groupPropertiesCache";
 }

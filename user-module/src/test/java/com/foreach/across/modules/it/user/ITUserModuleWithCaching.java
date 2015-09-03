@@ -17,112 +17,251 @@ package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.context.info.AcrossContextInfo;
-import com.foreach.across.core.context.info.AcrossModuleInfo;
-import com.foreach.across.modules.hibernate.AcrossHibernateModule;
-import com.foreach.across.modules.properties.PropertiesModule;
-import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
+import com.foreach.across.core.context.configurer.ConfigurerScope;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModule;
-import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
+import com.foreach.across.modules.user.UserModuleCache;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.MachinePrincipal;
-import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.business.UserRestriction;
-import com.foreach.across.modules.user.services.GroupAclInterceptor;
+import com.foreach.across.modules.user.dto.GroupDto;
+import com.foreach.across.modules.user.dto.MachinePrincipalDto;
+import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
-import com.foreach.across.modules.user.services.UserService;
-import com.foreach.across.test.AcrossTestConfiguration;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.support.SimpleCacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.EnumSet;
+import java.util.Collection;
+import java.util.Map;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+/**
+ * @author Arne Vandamme
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@ContextConfiguration(classes = ITUserModuleWithCaching.Config.class)
+@ContextConfiguration(classes = { ITUserModule.Config.class,
+                                  ITUserModuleWithCaching.CacheConfig.class })
 public class ITUserModuleWithCaching
 {
-	@Autowired
-	private UserService userService;
-
 	@Autowired
 	private MachinePrincipalService machinePrincipalService;
 
 	@Autowired
-	private AcrossContextInfo acrossContextInfo;
+	private GroupService groupService;
+
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
+
+	private Map<Object, Object> securityPrincipalCache, groupCache;
+
+	@Autowired
+	public void registerCaches(
+			@Qualifier(SpringSecurityModuleCache.SECURITY_PRINCIPAL) ConcurrentMapCache securityPrincipalCache,
+			@Qualifier(UserModuleCache.GROUPS) ConcurrentMapCache groupCache
+	) {
+		this.securityPrincipalCache = securityPrincipalCache.getNativeCache();
+		this.groupCache = groupCache.getNativeCache();
+	}
+
+	@Before
+	public void before() {
+		securityPrincipalCache.clear();
+
+		SecurityPrincipal principal = mock( SecurityPrincipal.class );
+		when( principal.toString() ).thenReturn( "principal" );
+
+		securityPrincipalService.authenticate( principal );
+	}
+
+	@After
+	public void after() {
+		securityPrincipalService.clearAuthentication();
+	}
 
 	@Test
-	public void verifyBootstrapped() {
-		assertNotNull( userService );
-		User admin = userService.getUserByUsername( "admin" );
-		assertNotNull( admin );
-		assertEquals( "admin", admin.getUsername() );
-		assertEquals( EnumSet.noneOf( UserRestriction.class ), admin.getRestrictions() );
-		assertEquals( false, admin.isDeleted() );
-		assertEquals( true, admin.getEmailConfirmed() );
+	public void createAndGetMachinePrincipal() {
+		MachinePrincipalDto principalDto = new MachinePrincipalDto();
+		principalDto.setName( "somePrincipal" );
 
-		assertEquals( true, admin.isEnabled() );
-		assertEquals( true, admin.isAccountNonExpired() );
-		assertEquals( true, admin.isAccountNonLocked() );
-		assertEquals( true, admin.isCredentialsNonExpired() );
+		// Null value should be cached
+		assertTrue( securityPrincipalCache.isEmpty() );
+		assertNull( machinePrincipalService.getMachinePrincipalByName( "somePrincipal" ) );
+		assertEquals( 1, securityPrincipalCache.size() );
 
-		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" );
-		assertNotNull( machine );
+		MachinePrincipal created = machinePrincipalService.save( principalDto );
+		assertNotNull( created );
 
-		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
+		assertTrue( securityPrincipalCache.isEmpty() );
 
-		try {
-			assertNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
-		}
-		catch ( NoSuchBeanDefinitionException e ) {
-			assertTrue( true ); //If we get this exception, the desired result has been achieved.
-		}
+		MachinePrincipal byName = machinePrincipalService.getMachinePrincipalByName( created.getName() );
+		assertNotNull( byName );
+		assertEquals( created, byName );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( byName, securityPrincipalCache.get( created.getId() ) );
+		assertSame( byName, securityPrincipalCache.get( created.getName() ) );
 
-		CacheManager cacheManager = CacheManager.getCacheManager( "hibernate" );
-		Cache cache = cacheManager.getCache( BasicSecurityPrincipal.class.getName() );
-		cache.flush();
-		assertEquals( 0, cache.getSize() );
+		MachinePrincipal byId = machinePrincipalService.getMachinePrincipalById( created.getId() );
+		assertNotNull( byId );
+		assertEquals( created, byId );
+		assertSame( byName, byId );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( byId, securityPrincipalCache.get( created.getId() ) );
+		assertSame( byId, securityPrincipalCache.get( created.getName() ) );
 
-		assertNotNull( machinePrincipalService.getMachinePrincipalByName( "system" ) );
-		assertEquals( 1, cache.getSize() );
+		MachinePrincipalDto otherDto = new MachinePrincipalDto();
+		otherDto.setName( "otherEntity" );
+
+		MachinePrincipal other = machinePrincipalService.save( otherDto );
+		assertNotNull( other );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( byId, securityPrincipalCache.get( created.getId() ) );
+		assertSame( byId, securityPrincipalCache.get( created.getName() ) );
+
+		other = machinePrincipalService.getMachinePrincipalByName( other.getName() );
+		assertEquals( 4, securityPrincipalCache.size() );
+
+		machinePrincipalService.save( principalDto );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( other, securityPrincipalCache.get( other.getId() ) );
+		assertSame( other, securityPrincipalCache.get( other.getName() ) );
+	}
+
+	@Test
+	public void createAndGetGroup() {
+		GroupDto principalDto = new GroupDto();
+		principalDto.setName( "someGroup" );
+
+		// Null value should be cached
+		assertTrue( securityPrincipalCache.isEmpty() );
+		assertTrue( groupCache.isEmpty() );
+		assertNull( groupService.getGroupByName( "someGroup" ) );
+		assertTrue( securityPrincipalCache.isEmpty() );
+		assertEquals( 1, groupCache.size() );
+
+		Group created = groupService.save( principalDto );
+		assertNotNull( created );
+
+		assertTrue( securityPrincipalCache.isEmpty() );
+
+		Group byName = groupService.getGroupByName( created.getName() );
+		assertNotNull( byName );
+		assertEquals( created, byName );
+		assertEquals( 1, groupCache.size() );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( byName, groupCache.get( created.getName() ) );
+		assertSame( byName, securityPrincipalCache.get( created.getId() ) );
+		assertSame( byName, securityPrincipalCache.get( created.getPrincipalName() ) );
+
+		Group byId = groupService.getGroupById( created.getId() );
+		assertNotNull( byId );
+		assertEquals( created, byId );
+		assertSame( byName, byId );
+		assertEquals( 1, groupCache.size() );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( byId, groupCache.get( created.getName() ) );
+		assertSame( byId, securityPrincipalCache.get( created.getId() ) );
+		assertSame( byId, securityPrincipalCache.get( created.getPrincipalName() ) );
+
+		GroupDto otherDto = new GroupDto();
+		otherDto.setName( "otherGroup" );
+
+		Group other = groupService.save( otherDto );
+		assertNotNull( other );
+		assertEquals( 0, groupCache.size() );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( byId, securityPrincipalCache.get( created.getId() ) );
+		assertSame( byId, securityPrincipalCache.get( created.getPrincipalName() ) );
+
+		other = groupService.getGroupByName( other.getName() );
+		assertEquals( 1, groupCache.size() );
+		assertEquals( 4, securityPrincipalCache.size() );
+
+		groupService.save( principalDto );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( other, securityPrincipalCache.get( other.getId() ) );
+		assertSame( other, securityPrincipalCache.get( other.getPrincipalName() ) );
+		assertEquals( 0, groupCache.size() );
 	}
 
 	@Configuration
-	@AcrossTestConfiguration
-	static class Config implements AcrossContextConfigurer
+	static class CacheConfig implements AcrossContextConfigurer
 	{
+		@Bean(name = SpringSecurityModuleCache.SECURITY_PRINCIPAL)
+		public ConcurrentMapCache securityPrincipalCache() {
+			return new ConcurrentMapCache( SpringSecurityModuleCache.SECURITY_PRINCIPAL );
+		}
+
+		@Bean(name = UserModuleCache.USERS)
+		public ConcurrentMapCache userCache() {
+			return new ConcurrentMapCache( UserModuleCache.USERS );
+		}
+
+		@Bean(name = UserModuleCache.USER_PROPERTIES)
+		public ConcurrentMapCache userPropertiesCache() {
+			return new ConcurrentMapCache( UserModuleCache.USER_PROPERTIES );
+		}
+
+		@Bean(name = UserModuleCache.GROUPS)
+		public ConcurrentMapCache groupCache() {
+			return new ConcurrentMapCache( UserModuleCache.GROUPS );
+		}
+
+		@Bean(name = UserModuleCache.GROUP_PROPERTIES)
+		public ConcurrentMapCache groupPropertiesCache() {
+			return new ConcurrentMapCache( UserModuleCache.GROUP_PROPERTIES );
+		}
+
 		@Override
-		public void configure( AcrossContext context ) {
-			context.addModule( acrossHibernateModule() );
-			context.addModule( userModule() );
-			context.addModule( propertiesModule() );
-			context.addModule( new SpringSecurityModule() );
-		}
+		public void configure( AcrossContext acrossContext ) {
+			acrossContext.addApplicationContextConfigurer( new AnnotatedClassConfigurer(
+					                                               CacheConfiguration.class ),
+			                                               ConfigurerScope.CONTEXT_ONLY
+			);
 
-		private PropertiesModule propertiesModule() {
-			return new PropertiesModule();
+			acrossContext.getModule( UserModule.NAME )
+			             .addApplicationContextConfigurer( EnableCachingConfiguration.class );
+			acrossContext.getModule( SpringSecurityInfrastructureModule.NAME )
+			             .addApplicationContextConfigurer( EnableCachingConfiguration.class );
 		}
+	}
 
-		private AcrossHibernateModule acrossHibernateModule() {
-			AcrossHibernateModule acrossHibernateModule = new AcrossHibernateModule();
-			acrossHibernateModule.setHibernateProperty( "hibernate.cache.use_second_level_cache", "true" );
-			acrossHibernateModule.setHibernateProperty( "hibernate.cache.use_query_cache", "true" );
-			acrossHibernateModule.setHibernateProperty( "hibernate.cache.region.factory_class",
-			                                            "org.hibernate.cache.ehcache.EhCacheRegionFactory" );
-			return acrossHibernateModule;
-		}
+	@EnableCaching
+	static class EnableCachingConfiguration
+	{
+	}
 
-		private UserModule userModule() {
-			return new UserModule();
+	@Configuration
+	static class CacheConfiguration
+	{
+		@Bean
+		@Autowired
+		@Primary
+		public CacheManager cacheManager( Collection<ConcurrentMapCache> concurrentMapCacheCollection ) {
+			SimpleCacheManager cacheManager = new SimpleCacheManager();
+			cacheManager.setCaches( concurrentMapCacheCollection );
+
+			return cacheManager;
 		}
 	}
 }

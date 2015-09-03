@@ -23,4 +23,5 @@ import com.foreach.across.modules.user.business.Group;
  */
 public interface GroupRepository extends BasicRepository<Group>
 {
+	Group getByName( String name );
 }

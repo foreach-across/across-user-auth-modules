@@ -16,8 +16,13 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.business.MachinePrincipal;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Arne Vandamme
@@ -25,4 +30,51 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class MachinePrincipalRepositoryImpl extends BasicRepositoryImpl<MachinePrincipal> implements MachinePrincipalRepository
 {
+	@Caching(
+			put = {
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
+	@Transactional(readOnly = true)
+	@Override
+	public MachinePrincipal getById( long id ) {
+		return super.getById( id );
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#machinePrincipal.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#machinePrincipal.principalName")
+			}
+	)
+	@Transactional
+	@Override
+	public void create( MachinePrincipal machinePrincipal ) {
+		super.create( machinePrincipal );
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#machinePrincipal.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#machinePrincipal.principalName")
+			}
+	)
+	@Transactional
+	@Override
+	public void update( MachinePrincipal machinePrincipal ) {
+		super.update( machinePrincipal );
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#machinePrincipal.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#machinePrincipal.principalName")
+			}
+	)
+	@Transactional
+	@Override
+	public void delete( MachinePrincipal machinePrincipal ) {
+		super.delete( machinePrincipal );
+	}
 }

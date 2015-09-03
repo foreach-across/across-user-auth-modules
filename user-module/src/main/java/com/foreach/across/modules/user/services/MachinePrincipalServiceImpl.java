@@ -16,11 +16,13 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.dto.MachinePrincipalDto;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +45,7 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 		return machinePrincipalRepository.getAll();
 	}
 
+	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public MachinePrincipal getMachinePrincipalById( long id ) {
 		return machinePrincipalRepository.getById( id );

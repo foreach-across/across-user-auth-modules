@@ -30,6 +30,8 @@ public interface GroupService
 
 	Group getGroupById( long id );
 
+	Group getGroupByName( String name );
+
 	Group save( GroupDto groupDto );
 
 	void delete( long groupId );
