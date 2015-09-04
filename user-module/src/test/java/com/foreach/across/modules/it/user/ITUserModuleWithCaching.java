@@ -27,10 +27,13 @@ import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.MachinePrincipal;
+import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.dto.GroupDto;
 import com.foreach.across.modules.user.dto.MachinePrincipalDto;
+import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
+import com.foreach.across.modules.user.services.UserService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,20 +76,27 @@ public class ITUserModuleWithCaching
 	@Autowired
 	private SecurityPrincipalService securityPrincipalService;
 
-	private Map<Object, Object> securityPrincipalCache, groupCache;
+	@Autowired
+	private UserService userService;
+
+	private Map<Object, Object> securityPrincipalCache, groupCache, userCache;
 
 	@Autowired
 	public void registerCaches(
 			@Qualifier(SpringSecurityModuleCache.SECURITY_PRINCIPAL) ConcurrentMapCache securityPrincipalCache,
-			@Qualifier(UserModuleCache.GROUPS) ConcurrentMapCache groupCache
+			@Qualifier(UserModuleCache.GROUPS) ConcurrentMapCache groupCache,
+			@Qualifier(UserModuleCache.USERS) ConcurrentMapCache userCache
 	) {
 		this.securityPrincipalCache = securityPrincipalCache.getNativeCache();
 		this.groupCache = groupCache.getNativeCache();
+		this.userCache = userCache.getNativeCache();
 	}
 
 	@Before
 	public void before() {
 		securityPrincipalCache.clear();
+		groupCache.clear();
+		userCache.clear();
 
 		SecurityPrincipal principal = mock( SecurityPrincipal.class );
 		when( principal.toString() ).thenReturn( "principal" );
@@ -202,6 +212,76 @@ public class ITUserModuleWithCaching
 		assertSame( other, securityPrincipalCache.get( other.getId() ) );
 		assertSame( other, securityPrincipalCache.get( other.getPrincipalName() ) );
 		assertEquals( 0, groupCache.size() );
+	}
+
+	@Test
+	public void createAndGetUser() {
+		UserDto userDto = new UserDto();
+		userDto.setUsername( "someUser" );
+		userDto.setEmail( "someEmail@localhost" );
+		userDto.setPassword( "pwd" );
+
+		// Null value should be cached
+		assertTrue( securityPrincipalCache.isEmpty() );
+		assertTrue( userCache.isEmpty() );
+		assertNull( userService.getUserByUsername( "someUser" ) );
+		assertNull( userService.getUserByEmail( "someEmail@localhost" ) );
+		assertTrue( securityPrincipalCache.isEmpty() );
+		assertEquals( 2, userCache.size() );
+
+		User created = userService.save( userDto );
+		assertNotNull( created );
+
+		assertTrue( userCache.isEmpty() );
+
+		User byUsername = userService.getUserByUsername( created.getUsername() );
+		assertNotNull( byUsername );
+		assertEquals( created, byUsername );
+		assertEquals( 1, userCache.size() );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( byUsername, userCache.get( "username:" + created.getUsername() ) );
+		assertSame( byUsername, securityPrincipalCache.get( created.getId() ) );
+		assertSame( byUsername, securityPrincipalCache.get( created.getPrincipalName() ) );
+
+		User byId = userService.getUserById( created.getId() );
+		assertSame( byUsername, byId );
+		assertEquals( 1, userCache.size() );
+		assertEquals( 2, securityPrincipalCache.size() );
+
+		User byEmail = userService.getUserByEmail( created.getEmail() );
+		assertEquals( created, byEmail );
+		assertEquals( 2, userCache.size() );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( byEmail, userCache.get( "username:" + created.getUsername() ) );
+		assertSame( byEmail, userCache.get( "email:" + created.getEmail() ) );
+		assertSame( byEmail, securityPrincipalCache.get( created.getId() ) );
+		assertSame( byEmail, securityPrincipalCache.get( created.getPrincipalName() ) );
+
+		UserDto otherDto = new UserDto();
+		otherDto.setUsername( "otherUser" );
+		otherDto.setEmail( "otherEmail@localhost" );
+		otherDto.setPassword( "pwd" );
+
+		User other = userService.save( otherDto );
+		assertNotNull( other );
+		assertEquals( 2, userCache.size() );
+		assertEquals( 2, securityPrincipalCache.size() );
+
+		other = userService.getUserByEmail( other.getEmail() );
+		assertEquals( 4, userCache.size() );
+		assertEquals( 4, securityPrincipalCache.size() );
+		assertSame( other, userCache.get( "username:" + other.getUsername() ) );
+		assertSame( other, userCache.get( "email:" + other.getEmail() ) );
+		assertSame( other, securityPrincipalCache.get( other.getId() ) );
+		assertSame( other, securityPrincipalCache.get( other.getPrincipalName() ) );
+
+		userService.save( userDto );
+		assertEquals( 2, userCache.size() );
+		assertEquals( 2, securityPrincipalCache.size() );
+		assertSame( other, userCache.get( "username:" + other.getUsername() ) );
+		assertSame( other, userCache.get( "email:" + other.getEmail() ) );
+		assertSame( other, securityPrincipalCache.get( other.getId() ) );
+		assertSame( other, securityPrincipalCache.get( other.getPrincipalName() ) );
 	}
 
 	@Configuration

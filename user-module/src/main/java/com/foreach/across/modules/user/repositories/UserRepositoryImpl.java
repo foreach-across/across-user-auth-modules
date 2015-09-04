@@ -37,7 +37,7 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 {
 	@Caching(
 			put = {
-					@CachePut(value = UserModuleCache.USERS, key = "'username:' +#result.username", condition = "#result != null"),
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
@@ -51,6 +51,7 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 	@Caching(
 			put = {
 					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
+					@CachePut(value = UserModuleCache.USERS, key = "'email:' + #result.email", condition = "#result != null"),
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
