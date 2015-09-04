@@ -154,8 +154,8 @@
 			</not>
 		</preConditions>
 
-		<addUniqueConstraint tableName="oauth_access_token" columnNames="authentication_id" constraintName="u_oauth_ata_id" />
 		<dropIndex tableName="oauth_access_token" indexName="ix_oauth_ata_id" />
+		<addUniqueConstraint tableName="oauth_access_token" columnNames="authentication_id" constraintName="u_oauth_ata_id" />
 		<createIndex tableName="oauth_access_token" indexName="ix_oauth_user_name">
 			<column name="user_name" />
 		</createIndex>
