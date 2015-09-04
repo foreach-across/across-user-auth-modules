@@ -21,7 +21,7 @@ import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
 import com.foreach.across.modules.oauth2.services.ClientOAuth2AuthenticationSerializer;
 import com.foreach.across.modules.oauth2.services.CustomTokenServices;
 import com.foreach.across.modules.oauth2.services.OAuth2StatelessJdbcTokenStore;
-import com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer;
+import com.foreach.across.modules.oauth2.services.UserDetailsOAuth2AuthenticationSerializer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -71,8 +71,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	}
 
 	@Bean
-	public UserOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
-		return new UserOAuth2AuthenticationSerializer();
+	public UserDetailsOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
+		return new UserDetailsOAuth2AuthenticationSerializer();
 	}
 
 	@Bean

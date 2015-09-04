@@ -190,7 +190,7 @@ public class TestOAuth2JdbcTokenStore
 
 		Object o = SerializationUtils.deserialize( bytes );
 		assertNotNull( o );
-		assertTrue( "Serializer should be of type UserOAuth2AuthenticationSerializer",
+		assertTrue( "Serializer should be of type UserDetailsOAuth2AuthenticationSerializer",
 		            o instanceof AuthenticationSerializerObject );
 
 		OAuth2Authentication storedAuthentication = oAuth2StatelessJdbcTokenStore.deserializeAuthentication( bytes );
@@ -340,8 +340,8 @@ public class TestOAuth2JdbcTokenStore
 		}
 
 		@Bean
-		public UserOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
-			return spy( new UserOAuth2AuthenticationSerializer() );
+		public UserDetailsOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
+			return spy( new UserDetailsOAuth2AuthenticationSerializer() );
 		}
 
 		@Bean
