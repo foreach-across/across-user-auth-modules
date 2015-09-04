@@ -15,22 +15,22 @@
  */
 package com.foreach.across.modules.oauth2.services;
 
+import com.foreach.across.core.annotations.RefreshableCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.util.SerializationUtils;
 
 import javax.sql.DataSource;
-import java.util.List;
+import java.util.Collection;
 
 public class OAuth2StatelessJdbcTokenStore extends JdbcTokenStore
 {
 	private static final Logger LOG = LoggerFactory.getLogger( OAuth2StatelessJdbcTokenStore.class );
 
-	@Autowired
-	private List<OAuth2AuthenticationSerializer> serializers;
+	@RefreshableCollection(includeModuleInternals = true)
+	private Collection<OAuth2AuthenticationSerializer> serializers;
 
 	public OAuth2StatelessJdbcTokenStore( DataSource dataSource ) {
 		super( dataSource );
@@ -43,7 +43,7 @@ public class OAuth2StatelessJdbcTokenStore extends JdbcTokenStore
 				return serializer.serialize( authentication );
 			}
 		}
-		LOG.error( "Falling back to default serialization" );
+
 		return super.serializeAuthentication( authentication );
 	}
 

@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.oauth2.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.foreach.across.core.annotations.RefreshableCollection;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,8 +29,8 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -38,8 +38,8 @@ import java.util.UUID;
  */
 public class CustomJdbcAuthorizationCodeServices implements AuthorizationCodeServices
 {
-	@Autowired
-	private List<OAuth2AuthenticationSerializer> serializers;
+	@RefreshableCollection(includeModuleInternals = true)
+	private Collection<OAuth2AuthenticationSerializer> serializers;
 
 	private static final String DEFAULT_SELECT_STATEMENT = "select code, authentication from oauth_code where code = ?";
 	private static final String DEFAULT_INSERT_STATEMENT =

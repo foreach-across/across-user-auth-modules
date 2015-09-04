@@ -20,7 +20,6 @@ import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.collections.Sets;
@@ -73,7 +72,6 @@ public class TestOAuth2JdbcTokenStore
 	}
 
 	@Test
-	@Ignore("Fixed in 1.1.1 branch")
 	public void testClientSerialization() {
 		OAuth2Request request = new OAuth2Request( Collections.singletonMap( "keyParam", "keyValue" ),
 		                                           "testClientId", Collections.singleton( mock(
@@ -145,7 +143,6 @@ public class TestOAuth2JdbcTokenStore
 	}
 
 	@Test
-	@Ignore("Fixed in 1.1.1 branch")
 	public void testUserSerialization() {
 		OAuth2Client client = new OAuth2Client();
 		client.setRoles( Sets.newSet( new Role( "adminClient" ), new Role( "manager client" ) ) );
@@ -189,7 +186,7 @@ public class TestOAuth2JdbcTokenStore
 
 		Object o = SerializationUtils.deserialize( bytes );
 		assertNotNull( o );
-		assertTrue( "Serializer should be of type UserOAuth2AuthenticationSerializer",
+		assertTrue( "Serializer should be of type UserDetailsOAuth2AuthenticationSerializer",
 		            o instanceof AuthenticationSerializerObject );
 
 		OAuth2Authentication storedAuthentication = oAuth2StatelessJdbcTokenStore.deserializeAuthentication( bytes );
@@ -340,8 +337,8 @@ public class TestOAuth2JdbcTokenStore
 		}
 
 		@Bean
-		public UserOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
-			return spy( new UserOAuth2AuthenticationSerializer() );
+		public UserDetailsOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
+			return spy( new UserDetailsOAuth2AuthenticationSerializer() );
 		}
 
 		@Bean
