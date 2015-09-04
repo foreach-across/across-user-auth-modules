@@ -104,7 +104,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 		endpoints.tokenStore( tokenStore() )
 		         .tokenServices( tokenServices() )
-		         .clientDetailsService( clientDetailsService )
 		         .requestFactory( oAuth2RequestFactory() )
 		         .authenticationManager( authenticationManager )
 		         .userApprovalHandler( userApprovalHandler() )
