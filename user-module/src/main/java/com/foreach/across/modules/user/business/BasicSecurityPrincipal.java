@@ -19,7 +19,7 @@ import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.spring.security.infrastructure.business.AbstractSecurityPrincipal;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
-import com.foreach.across.modules.user.converters.FieldUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
@@ -82,11 +82,11 @@ public abstract class BasicSecurityPrincipal extends AbstractSecurityPrincipal
 
 	@Override
 	public String getPrincipalName() {
-		return principalName;
+		return StringUtils.lowerCase( principalName );
 	}
 
 	protected final void setPrincipalName( String principalName ) {
-		this.principalName = FieldUtils.lowerCase( principalName );
+		this.principalName = StringUtils.lowerCase( principalName );
 	}
 
 	@Override

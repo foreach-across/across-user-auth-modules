@@ -19,6 +19,7 @@ import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.hibernate.repositories.Undeletable;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserRestriction;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -63,11 +64,11 @@ public class User extends GroupedPrincipal implements IdBasedEntity, UserDetails
 	private Set<UserRestriction> restrictions = EnumSet.noneOf( UserRestriction.class );
 
 	public String getUsername() {
-		return username;
+		return StringUtils.lowerCase( username );
 	}
 
 	public void setUsername( String username ) {
-		this.username = username;
+		this.username = StringUtils.lowerCase( username );
 		setPrincipalName( username );
 	}
 
@@ -96,11 +97,11 @@ public class User extends GroupedPrincipal implements IdBasedEntity, UserDetails
 	}
 
 	public String getEmail() {
-		return email;
+		return StringUtils.lowerCase( email );
 	}
 
 	public void setEmail( String email ) {
-		this.email = email;
+		this.email = StringUtils.lowerCase( email );
 	}
 
 	public String getPassword() {

@@ -17,7 +17,6 @@ package com.foreach.across.modules.user.dto;
 
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
-import com.foreach.across.modules.user.converters.FieldUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
@@ -50,7 +49,7 @@ public class UserDto extends GroupedPrincipalDto<User>
 	}
 
 	public void setUsername( String username ) {
-		this.username = FieldUtils.lowerCase( username );
+		this.username = StringUtils.lowerCase( username );
 	}
 
 	@Override
@@ -87,7 +86,7 @@ public class UserDto extends GroupedPrincipalDto<User>
 	}
 
 	public void setEmail( String email ) {
-		this.email = FieldUtils.lowerCase( email );
+		this.email = StringUtils.lowerCase( email );
 	}
 
 	public String getPassword() {
