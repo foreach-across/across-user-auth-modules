@@ -46,6 +46,11 @@
 		</dependency>
 		<dependency>
 			<groupId>across-standard-modules</groupId>
+			<artifactId>properties-module</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>across-standard-modules</groupId>
 			<artifactId>spring-security</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 		</dependency>

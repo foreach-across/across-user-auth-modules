@@ -16,6 +16,7 @@
 package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.oauth2.business.OAuth2Client;
+import com.foreach.across.modules.spring.security.authority.NamedGrantedAuthority;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
@@ -73,14 +74,17 @@ public class TestOAuth2JdbcTokenStore
 
 	@Test
 	public void testClientSerialization() {
-		OAuth2Request request = new OAuth2Request( Collections.singletonMap( "keyParam", "keyValue" ),
-		                                           "testClientId", Collections.singleton( mock(
-				GrantedAuthority.class ) ), true,
-		                                           Collections.singleton( "fullScope" ),
-		                                           Collections.singleton( "resourceId" ), "redirectUrl",
-		                                           Collections.singleton( "responseTypes" ),
-		                                           Collections.<String, Serializable>singletonMap( "extensionKey",
-		                                                                                           new ArrayList() ) );
+		OAuth2Request request = new OAuth2Request(
+				Collections.singletonMap( "keyParam", "keyValue" ),
+				"testClientId",
+				Collections.singleton( mock( GrantedAuthority.class ) ),
+				true,
+				Collections.singleton( "fullScope" ),
+				Collections.singleton( "resourceId" ),
+				"redirectUrl",
+				Collections.singleton( "responseTypes" ),
+				Collections.<String, Serializable>singletonMap( "extensionKey", new ArrayList() )
+		);
 
 		OAuth2Client clientDetails = new OAuth2Client();
 
@@ -93,7 +97,7 @@ public class TestOAuth2JdbcTokenStore
 		roles.add( thirdRole );
 		clientDetails.setRoles( roles );
 
-		clientDetails.setId( 516 );
+		clientDetails.setId( 516L );
 		Set<String> authorityTypes = new HashSet<>();
 		authorityTypes.add( "authority one" );
 		authorityTypes.add( "authority two" );
@@ -132,14 +136,14 @@ public class TestOAuth2JdbcTokenStore
 		assertEquals( Collections.<String, Serializable>singletonMap( "extensionKey", new ArrayList() ),
 		              storedAuthentication.getOAuth2Request().getExtensions() );
 
-		assertEquals( 4, storedAuthentication.getOAuth2Request().getAuthorities().size() );
-		Iterator<? extends GrantedAuthority> storedAuthorities =
-				storedAuthentication.getOAuth2Request().getAuthorities().iterator();
-		assertEquals( "role three", storedAuthorities.next().getAuthority() );
-		assertEquals( "role one", storedAuthorities.next().getAuthority() );
-		assertEquals( "role two", storedAuthorities.next().getAuthority() );
-		assertEquals( "authority two", storedAuthorities.next().getAuthority() );
+		Collection<? extends GrantedAuthority> storedAuthorities =
+				storedAuthentication.getOAuth2Request().getAuthorities();
 
+		assertEquals( 4, storedAuthorities.size() );
+		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "role three" ) ) );
+		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "role one" ) ) );
+		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "role two" ) ) );
+		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "authority two" ) ) );
 	}
 
 	@Test
@@ -171,7 +175,7 @@ public class TestOAuth2JdbcTokenStore
 		roles.add( userRole );
 		user.setRoles( roles );
 
-		user.setId( 777 );
+		user.setId( 777L );
 
 		when( userDetailsService.loadUserByUsername( "testusername" ) ).thenReturn( user );
 		when( clientDetailsService.loadClientByClientId( "testClientId" ) ).thenReturn( client );
@@ -209,18 +213,17 @@ public class TestOAuth2JdbcTokenStore
 		assertEquals( Collections.<String, Serializable>singletonMap( "extensionKeysForUser", new ArrayList() ),
 		              storedAuthentication.getOAuth2Request().getExtensions() );
 
-		assertEquals( 3, storedAuthentication.getAuthorities().size() );
-		Iterator<GrantedAuthority> storedAuthorities = storedAuthentication.getAuthorities().iterator();
-		assertEquals( "role three", storedAuthorities.next().getAuthority() );
-		assertEquals( "permission 1", storedAuthorities.next().getAuthority() );
-		assertEquals( "permission 2", storedAuthorities.next().getAuthority() );
+		Collection<GrantedAuthority> storedAuthorities = storedAuthentication.getAuthorities();
+		assertEquals( 3, storedAuthorities.size() );
+		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "role three" ) ) );
+		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "permission 1" ) ) );
+		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "permission 2" ) ) );
 
-		assertEquals( 2, storedAuthentication.getOAuth2Request().getAuthorities().size() );
-		Iterator<? extends GrantedAuthority> storedOauthRequestAuthorities =
-				storedAuthentication.getOAuth2Request().getAuthorities().iterator();
-		assertEquals( "manager client", storedOauthRequestAuthorities.next().getAuthority() );
-		assertEquals( "adminClient", storedOauthRequestAuthorities.next().getAuthority() );
-
+		Collection<? extends GrantedAuthority> storedOauthRequestAuthorities =
+				storedAuthentication.getOAuth2Request().getAuthorities();
+		assertEquals( 2, storedOauthRequestAuthorities.size() );
+		assertTrue( storedOauthRequestAuthorities.contains( new NamedGrantedAuthority( "manager client" ) ) );
+		assertTrue( storedOauthRequestAuthorities.contains( new NamedGrantedAuthority( "adminClient" ) ) );
 	}
 
 	@Test
