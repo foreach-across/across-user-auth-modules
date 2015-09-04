@@ -143,5 +143,25 @@
 			<column name="lastModifiedAt" type="java.sql.Types.TIMESTAMP"/>
 		</createTable>
 	</changeSet>
+	
+	<changeSet id="201509041528" author="wtx">
+		<preConditions onFail="MARK_RAN">
+			<indexExists tableName="oauth_access_token" indexName="ix_oauth_ata_id" />
+			<not>
+				<indexExists tableName="oauth_access_token" indexName="u_oauth_ata_id" />
+				<indexExists tableName="oauth_access_token" indexName="ix_oauth_user_name" />
+				<indexExists tableName="oauth_access_token" indexName="ix_oauth_client_id" />
+			</not>
+		</preConditions>
+
+		<addUniqueConstraint tableName="oauth_access_token" columnNames="authentication_id" constraintName="u_oauth_ata_id" />
+		<dropIndex tableName="oauth_access_token" indexName="ix_oauth_ata_id" />
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_user_name">
+			<column name="user_name" />
+		</createIndex>
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_client_id">
+			<column name="client_id" />
+		</createIndex>
+	</changeSet>
 
 </databaseChangeLog>
