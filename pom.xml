@@ -52,22 +52,22 @@
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
 				<version>1.5.0</version>
-				<!--<inherited>false</inherited>-->
-				<!--<configuration>-->
-				<!--<sourceDirectory>docs</sourceDirectory>-->
-				<!--<sourceDocumentName>index.adoc</sourceDocumentName>-->
-				<!--<outputDirectory>${project.build.directory}/site/${project.version}/reference</outputDirectory>-->
-				<!--<backend>html</backend>-->
-				<!--</configuration>-->
-				<!--<executions>-->
-				<!--<execution>-->
-				<!--<id>output-html</id>-->
-				<!--<phase>prepare-package</phase>-->
-				<!--<goals>-->
-				<!--<goal>process-asciidoc</goal>-->
-				<!--</goals>-->
-				<!--</execution>-->
-				<!--</executions>-->
+				<inherited>false</inherited>
+				<configuration>
+					<sourceDirectory>docs</sourceDirectory>
+					<sourceDocumentName>index.adoc</sourceDocumentName>
+					<outputDirectory>${project.build.directory}/site/${project.version}/reference</outputDirectory>
+					<backend>html</backend>
+				</configuration>
+				<executions>
+					<execution>
+						<id>output-html</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
