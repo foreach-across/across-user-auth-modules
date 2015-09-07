@@ -1,4 +1,0 @@
-<div th:fragment="checkbox(component)" th:remove="tag">
-	<h1 th:if="${component.elementType eq 'header'}" th:text="${component.name}"></h1>
-	<span th:unless="${component.elementType eq 'header'}" th:text="${component.name}"></span>
-</div>
