@@ -55,9 +55,8 @@
 			<version>1.0.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
+			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>logging-module</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
