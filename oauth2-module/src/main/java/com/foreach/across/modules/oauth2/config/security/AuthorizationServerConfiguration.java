@@ -22,6 +22,7 @@ import com.foreach.across.modules.oauth2.services.ClientOAuth2AuthenticationSeri
 import com.foreach.across.modules.oauth2.services.CustomTokenServices;
 import com.foreach.across.modules.oauth2.services.OAuth2StatelessJdbcTokenStore;
 import com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer;
+import com.foreach.across.modules.spring.security.infrastructure.config.SecurityInfrastructure;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -52,7 +52,7 @@ import java.util.Map;
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter
 {
 	@Autowired
-	private AuthenticationManager authenticationManager;
+	private SecurityInfrastructure securityInfrastructure;
 
 	@Autowired
 	@Qualifier(AcrossContext.DATASOURCE)
@@ -106,7 +106,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		}
 		endpoints.tokenStore( tokenStore() )
 		         .tokenServices( tokenServices() )
-		         .authenticationManager( authenticationManager )
+		         .authenticationManager( securityInfrastructure.authenticationManager() )
 		         .getFrameworkEndpointHandlerMapping().setMappings( mapping );
 
 		if ( oAuth2ModuleSettings.isUseTokenStoreUserApprovalHandler() ) {
