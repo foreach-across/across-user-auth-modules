@@ -182,7 +182,6 @@
 
 	<modules>
 		<module>across-hibernate</module>
-		<module>across-ehcache</module>
 		<module>admin-web</module>
 		<module>spring-security</module>
 		<module>oauth2-module</module>
