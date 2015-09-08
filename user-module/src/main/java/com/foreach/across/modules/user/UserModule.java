@@ -29,7 +29,7 @@ import com.foreach.across.modules.hibernate.provider.TableAliasProvider;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
-import com.foreach.across.modules.user.config.modules.UserSpringSecurityConfiguration;
+import com.foreach.across.modules.user.extensions.SpringSecurityUserDetailsConfiguration;
 import com.foreach.across.modules.user.installers.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,6 +83,6 @@ public class UserModule extends AcrossModule implements HibernatePackageConfigur
 	@Override
 	public void prepareForBootstrap( ModuleBootstrapConfig currentModule, AcrossBootstrapConfig contextConfig ) {
 		contextConfig.extendModule( "SpringSecurityModule",
-		                            UserSpringSecurityConfiguration.UserDetailsServiceConfiguration.class );
+		                            SpringSecurityUserDetailsConfiguration.class );
 	}
 }

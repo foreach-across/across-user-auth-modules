@@ -16,7 +16,6 @@
 package com.foreach.across.modules.user.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -26,7 +25,6 @@ import com.foreach.across.modules.spring.security.actions.AuthorityMatchingAllow
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
 import com.foreach.across.modules.user.UserAuthorities;
-import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
 import com.foreach.across.modules.user.security.CurrentUserProxyImpl;
@@ -34,9 +32,7 @@ import com.foreach.across.modules.user.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -96,29 +92,4 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 		return new CurrentUserProxyImpl();
 	}
 
-	/**
-	 * Configuration to load inside the SpringSecurityModule ApplicationContext.
-	 */
-	@AcrossDepends(required = "SpringSecurityModule")
-	@Configuration
-	public static class UserDetailsServiceConfiguration
-	{
-		@Autowired
-		private AcrossContextBeanRegistry contextBeanRegistry;
-
-		@Autowired
-		@SuppressWarnings("SignatureDeclareThrowsException")
-		public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-			PasswordEncoder userPasswordEncoder = contextBeanRegistry.getBeanOfTypeFromModule(
-					UserModule.NAME,
-					PasswordEncoder.class
-			);
-			UserDetailsService userDetailsService = contextBeanRegistry.getBeanOfTypeFromModule(
-					UserModule.NAME,
-					UserDetailsService.class
-			);
-
-			auth.userDetailsService( userDetailsService ).passwordEncoder( userPasswordEncoder );
-		}
-	}
 }
