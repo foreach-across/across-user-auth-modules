@@ -43,9 +43,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>spring-security</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>spring-security-module</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
