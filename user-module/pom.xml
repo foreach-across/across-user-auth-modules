@@ -32,9 +32,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>across-hibernate</artifactId>
-			<version>${project.parent.version}</version>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>across-hibernate-module</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>across-standard-modules</groupId>
