@@ -20,20 +20,21 @@ import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.modules.hibernate.installers.AuditableSchemaInstaller;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * @author Andy Somers
  */
 @Installer(description = "Adds the auditable columns to the um_principal table", version = 1)
 public class BasicSecurityPrincipalAuditableInstaller extends AuditableSchemaInstaller
 {
-	private final SchemaConfiguration schemaConfiguration;
-
 	public BasicSecurityPrincipalAuditableInstaller( SchemaConfiguration schemaConfiguration ) {
-		this.schemaConfiguration = schemaConfiguration;
+		super( schemaConfiguration );
 	}
 
 	@Override
-	protected String getTableName() {
-		return schemaConfiguration.getCurrentTableName( UserSchemaConfiguration.TABLE_PRINCIPAL );
+	protected Collection<String> getTableNames() {
+		return Collections.singleton( UserSchemaConfiguration.TABLE_PRINCIPAL );
 	}
 }
