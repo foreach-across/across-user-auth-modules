@@ -19,6 +19,9 @@ import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.modules.hibernate.installers.AuditableSchemaInstaller;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * @author Andy Somers
  */
@@ -27,7 +30,7 @@ import com.foreach.across.modules.hibernate.installers.AuditableSchemaInstaller;
 public class AclEntityAuditableInstaller extends AuditableSchemaInstaller
 {
 	@Override
-	protected String getTableName() {
-		return "acl_entity";
+	protected Collection<String> getTableNames() {
+		return Collections.singleton( "acl_entity" );
 	}
 }
