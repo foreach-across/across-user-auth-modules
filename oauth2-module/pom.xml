@@ -45,9 +45,8 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>spring-security</artifactId>
-			<version>${project.parent.version}</version>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>spring-security-module</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security.oauth</groupId>
