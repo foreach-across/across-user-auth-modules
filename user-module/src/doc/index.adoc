@@ -45,4 +45,6 @@ the `AdminWebModule` this will also enable the administrative management control
 NOTE: By default the `Permission` and `PermissionGroup` entities are `hidden` from the admin UI and can only be managed through code.  If you
 want to enable UI management of those entities, you can modify the `hidden` property using a custom `EntityConfigurer`.
 
+NOTE: Make sure rol names (Permission::name) are always in lowercase, as they are case sensitive and as such stored in the database.
+
 
