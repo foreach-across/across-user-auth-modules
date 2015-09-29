@@ -32,9 +32,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>admin-web</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>admin-web-module</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
