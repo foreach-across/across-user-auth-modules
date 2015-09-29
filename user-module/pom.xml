@@ -57,9 +57,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>admin-web</artifactId>
-			<version>${project.parent.version}</version>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>admin-web-module</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
