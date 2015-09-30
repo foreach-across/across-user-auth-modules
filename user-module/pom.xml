@@ -41,9 +41,8 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
+			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>entity-module</artifactId>
-			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
