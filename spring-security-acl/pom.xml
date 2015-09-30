@@ -53,7 +53,7 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
+			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>entity-module</artifactId>
 			<optional>true</optional>
 		</dependency>
