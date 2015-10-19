@@ -57,7 +57,7 @@ public class OAuth2StatelessJdbcTokenStore extends JdbcTokenStore
 		}
 		catch ( Exception e ) {
 			LOG.warn( "Exception deserializing authentication", e );
-			throw e;
+			throw new IllegalArgumentException( e );
 		}
 
 		if ( object instanceof AuthenticationSerializerObject ) {

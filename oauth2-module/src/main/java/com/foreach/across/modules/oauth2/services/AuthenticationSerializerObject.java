@@ -23,6 +23,8 @@ import java.util.*;
 
 public class AuthenticationSerializerObject<T> implements Serializable
 {
+	private static final long serialVersionUID = -3165303425428338511L;
+
 	private final String className;
 	private final T object;
 
