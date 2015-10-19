@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.foreach.across.modules:admin-web-module:1.2.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/modules/admin-web-module/1.2.0-SNAPSHOT/admin-web-module-1.2.0-20150929.072148-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/modules/admin-web-module/1.2.0-SNAPSHOT/admin-web-module-1.2.0-20150929.072148-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/modules/admin-web-module/1.2.0-SNAPSHOT/admin-web-module-1.2.0-20150929.072148-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
