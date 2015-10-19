@@ -14,21 +14,25 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>across-standard-modules</artifactId>
-		<groupId>across-standard-modules</groupId>
-		<version>1.1.1-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>spring-security-acl</artifactId>
+    <parent>
+        <groupId>com.foreach.across.modules</groupId>
+        <artifactId>spring-security-acl-module-project</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <artifactId>spring-security-acl-module</artifactId>
+
+    <name>${project.groupId}:${project.artifactId}</name>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>spring-security-module</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>admin-web-module</artifactId>
@@ -41,7 +45,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>spring-security-module</artifactId>
+			<artifactId>logging-module</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -52,6 +57,16 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+            <groupId>across</groupId>
+            <artifactId>across-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 </project>
