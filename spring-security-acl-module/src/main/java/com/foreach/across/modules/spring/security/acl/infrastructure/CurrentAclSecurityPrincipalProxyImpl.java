@@ -19,6 +19,7 @@ import com.foreach.across.core.annotations.Refreshable;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxyImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,10 @@ public class CurrentAclSecurityPrincipalProxyImpl extends CurrentSecurityPrincip
 
 	@Override
 	public boolean hasAclPermission( IdBasedEntity entity, AclPermission permission ) {
+		SecurityPrincipal securityPrincipal = getPrincipal();
+
 		return aclSecurityService != null
 				&& isAuthenticated()
-				&& aclSecurityService.hasPermission( getPrincipal(), entity, permission );
+				&& aclSecurityService.hasPermission( securityPrincipal, entity, permission );
 	}
 }
