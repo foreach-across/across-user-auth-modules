@@ -14,15 +14,19 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<groupId>across-standard-modules</groupId>
-		<artifactId>across-standard-modules</artifactId>
-		<version>1.0.6-SNAPSHOT</version>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>com.foreach.across.modules</groupId>
+		<artifactId>user-module-project</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
 	<artifactId>user-module</artifactId>
+
+	<name>${project.groupId}:${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>
@@ -30,9 +34,8 @@
 			<artifactId>across-hibernate-module</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
+			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>properties-module</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
@@ -44,9 +47,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>spring-security-acl</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>spring-security-acl-module</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -78,8 +80,8 @@
 			<artifactId>javax.el-api</artifactId>
 		</dependency>
 		<!--<dependency>-->
-			<!--<groupId>org.glassfish.web</groupId>-->
-			<!--<artifactId>javax.el</artifactId>-->
+		<!--<groupId>org.glassfish.web</groupId>-->
+		<!--<artifactId>javax.el</artifactId>-->
 		<!--</dependency>-->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -90,6 +92,40 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>across</groupId>
+			<artifactId>across-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.foreach.libs</groupId>
+			<artifactId>common-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.jtds</groupId>
+			<artifactId>jtds</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -97,6 +133,26 @@
 			<plugin>
 				<groupId>com.mysema.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>1.5.0</version>
+				<configuration>
+					<sourceDirectory>${project.basedir}/src/doc</sourceDirectory>
+					<sourceDocumentName>index.adoc</sourceDocumentName>
+					<outputDirectory>${project.reporting.outputDirectory}/${project.version}/reference</outputDirectory>
+					<backend>html</backend>
+				</configuration>
+				<executions>
+					<execution>
+						<id>output-html</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
