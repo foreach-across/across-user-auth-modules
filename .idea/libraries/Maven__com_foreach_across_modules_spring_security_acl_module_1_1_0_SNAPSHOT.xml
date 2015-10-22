@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: com.foreach.across.modules:spring-security-acl-module:1.1.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/modules/spring-security-acl-module/1.1.0-SNAPSHOT/spring-security-acl-module-1.1.0-20151019.080108-1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/modules/spring-security-acl-module/1.1.0-SNAPSHOT/spring-security-acl-module-1.1.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/modules/spring-security-acl-module/1.1.0-SNAPSHOT/spring-security-acl-module-1.1.0-20151019.080108-1-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/modules/spring-security-acl-module/1.1.0-SNAPSHOT/spring-security-acl-module-1.1.0-SNAPSHOT-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/modules/spring-security-acl-module/1.1.0-SNAPSHOT/spring-security-acl-module-1.1.0-20151019.080108-1-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/modules/spring-security-acl-module/1.1.0-SNAPSHOT/spring-security-acl-module-1.1.0-SNAPSHOT-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
