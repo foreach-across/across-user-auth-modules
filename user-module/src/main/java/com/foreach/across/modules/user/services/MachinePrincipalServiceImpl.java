@@ -16,10 +16,13 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -33,11 +36,15 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 	@Autowired
 	private MachinePrincipalRepository machinePrincipalRepository;
 
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
+
 	@Override
 	public Collection<MachinePrincipal> getMachinePrincipals() {
 		return machinePrincipalRepository.findAll( new Sort( Sort.Direction.ASC, "name" ) );
 	}
 
+	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public MachinePrincipal getMachinePrincipalById( long id ) {
 		return machinePrincipalRepository.findOne( id );
@@ -45,7 +52,7 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 
 	@Override
 	public MachinePrincipal getMachinePrincipalByName( String name ) {
-		return machinePrincipalRepository.findByName( name );
+		return (MachinePrincipal) securityPrincipalService.getPrincipalByName( name );
 	}
 
 	@Override

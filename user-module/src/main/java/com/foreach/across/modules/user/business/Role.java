@@ -20,6 +20,7 @@ import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,9 +36,12 @@ import java.util.TreeSet;
 @NotThreadSafe
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_ROLE)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Role extends SettableIdBasedEntity<Role>
 		implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(generator = "seq_um_role_id")
 	@GenericGenerator(
@@ -64,6 +68,7 @@ public class Role extends SettableIdBasedEntity<Role>
 	@Column(name = "description")
 	private String description;
 
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@ManyToMany(fetch = FetchType.EAGER)
 	@BatchSize(size = 50)
 	@JoinTable(

@@ -21,6 +21,12 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Arne Vandamme
@@ -50,5 +56,23 @@ public class TestGroup
 		assertEquals( group.getName(), dto.getName() );
 		assertEquals( group.getRoles(), dto.getRoles() );
 		assertNotSame( group.getRoles(), dto.getRoles() );
+	}
+	
+	@Test
+	public void principalNameIsAlwaysLowerCased() throws Exception {
+		Group group = new Group();
+		assertNull( group.getPrincipalName() );
+		assertNull( group.getName() );
+
+		group.setName( "Some Group" );
+
+		assertEquals( "Some Group", group.getName() );
+		assertEquals( "group:some group", group.getPrincipalName() );
+
+		Field principalName = ReflectionUtils.findField( Group.class, "principalName" );
+		principalName.setAccessible( true );
+		principalName.set( group, "GROUP:PRINCIPAL_NAME" );
+
+		assertEquals( "group:principal_name", group.getPrincipalName() );
 	}
 }

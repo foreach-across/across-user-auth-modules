@@ -78,7 +78,7 @@ public class User extends GroupedPrincipal<User> implements UserDetails, Undelet
 	private Set<UserRestriction> restrictions = EnumSet.noneOf( UserRestriction.class );
 
 	public String getUsername() {
-		return username;
+		return StringUtils.lowerCase( username );
 	}
 
 	public void setUsername( String username ) {
@@ -111,7 +111,7 @@ public class User extends GroupedPrincipal<User> implements UserDetails, Undelet
 	}
 
 	public String getEmail() {
-		return email;
+		return StringUtils.lowerCase( email );
 	}
 
 	public void setEmail( String email ) {

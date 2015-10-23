@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.user.repositories;
-
-import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
-import com.foreach.across.modules.user.business.Group;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+package com.foreach.across.modules.user;
 
 /**
  * @author Arne Vandamme
  */
-public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, QueryDslPredicateExecutor<Group>
+public interface UserModuleCache
 {
-	Group getByName( String name );
+	String USERS = "userCache";
+	String USER_PROPERTIES = "userPropertiesCache";
+
+	String GROUPS = "groupCache";
+	String GROUP_PROPERTIES = "groupPropertiesCache";
 }

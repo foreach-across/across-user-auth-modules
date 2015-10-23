@@ -21,6 +21,12 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Arne Vandamme
@@ -60,5 +66,28 @@ public class TestMachinePrincipal
 		assertNotSame( machinePrincipal.getRoles(), dto.getRoles() );
 		assertEquals( machinePrincipal.getGroups(), dto.getGroups() );
 		assertNotSame( machinePrincipal.getGroups(), dto.getGroups() );
+	}
+	
+	@Test
+	public void principalNameAndNameAreAlwaysLowerCased() throws Exception {
+		MachinePrincipal machinePrincipal = new MachinePrincipal();
+		assertNull( machinePrincipal.getPrincipalName() );
+		assertNull( machinePrincipal.getName() );
+
+		machinePrincipal.setName( "Some Principal" );
+
+		assertEquals( "some principal", machinePrincipal.getName() );
+		assertEquals( "some principal", machinePrincipal.getPrincipalName() );
+
+		Field name = ReflectionUtils.findField( MachinePrincipal.class, "name" );
+		name.setAccessible( true );
+		name.set( machinePrincipal, "OTHER Name" );
+
+		Field principalName = ReflectionUtils.findField( MachinePrincipal.class, "principalName" );
+		principalName.setAccessible( true );
+		principalName.set( machinePrincipal, "PRINCIPAL_NAME" );
+
+		assertEquals( "other name", machinePrincipal.getName() );
+		assertEquals( "principal_name", machinePrincipal.getPrincipalName() );
 	}
 }

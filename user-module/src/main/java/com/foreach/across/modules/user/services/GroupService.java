@@ -29,12 +29,14 @@ public interface GroupService
 
 	Group getGroupById( long id );
 
+	Group getGroupByName( String name );
+
 	Group save( Group groupDto );
 
 	void delete( long groupId );
 
 	GroupProperties getProperties( Group group );
-
+	
 	void saveProperties( GroupProperties groupProperties );
 
 	void deleteProperties( Group group );

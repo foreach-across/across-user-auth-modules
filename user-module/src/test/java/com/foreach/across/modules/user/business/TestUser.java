@@ -16,7 +16,9 @@
 package com.foreach.across.modules.user.business;
 
 import org.junit.Test;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -24,6 +26,37 @@ import static org.junit.Assert.*;
 
 public class TestUser
 {
+	@Test
+	public void usernameAndEmailIsAlwaysLowerCased() throws Exception {
+		User user = new User();
+		assertNull( user.getPrincipalName() );
+		assertNull( user.getUsername() );
+		assertNull( user.getEmail() );
+
+		user.setEmail( "someEmail@localHOST" );
+		user.setUsername( "Some Username" );
+
+		assertEquals( "someemail@localhost", user.getEmail() );
+		assertEquals( "some username", user.getUsername() );
+		assertEquals( "some username", user.getPrincipalName() );
+
+		Field username = ReflectionUtils.findField( User.class, "username");
+		username.setAccessible( true );
+		username.set( user, "Some Username" );
+
+		Field email = ReflectionUtils.findField( User.class, "email");
+		email.setAccessible( true );
+		email.set( user, "someEmail@localHOST" );
+
+		Field principalName = ReflectionUtils.findField( User.class, "principalName");
+		principalName.setAccessible( true );
+		principalName.set( user, "PRINCIPAL_NAME" );
+
+		assertEquals( "someemail@localhost" , user.getEmail() );
+		assertEquals( "some username", user.getUsername() );
+		assertEquals( "principal_name", user.getPrincipalName() );
+	}
+
 	@Test
 	public void hasPermissions() {
 		Role roleOne = new Role( "role one" );
