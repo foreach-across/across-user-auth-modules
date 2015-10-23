@@ -18,7 +18,7 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModuleCache;
-import com.foreach.across.modules.user.dto.UserDto;
+import com.foreach.across.modules.user.business.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -42,7 +42,7 @@ public class UserModifiedNotifier
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#original.principalName", condition = "#original.principalName != #update.principalName")
 			}
 	)
-	public void update( UserDto original, UserDto update ) {
+	public void update( User original, User update ) {
 		String oldPrincipalName = StringUtils.lowerCase( original.getUsername() );
 		String newPrincipalName = StringUtils.lowerCase( update.getUsername() );
 

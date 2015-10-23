@@ -16,7 +16,6 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
-import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.UserModuleSettings;
@@ -27,9 +26,9 @@ import com.mysema.query.types.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,9 +109,7 @@ public class UserServiceImpl implements UserService
 	@Transactional(HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	public User save( User userDto ) {
 		User user;
-
-		boolean isPrincipalRename = false;
-		String oldPrincipalName = null;
+		User originalUser = null;
 
 		if ( userDto.isNew() ) {
 			if ( StringUtils.isBlank( userDto.getPassword() ) ) {
@@ -135,7 +132,9 @@ public class UserServiceImpl implements UserService
 				throw new UserModuleException(
 						"Attempt to update user with id " + existingUserId + " but that user does not exist" );
 			}
-			
+
+			originalUser = user;
+
 			String currentPassword = user.getPassword();
 			user = user.toDto();
 			user.setPassword( currentPassword );
@@ -152,11 +151,6 @@ public class UserServiceImpl implements UserService
 					&& StringUtils.equals( userDto.getUsername(), user.getEmail() ) ) {
 				userDto.setUsername( userDto.getEmail() );
 			}
-		}
-
-		if ( !userDto.isNew() && !StringUtils.equalsIgnoreCase( userDto.getUsername(), user.getUsername() ) ) {
-			isPrincipalRename = true;
-			oldPrincipalName = user.getPrincipalName();
 		}
 
 		Errors errors = new BeanPropertyBindingResult( userDto, "user" );

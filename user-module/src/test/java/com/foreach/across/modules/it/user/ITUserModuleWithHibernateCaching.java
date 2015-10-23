@@ -19,7 +19,7 @@ import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.context.info.AcrossContextInfo;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
-import com.foreach.across.modules.hibernate.AcrossHibernateModule;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.user.UserModule;
@@ -112,8 +112,8 @@ public class ITUserModuleWithHibernateCaching
 			return new PropertiesModule();
 		}
 
-		private AcrossHibernateModule acrossHibernateModule() {
-			AcrossHibernateModule acrossHibernateModule = new AcrossHibernateModule();
+		private AcrossHibernateJpaModule acrossHibernateModule() {
+			AcrossHibernateJpaModule acrossHibernateModule = new AcrossHibernateJpaModule();
 			acrossHibernateModule.setHibernateProperty( "hibernate.cache.use_second_level_cache", "true" );
 			acrossHibernateModule.setHibernateProperty( "hibernate.cache.use_query_cache", "true" );
 			acrossHibernateModule.setHibernateProperty( "hibernate.cache.region.factory_class",

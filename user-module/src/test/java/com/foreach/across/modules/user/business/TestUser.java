@@ -40,19 +40,19 @@ public class TestUser
 		assertEquals( "some username", user.getUsername() );
 		assertEquals( "some username", user.getPrincipalName() );
 
-		Field username = ReflectionUtils.findField( User.class, "username");
+		Field username = ReflectionUtils.findField( User.class, "username" );
 		username.setAccessible( true );
 		username.set( user, "Some Username" );
 
-		Field email = ReflectionUtils.findField( User.class, "email");
+		Field email = ReflectionUtils.findField( User.class, "email" );
 		email.setAccessible( true );
 		email.set( user, "someEmail@localHOST" );
 
-		Field principalName = ReflectionUtils.findField( User.class, "principalName");
+		Field principalName = ReflectionUtils.findField( User.class, "principalName" );
 		principalName.setAccessible( true );
 		principalName.set( user, "PRINCIPAL_NAME" );
 
-		assertEquals( "someemail@localhost" , user.getEmail() );
+		assertEquals( "someemail@localhost", user.getEmail() );
 		assertEquals( "some username", user.getUsername() );
 		assertEquals( "principal_name", user.getPrincipalName() );
 	}

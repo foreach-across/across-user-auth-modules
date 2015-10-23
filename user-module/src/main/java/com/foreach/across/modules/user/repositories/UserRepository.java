@@ -15,18 +15,133 @@
  */
 package com.foreach.across.modules.user.repositories;
 
+import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
 public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryDslPredicateExecutor<User>
 {
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
 	User findByUsername( String userName );
 
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
+					@CachePut(value = UserModuleCache.USERS, key = "'email:' + #result.email", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
 	User findByEmail( String email );
 
 	Collection<User> findAllByGroups( Group group );
+
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
+	@Override
+	User findOne( Long id );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #p0.username"),
+					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #p0.email"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+			}
+	)
+	@Override
+	<S extends User> S save( S user );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #p0.username"),
+					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #p0.email"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+			}
+	)
+	@Override
+	<S extends User> S saveAndFlush( S user );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #p0.username"),
+					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #p0.email"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+			}
+	)
+	@Override
+	void delete( User user );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
+	@Override
+	void delete( Long id );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
+	@Override
+	void deleteAllInBatch();
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
+	@Override
+	void deleteInBatch( Iterable<User> entities );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
+	@Override
+	void delete( Iterable<? extends User> entities );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
+	@Override
+	void deleteAll();
 }

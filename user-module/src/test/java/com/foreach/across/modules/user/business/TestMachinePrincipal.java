@@ -16,17 +16,13 @@
 package com.foreach.across.modules.user.business;
 
 import org.junit.Test;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * @author Arne Vandamme
@@ -67,7 +63,7 @@ public class TestMachinePrincipal
 		assertEquals( machinePrincipal.getGroups(), dto.getGroups() );
 		assertNotSame( machinePrincipal.getGroups(), dto.getGroups() );
 	}
-	
+
 	@Test
 	public void principalNameAndNameAreAlwaysLowerCased() throws Exception {
 		MachinePrincipal machinePrincipal = new MachinePrincipal();

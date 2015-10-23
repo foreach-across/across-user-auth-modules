@@ -28,9 +28,6 @@ import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.dto.GroupDto;
-import com.foreach.across.modules.user.dto.MachinePrincipalDto;
-import com.foreach.across.modules.user.dto.UserDto;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.UserService;
@@ -111,7 +108,7 @@ public class ITUserModuleWithCaching
 
 	@Test
 	public void createAndGetMachinePrincipal() {
-		MachinePrincipalDto principalDto = new MachinePrincipalDto();
+		MachinePrincipal principalDto = new MachinePrincipal();
 		principalDto.setName( "somePrincipal" );
 
 		// Null value should be cached
@@ -139,7 +136,7 @@ public class ITUserModuleWithCaching
 		assertSame( byId, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byId, securityPrincipalCache.get( created.getName() ) );
 
-		MachinePrincipalDto otherDto = new MachinePrincipalDto();
+		MachinePrincipal otherDto = new MachinePrincipal();
 		otherDto.setName( "otherEntity" );
 
 		MachinePrincipal other = machinePrincipalService.save( otherDto );
@@ -159,7 +156,7 @@ public class ITUserModuleWithCaching
 
 	@Test
 	public void createAndGetGroup() {
-		GroupDto principalDto = new GroupDto();
+		Group principalDto = new Group();
 		principalDto.setName( "someGroup" );
 
 		// Null value should be cached
@@ -193,7 +190,7 @@ public class ITUserModuleWithCaching
 		assertSame( byId, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byId, securityPrincipalCache.get( created.getPrincipalName() ) );
 
-		GroupDto otherDto = new GroupDto();
+		Group otherDto = new Group();
 		otherDto.setName( "otherGroup" );
 
 		Group other = groupService.save( otherDto );
@@ -216,10 +213,10 @@ public class ITUserModuleWithCaching
 
 	@Test
 	public void createAndGetUser() {
-		UserDto userDto = new UserDto();
-		userDto.setUsername( "someUser" );
-		userDto.setEmail( "someEmail@localhost" );
-		userDto.setPassword( "pwd" );
+		User User = new User();
+		User.setUsername( "someUser" );
+		User.setEmail( "someEmail@localhost" );
+		User.setPassword( "pwd" );
 
 		// Null value should be cached
 		assertTrue( securityPrincipalCache.isEmpty() );
@@ -229,7 +226,7 @@ public class ITUserModuleWithCaching
 		assertTrue( securityPrincipalCache.isEmpty() );
 		assertEquals( 2, userCache.size() );
 
-		User created = userService.save( userDto );
+		User created = userService.save( User );
 		assertNotNull( created );
 
 		assertTrue( userCache.isEmpty() );
@@ -257,7 +254,7 @@ public class ITUserModuleWithCaching
 		assertSame( byEmail, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byEmail, securityPrincipalCache.get( created.getPrincipalName() ) );
 
-		UserDto otherDto = new UserDto();
+		User otherDto = new User();
 		otherDto.setUsername( "otherUser" );
 		otherDto.setEmail( "otherEmail@localhost" );
 		otherDto.setPassword( "pwd" );
@@ -275,7 +272,7 @@ public class ITUserModuleWithCaching
 		assertSame( other, securityPrincipalCache.get( other.getId() ) );
 		assertSame( other, securityPrincipalCache.get( other.getPrincipalName() ) );
 
-		userService.save( userDto );
+		userService.save( User );
 		assertEquals( 2, userCache.size() );
 		assertEquals( 2, securityPrincipalCache.size() );
 		assertSame( other, userCache.get( "username:" + other.getUsername() ) );

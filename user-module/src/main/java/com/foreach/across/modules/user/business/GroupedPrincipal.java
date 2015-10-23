@@ -109,6 +109,6 @@ public abstract class GroupedPrincipal<T extends SettableIdBasedEntity<?>>
 	public Collection<SecurityPrincipal> getParentPrincipals() {
 		return groups == null || groups.isEmpty()
 				? Collections.<SecurityPrincipal>emptyList()
-				: new ArrayList<SecurityPrincipal>( groups );
+				: new ArrayList<>( groups );
 	}
 }

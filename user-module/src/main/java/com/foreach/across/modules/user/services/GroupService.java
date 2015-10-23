@@ -36,7 +36,7 @@ public interface GroupService
 	void delete( long groupId );
 
 	GroupProperties getProperties( Group group );
-	
+
 	void saveProperties( GroupProperties groupProperties );
 
 	void deleteProperties( Group group );
