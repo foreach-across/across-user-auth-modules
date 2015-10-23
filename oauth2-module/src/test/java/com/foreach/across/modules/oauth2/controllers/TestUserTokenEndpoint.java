@@ -28,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -115,7 +116,8 @@ public class TestUserTokenEndpoint
 
 	@Test
 	public void nonExistingUserReturnsForbidden() {
-		when( userDetailsService.loadUserByUsername( "unknown" ) ).thenReturn( null );
+		when( userDetailsService.loadUserByUsername( "unknown" ) ).thenThrow( new UsernameNotFoundException(
+				"username not found" ) );
 
 		ResponseEntity<Map<String, String>> response = endpoint.createUserToken( authentication, "unknown", "full" );
 

@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -69,16 +70,19 @@ public class UserTokenEndpoint
 		}
 
 		if ( forbidden == null ) {
-			UserDetails userDetails = userDetailsService.loadUserByUsername( username );
-
-			if ( userDetails == null ) {
+			UserDetails userDetails = null;
+			try {
+				userDetails = userDetailsService.loadUserByUsername( username );
+			}
+			catch ( UsernameNotFoundException e ) {
 				forbidden = "Requested user does not exist.";
 			}
-			else if ( !canAuthenticate( userDetails ) ) {
+
+			if ( userDetails != null && !canAuthenticate( userDetails ) ) {
 				forbidden = "Requested user is not allowed to authenticate.";
 			}
 
-			if ( forbidden == null ) {
+			if ( userDetails != null && forbidden == null ) {
 				// Build new request and user authentication
 				OAuth2Request clientAuthentication = authentication.getOAuth2Request();
 
