@@ -143,23 +143,55 @@
 			<column name="lastModifiedAt" type="java.sql.Types.TIMESTAMP"/>
 		</createTable>
 	</changeSet>
-	
-	<changeSet id="201509041528" author="wtx">
-		<preConditions onFail="MARK_RAN">
+
+	<changeSet id="201510261420" author="arne">
+		<preConditions>
 			<indexExists tableName="oauth_access_token" indexName="ix_oauth_ata_id" />
+		</preConditions>
+
+		<comment>Drop non-unique authentication_id index</comment>
+
+		<dropIndex tableName="oauth_access_token" indexName="ix_oauth_ata_id" />
+	</changeSet>
+
+	<changeSet id="201510261421" author="arne">
+		<preConditions>
 			<not>
-				<indexExists tableName="oauth_access_token" indexName="u_oauth_ata_id" />
-				<indexExists tableName="oauth_access_token" indexName="ix_oauth_user_name" />
-				<indexExists tableName="oauth_access_token" indexName="ix_oauth_client_id" />
+				<indexExists tableName="oauth_access_token" columnNames="authentication_id" />
 			</not>
 		</preConditions>
 
-		<dropIndex tableName="oauth_access_token" indexName="ix_oauth_ata_id" />
-		<addUniqueConstraint tableName="oauth_access_token" columnNames="authentication_id" constraintName="u_oauth_ata_id" />
-		<createIndex tableName="oauth_access_token" indexName="ix_oauth_user_name">
+		<comment>Create unique authentication_id index</comment>
+
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_at_aid" unique="true">
+			<column name="authentication_id" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="201510261422" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="oauth_access_token" columnNames="user_name" />
+			</not>
+		</preConditions>
+
+		<comment>Create index on user_name</comment>
+
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_at_uname">
 			<column name="user_name" />
 		</createIndex>
-		<createIndex tableName="oauth_access_token" indexName="ix_oauth_client_id">
+	</changeSet>
+
+	<changeSet id="201510261423" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="oauth_access_token" columnNames="client_id" />
+			</not>
+		</preConditions>
+
+		<comment>Create index on client_id</comment>
+
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_at_cid">
 			<column name="client_id" />
 		</createIndex>
 	</changeSet>
