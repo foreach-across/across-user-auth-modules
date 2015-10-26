@@ -17,15 +17,12 @@ package com.foreach.across.modules.it.oauth2;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
-import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.oauth2.OAuth2Module;
+import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
 import com.foreach.across.modules.oauth2.business.OAuth2Client;
 import com.foreach.across.modules.oauth2.business.OAuth2ClientScope;
 import com.foreach.across.modules.oauth2.business.OAuth2Scope;
-import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
-import com.foreach.across.modules.oauth2.business.OAuth2Client;
 import com.foreach.across.modules.oauth2.services.OAuth2Service;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
@@ -91,7 +88,7 @@ public class ITOAuth2Module
 			oAuth2Client.setClientSecret( "fred" );
 			oAuth2Client.setSecretRequired( true );
 
-			oauth2Service.save( oAuth2Client );
+			oauth2Service.saveClient( oAuth2Client );
 
 			OAuth2Client existing = oauth2Service.getClientById( "someclient" );
 			assertNotNull( existing );
@@ -139,38 +136,50 @@ public class ITOAuth2Module
 
 	@Test
 	public void savingOauth2ClientTwiceDoesNotCauseStackOverflow() throws Exception {
-		Set<String> allGrantTypes = new HashSet<>();
-		allGrantTypes.add( "authorization_code" );
-		allGrantTypes.add( "client_credentials" );
-		allGrantTypes.add( "refresh_token" );
+		BaseConfiguration configuration = new BaseConfiguration()
+		{
+			@Override
+			protected void configureModule( OAuth2Module module ) {
+			}
+		};
 
-		Set<String> resourceIds = new HashSet<>();
-		resourceIds.add( "knooppunt" );
+		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configuration )) {
+			OAuth2Service oauth2Service
+					= ctx.beanRegistry().getBeanOfType( OAuth2Service.class );
 
-		OAuth2Client client = new OAuth2Client();
-		client.setClientId( "foo" );
-		client.setClientSecret( "bar" );
-		client.setSecretRequired( true );
-		client.setAccessTokenValiditySeconds( 86400 );
-		client.setRefreshTokenValiditySeconds( 86400 * 365 * 10 );
-		client.getAuthorizedGrantTypes().addAll( allGrantTypes );
-		client.getResourceIds().addAll( resourceIds );
-		linkFullScope( client );
-		oauth2Service.saveClient( client );
+			Set<String> allGrantTypes = new HashSet<>();
+			allGrantTypes.add( "authorization_code" );
+			allGrantTypes.add( "client_credentials" );
+			allGrantTypes.add( "refresh_token" );
 
-		OAuth2Client clientById = oauth2Service.getClientById( "foo" );
-		OAuth2Client dto = clientById.toDto();
-		dto.setRefreshTokenValiditySeconds( 55 );
-		try {
-			oauth2Service.saveClient( dto );
-		}
-		catch ( StackOverflowError e ) {
-			fail();
+			Set<String> resourceIds = new HashSet<>();
+			resourceIds.add( "knooppunt" );
+
+			OAuth2Client client = new OAuth2Client();
+			client.setClientId( "foo" );
+			client.setClientSecret( "bar" );
+			client.setSecretRequired( true );
+			client.setAccessTokenValiditySeconds( 86400 );
+			client.setRefreshTokenValiditySeconds( 86400 * 365 * 10 );
+			client.getAuthorizedGrantTypes().addAll( allGrantTypes );
+			client.getResourceIds().addAll( resourceIds );
+			linkFullScope( client, oauth2Service );
+			oauth2Service.saveClient( client );
+
+			OAuth2Client clientById = oauth2Service.getClientById( "foo" );
+			OAuth2Client dto = clientById.toDto();
+			dto.setRefreshTokenValiditySeconds( 55 );
+			try {
+				oauth2Service.saveClient( dto );
+			}
+			catch ( StackOverflowError e ) {
+				fail();
+			}
 		}
 	}
 
-	private void linkFullScope( OAuth2Client client ) {
-		OAuth2Scope fullScope = getFullScope();
+	private void linkFullScope( OAuth2Client client, OAuth2Service oAuth2Service ) {
+		OAuth2Scope fullScope = getFullScope( oAuth2Service );
 		OAuth2ClientScope clientScope = new OAuth2ClientScope();
 		clientScope.setAutoApprove( false );
 		clientScope.setOAuth2Scope( fullScope );
@@ -178,8 +187,8 @@ public class ITOAuth2Module
 		client.setOAuth2ClientScopes( Collections.singleton( clientScope ) );
 	}
 
-	private OAuth2Scope getFullScope() {
-		Collection<OAuth2Scope> scopes = oauth2Service.getOAuth2Scopes();
+	private OAuth2Scope getFullScope( OAuth2Service oAuth2Service ) {
+		Collection<OAuth2Scope> scopes = oAuth2Service.getOAuth2Scopes();
 		OAuth2Scope fullScope = null;
 		for ( OAuth2Scope scope : scopes ) {
 			if ( scope.getName().equals( "full" ) ) {
@@ -190,7 +199,7 @@ public class ITOAuth2Module
 			fullScope = new OAuth2Scope();
 			fullScope.setName( "full" );
 
-			oauth2Service.saveScope( fullScope );
+			oAuth2Service.saveScope( fullScope );
 		}
 		return fullScope;
 	}

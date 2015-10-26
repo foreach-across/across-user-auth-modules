@@ -21,7 +21,7 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.cache.AcrossCompositeCacheManager;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ConfigurerScope;
-import com.foreach.across.modules.hibernate.AcrossHibernateModule;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.oauth2.OAuth2Module;
 import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
 import com.foreach.across.modules.oauth2.business.OAuth2Client;
@@ -86,7 +86,7 @@ public class ITOAuth2ModuleWithCaching
 		oAuth2Client.setClientSecret( "fred" );
 		oAuth2Client.setSecretRequired( true );
 
-		oauth2Service.save( oAuth2Client );
+		oauth2Service.saveClient( oAuth2Client );
 
 		assertTrue( principalMap.isEmpty() );
 
@@ -130,15 +130,15 @@ public class ITOAuth2ModuleWithCaching
 
 		@Override
 		public void configure( AcrossContext context ) {
-			context.addModule( acrossHibernateModule() );
+			context.addModule( acrossHibernateJpaModule() );
 			context.addModule( userModule() );
 			context.addModule( oauth2Module() );
 			context.addModule( propertiesModule() );
 			context.addModule( springSecurityModule() );
 
 			context.addApplicationContextConfigurer(
-				new AnnotatedClassConfigurer( EnableCachingConfiguration.class ),
-				ConfigurerScope.MODULES_ONLY
+					new AnnotatedClassConfigurer( EnableCachingConfiguration.class ),
+					ConfigurerScope.MODULES_ONLY
 			);
 		}
 
@@ -146,8 +146,8 @@ public class ITOAuth2ModuleWithCaching
 			return new PropertiesModule();
 		}
 
-		private AcrossHibernateModule acrossHibernateModule() {
-			return new AcrossHibernateModule();
+		private AcrossHibernateJpaModule acrossHibernateJpaModule() {
+			return new AcrossHibernateJpaModule();
 		}
 
 		private UserModule userModule() {

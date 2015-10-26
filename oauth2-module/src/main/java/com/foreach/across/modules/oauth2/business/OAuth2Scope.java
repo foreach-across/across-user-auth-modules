@@ -19,11 +19,12 @@ import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;

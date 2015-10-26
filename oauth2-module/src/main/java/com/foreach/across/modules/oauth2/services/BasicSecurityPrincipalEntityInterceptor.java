@@ -33,6 +33,11 @@ public class BasicSecurityPrincipalEntityInterceptor extends EntityInterceptorAd
 	}
 
 	@Override
+	public boolean handles( Class<?> entityClass ) {
+		return BasicSecurityPrincipal.class.isAssignableFrom( entityClass );
+	}
+
+	@Override
 	public void afterUpdate( BasicSecurityPrincipal entity ) {
 		cache.clear();
 	}

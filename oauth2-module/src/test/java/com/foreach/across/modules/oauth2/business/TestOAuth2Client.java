@@ -15,21 +15,16 @@
  */
 package com.foreach.across.modules.oauth2.business;
 
-import com.foreach.across.modules.user.business.Role;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.junit.Assert.*;
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.Role;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme

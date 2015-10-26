@@ -17,21 +17,13 @@ package com.foreach.across.modules.oauth2.config.security;
 
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
-import com.foreach.across.modules.oauth2.services.ClientOAuth2AuthenticationSerializer;
-import com.foreach.across.modules.oauth2.services.CustomTokenServices;
-import com.foreach.across.modules.oauth2.services.OAuth2StatelessJdbcTokenStore;
-import com.foreach.across.modules.oauth2.services.UserDetailsOAuth2AuthenticationSerializer;
-import com.foreach.across.modules.spring.security.infrastructure.config.SecurityInfrastructure;
 import com.foreach.across.modules.oauth2.services.*;
+import com.foreach.across.modules.spring.security.infrastructure.config.SecurityInfrastructure;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -81,7 +73,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Bean
 	@Primary
-	public DefaultTokenServices tokenServices() {
+	public AuthorizationServerTokenServices tokenServices() {
 		DefaultTokenServices tokenServices = new CustomTokenServices( cacheManager );
 		tokenServices.setTokenStore( tokenStore() );
 		tokenServices.setSupportRefreshToken( true );
