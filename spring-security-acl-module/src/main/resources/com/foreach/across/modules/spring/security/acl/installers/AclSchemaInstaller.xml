@@ -293,4 +293,18 @@
 		</createTable>
 	</changeSet>
 
+	<changeSet id="20150828" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="acl_entity" columnNames="name" />
+			</not>
+		</preConditions>
+
+		<comment>Add index on acl security entity name</comment>
+
+		<createIndex tableName="acl_entity" indexName="ix_acl_entity_name" unique="true">
+			<column name="name" />
+		</createIndex>
+	</changeSet>
+
 </databaseChangeLog>

@@ -45,7 +45,7 @@ import java.util.Set;
 @AcrossRole(AcrossModuleRole.INFRASTRUCTURE)
 @AcrossDepends(
 		required = { SpringSecurityModule.NAME, SpringSecurityInfrastructureModule.NAME },
-		optional = { "AcrossHibernateJpaModule", "EhcacheModule" }
+		optional = { "AcrossHibernateJpaModule", "EhcacheModule", "LoggingModule" }
 )
 public class SpringSecurityAclModule extends AcrossModule implements HibernatePackageConfiguringModule
 {
@@ -95,7 +95,8 @@ public class SpringSecurityAclModule extends AcrossModule implements HibernatePa
 
 	@Override
 	public Object[] getInstallers() {
-		return new Object[] { AclSchemaInstaller.class,
+		return new Object[] { AcrossSequencesInstaller.class,
+		                      AclSchemaInstaller.class,
 		                      AclEntityAuditableInstaller.class };
 	}
 }
