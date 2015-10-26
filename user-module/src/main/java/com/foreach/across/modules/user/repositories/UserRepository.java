@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.user.repositories;
 
-import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModuleCache;
@@ -25,7 +24,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
@@ -101,7 +99,6 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void delete( Long id );
 
@@ -111,7 +108,6 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void deleteAllInBatch();
 
@@ -121,7 +117,6 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void deleteInBatch( Iterable<User> entities );
 
@@ -131,7 +126,6 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void delete( Iterable<? extends User> entities );
 
@@ -141,7 +135,6 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void deleteAll();
 }

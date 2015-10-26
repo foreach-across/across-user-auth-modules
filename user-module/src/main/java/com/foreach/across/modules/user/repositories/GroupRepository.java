@@ -15,18 +15,15 @@
  */
 package com.foreach.across.modules.user.repositories;
 
-import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
-import com.foreach.across.modules.user.business.MachinePrincipal;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Arne Vandamme
@@ -40,7 +37,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER, readOnly = true)
 	@Query("select g from Group g where g.name = ?1")
 	Group getByName( String name );
 
@@ -51,7 +47,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
-	@Transactional(readOnly = true)
 	@Override
 	Group findOne( Long id );
 
@@ -62,7 +57,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	<S extends Group> S save( S group );
 
@@ -73,7 +67,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	<S extends Group> S saveAndFlush( S group );
 
@@ -84,7 +77,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void delete( Group group );
 
@@ -94,7 +86,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void delete( Long id );
 
@@ -104,7 +95,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void deleteAllInBatch();
 
@@ -114,7 +104,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void deleteInBatch( Iterable<Group> entities );
 
@@ -124,7 +113,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void delete( Iterable<? extends Group> entities );
 
@@ -134,7 +122,6 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 			}
 	)
-	@Transactional(value = HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	void deleteAll();
 }
