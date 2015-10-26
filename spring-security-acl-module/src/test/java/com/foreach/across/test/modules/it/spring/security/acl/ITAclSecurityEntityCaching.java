@@ -18,11 +18,10 @@ package com.foreach.across.test.modules.it.spring.security.acl;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.hibernate.AcrossHibernateModule;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCache;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
-import com.foreach.across.modules.spring.security.acl.dto.AclSecurityEntityDto;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
@@ -91,7 +90,7 @@ public class ITAclSecurityEntityCaching
 
 	@Test
 	public void createAndGetAclSecurityEntity() {
-		AclSecurityEntityDto entityDto = new AclSecurityEntityDto();
+		AclSecurityEntity entityDto = new AclSecurityEntity();
 		entityDto.setName( "someEntity" );
 
 		AclSecurityEntity created = securityEntityService.save( entityDto );
@@ -114,7 +113,7 @@ public class ITAclSecurityEntityCaching
 		assertSame( byId, entityCache.get( created.getId() ) );
 		assertSame( byId, entityCache.get( created.getName() ) );
 
-		AclSecurityEntityDto otherDto = new AclSecurityEntityDto();
+		AclSecurityEntity otherDto = new AclSecurityEntity();
 		otherDto.setName( "otherEntity" );
 
 		AclSecurityEntity other = securityEntityService.save( otherDto );
@@ -137,7 +136,7 @@ public class ITAclSecurityEntityCaching
 	{
 		@Override
 		public void configure( AcrossContext acrossContext ) {
-			acrossContext.addModule( new AcrossHibernateModule() );
+			acrossContext.addModule( new AcrossHibernateJpaModule() );
 
 			acrossContext.getModule( SpringSecurityAclModule.NAME )
 			             .addApplicationContextConfigurer( EnableCachingConfiguration.class );
