@@ -70,4 +70,9 @@ public class UserDetailsOAuth2AuthenticationSerializer extends OAuth2Authenticat
 		Object principal = authentication.getPrincipal();
 		return principal != null && principal instanceof UserDetails;
 	}
+
+	@Override
+	public boolean canDeserialize( AuthenticationSerializerObject serializerObject ) {
+		return super.canDeserialize( serializerObject ) || serializerObject.getClassName().equals( "com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer" );
+	}
 }

@@ -23,6 +23,8 @@ import java.util.*;
 
 public class AuthenticationSerializerObject<T> implements Serializable
 {
+	private static final long serialVersionUID = -3165303425428338511L;
+
 	private final String className;
 	private final T object;
 
@@ -43,7 +45,7 @@ public class AuthenticationSerializerObject<T> implements Serializable
 		this.requestParameters = oAuth2Request.getRequestParameters();
 		this.clientId = oAuth2Request.getClientId();
 		this.approved = oAuth2Request.isApproved();
-		this.scope = duplicate( oAuth2Request.getScope());
+		this.scope = duplicate( oAuth2Request.getScope() );
 		this.resourceIds = duplicate( oAuth2Request.getResourceIds() );
 		this.redirectUri = oAuth2Request.getRedirectUri();
 		this.responseTypes = duplicate( oAuth2Request.getResponseTypes() );
@@ -81,5 +83,32 @@ public class AuthenticationSerializerObject<T> implements Serializable
 		                          responseTypes,
 		                          extensionProperties
 		);
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( o == null || getClass() != o.getClass() ) {
+			return false;
+		}
+		AuthenticationSerializerObject<?> that = (AuthenticationSerializerObject<?>) o;
+		return Objects.equals( approved, that.approved ) &&
+				Objects.equals( className, that.className ) &&
+				Objects.equals( object, that.object ) &&
+				Objects.equals( requestParameters, that.requestParameters ) &&
+				Objects.equals( clientId, that.clientId ) &&
+				Objects.equals( scope, that.scope ) &&
+				Objects.equals( resourceIds, that.resourceIds ) &&
+				Objects.equals( redirectUri, that.redirectUri ) &&
+				Objects.equals( responseTypes, that.responseTypes ) &&
+				Objects.equals( extensionProperties, that.extensionProperties );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( className, object, requestParameters, clientId, approved, scope, resourceIds, redirectUri,
+		                     responseTypes, extensionProperties );
 	}
 }

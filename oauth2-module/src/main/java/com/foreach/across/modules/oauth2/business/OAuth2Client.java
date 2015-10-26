@@ -18,6 +18,7 @@ package com.foreach.across.modules.oauth2.business;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -32,9 +33,11 @@ import java.util.*;
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT)
 public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implements ClientDetails
 {
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.oAuth2Client", cascade = CascadeType.ALL)
 	private Set<OAuth2ClientScope> oAuth2ClientScopes = new TreeSet<OAuth2ClientScope>();
 
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@Cascade(org.hibernate.annotations.CascadeType.MERGE)
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
@@ -44,6 +47,7 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 	@Column(name = "resource_id")
 	private Set<String> resourceIds = new HashSet<String>();
 
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@Cascade(org.hibernate.annotations.CascadeType.MERGE)
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
@@ -53,6 +57,7 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 	@Column(name = "grant_type")
 	private Set<String> authorizedGrantTypes = new HashSet<String>();
 
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@Cascade(org.hibernate.annotations.CascadeType.MERGE)
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(

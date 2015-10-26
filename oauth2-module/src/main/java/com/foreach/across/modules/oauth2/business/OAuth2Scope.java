@@ -20,18 +20,23 @@ import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @NotThreadSafe
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_SCOPE)
-public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements Comparable<OAuth2Scope>
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements Comparable<OAuth2Scope>, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_oauth_scope_id")
 	@GenericGenerator(
@@ -82,5 +87,23 @@ public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements C
 	@Override
 	public int compareTo( OAuth2Scope o ) {
 		return ObjectUtils.compare( getName(), o != null ? o.getName() : null );
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( !( o instanceof OAuth2Scope ) ) {
+			return false;
+		}
+		OAuth2Scope that = (OAuth2Scope) o;
+
+		return Objects.equals( getId(), that.getId() );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( getId() );
 	}
 }
