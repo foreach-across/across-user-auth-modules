@@ -79,23 +79,4 @@ public class AclSecurityEntity extends SettableIdAuditableEntity<AclSecurityEnti
 	public void setParent( AclSecurityEntity parent ) {
 		this.parent = parent;
 	}
-
-	@Override
-	public boolean equals( Object o ) {
-		if ( this == o ) {
-			return true;
-		}
-		if ( !( o instanceof AclSecurityEntity ) ) {
-			return false;
-		}
-
-		AclSecurityEntity that = (AclSecurityEntity) o;
-
-		return Objects.equals( getId(), that.getId() );
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode( getId() );
-	}
 }
