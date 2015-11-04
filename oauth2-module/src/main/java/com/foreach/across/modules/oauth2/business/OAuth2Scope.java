@@ -27,7 +27,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @NotThreadSafe
@@ -88,23 +87,5 @@ public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements C
 	@Override
 	public int compareTo( OAuth2Scope o ) {
 		return ObjectUtils.compare( getName(), o != null ? o.getName() : null );
-	}
-
-	@Override
-	public boolean equals( Object o ) {
-		if ( this == o ) {
-			return true;
-		}
-		if ( !( o instanceof OAuth2Scope ) ) {
-			return false;
-		}
-		OAuth2Scope that = (OAuth2Scope) o;
-
-		return Objects.equals( getId(), that.getId() );
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash( getId() );
 	}
 }
