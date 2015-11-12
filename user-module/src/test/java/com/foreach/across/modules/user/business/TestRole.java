@@ -15,7 +15,13 @@
  */
 package com.foreach.across.modules.user.business;
 
+import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import org.junit.Test;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -56,5 +62,28 @@ public class TestRole
 		assertTrue( role.hasPermission( "one" ) );
 		assertTrue( role.hasPermission( new Permission( "TWO" ) ) );
 		assertTrue( role.hasPermission( three ) );
+	}
+
+	@Test
+	public void authorityMatching() {
+		Set<GrantedAuthority> actuals = new HashSet<>();
+		actuals.add( new Role( "ROLE_ADMIN" ) );
+
+		AuthorityMatcher matcher = AuthorityMatcher.allOf( "ROLE_ADMIN" );
+		assertTrue( matcher.matches( actuals ) );
+
+		matcher = AuthorityMatcher.allOf( new Role( "ROLE_ADMIN" ) );
+		assertTrue( matcher.matches( actuals ) );
+	}
+
+	@Test
+	public void nullValuesAreSameAsEmpty() {
+		Role role = new Role( "some role" );
+		role.setPermissions( Collections.singleton( new Permission( "one" ) ) );
+
+		assertFalse( role.getPermissions().isEmpty() );
+
+		role.setPermissions( null );
+		assertTrue( role.getPermissions().isEmpty() );
 	}
 }

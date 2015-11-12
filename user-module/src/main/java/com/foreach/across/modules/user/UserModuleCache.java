@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.user.dto;
-
-import com.foreach.across.modules.user.business.MachinePrincipal;
-import org.apache.commons.lang3.StringUtils;
+package com.foreach.across.modules.user;
 
 /**
  * @author Arne Vandamme
  */
-public class MachinePrincipalDto extends GroupedPrincipalDto<MachinePrincipal>
+public interface UserModuleCache
 {
-	private String name;
+	String USERS = "userCache";
+	String USER_PROPERTIES = "userPropertiesCache";
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName( String name ) {
-		this.name = name;
-	}
-
-	@Override
-	public String getPrincipalName() {
-		return StringUtils.lowerCase( getName() );
-	}
+	String GROUPS = "groupCache";
+	String GROUP_PROPERTIES = "groupPropertiesCache";
 }

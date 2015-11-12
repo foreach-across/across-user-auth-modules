@@ -16,10 +16,17 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Arne Vandamme
@@ -27,6 +34,71 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class GroupRepositoryImpl extends BasicRepositoryImpl<Group> implements GroupRepository
 {
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.GROUPS, key = "#result.name", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
+	@Transactional(readOnly = true)
+	@Override
+	public Group getById( long id ) {
+		return super.getById( id );
+	}
+
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.GROUPS, key = "#result.name", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
+	@Transactional(readOnly = true)
+	@Override
+	public Group getByName( String name ) {
+		return (Group) distinct()
+				.add( Restrictions.eq( "name", name ) )
+				.uniqueResult();
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#group.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#group.principalName")
+			}
+	)
+	@Transactional
+	@Override
+	public void create( Group group ) {
+		super.create( group );
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#group.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#group.principalName")
+			}
+	)
+	@Override
+	public void update( Group group ) {
+		super.update( group );
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#group.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#group.principalName")
+			}
+	)
+	@Override
+	public void delete( Group group ) {
+		super.delete( group );
+	}
+
 	@Override
 	protected Criteria ordered( Criteria criteria ) {
 		criteria.addOrder( Order.asc( "name" ) );

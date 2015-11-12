@@ -16,12 +16,17 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.converters.FieldUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +35,27 @@ import java.util.Collection;
 @Repository
 public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements UserRepository
 {
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
+	@Transactional(readOnly = true)
+	@Override
+	public User getById( long id ) {
+		return super.getById( id );
+	}
+
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
+					@CachePut(value = UserModuleCache.USERS, key = "'email:' + #result.email", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
 	@Transactional(readOnly = true)
 	@Override
 	public User getByEmail( String email ) {
@@ -42,16 +68,66 @@ public class UserRepositoryImpl extends BasicRepositoryImpl<User> implements Use
 	@Transactional(readOnly = true)
 	@Override
 	public Collection<User> getUsersInGroup( Group group ) {
-		return (Collection<User>) distinct().createAlias( "groups", "group", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN )
-				.add( Restrictions.eq( "group.id", group.getId() ) ).list();
+		return (Collection<User>) distinct().createAlias( "groups", "group",
+		                                                  org.hibernate.sql.JoinType.LEFT_OUTER_JOIN )
+		                                    .add( Restrictions.eq( "group.id", group.getId() ) ).list();
 	}
 
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
 	@Transactional(readOnly = true)
 	@Override
 	public User getByUsername( String userName ) {
 		return (User) distinct()
 				.add( Restrictions.eq( "username", FieldUtils.lowerCase( userName ) ) )
 				.uniqueResult();
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #user.username"),
+					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #user.email"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.principalName")
+			}
+	)
+	@Transactional
+	@Override
+	public void create( User user ) {
+		super.create( user );
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #user.username"),
+					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #user.email"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.principalName")
+			}
+	)
+	@Transactional
+	@Override
+	public void update( User user ) {
+		super.update( user );
+	}
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.USERS, key = "'username:' + #user.username"),
+					@CacheEvict(value = UserModuleCache.USERS, key = "'email:' + #user.email"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#user.principalName")
+			}
+	)
+	@Transactional
+	@Override
+	public void delete( User user ) {
+		super.delete( user );
 	}
 
 	@Override

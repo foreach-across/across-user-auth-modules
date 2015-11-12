@@ -26,7 +26,9 @@ import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity
 import com.foreach.across.modules.spring.security.acl.dto.AclSecurityEntityDto;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.infrastructure.services.CloseableAuthentication;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.PermissionGroup;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
@@ -66,23 +68,26 @@ public class AclPermissionsInstaller
 	@InstallerMethod
 	public void install() {
 		createPermissionsAndAddToAdminRole();
-		createSystemEntity();
-		createGroupsAclSecurityEntity();
+		createEntitiesAndAcls();
 	}
 
-	public void createSystemEntity() {
-		securityPrincipalService.authenticate( machinePrincipalService.getMachinePrincipalByName( "system" ) );
+	public void createEntitiesAndAcls() {
+		MachinePrincipal system = machinePrincipalService.getMachinePrincipalByName( "system" );
 
-		AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" );
+		try (CloseableAuthentication ignore = securityPrincipalService.authenticate( system )) {
+			AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" );
 
-		if ( systemAcl == null ) {
-			AclSecurityEntityDto dto = new AclSecurityEntityDto();
-			dto.setName( "system" );
+			if ( systemAcl == null ) {
+				AclSecurityEntityDto dto = new AclSecurityEntityDto();
+				dto.setName( "system" );
 
-			systemAcl = aclSecurityEntityService.save( dto );
+				systemAcl = aclSecurityEntityService.save( dto );
+			}
+
+			aclSecurityService.setDefaultParentAcl( systemAcl );
+
+			createGroupsAclSecurityEntity();
 		}
-
-		aclSecurityService.setDefaultParentAcl( systemAcl );
 	}
 
 	public void createPermissionsAndAddToAdminRole() {
@@ -120,13 +125,14 @@ public class AclPermissionsInstaller
 	public void createGroupsAclSecurityEntity() {
 		AclSecurityEntity existing = aclSecurityEntityService.getSecurityEntityByName( "groups" );
 
-		if (existing == null) {
+		if ( existing == null ) {
 			AclSecurityEntityDto dto = new AclSecurityEntityDto();
 			dto.setName( "groups" );
 			dto.setParent( aclSecurityEntityService.getSecurityEntityByName( "system" ) );
 
 			existing = aclSecurityEntityService.save( dto );
-			aclSecurityService.createAclWithParent( existing, aclSecurityEntityService.getSecurityEntityByName( "system" ) );
+			aclSecurityService.createAclWithParent( existing, aclSecurityEntityService.getSecurityEntityByName(
+					"system" ) );
 			aclSecurityService.allow( "manage groups", existing, AclPermission.READ, AclPermission.WRITE );
 		}
 	}

@@ -16,11 +16,14 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.GroupProperties;
 import com.foreach.across.modules.user.dto.GroupDto;
 import com.foreach.across.modules.user.repositories.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,9 +47,16 @@ public class GroupServiceImpl implements GroupService
 		return groupRepository.getAll();
 	}
 
+	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public Group getGroupById( long id ) {
 		return groupRepository.getById( id );
+	}
+
+	@Cacheable(value = UserModuleCache.GROUPS, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
+	@Override
+	public Group getGroupByName( String name ) {
+		return groupRepository.getByName( name );
 	}
 
 	@Transactional

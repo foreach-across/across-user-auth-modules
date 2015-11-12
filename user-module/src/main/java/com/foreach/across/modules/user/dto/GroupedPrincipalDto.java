@@ -24,7 +24,7 @@ import java.util.TreeSet;
 /**
  * @author Arne Vandamme
  */
-public class GroupedPrincipalDto<T extends GroupedPrincipal> extends NonGroupedPrincipalDto<T>
+public abstract class GroupedPrincipalDto<T extends GroupedPrincipal> extends NonGroupedPrincipalDto<T>
 {
 	private Set<Group> groups = new TreeSet<>();
 

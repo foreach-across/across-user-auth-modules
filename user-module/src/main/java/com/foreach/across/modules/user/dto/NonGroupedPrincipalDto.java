@@ -25,7 +25,7 @@ import java.util.TreeSet;
 /**
  * @author Arne Vandamme
  */
-public class NonGroupedPrincipalDto<T extends BasicSecurityPrincipal> extends IdBasedEntityDto<T>
+public abstract class NonGroupedPrincipalDto<T extends BasicSecurityPrincipal> extends IdBasedEntityDto<T>
 {
 	private Set<Role> roles = new TreeSet<>();
 
@@ -40,4 +40,6 @@ public class NonGroupedPrincipalDto<T extends BasicSecurityPrincipal> extends Id
 	public void addRole( Role role ) {
 		roles.add( role );
 	}
+
+	public abstract String getPrincipalName();
 }

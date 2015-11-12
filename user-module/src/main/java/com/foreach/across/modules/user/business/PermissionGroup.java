@@ -19,14 +19,17 @@ import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_PERMISSION_GROUP)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PermissionGroup
 {
 	@Id
@@ -50,6 +53,7 @@ public class PermissionGroup
 	@Column(name = "description")
 	private String description;
 
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "group")
 	@BatchSize(size = 50)
 	private Set<Permission> permissions = new TreeSet<>();
@@ -99,7 +103,7 @@ public class PermissionGroup
 		if ( this == o ) {
 			return true;
 		}
-		if ( o == null || getClass() != o.getClass() ) {
+		if ( o == null || !( o instanceof PermissionGroup ) ) {
 			return false;
 		}
 
@@ -114,7 +118,7 @@ public class PermissionGroup
 
 	@Override
 	public int hashCode() {
-		return name != null ? name.hashCode() : 0;
+		return Objects.hashCode( getName() );
 	}
 
 	@Override

@@ -18,6 +18,7 @@ package com.foreach.across.modules.user.business;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -32,8 +33,11 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_PERMISSION)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Permission implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(generator = "seq_um_permission_id")
 	@GenericGenerator(
@@ -52,7 +56,7 @@ public class Permission implements GrantedAuthority, Comparable<GrantedAuthority
 	@Column(name = "description")
 	private String description;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "permission_group_id")
 	private PermissionGroup group;
 

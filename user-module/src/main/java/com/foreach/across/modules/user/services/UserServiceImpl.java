@@ -15,7 +15,8 @@
  */
 package com.foreach.across.modules.user.services;
 
-import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
@@ -25,6 +26,7 @@ import com.foreach.across.modules.user.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +51,7 @@ public class UserServiceImpl implements UserService
 	private UserPropertiesService userPropertiesService;
 
 	@Autowired
-	private SecurityPrincipalService securityPrincipalService;
+	private UserModifiedNotifier userModifiedNotifier;
 
 	private final PasswordEncoder passwordEncoder;
 	private final boolean useEmailAsUsername;
@@ -83,16 +85,19 @@ public class UserServiceImpl implements UserService
 		return userRepository.getAll();
 	}
 
+	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public User getUserById( long id ) {
 		return userRepository.getById( id );
 	}
 
+	@Cacheable(value = UserModuleCache.USERS, key = "('email:' + #email).toLowerCase()", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public User getUserByEmail( String email ) {
 		return userRepository.getByEmail( email );
 	}
 
+	@Cacheable(value = UserModuleCache.USERS, key = "('username:' + #username).toLowerCase()", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public User getUserByUsername( String username ) {
 		return userRepository.getByUsername( username );
@@ -107,9 +112,7 @@ public class UserServiceImpl implements UserService
 	@Transactional
 	public User save( UserDto userDto ) {
 		User user;
-
-		boolean isPrincipalRename = false;
-		String oldPrincipalName = null;
+		UserDto originalUser = null;
 
 		if ( userDto.isNewEntity() ) {
 			user = new User();
@@ -132,6 +135,8 @@ public class UserServiceImpl implements UserService
 				throw new UserModuleException(
 						"Attempt to update user with id " + existingUserId + " but that user does not exist" );
 			}
+
+			originalUser = new UserDto( user );
 		}
 
 		if ( useEmailAsUsername ) {
@@ -145,11 +150,6 @@ public class UserServiceImpl implements UserService
 					&& StringUtils.equals( userDto.getUsername(), user.getEmail() ) ) {
 				userDto.setUsername( userDto.getEmail() );
 			}
-		}
-
-		if ( !userDto.isNewEntity() && !StringUtils.equalsIgnoreCase( userDto.getUsername(), user.getUsername() ) ) {
-			isPrincipalRename = true;
-			oldPrincipalName = user.getPrincipalName();
 		}
 
 		Errors errors = new BeanPropertyBindingResult( userDto, "user" );
@@ -182,8 +182,8 @@ public class UserServiceImpl implements UserService
 
 		userDto.copyFrom( user );
 
-		if ( isPrincipalRename ) {
-			securityPrincipalService.publishRenameEvent( oldPrincipalName, user.getPrincipalName() );
+		if ( originalUser != null ) {
+			userModifiedNotifier.update( originalUser, userDto );
 		}
 
 		return user;

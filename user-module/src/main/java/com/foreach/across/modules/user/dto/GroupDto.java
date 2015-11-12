@@ -16,6 +16,7 @@
 package com.foreach.across.modules.user.dto;
 
 import com.foreach.across.modules.user.business.Group;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 /**
@@ -33,9 +34,14 @@ public class GroupDto extends NonGroupedPrincipalDto<Group>
 		this.name = name;
 	}
 
+	@Override
+	public String getPrincipalName() {
+		return StringUtils.lowerCase("group:" + getName());
+	}
+
 	public static GroupDto fromGroup( Group group ) {
 		GroupDto dto = new GroupDto();
-		BeanUtils.copyProperties( group, dto );
+		BeanUtils.copyProperties( group, dto, "principalName" );
 
 		return dto;
 	}

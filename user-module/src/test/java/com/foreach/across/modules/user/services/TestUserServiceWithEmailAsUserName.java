@@ -57,7 +57,6 @@ public class TestUserServiceWithEmailAsUserName
 
 	@Test
 	public void creatingUserFailsWhenEmailAlreadyExists() throws Exception {
-
 		int firstUserId = 498;
 		UserDto userDto = new UserDto();
 		userDto.setId( firstUserId );
