@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>standard-module-bom</artifactId>
-		<version>1.0.6-SNAPSHOT</version>
+		<version>1.0.6.RELEASE</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
@@ -72,47 +72,47 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>across-hibernate-module</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>properties-module</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>entity-module</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-module</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-acl-module</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>admin-web-module</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>ehcache-module</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>logging-module</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>user-module</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -144,6 +144,7 @@
 	<scm>
 		<connection>scm:git:https://bitbucket.org/beforeach/oauth2-module.git</connection>
 		<developerConnection>scm:git:https://bitbucket.org/beforeach/oauth2-module.git</developerConnection>
+		<url>https://bitbucket.org/beforeach/oauth2-module</url>
 	</scm>
 
 </project>
