@@ -18,17 +18,19 @@ package com.foreach.across.modules.oauth2.business;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT_SCOPE)
 @AssociationOverrides({
-		                      @AssociationOverride(name = "pk.oAuth2Client",
-		                                           joinColumns = @JoinColumn(name = "client_id")),
-		                      @AssociationOverride(name = "pk.oAuth2Scope",
-		                                           joinColumns = @JoinColumn(name = "scope_id")) })
-public class OAuth2ClientScope implements Comparable
+		@AssociationOverride(name = "pk.oAuth2Client",
+				joinColumns = @JoinColumn(name = "client_id")),
+		@AssociationOverride(name = "pk.oAuth2Scope",
+				joinColumns = @JoinColumn(name = "scope_id")) })
+public class OAuth2ClientScope implements Comparable, Serializable
 {
+	private static final long serialVersionUID = -1673618360294752368L;
 
 	@EmbeddedId
 	private OAuth2ClientScopeId pk = new OAuth2ClientScopeId();
@@ -75,18 +77,18 @@ public class OAuth2ClientScope implements Comparable
 		if ( this == o ) {
 			return true;
 		}
-		if ( o == null || getClass() != o.getClass() ) {
+		if ( o == null || !( o instanceof OAuth2ClientScope ) ) {
 			return false;
 		}
 
 		OAuth2ClientScope that = (OAuth2ClientScope) o;
 
-		return Objects.equals( pk, that.pk );
+		return Objects.equals( getPk(), that.getPk() );
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( pk );
+		return Objects.hash( getPk() );
 	}
 
 	@Override

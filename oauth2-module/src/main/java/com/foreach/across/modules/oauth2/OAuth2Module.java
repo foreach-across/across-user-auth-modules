@@ -30,6 +30,7 @@ import com.foreach.across.modules.oauth2.config.OAuth2EndpointsConfiguration;
 import com.foreach.across.modules.oauth2.config.OAuth2RepositoriesConfiguration;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import com.foreach.across.modules.oauth2.config.OAuth2ServicesConfiguration;
+import com.foreach.across.modules.oauth2.config.aop.EntityInterceptorConfiguration;
 import com.foreach.across.modules.oauth2.config.security.AuthorizationServerSecurityConfiguration;
 import com.foreach.across.modules.oauth2.config.security.CustomTokenEndpointsConfiguration;
 import com.foreach.across.modules.oauth2.config.security.ResourceServerSecurityConfiguration;
@@ -42,7 +43,10 @@ import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHa
 
 import java.util.Set;
 
-@AcrossDepends(required = { UserModule.NAME, SpringSecurityModule.NAME })
+@AcrossDepends(
+		required = { UserModule.NAME, SpringSecurityModule.NAME },
+		optional = "EhcacheModule"
+)
 public class OAuth2Module extends AcrossModule implements HasHibernatePackageProvider, HasSchemaConfiguration
 {
 
@@ -87,7 +91,8 @@ public class OAuth2Module extends AcrossModule implements HasHibernatePackagePro
 						OAuth2EndpointsConfiguration.class,
 						AuthorizationServerSecurityConfiguration.class,
 						CustomTokenEndpointsConfiguration.class,
-						ResourceServerSecurityConfiguration.class
+						ResourceServerSecurityConfiguration.class,
+						EntityInterceptorConfiguration.class
 				)
 		);
 	}

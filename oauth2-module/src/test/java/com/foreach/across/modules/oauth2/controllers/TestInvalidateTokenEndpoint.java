@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
@@ -125,9 +126,10 @@ public class TestInvalidateTokenEndpoint
 	@Configuration
 	protected static class Config
 	{
+
 		@Bean
 		public InvalidateTokenEndpoint oAuth2TokenController() {
-			return new InvalidateTokenEndpoint();
+			return new InvalidateTokenEndpoint( new NoOpCacheManager() );
 		}
 	}
 }

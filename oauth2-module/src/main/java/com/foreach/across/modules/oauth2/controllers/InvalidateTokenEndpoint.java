@@ -15,9 +15,12 @@
  */
 package com.foreach.across.modules.oauth2.controllers;
 
+import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
 import com.foreach.across.modules.oauth2.dto.OAuth2TokenDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,6 +43,12 @@ public class InvalidateTokenEndpoint
 	@Autowired
 	private TokenStore tokenStore;
 
+	private Cache cache;
+
+	public InvalidateTokenEndpoint( CacheManager cacheManager ) {
+		cache = cacheManager.getCache( OAuth2ModuleCache.ACCESS_TOKENS_TO_AUTHENTICATION );
+	}
+
 	@RequestMapping("/oauth/invalidate")
 	public ResponseEntity<OAuth2TokenDto> invalidateToken(
 			OAuth2Authentication authentication,
@@ -58,6 +67,7 @@ public class InvalidateTokenEndpoint
 						storedAuthentication.getOAuth2Request().getClientId() ) ) {
 					OAuth2RefreshToken refreshToken = accessToken.getRefreshToken();
 					tokenStore.removeAccessToken( accessToken );
+					cache.evict( accessToken );
 					if ( refreshToken != null ) {
 						tokenStore.removeRefreshToken( refreshToken );
 					}

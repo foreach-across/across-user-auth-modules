@@ -18,10 +18,13 @@ package com.foreach.across.modules.oauth2.business;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
 public class OAuth2ClientScopeId implements Serializable
 {
+	private static final long serialVersionUID = -2165810738665473456L;
+
 	@ManyToOne
 	private OAuth2Client oAuth2Client;
 
@@ -42,5 +45,23 @@ public class OAuth2ClientScopeId implements Serializable
 
 	public void setOAuth2Scope( OAuth2Scope oAuth2Scope ) {
 		this.oAuth2Scope = oAuth2Scope;
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( !( o instanceof OAuth2ClientScopeId ) ) {
+			return false;
+		}
+		OAuth2ClientScopeId that = (OAuth2ClientScopeId) o;
+		return Objects.equals( getOAuth2Client(), that.getOAuth2Client() ) &&
+				Objects.equals( getOAuth2Scope(), that.getOAuth2Scope() );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( getOAuth2Client(), getOAuth2Scope() );
 	}
 }

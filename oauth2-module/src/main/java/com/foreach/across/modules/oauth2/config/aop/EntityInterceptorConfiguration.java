@@ -13,40 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.oauth2.config;
+package com.foreach.across.modules.oauth2.config.aop;
 
-import com.foreach.across.modules.oauth2.controllers.AcrossWhitelabelApprovalEndpoint;
-import com.foreach.across.modules.oauth2.controllers.InvalidateTokenEndpoint;
-import com.foreach.across.modules.oauth2.controllers.UserTokenEndpoint;
+import com.foreach.across.modules.oauth2.services.BasicSecurityPrincipalEntityInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Adds some additional OAuth endpoints.
- *
- * @see org.springframework.security.oauth2.provider.endpoint.FrameworkEndpoint
- * @see org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping
+ * @author Andy Somers
  */
 @Configuration
-public class OAuth2EndpointsConfiguration
+public class EntityInterceptorConfiguration
 {
 	@Autowired
 	private CacheManager cacheManager;
 
 	@Bean
-	public InvalidateTokenEndpoint invalidateTokenEndpoint() {
-		return new InvalidateTokenEndpoint( cacheManager );
-	}
-
-	@Bean
-	public UserTokenEndpoint userTokenEndpoint() {
-		return new UserTokenEndpoint();
-	}
-
-	@Bean
-	public AcrossWhitelabelApprovalEndpoint acrossWhitelabelApprovalEndpoint() {
-		return new AcrossWhitelabelApprovalEndpoint();
+	public BasicSecurityPrincipalEntityInterceptor basicSecurityPrincipalEntityInterceptor() {
+		return new BasicSecurityPrincipalEntityInterceptor( cacheManager );
 	}
 }

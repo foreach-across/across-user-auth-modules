@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.oauth2.repositories;
+package com.foreach.across.modules.oauth2;
 
-import com.foreach.across.modules.hibernate.repositories.BasicRepository;
-import com.foreach.across.modules.oauth2.business.OAuth2Client;
-
-public interface OAuth2ClientRepository extends BasicRepository<OAuth2Client>
+/**
+ * @author Arne Vandamme
+ */
+public interface OAuth2ModuleCache
 {
-	void save( OAuth2Client client );
-
-	OAuth2Client getByClientId( String clientId );
+	String CLIENTS = "oauth2ClientCache";
+	String ACCESS_TOKENS_TO_AUTHENTICATION = "oauth2AuthenticationByAccessTokenCache";
 }

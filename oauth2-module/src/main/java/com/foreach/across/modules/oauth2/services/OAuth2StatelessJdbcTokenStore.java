@@ -15,18 +15,22 @@
  */
 package com.foreach.across.modules.oauth2.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.foreach.across.core.annotations.RefreshableCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.util.SerializationUtils;
 
 import javax.sql.DataSource;
-import java.util.List;
+import java.util.Collection;
 
 public class OAuth2StatelessJdbcTokenStore extends JdbcTokenStore
 {
-	@Autowired
-	private List<OAuth2AuthenticationSerializer> serializers;
+	private static final Logger LOG = LoggerFactory.getLogger( OAuth2StatelessJdbcTokenStore.class );
+
+	@RefreshableCollection(includeModuleInternals = true)
+	private Collection<OAuth2AuthenticationSerializer> serializers;
 
 	public OAuth2StatelessJdbcTokenStore( DataSource dataSource ) {
 		super( dataSource );
@@ -39,13 +43,23 @@ public class OAuth2StatelessJdbcTokenStore extends JdbcTokenStore
 				return serializer.serialize( authentication );
 			}
 		}
+
 		return super.serializeAuthentication( authentication );
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected OAuth2Authentication deserializeAuthentication( byte[] authentication ) {
-		Object object = SerializationUtils.deserialize( authentication );
+		Object object;
+
+		try {
+			object = SerializationUtils.deserialize( authentication );
+		}
+		catch ( Exception e ) {
+			LOG.warn( "Exception deserializing authentication", e );
+			throw new IllegalArgumentException( e );
+		}
+
 		if ( object instanceof AuthenticationSerializerObject ) {
 			AuthenticationSerializerObject oAuth2AuthenticationSerializerObject =
 					(AuthenticationSerializerObject) object;
