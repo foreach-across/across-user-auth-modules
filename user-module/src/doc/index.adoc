@@ -45,4 +45,129 @@ the `AdminWebModule` this will also enable the administrative management control
 NOTE: By default the `Permission` and `PermissionGroup` entities are `hidden` from the admin UI and can only be managed through code.  If you
 want to enable UI management of those entities, you can modify the `hidden` property using a custom `EntityConfigurer`.
 
+NOTE: Make sure role names (Permission::name) are always in lowercase, as they are case sensitive and as such stored in the database.
+
+
+Description
+Creates a User domain model along with permission management.  Provides:
+User datamodel with password encryption functionality (defaults to BCrypt)
+Business objects: User, Role, Permission, PermissionGroup
+Services: UserService, RoleService, PermissionService
+Admin web interface for managing users and roles
+Integration with SpringSecurityModule through a UserDetailsService
+
+<dependency>
+	<groupId>across-standard-modules</groupId>
+	<artifactId>user-module</artifactId>
+</dependency>
+Module dependencies
+Module	Type	Reason
+AcrossHibernateModule	required
+PropertiesModule	required
+AdminWebModule	optional	If present: will provide admin controllers for user and role management.
+SpringSecurityModule	extension	If present: will create a UserDetailsService and allow authentication and use of the permissions/roles.
+
+Define an AcrossContext with the UserModule, SpringSecurityModule and AdminWebModule to quickly get up and running with an administrative web interface that allows user login, user management and authorization through user permissions.
+
+Though the UserModule does not require the SpringSecurityModule to be present, it does depend on Spring security libraries for the PasswordEncoder and the UserDetails interface. The necessary Spring security jars should be present, but none of the services are required to be active.
+Configuration
+Installation
+Upon installation a single default user and a set of default roles and permissions will be created:
+permissions:
+access administration
+manage users
+manage user roles
+roles:
+ROLE_ADMIN with permissions: access administration, manage users and manage user roles
+ROLE_MANAGER with permissions: access administration, manage users
+user with username admin, password admin and role ROLE_ADMIN
+Password encryption
+User passwords are encrypted using BCrypt by default.  This is done using a PasswordEncoder instance from Spring security.  You can provide the password encoder instance to use as a property when configuring the module (see example below).  Using a NoOpPasswordEncoder you can disable password encoding altogether.
+Renaming database tables
+UserModule exposes a SchemaConfiguration (see the example below) that allows you to rename the database tables if that would be required.  Note that this must be done before the first installation of the module.
+Unless you have a good reason to do so, it is probably best to stick with the default SchemaConfiguration as this will reduce the chances of conflicts with future updates.
+Example configuration
+public UserModule userModule() {
+	UserModule userModule = new UserModule();
+
+	// Disable password encoding
+	userModule.setProperty( UserModuleSettings.PASSWORD_ENCODER, NoOpPasswordEncoder.getInstance() );
+
+	// Rename some database tables
+	SchemaConfiguration schema = userModule.getSchemaConfiguration();
+	schema.renameTable( UserSchemaConfiguration.TABLE_PERMISSION, "permissies" );
+	schema.renameTable( UserSchemaConfiguration.TABLE_USER, "gebruikers" );
+
+	return userModule;
+}
+User documentation
+Exposed services
+Services	Dependency	Description
+UserService
+
+RoleService
+
+PermissionService
+
+UserDetailsService	SpringSecurityModule	Implementation of the Spring security UserDetailsService.
+CurrentUserProxy	SpringSecurityModule	Service allowing access to the User instance attached to the current thread.
+Defining permissions
+Other modules depending on the UserModule can use the RoleService and PermissionService to define their own permissions upon installation.  Permissions should be member of exactly one group, this means modules can easily define their own group(s) of permissions.  Groups make it easier to organize the administrative interface, but otherwise have no impact on permission handling.
+@Installer(description = "Define demo permissions and assign them to the admin role.",
+           phase = InstallerPhase.AfterModuleBootstrap)
+public class DemoPermissionsInstaller
+{
+	private static Logger LOG = LoggerFactory.getLogger( DemoPermissionsInstaller.class );
+
+	@Autowired
+	private RoleService roleService;
+
+	@Autowired
+	private PermissionService permissionService;
+
+	@InstallerMethod
+	public void install() {
+		createPermissionGroupAndPermissions();
+		assignPermissionsToExistingRole();
+	}
+
+	private void createPermissionGroupAndPermissions() {
+		// Register the permissions - a default group with these permissions will be created if not found
+		permissionService.definePermission( "read something", "The user can read something.", "demo-permissions" );
+		permissionService.definePermission( "write something", "The user can write something.", "demo-permissions" );
+		// Update the newly created group with some more descriptive text
+		PermissionGroup permissionGroup = permissionService.getPermissionGroup( "demo-permissions" );
+		permissionGroup.setTitle( "Module: DemoWebModule" );
+		permissionGroup.setDescription(
+				"Custom permissions defined by the DemoWebModule to illustrate integration with the UserModule." );
+		permissionService.save( permissionGroup );
+	}
+
+	private void assignPermissionsToExistingRole() {
+		// Extend the admin role with the new permissions
+		Role role = roleService.getRole( "ROLE_ADMIN" );
+		if ( role != null ) {
+			role.addPermission( "read something", "write something" );
+			roleService.save( role );
+		}
+		else {
+			LOG.warn(
+					"ROLE_ADMIN does not appear to exist - the demo permissions have not been assigned to any role." );
+		}
+	}
+}
+Spring security integration
+The User class exposes its permissions and roles as a set of GrantedAuthorities, meaning you can use authority checks in annotations or security filters if both the UserModule and SpringSecurityModule are activated.  Note that the term permission in Spring security context is used related to the ACL setup.  That is why you should use hasAuthority instead of hasPermission when checking for a permissions in Spring security expressions.
+@RequestMapping("/restricted-page")
+@PreAuthorize("hasAuthority('manage users')")
+public String restricted() {
+	// This controller method would only be called if the User has any role that defines the manage users permission
+	...
+}
+
+As a general rule, applications should authorize on permissions and not on roles. This is contrary to most Spring security examples, but offers more flexibility in shifting permissions around without tying your application to specific user roles.
+
+Custom security principal
+If you want your application to authenticate against your own User concept, you can provide a custom security principal object by extending from the BasicSecurityPrincipal class and implementing the UserDetails interface. In case your application uses an encoding algorithm different from BCrypt, don't forget to configure your custom PasswordEncoder implementation as in the example above (see section Password Encryption).
+Make sure to call setPrincipalName() in the setter method of the field that serves as the principal username.
 

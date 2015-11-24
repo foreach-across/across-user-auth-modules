@@ -43,11 +43,11 @@ public class MachinePrincipal extends GroupedPrincipal<MachinePrincipal> impleme
 	private String name;
 
 	public String getName() {
-		return name;
+		return StringUtils.lowerCase( name );
 	}
 
 	public void setName( String name ) {
-		this.name = name;
+		this.name = StringUtils.lowerCase( name );
 		setPrincipalName( name );
 	}
 

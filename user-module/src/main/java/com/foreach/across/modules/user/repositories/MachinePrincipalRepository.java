@@ -16,7 +16,11 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.business.MachinePrincipal;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 /**
@@ -25,5 +29,59 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 public interface MachinePrincipalRepository
 		extends IdBasedEntityJpaRepository<MachinePrincipal>, QueryDslPredicateExecutor<MachinePrincipal>
 {
-	MachinePrincipal findByName( String name );
+	@Caching(
+			put = {
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
+	@Override
+	MachinePrincipal findOne( Long id );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+			}
+	)
+	@Override
+	<S extends MachinePrincipal> S save( S machinePrincipal );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+			}
+	)
+	@Override
+	<S extends MachinePrincipal> S saveAndFlush( S machinePrincipal );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+			}
+	)
+	@Override
+	void delete( MachinePrincipal machinePrincipal );
+
+	@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+	@Override
+	void delete( Long id );
+
+	@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+	@Override
+	void deleteAllInBatch();
+
+	@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+	@Override
+	void deleteInBatch( Iterable<MachinePrincipal> entities );
+
+	@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+	@Override
+	void delete( Iterable<? extends MachinePrincipal> entities );
+
+	@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+	@Override
+	void deleteAll();
 }

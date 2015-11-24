@@ -20,6 +20,7 @@ import com.foreach.across.modules.spring.security.infrastructure.business.Securi
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalHierarchy;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -39,6 +40,7 @@ public abstract class GroupedPrincipal<T extends SettableIdBasedEntity<?>>
 		extends BasicSecurityPrincipal<T>
 		implements SecurityPrincipalHierarchy
 {
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@ManyToMany(fetch = FetchType.EAGER)
 	@BatchSize(size = 50)
 	@JoinTable(
@@ -107,6 +109,6 @@ public abstract class GroupedPrincipal<T extends SettableIdBasedEntity<?>>
 	public Collection<SecurityPrincipal> getParentPrincipals() {
 		return groups == null || groups.isEmpty()
 				? Collections.<SecurityPrincipal>emptyList()
-				: new ArrayList<SecurityPrincipal>( groups );
+				: new ArrayList<>( groups );
 	}
 }

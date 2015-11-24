@@ -107,4 +107,9 @@ public class UserModuleConfiguration
 		                            settings.isUseEmailAsUsername(),
 		                            settings.isRequireUniqueEmail() );
 	}
+
+	@Bean
+	public UserModifiedNotifier userModifiedNotifier() {
+		return new UserModifiedNotifier();
+	}
 }

@@ -18,10 +18,10 @@ package com.foreach.across.modules.user.business;
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -42,9 +42,10 @@ import java.util.*;
 		name = "principal_type",
 		discriminatorType = DiscriminatorType.STRING
 )
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		extends SettableIdBasedEntity<T>
-		implements SecurityPrincipal, Auditable<String>
+		implements IdBasedSecurityPrincipal, Auditable<String>
 {
 	@Id
 	@GeneratedValue(generator = "seq_um_principal_id")
@@ -58,6 +59,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 	)
 	private Long id;
 
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@ManyToMany(fetch = FetchType.EAGER)
 	@BatchSize(size = 50)
 	@JoinTable(
@@ -83,7 +85,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 
 	@Override
 	public String getPrincipalName() {
-		return principalName;
+		return StringUtils.lowerCase( principalName );
 	}
 
 	protected final void setPrincipalName( String principalName ) {

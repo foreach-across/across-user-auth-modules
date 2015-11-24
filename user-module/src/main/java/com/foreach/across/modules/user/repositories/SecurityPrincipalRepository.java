@@ -16,9 +16,12 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalRetrievalStrategy;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.jpa.repository.Query;
 
 /**
@@ -27,6 +30,12 @@ import org.springframework.data.jpa.repository.Query;
 public interface SecurityPrincipalRepository
 		extends IdBasedEntityJpaRepository<BasicSecurityPrincipal>, SecurityPrincipalRetrievalStrategy
 {
+	@Caching(
+			put = {
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
 	@Query("select p from BasicSecurityPrincipal p where p.principalName = ?1")
 	@Override
 	SecurityPrincipal getPrincipalByName( String principalName );

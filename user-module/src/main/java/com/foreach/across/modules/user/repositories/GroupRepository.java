@@ -16,7 +16,13 @@
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 /**
@@ -24,4 +30,98 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  */
 public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, QueryDslPredicateExecutor<Group>
 {
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.GROUPS, key = "#result.name", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
+	@Query("select g from Group g where g.name = ?1")
+	Group getByName( String name );
+
+	@Caching(
+			put = {
+					@CachePut(value = UserModuleCache.GROUPS, key = "#result.name", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
+	@Override
+	Group findOne( Long id );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+			}
+	)
+	@Override
+	<S extends Group> S save( S group );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+			}
+	)
+	@Override
+	<S extends Group> S saveAndFlush( S group );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+			}
+	)
+	@Override
+	void delete( Group group );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Override
+	void delete( Long id );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Override
+	void deleteAllInBatch();
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Override
+	void deleteInBatch( Iterable<Group> entities );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Override
+	void delete( Iterable<? extends Group> entities );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = UserModuleCache.GROUPS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Override
+	void deleteAll();
 }

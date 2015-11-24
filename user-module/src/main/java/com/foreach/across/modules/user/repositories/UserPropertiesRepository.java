@@ -15,9 +15,14 @@
  */
 package com.foreach.across.modules.user.repositories;
 
+import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
 import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
+import com.foreach.across.modules.user.UserModuleCache;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Arne Vandamme
@@ -27,5 +32,26 @@ public class UserPropertiesRepository extends EntityPropertiesRepository<Long>
 {
 	public UserPropertiesRepository( EntityPropertiesDescriptor configuration ) {
 		super( configuration );
+	}
+
+	@Cacheable(UserModuleCache.USER_PROPERTIES)
+	@Transactional(readOnly = true)
+	@Override
+	public StringPropertiesSource loadProperties( Long entityId ) {
+		return super.loadProperties( entityId );
+	}
+
+	@CacheEvict(value = UserModuleCache.USER_PROPERTIES, key = "#entityId")
+	@Transactional
+	@Override
+	public void saveProperties( Long entityId, StringPropertiesSource properties ) {
+		super.saveProperties( entityId, properties );
+	}
+
+	@CacheEvict(value = UserModuleCache.USER_PROPERTIES, key = "#entityId")
+	@Transactional
+	@Override
+	public void deleteProperties( Long entityId ) {
+		super.deleteProperties( entityId );
 	}
 }

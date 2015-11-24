@@ -16,7 +16,8 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
-import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserProperties;
@@ -25,6 +26,7 @@ import com.mysema.query.types.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService
 	private UserPropertiesService userPropertiesService;
 
 	@Autowired
-	private SecurityPrincipalService securityPrincipalService;
+	private UserModifiedNotifier userModifiedNotifier;
 
 	private final PasswordEncoder passwordEncoder;
 	private final boolean useEmailAsUsername;
@@ -85,16 +87,19 @@ public class UserServiceImpl implements UserService
 		return userRepository.findAll();
 	}
 
+	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public User getUserById( long id ) {
 		return userRepository.findOne( id );
 	}
 
+	@Cacheable(value = UserModuleCache.USERS, key = "('email:' + #email).toLowerCase()", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public User getUserByEmail( String email ) {
 		return userRepository.findByEmail( email );
 	}
 
+	@Cacheable(value = UserModuleCache.USERS, key = "('username:' + #username).toLowerCase()", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public User getUserByUsername( String username ) {
 		return userRepository.findByUsername( username );
@@ -104,9 +109,7 @@ public class UserServiceImpl implements UserService
 	@Transactional(HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	public User save( User userDto ) {
 		User user;
-
-		boolean isPrincipalRename = false;
-		String oldPrincipalName = null;
+		User originalUser = null;
 
 		if ( userDto.isNew() ) {
 			if ( StringUtils.isBlank( userDto.getPassword() ) ) {
@@ -129,6 +132,9 @@ public class UserServiceImpl implements UserService
 				throw new UserModuleException(
 						"Attempt to update user with id " + existingUserId + " but that user does not exist" );
 			}
+
+			originalUser = user;
+
 			String currentPassword = user.getPassword();
 			user = user.toDto();
 			user.setPassword( currentPassword );
@@ -145,11 +151,6 @@ public class UserServiceImpl implements UserService
 					&& StringUtils.equals( userDto.getUsername(), user.getEmail() ) ) {
 				userDto.setUsername( userDto.getEmail() );
 			}
-		}
-
-		if ( !userDto.isNew() && !StringUtils.equalsIgnoreCase( userDto.getUsername(), user.getUsername() ) ) {
-			isPrincipalRename = true;
-			oldPrincipalName = user.getPrincipalName();
 		}
 
 		Errors errors = new BeanPropertyBindingResult( userDto, "user" );
@@ -177,8 +178,8 @@ public class UserServiceImpl implements UserService
 
 		BeanUtils.copyProperties( saved, userDto, "password" );
 
-		if ( isPrincipalRename ) {
-			securityPrincipalService.publishRenameEvent( oldPrincipalName, user.getPrincipalName() );
+		if ( originalUser != null ) {
+			userModifiedNotifier.update( originalUser, userDto );
 		}
 
 		return saved;
