@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.oauth2.installers;
+package com.foreach.across.modules.oauth2;
 
-import com.foreach.across.core.annotations.Installer;
-import com.foreach.across.core.installers.AcrossLiquibaseInstaller;
-import com.foreach.across.core.installers.InstallerPhase;
-
-@Installer(
-		description = "Creates the database schema for all token stores.",
-		phase = InstallerPhase.BeforeContextBootstrap,
-		version = 7
-)
-public class TokenStoreSchemaInstaller extends AcrossLiquibaseInstaller
+/**
+ * @author Arne Vandamme
+ */
+public interface OAuth2ModuleCache
 {
+	String CLIENTS = "oauth2ClientCache";
+	String ACCESS_TOKENS_TO_AUTHENTICATION = "oauth2AuthenticationByAccessTokenCache";
 }

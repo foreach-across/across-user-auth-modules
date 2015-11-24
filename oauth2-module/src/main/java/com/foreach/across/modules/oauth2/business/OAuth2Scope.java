@@ -19,10 +19,12 @@ import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,8 +32,11 @@ import java.util.Set;
 @NotThreadSafe
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_SCOPE)
-public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements Comparable<OAuth2Scope>
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements Comparable<OAuth2Scope>, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_oauth_scope_id")
 	@GenericGenerator(

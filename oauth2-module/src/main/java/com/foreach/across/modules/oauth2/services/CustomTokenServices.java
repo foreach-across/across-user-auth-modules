@@ -15,6 +15,9 @@
  */
 package com.foreach.across.modules.oauth2.services;
 
+import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
@@ -27,20 +30,27 @@ public class CustomTokenServices extends DefaultTokenServices
 {
 	private TokenStore tokenStore;
 
+	private Cache cache;
+
+	public CustomTokenServices( CacheManager cacheManager ) {
+		cache = cacheManager.getCache( OAuth2ModuleCache.ACCESS_TOKENS_TO_AUTHENTICATION );
+	}
+
 	@Override
 	public synchronized OAuth2AccessToken createAccessToken(
-			OAuth2Authentication authentication) throws AuthenticationException {
+			OAuth2Authentication authentication ) throws AuthenticationException {
 		// https://github.com/spring-projects/spring-security-oauth/issues/276
-		return super.createAccessToken(authentication);
+		return super.createAccessToken( authentication );
 	}
 
 	@Override
 	public synchronized OAuth2AccessToken refreshAccessToken(
-			String refreshTokenValue, TokenRequest request) {
+			String refreshTokenValue, TokenRequest request ) {
 		// https://github.com/spring-projects/spring-security-oauth/issues/276
 		try {
 			return super.refreshAccessToken( refreshTokenValue, request );
-		} catch ( RemoveTokenException e ) {
+		}
+		catch ( RemoveTokenException e ) {
 			throw new InvalidGrantException( "User is invalid" );
 		}
 	}
@@ -54,7 +64,13 @@ public class CustomTokenServices extends DefaultTokenServices
 	@Override
 	public OAuth2Authentication loadAuthentication( String accessTokenValue ) throws AuthenticationException {
 		try {
-			return super.loadAuthentication( accessTokenValue );
+			Cache.ValueWrapper valueWrapper = cache.get( accessTokenValue );
+			if ( valueWrapper == null || valueWrapper.get() == null ) {
+				OAuth2Authentication oAuth2Authentication = super.loadAuthentication( accessTokenValue );
+				cache.put( accessTokenValue, oAuth2Authentication );
+				return oAuth2Authentication;
+			}
+			return (OAuth2Authentication) valueWrapper.get();
 		}
 		catch ( RemoveTokenException removeTokenException ) {
 			// When the username is changed or the clientId is changed, we remove the access token so we get an invalid token exception later on

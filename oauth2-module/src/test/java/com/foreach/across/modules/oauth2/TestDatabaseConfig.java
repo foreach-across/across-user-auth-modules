@@ -17,9 +17,8 @@ package com.foreach.across.modules.oauth2;
 
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.database.support.HikariDataSourceHelper;
-import com.foreach.across.modules.hibernate.AcrossHibernateModule;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.hibernate.provider.PackagesToScanProvider;
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -37,14 +36,14 @@ public class TestDatabaseConfig
 	public AcrossContext acrossContext( ConfigurableApplicationContext applicationContext ) throws Exception {
 		AcrossContext acrossContext = new AcrossContext( applicationContext );
 		acrossContext.setDataSource( dataSource() );
-		acrossContext.addModule( acrossHibernateModule() );
+		acrossContext.addModule( acrossHibernateJpaModule() );
 
 		return acrossContext;
 	}
 
 	@Bean
-	public AcrossHibernateModule acrossHibernateModule() {
-		AcrossHibernateModule acrossHibernateModule = new AcrossHibernateModule();
+	public AcrossHibernateJpaModule acrossHibernateJpaModule() {
+		AcrossHibernateJpaModule acrossHibernateModule = new AcrossHibernateJpaModule();
 		acrossHibernateModule.addHibernatePackageProvider(
 				new PackagesToScanProvider( "com.foreach.across.modules.oauth2.business",
 				                            "com.foreach.across.modules.user.business" ) );

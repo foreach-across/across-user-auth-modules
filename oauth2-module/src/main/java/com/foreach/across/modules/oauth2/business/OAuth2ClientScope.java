@@ -32,6 +32,8 @@ import java.util.Objects;
 )
 public class OAuth2ClientScope implements Comparable, Serializable
 {
+	private static final long serialVersionUID = -1673618360294752368L;
+
 	@EmbeddedId
 	private OAuth2ClientScopeId pk = new OAuth2ClientScopeId();
 
@@ -77,18 +79,18 @@ public class OAuth2ClientScope implements Comparable, Serializable
 		if ( this == o ) {
 			return true;
 		}
-		if ( o == null || getClass() != o.getClass() ) {
+		if ( o == null || !( o instanceof OAuth2ClientScope ) ) {
 			return false;
 		}
 
 		OAuth2ClientScope that = (OAuth2ClientScope) o;
 
-		return Objects.equals( pk, that.pk );
+		return Objects.equals( getPk(), that.getPk() );
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( pk );
+		return Objects.hash( getPk() );
 	}
 
 	@Override

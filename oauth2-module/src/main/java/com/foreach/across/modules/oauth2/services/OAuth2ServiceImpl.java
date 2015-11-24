@@ -15,11 +15,14 @@
  */
 package com.foreach.across.modules.oauth2.services;
 
+import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
 import com.foreach.across.modules.oauth2.business.OAuth2Client;
 import com.foreach.across.modules.oauth2.business.OAuth2Scope;
 import com.foreach.across.modules.oauth2.repositories.OAuth2ClientRepository;
 import com.foreach.across.modules.oauth2.repositories.OAuth2ScopeRepository;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -58,6 +61,7 @@ public class OAuth2ServiceImpl implements OAuth2Service
 		return oAuth2ClientRepository.save( oAuth2Client );
 	}
 
+	@Cacheable(value = OAuth2ModuleCache.CLIENTS, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public OAuth2Client getClientById( String clientId ) {
 		return oAuth2ClientRepository.findByClientId( clientId );

@@ -15,9 +15,12 @@
  */
 package com.foreach.across.modules.oauth2.business;
 
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.Role;
 import org.junit.Test;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -110,5 +113,23 @@ public class TestOAuth2Client
 		assertNotSame( client.getResourceIds(), dto.getResourceIds() );
 		assertEquals( client.getOAuth2ClientScopes(), dto.getOAuth2ClientScopes() );
 		assertNotSame( client.getOAuth2ClientScopes(), dto.getOAuth2ClientScopes() );
+	}
+	
+	@Test
+	public void principalNameIsAlwaysLowerCased() throws Exception {
+		OAuth2Client client = new OAuth2Client();
+		assertNull( client.getPrincipalName() );
+		assertNull( client.getClientId() );
+
+		client.setClientId( "My Client Id" );
+
+		assertEquals( "My Client Id", client.getClientId() );
+		assertEquals( "my client id", client.getPrincipalName() );
+
+		Field principalName = ReflectionUtils.findField( Group.class, "principalName" );
+		principalName.setAccessible( true );
+		principalName.set( client, "CLIENT PRINCIPAL_NAME" );
+
+		assertEquals( "client principal_name", client.getPrincipalName() );
 	}
 }

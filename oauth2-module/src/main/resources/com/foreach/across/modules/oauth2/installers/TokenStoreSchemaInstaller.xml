@@ -65,20 +65,135 @@
 			<column name="authentication" type="java.sql.Types.BLOB"/>
 		</createTable>
 	</changeSet>
-	
+
 	<changeSet id="201507241413" author="wtx">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<tableExists tableName="oauth_code" />
+				<tableExists tableName="oauth_code"/>
 			</not>
 		</preConditions>
-		
+
 		<comment>Creates oauth_code table.</comment>
-		
+
 		<createTable tableName="oauth_code">
-			<column name="code" type="java.sql.Types.VARCHAR(255)" />
-			<column name="authentication" type="java.sql.Types.BLOB" />
+			<column name="code" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="authentication" type="java.sql.Types.BLOB"/>
 		</createTable>
+	</changeSet>
+
+	<changeSet id="201508260907" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="oauth_code" columnName="created"/>
+			</not>
+		</preConditions>
+		<comment>Adds created to oauth_code table.</comment>
+
+		<addColumn tableName="oauth_code">
+			<column name="created" type="java.sql.Types.TIMESTAMP"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="201508260939" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="oauth_code" indexName="ix_oauth_code_code"/>
+			</not>
+		</preConditions>
+		<comment>Adds index to oauth_code table.</comment>
+
+		<createIndex tableName="oauth_code" indexName="ix_oauth_code_code">
+			<column name="code"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="201508261350" author="wtx">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="oauth_access_token" indexName="ix_oauth_ata_id"/>
+			</not>
+		</preConditions>
+
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_ata_id">
+			<column name="authentication_id"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="201508280825" author="arne">
+		<preConditions>
+			<not>
+				<tableExists tableName="oauth_approvals"/>
+			</not>
+		</preConditions>
+
+		<comment>Creating oauth_approvals table</comment>
+
+		<createTable tableName="oauth_approvals">
+			<column name="userId" type="java.sql.Types.VARCHAR(255)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="clientId" type="java.sql.Types.VARCHAR(255)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="scope" type="java.sql.Types.VARCHAR(255)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="expiresAt" type="java.sql.Types.TIMESTAMP"/>
+			<column name="status" type="java.sql.Types.VARCHAR(10)"/>
+			<column name="lastModifiedAt" type="java.sql.Types.TIMESTAMP"/>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="201510261420" author="arne">
+		<preConditions>
+			<indexExists tableName="oauth_access_token" indexName="ix_oauth_ata_id" />
+		</preConditions>
+
+		<comment>Drop non-unique authentication_id index</comment>
+
+		<dropIndex tableName="oauth_access_token" indexName="ix_oauth_ata_id" />
+	</changeSet>
+
+	<changeSet id="201510261421" author="arne">
+		<preConditions>
+			<not>
+				<indexExists tableName="oauth_access_token" columnNames="authentication_id" />
+			</not>
+		</preConditions>
+
+		<comment>Create unique authentication_id index</comment>
+
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_at_aid" unique="true">
+			<column name="authentication_id" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="201510261422" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="oauth_access_token" columnNames="user_name" />
+			</not>
+		</preConditions>
+
+		<comment>Create index on user_name</comment>
+
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_at_uname">
+			<column name="user_name" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="201510261423" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="oauth_access_token" columnNames="client_id" />
+			</not>
+		</preConditions>
+
+		<comment>Create index on client_id</comment>
+
+		<createIndex tableName="oauth_access_token" indexName="ix_oauth_at_cid">
+			<column name="client_id" />
+		</createIndex>
 	</changeSet>
 
 </databaseChangeLog>

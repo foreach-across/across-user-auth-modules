@@ -16,28 +16,21 @@
 package com.foreach.across.modules.oauth2.config.security;
 
 import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
-import com.foreach.across.modules.oauth2.services.ClientOAuth2AuthenticationSerializer;
-import com.foreach.across.modules.oauth2.services.CustomTokenServices;
-import com.foreach.across.modules.oauth2.services.OAuth2StatelessJdbcTokenStore;
-import com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer;
+import com.foreach.across.modules.oauth2.services.*;
 import com.foreach.across.modules.spring.security.infrastructure.config.SecurityInfrastructure;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Primary;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.*;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
-import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
-import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.approval.*;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
@@ -63,6 +56,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	private ClientDetailsService clientDetailsService;
 
 	@Autowired
+	private CacheManager cacheManager;
+
+	@Autowired
 	private OAuth2ModuleSettings oAuth2ModuleSettings;
 
 	@Bean
@@ -71,14 +67,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	}
 
 	@Bean
-	public UserOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
-		return new UserOAuth2AuthenticationSerializer();
+	public UserDetailsOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
+		return new UserDetailsOAuth2AuthenticationSerializer();
 	}
 
 	@Bean
 	@Primary
 	public AuthorizationServerTokenServices tokenServices() {
-		DefaultTokenServices tokenServices = new CustomTokenServices();
+		DefaultTokenServices tokenServices = new CustomTokenServices( cacheManager );
 		tokenServices.setTokenStore( tokenStore() );
 		tokenServices.setSupportRefreshToken( true );
 		tokenServices.setClientDetailsService( clientDetailsService );
@@ -88,7 +84,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	}
 
 	@Bean
-	@Exposed
 	public TokenStore tokenStore() {
 		return new OAuth2StatelessJdbcTokenStore( dataSource );
 	}
@@ -101,23 +96,33 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Override
 	public void configure( AuthorizationServerEndpointsConfigurer endpoints ) throws Exception {
 		Map<String, String> mapping = new HashMap<>();
+
 		if ( StringUtils.isNotBlank( oAuth2ModuleSettings.getCustomApprovalForm() ) ) {
-			mapping.put( "/oauth/confirm_access", "/oauth/custom_confirm_access" );
+			mapping.put( "/oauth/confirm_access", "/oauth/confirm_access_external" );
 		}
+
 		endpoints.tokenStore( tokenStore() )
 		         .tokenServices( tokenServices() )
+		         .requestFactory( oAuth2RequestFactory() )
 		         .authenticationManager( securityInfrastructure.authenticationManager() )
+		         .userApprovalHandler( userApprovalHandler() )
 		         .getFrameworkEndpointHandlerMapping().setMappings( mapping );
 
-		if ( oAuth2ModuleSettings.isUseTokenStoreUserApprovalHandler() ) {
-			endpoints.userApprovalHandler( tokenStoreApprovalHandler() ).requestFactory( oAuth2RequestFactory() );
-		}
-		else {
-			endpoints.userApprovalHandler( new DefaultUserApprovalHandler() );
-		}
-
 		if ( oAuth2ModuleSettings.isUseJdbcAuthorizationCodeService() ) {
-			endpoints.authorizationCodeServices( new JdbcAuthorizationCodeServices( dataSource ) );
+			endpoints.authorizationCodeServices( customJdbcAuthorizationCodeServices() );
+		}
+	}
+
+	@Bean
+	@Lazy
+	public UserApprovalHandler userApprovalHandler() {
+		switch ( oAuth2ModuleSettings.getApprovalHandler() ) {
+			case TOKEN_STORE:
+				return tokenStoreApprovalHandler();
+			case APPROVAL_STORE:
+				return approvalStoreUserApprovalHandler();
+			default:
+				return new DefaultUserApprovalHandler();
 		}
 	}
 
@@ -125,10 +130,40 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		TokenStoreUserApprovalHandler tokenStoreUserApprovalHandler = new TokenStoreUserApprovalHandler();
 		tokenStoreUserApprovalHandler.setRequestFactory( oAuth2RequestFactory() );
 		tokenStoreUserApprovalHandler.setTokenStore( tokenStore() );
+		tokenStoreUserApprovalHandler.setClientDetailsService( clientDetailsService );
 		return tokenStoreUserApprovalHandler;
 	}
 
-	private DefaultOAuth2RequestFactory oAuth2RequestFactory() {
+	private ApprovalStoreUserApprovalHandler approvalStoreUserApprovalHandler() {
+		ApprovalStoreUserApprovalHandler approvalStoreUserApprovalHandler = new ApprovalStoreUserApprovalHandler();
+		approvalStoreUserApprovalHandler.setClientDetailsService( clientDetailsService );
+		approvalStoreUserApprovalHandler.setRequestFactory( oAuth2RequestFactory() );
+		approvalStoreUserApprovalHandler.setApprovalStore( approvalStore() );
+		return approvalStoreUserApprovalHandler;
+	}
+
+	@Bean
+	@Lazy
+	public ApprovalStore approvalStore() {
+		switch ( oAuth2ModuleSettings.getApprovalStore() ) {
+			case JDBC:
+				return new JdbcApprovalStore( dataSource );
+			case TOKEN:
+				TokenApprovalStore tokenApprovalStore = new TokenApprovalStore();
+				tokenApprovalStore.setTokenStore( tokenStore() );
+				return tokenApprovalStore;
+			default:
+				return new InMemoryApprovalStore();
+		}
+	}
+
+	@Bean
+	public AuthorizationCodeServices customJdbcAuthorizationCodeServices() {
+		return new CustomJdbcAuthorizationCodeServices( dataSource );
+	}
+
+	@Bean
+	DefaultOAuth2RequestFactory oAuth2RequestFactory() {
 		return new DefaultOAuth2RequestFactory( clientDetailsService );
 	}
 
