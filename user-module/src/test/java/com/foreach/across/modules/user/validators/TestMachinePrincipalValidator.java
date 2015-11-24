@@ -71,14 +71,14 @@ public class TestMachinePrincipalValidator
 	}
 
 	@Test
-	public void groupNameMustBeUnique() {
+	public void principalNameMustBeUnique() {
 		MachinePrincipal machinePrincipal = new MachinePrincipal();
 		machinePrincipal.setName( "PRINCIPAL NAME" );
 
 		MachinePrincipal existing = new MachinePrincipal();
 		existing.setName( "principal name" );
 
-		when( repository.findOne( QMachinePrincipal.machinePrincipal.name.equalsIgnoreCase( "PRINCIPAL NAME" ) ) )
+		when( repository.findOne( QMachinePrincipal.machinePrincipal.name.equalsIgnoreCase( machinePrincipal.getName() ) ) )
 				.thenReturn( existing );
 
 		validator.validate( machinePrincipal, errors );

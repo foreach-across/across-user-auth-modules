@@ -19,7 +19,6 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.database.support.HikariDataSourceHelper;
 import com.foreach.across.modules.hibernate.AcrossHibernateModule;
 import com.foreach.across.modules.hibernate.provider.PackagesToScanProvider;
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.context.ConfigurableApplicationContext;
