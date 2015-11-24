@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.installers;
-
-import com.foreach.across.core.annotations.Installer;
-import com.foreach.across.core.installers.AcrossLiquibaseInstaller;
+package com.foreach.across.modules.spring.security.acl;
 
 /**
  * @author Arne Vandamme
  */
-@Installer(description = "Installs the ACL database schema", version = 3)
-public class AclSchemaInstaller extends AcrossLiquibaseInstaller
+public interface SpringSecurityAclModuleCache
 {
+	String ACL = "securityAclCache";
+	String ACL_SECURITY_ENTITY = "aclSecurityEntityCache";
 }

@@ -124,6 +124,7 @@
 	<scm>
 		<connection>scm:git:https://bitbucket.org/beforeach/spring-security-acl-module.git</connection>
 		<developerConnection>scm:git:https://bitbucket.org/beforeach/spring-security-acl-module.git</developerConnection>
+		<url>https://bitbucket.org/beforeach/spring-security-acl-module</url>
 	</scm>
 
 </project>

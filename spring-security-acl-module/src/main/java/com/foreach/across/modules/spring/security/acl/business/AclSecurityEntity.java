@@ -22,12 +22,13 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 /**
  * Represents a generic named entity that can be used for ACL control.
  * This is usually a more abstract concept: like the default system ACL that does not have any
  * other entity representation (unlike User records for example).
- * <p/>
+ * <p>
  * An AclSecurityEntity can optionally have a single parent AclSecurityEntity.
  *
  * @author Arne Vandamme

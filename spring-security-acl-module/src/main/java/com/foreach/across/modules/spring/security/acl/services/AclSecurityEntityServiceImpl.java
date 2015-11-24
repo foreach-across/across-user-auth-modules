@@ -16,9 +16,12 @@
 package com.foreach.across.modules.spring.security.acl.services;
 
 import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
+import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCache;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.repositories.AclSecurityEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,11 +34,21 @@ public class AclSecurityEntityServiceImpl implements AclSecurityEntityService
 	@Autowired
 	private AclSecurityEntityRepository aclSecurityEntityRepository;
 
+	@Cacheable(
+			value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY,
+			key = "#id",
+			unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY
+	)
 	@Override
 	public AclSecurityEntity getSecurityEntityById( long id ) {
 		return aclSecurityEntityRepository.findOne( id );
 	}
 
+	@Cacheable(
+			value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY,
+			key = "#name",
+			unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY
+	)
 	@Override
 	public AclSecurityEntity getSecurityEntityByName( String name ) {
 		return aclSecurityEntityRepository.findByName( name );

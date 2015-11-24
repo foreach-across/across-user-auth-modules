@@ -23,6 +23,7 @@ import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
 import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
+import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageConfiguringModule;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
@@ -46,7 +47,7 @@ import java.util.Set;
 @AcrossRole(value = AcrossModuleRole.INFRASTRUCTURE)
 @AcrossDepends(
 		required = { SpringSecurityModule.NAME, SpringSecurityInfrastructureModule.NAME },
-		optional = { "AcrossHibernateJpaModule", "EhcacheModule" }
+		optional = { "AcrossHibernateJpaModule", "EhcacheModule", "LoggingModule" }
 )
 public class SpringSecurityAclModule extends AcrossModule implements HibernatePackageConfiguringModule
 {
@@ -97,7 +98,8 @@ public class SpringSecurityAclModule extends AcrossModule implements HibernatePa
 
 	@Override
 	public Object[] getInstallers() {
-		return new Object[] { AclSchemaInstaller.class,
+		return new Object[] { AcrossSequencesInstaller.class,
+		                      AclSchemaInstaller.class,
 		                      AclEntityAuditableInstaller.class };
 	}
 }
