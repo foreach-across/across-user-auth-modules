@@ -54,6 +54,11 @@ public class AclSecurityServiceImpl implements QueryableAclSecurityService
 		defaultParent = entity;
 	}
 
+	@Override
+	public IdBasedEntity getDefaultParentAcl() {
+		return defaultParent;
+	}
+
 	@Transactional(readOnly = true)
 	@Override
 	public MutableAcl getAcl( IdBasedEntity entity ) {
@@ -192,9 +197,8 @@ public class AclSecurityServiceImpl implements QueryableAclSecurityService
 			acl = aclService.createAcl( objectIdentity );
 		}
 
-		List<AccessControlEntry> aces = acl.getEntries();
-
 		for ( AclPermission aclPermission : aclPermissions ) {
+			List<AccessControlEntry> aces = acl.getEntries();
 			int index = aces.size();
 			AccessControlEntry ace = findAce( aces, sid, aclPermission );
 
