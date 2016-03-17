@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.validators;
 
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.QGroup;
 import com.foreach.across.modules.user.services.GroupService;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -27,11 +29,13 @@ import org.springframework.validation.Errors;
  */
 public class GroupValidator extends EntityValidatorSupport<Group>
 {
-	private GroupService groupService;
+	private final GroupService groupService;
+	private final DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
 
 	@Autowired
-	public GroupValidator( GroupService groupService ) {
+	public GroupValidator( GroupService groupService, DefaultUserDirectoryStrategy defaultUserDirectoryStrategy ) {
 		this.groupService = groupService;
+		this.defaultUserDirectoryStrategy = defaultUserDirectoryStrategy;
 	}
 
 	@Override
@@ -41,6 +45,11 @@ public class GroupValidator extends EntityValidatorSupport<Group>
 
 	@Override
 	protected void preValidation( Group entity, Errors errors ) {
+		defaultUserDirectoryStrategy.apply( entity );
+	}
+
+	@Override
+	protected void postValidation( Group entity, Errors errors ) {
 		if ( !errors.hasFieldErrors( "name" ) ) {
 			Group other = groupService.findGroup( QGroup.group.name.equalsIgnoreCase( entity.getName() ) );
 

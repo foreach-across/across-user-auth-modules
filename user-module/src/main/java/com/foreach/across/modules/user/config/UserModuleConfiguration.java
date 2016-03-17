@@ -22,6 +22,8 @@ import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import com.foreach.across.modules.user.services.*;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategyImpl;
 import com.foreach.across.modules.user.validators.GroupValidator;
 import com.foreach.across.modules.user.validators.MachinePrincipalValidator;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
@@ -60,7 +62,7 @@ public class UserModuleConfiguration
 
 	@Bean
 	public GroupValidator groupValidator() {
-		return new GroupValidator( groupService() );
+		return new GroupValidator( groupService(), defaultUserDirectoryStrategy() );
 	}
 
 	@Bean
@@ -70,7 +72,7 @@ public class UserModuleConfiguration
 
 	@Bean
 	public MachinePrincipalValidator machinePrincipalValidator( MachinePrincipalRepository machinePrincipalRepository ) {
-		return new MachinePrincipalValidator( machinePrincipalRepository );
+		return new MachinePrincipalValidator( machinePrincipalRepository, defaultUserDirectoryStrategy() );
 	}
 
 	@Bean
@@ -100,6 +102,11 @@ public class UserModuleConfiguration
 	@Bean
 	public EmailValidator emailValidator() {
 		return new EmailValidator();
+	}
+
+	@Bean
+	public DefaultUserDirectoryStrategy defaultUserDirectoryStrategy() {
+		return new DefaultUserDirectoryStrategyImpl( userDirectoryService() );
 	}
 
 	@Bean

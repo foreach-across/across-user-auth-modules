@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.validators;
 
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.QGroup;
 import com.foreach.across.modules.user.services.GroupService;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.validation.Errors;
@@ -32,12 +34,14 @@ public class TestGroupValidator
 {
 	private GroupService groupService;
 	private Validator validator;
+	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
 	private Errors errors;
 
 	@Before
 	public void before() {
 		groupService = mock( GroupService.class );
-		validator = new GroupValidator( groupService );
+		defaultUserDirectoryStrategy = mock( DefaultUserDirectoryStrategy.class );
+		validator = new GroupValidator( groupService, defaultUserDirectoryStrategy );
 
 		errors = mock( Errors.class );
 	}
@@ -51,6 +55,7 @@ public class TestGroupValidator
 
 		validator.validate( group, errors );
 
+		verify( defaultUserDirectoryStrategy ).apply( group );
 		verify( errors ).hasFieldErrors( "name" );
 		verifyNoMoreInteractions( errors );
 	}
@@ -64,6 +69,7 @@ public class TestGroupValidator
 
 		validator.validate( group, errors );
 
+		verify( defaultUserDirectoryStrategy ).apply( group );
 		verify( errors ).hasFieldErrors( "name" );
 		verifyNoMoreInteractions( errors );
 	}
@@ -80,6 +86,7 @@ public class TestGroupValidator
 
 		validator.validate( group, errors );
 
+		verify( defaultUserDirectoryStrategy ).apply( group );
 		verify( errors ).hasFieldErrors( "name" );
 		verify( errors ).rejectValue( "name", "alreadyExists" );
 		verifyNoMoreInteractions( errors );

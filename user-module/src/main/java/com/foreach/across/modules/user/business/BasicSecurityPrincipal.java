@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.hibernate.business.Auditable;
@@ -27,6 +28,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 /**
@@ -58,6 +60,11 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 			}
 	)
 	private Long id;
+
+	@NotNull
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "user_directory_id")
+	private UserDirectory userDirectory;
 
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -99,6 +106,14 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 
 	public void setId( Long id ) {
 		this.id = id;
+	}
+
+	public UserDirectory getUserDirectory() {
+		return userDirectory;
+	}
+
+	public void setUserDirectory( UserDirectory userDirectory ) {
+		this.userDirectory = userDirectory;
 	}
 
 	@Override

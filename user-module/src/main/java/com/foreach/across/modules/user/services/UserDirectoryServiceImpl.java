@@ -35,7 +35,7 @@ public class UserDirectoryServiceImpl implements UserDirectoryService
 	private UserDirectoryRepository userDirectoryRepository;
 
 	@Override
-	public UserDirectory getDefaultInternalDirectory() {
+	public UserDirectory getDefaultUserDirectory() {
 		return userDirectoryRepository.findOne( UserDirectory.DEFAULT_DIRECTORY_ID );
 	}
 

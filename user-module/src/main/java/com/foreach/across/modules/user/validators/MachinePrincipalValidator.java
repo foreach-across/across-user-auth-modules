@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.validators;
 
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.QMachinePrincipal;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -27,11 +29,14 @@ import org.springframework.validation.Errors;
  */
 public class MachinePrincipalValidator extends EntityValidatorSupport<MachinePrincipal>
 {
-	private MachinePrincipalRepository machinePrincipalRepository;
+	private final MachinePrincipalRepository machinePrincipalRepository;
+	private final DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
 
 	@Autowired
-	public MachinePrincipalValidator( MachinePrincipalRepository machinePrincipalRepository ) {
+	public MachinePrincipalValidator( MachinePrincipalRepository machinePrincipalRepository,
+	                                  DefaultUserDirectoryStrategy defaultUserDirectoryStrategy ) {
 		this.machinePrincipalRepository = machinePrincipalRepository;
+		this.defaultUserDirectoryStrategy = defaultUserDirectoryStrategy;
 	}
 
 	@Override
@@ -41,6 +46,11 @@ public class MachinePrincipalValidator extends EntityValidatorSupport<MachinePri
 
 	@Override
 	protected void preValidation( MachinePrincipal entity, Errors errors ) {
+		defaultUserDirectoryStrategy.apply( entity );
+	}
+
+	@Override
+	protected void postValidation( MachinePrincipal entity, Errors errors ) {
 		if ( !errors.hasFieldErrors( "name" ) ) {
 			MachinePrincipal other = machinePrincipalRepository.findOne(
 					QMachinePrincipal.machinePrincipal.name.equalsIgnoreCase( entity.getName() )

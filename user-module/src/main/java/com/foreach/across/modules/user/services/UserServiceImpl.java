@@ -23,6 +23,7 @@ import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.repositories.UserRepository;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import com.mysema.query.types.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -55,6 +56,9 @@ public class UserServiceImpl implements UserService
 
 	@Autowired
 	private UserModifiedNotifier userModifiedNotifier;
+
+	@Autowired
+	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
 
 	private final PasswordEncoder passwordEncoder;
 	private final boolean useEmailAsUsername;
@@ -109,6 +113,8 @@ public class UserServiceImpl implements UserService
 	@Override
 	@Transactional(HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	public User save( User userDto ) {
+		defaultUserDirectoryStrategy.apply( userDto );
+
 		User user;
 		User originalUser = null;
 

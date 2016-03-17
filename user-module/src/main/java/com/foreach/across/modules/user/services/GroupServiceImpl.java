@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
@@ -20,13 +21,13 @@ import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.GroupProperties;
-import com.foreach.across.modules.user.business.QGroup;
 import com.foreach.across.modules.user.repositories.GroupRepository;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import com.mysema.query.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,9 @@ public class GroupServiceImpl implements GroupService
 
 	@Autowired
 	private GroupPropertiesService groupPropertiesService;
+
+	@Autowired
+	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
 
 	@Override
 	public Collection<Group> getGroups() {
@@ -65,6 +69,7 @@ public class GroupServiceImpl implements GroupService
 
 	@Override
 	public Group save( Group groupDto ) {
+		defaultUserDirectoryStrategy.apply( groupDto );
 		return groupRepository.save( groupDto );
 	}
 

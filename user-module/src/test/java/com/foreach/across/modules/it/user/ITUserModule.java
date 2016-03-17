@@ -99,7 +99,7 @@ public class ITUserModule
 
 	@Test
 	public void defaultUserDirectoryShouldBeInstalled() {
-		UserDirectory directory = userDirectoryService.getDefaultInternalDirectory();
+		UserDirectory directory = userDirectoryService.getDefaultUserDirectory();
 		assertNotNull( directory );
 		assertEquals( UserDirectory.DEFAULT_DIRECTORY_ID, directory.getId() );
 
@@ -118,7 +118,7 @@ public class ITUserModule
 
 		Collection<UserDirectory> directories = userDirectoryService.getUserDirectories();
 		assertEquals( 2, directories.size() );
-		assertTrue( directories.contains( userDirectoryService.getDefaultInternalDirectory() ) );
+		assertTrue( directories.contains( userDirectoryService.getDefaultUserDirectory() ) );
 		assertTrue( directories.contains( saved ) );
 	}
 

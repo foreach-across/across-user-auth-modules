@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
   ~ Copyright 2014 the original author or authors
   ~
@@ -603,7 +604,24 @@
 		</insert>
 	</changeSet>
 
-	<!-- add user dir to user -->
+	<!-- Add user directory to principals -->
+	<changeSet id="201603171258" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="${table.principal}" columnName="user_directory_id"/>
+			</not>
+		</preConditions>
 
-	<!-- add user dir to group -->
+		<comment>Add user directory to principal table with default value</comment>
+
+		<addColumn tableName="${table.principal}">
+			<column name="user_directory_id" type="java.sql.Types.BIGINT" defaultValue="1"/>
+		</addColumn>
+
+		<addForeignKeyConstraint baseTableName="${table.principal}"
+		                         baseColumnNames="user_directory_id"
+		                         constraintName="fk_um_principal_did"
+		                         referencedTableName="${table.user_directory}"
+		                         referencedColumnNames="id"/>
+	</changeSet>
 </databaseChangeLog>

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
@@ -20,6 +21,7 @@ import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
@@ -39,6 +41,9 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 	@Autowired
 	private SecurityPrincipalService securityPrincipalService;
 
+	@Autowired
+	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
+
 	@Override
 	public Collection<MachinePrincipal> getMachinePrincipals() {
 		return machinePrincipalRepository.findAll( new Sort( Sort.Direction.ASC, "name" ) );
@@ -57,6 +62,7 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 
 	@Override
 	public MachinePrincipal save( MachinePrincipal machinePrincipalDto ) {
+		defaultUserDirectoryStrategy.apply( machinePrincipalDto );
 		return BasicServiceHelper.save( machinePrincipalDto, machinePrincipalRepository );
 	}
 }

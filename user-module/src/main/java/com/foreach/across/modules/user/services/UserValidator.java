@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +39,15 @@ public class UserValidator implements Validator
 	@Autowired
 	private SecurityPrincipalService securityPrincipalService;
 
+	@Autowired
+	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
+
 	@Override
 	public void validate( Object target, Errors errors ) {
 		if ( supports( target.getClass() ) ) {
 			User userDto = (User) target;
+			defaultUserDirectoryStrategy.apply( userDto );
+
 			if ( userService.isRequireEmailUnique() ) {
 				User userByEmail = userService.getUserByEmail( userDto.getEmail() );
 				if ( userByEmail != null && !userByEmail.getId().equals( userDto.getId() ) ) {
