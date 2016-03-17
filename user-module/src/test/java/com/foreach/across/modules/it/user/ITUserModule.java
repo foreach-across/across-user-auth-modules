@@ -101,7 +101,7 @@ public class ITUserModule
 	public void defaultUserDirectoryShouldBeInstalled() {
 		UserDirectory directory = userDirectoryService.getDefaultUserDirectory();
 		assertNotNull( directory );
-		assertEquals( UserDirectory.DEFAULT_DIRECTORY_ID, directory.getId() );
+		assertEquals( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID, directory.getId() );
 
 		Collection<UserDirectory> directories = userDirectoryService.getUserDirectories();
 		assertEquals( 1, directories.size() );
@@ -114,7 +114,7 @@ public class ITUserModule
 		dto.setName( "Additional dir" );
 
 		UserDirectory saved = userDirectoryService.save( dto );
-		assertTrue( saved.getId() > UserDirectory.DEFAULT_DIRECTORY_ID );
+		assertTrue( saved.getId() > UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
 
 		Collection<UserDirectory> directories = userDirectoryService.getUserDirectories();
 		assertEquals( 2, directories.size() );

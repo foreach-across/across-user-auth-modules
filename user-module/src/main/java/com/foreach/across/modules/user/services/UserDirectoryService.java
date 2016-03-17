@@ -29,7 +29,7 @@ public interface UserDirectoryService
 	/**
 	 * Get the default directory that should be used for all principals that do not have a specific
 	 * directory set.  Usually the default internal directory is returned.  This is the initial
-	 * user directory created with id {@link UserDirectory#DEFAULT_DIRECTORY_ID}. It should never be
+	 * user directory created with id {@link UserDirectory#DEFAULT_INTERNAL_DIRECTORY_ID}. It should never be
 	 * removed.
 	 *
 	 * @return instance

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
 import org.junit.Test;
@@ -70,5 +71,38 @@ public class TestGroup
 		principalName.set( group, "GROUP:PRINCIPAL_NAME" );
 
 		assertEquals( "group:principal_name", group.getPrincipalName() );
+	}
+
+	@Test
+	public void principalNameIsgroupPrefixedWithUserDirectoryIfNonDefault() {
+		Group group = new Group();
+		group.setName( "Some Group" );
+
+		UserDirectory defaultDir = new UserDirectory();
+		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
+
+		group.setUserDirectory( defaultDir );
+		assertEquals( "group:some group", group.getPrincipalName() );
+
+		UserDirectory neg = new UserDirectory();
+		neg.setId( -399L );
+		group.setUserDirectory( neg );
+		assertEquals( "-399,group:some group", group.getPrincipalName() );
+
+		UserDirectory other = new UserDirectory();
+		other.setId( 2L );
+		group.setUserDirectory( other );
+		assertEquals( "2,group:some group", group.getPrincipalName() );
+
+		group.setName( "Renamed Group" );
+		assertEquals( "2,group:renamed group", group.getPrincipalName() );
+
+		UserDirectory third = new UserDirectory();
+		third.setId( 40L );
+		group.setUserDirectory( third );
+		assertEquals( "40,group:renamed group", group.getPrincipalName() );
+
+		group.setUserDirectory( defaultDir );
+		assertEquals( "group:renamed group", group.getPrincipalName() );
 	}
 }

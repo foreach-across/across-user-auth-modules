@@ -36,7 +36,7 @@ public class UserDirectoryServiceImpl implements UserDirectoryService
 
 	@Override
 	public UserDirectory getDefaultUserDirectory() {
-		return userDirectoryRepository.findOne( UserDirectory.DEFAULT_DIRECTORY_ID );
+		return userDirectoryRepository.findOne( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
 	}
 
 	@Override

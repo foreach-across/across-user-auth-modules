@@ -38,7 +38,7 @@ public class UserDirectory extends SettableIdAuditableEntity<UserDirectory>
 	/**
 	 * Unique id of the default internal directory. This directory should always exist.
 	 */
-	public static final Long DEFAULT_DIRECTORY_ID = 1L;
+	public static final Long DEFAULT_INTERNAL_DIRECTORY_ID = 1L;
 
 	@Id
 	@GeneratedValue(generator = "seq_um_user_directory_id")

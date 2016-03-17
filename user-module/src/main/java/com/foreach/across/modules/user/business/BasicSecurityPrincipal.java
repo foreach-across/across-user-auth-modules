@@ -30,6 +30,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Represents a security principal that can be assigned one or more roles.
@@ -49,6 +50,8 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		extends SettableIdBasedEntity<T>
 		implements IdBasedSecurityPrincipal, Auditable<String>
 {
+	private static final Pattern DIRECTORY_PREFIXED = Pattern.compile( "^-?\\d+," );
+
 	@Id
 	@GeneratedValue(generator = "seq_um_principal_id")
 	@GenericGenerator(
@@ -97,6 +100,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 
 	protected final void setPrincipalName( String principalName ) {
 		this.principalName = StringUtils.lowerCase( principalName );
+		prefixPrincipalName();
 	}
 
 	@Override
@@ -112,8 +116,19 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		return userDirectory;
 	}
 
-	public void setUserDirectory( UserDirectory userDirectory ) {
+	public final void setUserDirectory( UserDirectory userDirectory ) {
 		this.userDirectory = userDirectory;
+		prefixPrincipalName();
+	}
+
+	private void prefixPrincipalName() {
+		if ( !StringUtils.isBlank( principalName ) ) {
+			principalName = DIRECTORY_PREFIXED.matcher( principalName ).replaceFirst( "" );
+			if ( userDirectory != null
+					&& !Objects.equals( userDirectory.getId(), UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID ) ) {
+				principalName = userDirectory.getId() + "," + principalName;
+			}
+		}
 	}
 
 	@Override

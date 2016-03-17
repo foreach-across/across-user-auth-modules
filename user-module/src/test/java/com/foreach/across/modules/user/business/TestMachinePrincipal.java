@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
 import org.junit.Test;
@@ -85,5 +86,39 @@ public class TestMachinePrincipal
 
 		assertEquals( "other name", machinePrincipal.getName() );
 		assertEquals( "principal_name", machinePrincipal.getPrincipalName() );
+	}
+
+	@Test
+	public void principalNameIsPrefixedWithUserDirectoryIfNonDefault() {
+		MachinePrincipal machinePrincipal = new MachinePrincipal();
+		machinePrincipal.setName( "my.PrincipalName" );
+		assertEquals( "my.principalname", machinePrincipal.getPrincipalName() );
+
+		UserDirectory defaultDir = new UserDirectory();
+		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
+
+		machinePrincipal.setUserDirectory( defaultDir );
+		assertEquals( "my.principalname", machinePrincipal.getPrincipalName() );
+
+		UserDirectory neg = new UserDirectory();
+		neg.setId( -399L );
+		machinePrincipal.setUserDirectory( neg );
+		assertEquals( "-399,my.principalname", machinePrincipal.getPrincipalName() );
+
+		UserDirectory other = new UserDirectory();
+		other.setId( 2L );
+		machinePrincipal.setUserDirectory( other );
+		assertEquals( "2,my.principalname", machinePrincipal.getPrincipalName() );
+
+		machinePrincipal.setName( "otherPrincipalName" );
+		assertEquals( "2,otherprincipalname", machinePrincipal.getPrincipalName() );
+
+		UserDirectory third = new UserDirectory();
+		third.setId( 40L );
+		machinePrincipal.setUserDirectory( third );
+		assertEquals( "40,otherprincipalname", machinePrincipal.getPrincipalName() );
+
+		machinePrincipal.setUserDirectory( defaultDir );
+		assertEquals( "otherprincipalname", machinePrincipal.getPrincipalName() );
 	}
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
 import org.junit.Test;
@@ -26,6 +27,40 @@ import static org.junit.Assert.*;
 
 public class TestUser
 {
+	@Test
+	public void principalNameIsLowerCasedAndPrefixedWithUserDirectoryIfNonDefault() {
+		User user = new User();
+		user.setUsername( "my.Username" );
+		assertEquals( "my.username", user.getPrincipalName() );
+
+		UserDirectory defaultDir = new UserDirectory();
+		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
+
+		user.setUserDirectory( defaultDir );
+		assertEquals( "my.username", user.getPrincipalName() );
+
+		UserDirectory neg = new UserDirectory();
+		neg.setId( -399L );
+		user.setUserDirectory( neg );
+		assertEquals( "-399,my.username", user.getPrincipalName() );
+
+		UserDirectory other = new UserDirectory();
+		other.setId( 2L );
+		user.setUserDirectory( other );
+		assertEquals( "2,my.username", user.getPrincipalName() );
+
+		user.setUsername( "otherUserName" );
+		assertEquals( "2,otherusername", user.getPrincipalName() );
+
+		UserDirectory third = new UserDirectory();
+		third.setId( 40L );
+		user.setUserDirectory( third );
+		assertEquals( "40,otherusername", user.getPrincipalName() );
+
+		user.setUserDirectory( defaultDir );
+		assertEquals( "otherusername", user.getPrincipalName() );
+	}
+
 	@Test
 	public void usernameAndEmailIsAlwaysLowerCased() throws Exception {
 		User user = new User();
