@@ -24,10 +24,11 @@ import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
  * @author Arne Vandamme
  * @since 1.0.0
  */
-public class TestLdapModuleConventions extends AbstractAcrossModuleConventionsTest {
-    @Override
-    protected AcrossModule createModule() {
-        return new LdapModule();
-    }
+public class TestLdapModuleConventions extends AbstractAcrossModuleConventionsTest
+{
+	@Override
+	protected AcrossModule createModule() {
+		return new LdapModule();
+	}
 }
 
