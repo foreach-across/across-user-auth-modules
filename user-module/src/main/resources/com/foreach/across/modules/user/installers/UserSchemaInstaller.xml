@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2014 the original author or authors
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  ~ Copyright 2014 the original author or authors
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
   -->
 <databaseChangeLog
 		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
@@ -26,6 +26,7 @@
 	<property name="table.role" value="um_role"/>
 	<property name="table.role_permission" value="um_role_permission"/>
 	<property name="table.user" value="um_user"/>
+	<property name="table.user_directory" value="um_user_directory"/>
 	<property name="table.user_properties" value="um_user_properties"/>
 	<property name="table.principal" value="um_principal"/>
 	<property name="table.principal_role" value="um_principal_role"/>
@@ -551,7 +552,7 @@
 
 		<addColumn tableName="${table.role}">
 			<column name="authority" type="java.sql.Types.VARCHAR(100)">
-				<constraints nullable="true" />
+				<constraints nullable="true"/>
 			</column>
 		</addColumn>
 
@@ -571,4 +572,38 @@
 		</createIndex>
 	</changeSet>
 
+	<!-- AXUM-14 support user directories -->
+	<changeSet id="201603171102" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.user_directory}"/>
+			</not>
+		</preConditions>
+
+		<comment>Create user_directory table and default user directory</comment>
+
+		<createTable tableName="${table.user_directory}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_um_user_dir"/>
+			</column>
+			<column name="name" type="java.sql.Types.NVARCHAR(255)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+
+		<insert tableName="${table.user_directory}">
+			<column name="id">1</column>
+			<column name="name">Default internal directory</column>
+		</insert>
+
+		<!-- Ensure that sequence starts higher -->
+		<insert tableName="across_sequences">
+			<column name="seq_name">seq_um_user_directory_id</column>
+			<column name="seq_number">2</column>
+		</insert>
+	</changeSet>
+
+	<!-- add user dir to user -->
+
+	<!-- add user dir to group -->
 </databaseChangeLog>

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
@@ -39,7 +40,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.persistence.EntityManagerFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -67,7 +67,7 @@ public class ITUserModule
 	private AcrossContextInfo acrossContextInfo;
 
 	@Autowired
-	private EntityManagerFactory entityManagerFactory;
+	private UserDirectoryService userDirectoryService;
 
 	@Test
 	public void verifyBootstrapped() {
@@ -95,6 +95,31 @@ public class ITUserModule
 		catch ( NoSuchBeanDefinitionException e ) {
 			assertTrue( true ); //If we get this exception, the desired result has been achieved.
 		}
+	}
+
+	@Test
+	public void defaultUserDirectoryShouldBeInstalled() {
+		UserDirectory directory = userDirectoryService.getDefaultInternalDirectory();
+		assertNotNull( directory );
+		assertEquals( UserDirectory.DEFAULT_DIRECTORY_ID, directory.getId() );
+
+		Collection<UserDirectory> directories = userDirectoryService.getUserDirectories();
+		assertEquals( 1, directories.size() );
+		assertTrue( directories.contains( directory ) );
+	}
+
+	@Test
+	public void additionalUserDirectoryCanBeCreatedAndShouldHaveHigherId() {
+		UserDirectory dto = new UserDirectory();
+		dto.setName( "Additional dir" );
+
+		UserDirectory saved = userDirectoryService.save( dto );
+		assertTrue( saved.getId() > UserDirectory.DEFAULT_DIRECTORY_ID );
+
+		Collection<UserDirectory> directories = userDirectoryService.getUserDirectories();
+		assertEquals( 2, directories.size() );
+		assertTrue( directories.contains( userDirectoryService.getDefaultInternalDirectory() ) );
+		assertTrue( directories.contains( saved ) );
 	}
 
 	@Test

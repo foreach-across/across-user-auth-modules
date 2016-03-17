@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.config;
 
 import com.foreach.across.core.context.support.AcrossModuleMessageSource;
@@ -99,6 +100,11 @@ public class UserModuleConfiguration
 	@Bean
 	public EmailValidator emailValidator() {
 		return new EmailValidator();
+	}
+
+	@Bean
+	public UserDirectoryService userDirectoryService() {
+		return new UserDirectoryServiceImpl();
 	}
 
 	@Bean

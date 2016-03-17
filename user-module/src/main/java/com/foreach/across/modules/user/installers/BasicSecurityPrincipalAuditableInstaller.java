@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.installers;
 
 import com.foreach.across.core.annotations.Installer;
@@ -20,13 +21,16 @@ import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.modules.hibernate.installers.AuditableSchemaInstaller;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * @author Andy Somers
  */
-@Installer(description = "Adds the auditable columns to the um_principal table", version = 1)
+@Installer(
+		description = "Adds the auditable columns to the um_principal and um_user_directory tables",
+		version = 1
+)
 public class BasicSecurityPrincipalAuditableInstaller extends AuditableSchemaInstaller
 {
 	public BasicSecurityPrincipalAuditableInstaller( SchemaConfiguration schemaConfiguration ) {
@@ -35,6 +39,6 @@ public class BasicSecurityPrincipalAuditableInstaller extends AuditableSchemaIns
 
 	@Override
 	protected Collection<String> getTableNames() {
-		return Collections.singleton( UserSchemaConfiguration.TABLE_PRINCIPAL );
+		return Arrays.asList( UserSchemaConfiguration.TABLE_PRINCIPAL, UserSchemaConfiguration.TABLE_USER_DIRECTORY );
 	}
 }

@@ -24,10 +24,18 @@
         <processorPath useClasspath="true" />
         <module name="user-module" />
       </profile>
+      <profile default="false" name="Annotation profile for user-module-test-web" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="user-module-test-web" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="user-module" target="1.8" />
       <module name="user-module-project" target="1.8" />
+      <module name="user-module-test-web" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

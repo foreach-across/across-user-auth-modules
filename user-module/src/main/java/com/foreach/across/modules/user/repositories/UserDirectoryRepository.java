@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.user.installers;
+package com.foreach.across.modules.user.repositories;
 
-import com.foreach.across.core.annotations.Installer;
-import com.foreach.across.core.database.SchemaConfiguration;
-import com.foreach.across.core.installers.AcrossLiquibaseInstaller;
+import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import com.foreach.across.modules.user.business.UserDirectory;
 
-@Installer(description = "Installs database schema for user authorization.", version = 18)
-public class UserSchemaInstaller extends AcrossLiquibaseInstaller
+/**
+ * @author Arne Vandamme
+ * @since 1.2.0
+ */
+public interface UserDirectoryRepository extends IdBasedEntityJpaRepository<UserDirectory>
 {
-	public UserSchemaInstaller( SchemaConfiguration schemaConfiguration ) {
-		super( schemaConfiguration );
-	}
 }

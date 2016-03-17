@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
@@ -74,7 +75,7 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 						"role-membership",
 						"lastModifiedDate"
 				)
-				.property( "group-membership" ).displayName( "Groups" ).spelValueFetcher( "groups.size()" ).and()
+				.property( "group-membership" ).displayName( "GroupUsers" ).spelValueFetcher( "groups.size()" ).and()
 				.property( "role-membership" ).displayName( "Roles" ).spelValueFetcher( "roles.size()" );
 
 		// Use the UserService for persisting User - as that one takes care of password handling

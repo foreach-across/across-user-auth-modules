@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.security;
 
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService
 {
-
 	@Autowired
 	private SecurityPrincipalService securityPrincipalService;
 
