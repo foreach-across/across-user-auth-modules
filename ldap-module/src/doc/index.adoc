@@ -1,0 +1,87 @@
+= LdapModule
+Arne Vandamme
+1.0.0-SNAPSHOT
+:toc: left
+:sectanchors:
+:module-version: 1.0.0-SNAPSHOT
+:module-name: LdapModule
+:module-artifact: ldap-module
+:module-url: https://foreach.atlassian.net/wiki/display/AX/LdapModule
+:admin-web-module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
+:entity-module-url: https://foreach.atlassian.net/wiki/display/AX/EntityModule
+:user-module-url: https://foreach.atlassian.net/wiki/display/AX/UserModule
+
+[copyright,verbatim]
+--
+Copyright (C) 2014-2015 +
+[small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
+--
+
+[abstract]
+== About
+The {module-name} provides a services for connecting to LDAP directories.
+It provides a domain model for configuring LDAP connections and integrating them with an authentication layer.
+If <<user-module-url,UserModule>> is also present support for synchronizing users and groups from LDAP will also be active.
+
+Module website: {module-url}
+
+:numbered:
+== General information
+
+=== Artifact
+[source,xml,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>{module-artifact}</artifactId>
+			<version>{module-version}</version>
+		</dependency>
+	</dependencies>
+----
+
+=== Module dependencies
+
+|===
+|Module |Type |Description
+
+|AcrossWebModule
+|required
+|
+
+|{admin-web-module-url}[AdminWebModule]
+|optional
+|Enables the administration user interface for the LDAP entities (if EntityModule is also enabled).
+
+|{entity-module-url}[EntityModule]
+|optional
+|Enables the administration user interface for the LDAP entities (if EntityModule is also enabled).
+
+|{user-module-url}[UserModule]
+|optional
+|Activates support for synchronizing users and groups from LDAP.
+
+|===
+[[settings]]
+=== Module settings
+All properties start with the ldapModule. prefix.
+
+|===
+|Property |Type |Description |Default
+
+|ldapModule.something
+|`String`
+| Internal id of the application.
+|_unknown_
+
+|===
+
+== What's new in this version?
+:numbered!:
+=== 1.0.0-SNAPSHOT
+Initial public release available on http://search.maven.org/[Maven central].
+
+:numbered:
+== Configuration
+...
