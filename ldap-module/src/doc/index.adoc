@@ -50,6 +50,10 @@ Module website: {module-url}
 |required
 |
 
+|AcrossHibernateJpaModule
+|required
+|Required for persisting the domain model.
+
 |{admin-web-module-url}[AdminWebModule]
 |optional
 |Enables the administration user interface for the LDAP entities (if EntityModule is also enabled).

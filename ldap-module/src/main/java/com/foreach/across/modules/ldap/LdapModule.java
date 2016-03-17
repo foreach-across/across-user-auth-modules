@@ -18,6 +18,7 @@ package com.foreach.across.modules.ldap;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.web.AcrossWebModule;
 
 /**
@@ -25,19 +26,20 @@ import com.foreach.across.modules.web.AcrossWebModule;
  * @since 1.0.0
  */
 @AcrossDepends(
-        required = AcrossWebModule.NAME,
-        optional = {"AdminWebModule", "EntityModule", "UserModule"}
+		required = { AcrossWebModule.NAME, AcrossHibernateJpaModule.NAME },
+		optional = { "AdminWebModule", "EntityModule", "UserModule" }
 )
-public class LdapModule extends AcrossModule {
-    public static final String NAME = "LdapModule";
+public class LdapModule extends AcrossModule
+{
+	public static final String NAME = "LdapModule";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public String getDescription() {
-        return "Provides a domain model and services for connecting to LDAP directories.";
-    }
+	@Override
+	public String getDescription() {
+		return "Provides a domain model and services for connecting to LDAP directories.";
+	}
 }
