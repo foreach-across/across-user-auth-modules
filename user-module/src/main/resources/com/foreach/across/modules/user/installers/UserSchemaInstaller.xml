@@ -634,10 +634,10 @@
 			</not>
 		</preConditions>
 		<sql>
-			DECLARE @ObjectName NVARCHAR(100)
+			DECLARE @ObjectName NVARCHAR(100);
 			SELECT @ObjectName = OBJECT_NAME([default_object_id]) FROM SYS.COLUMNS
 			WHERE [object_id] = OBJECT_ID('${table.group}') AND [name] = 'name';
-			EXEC('ALTER TABLE ${table.group} DROP CONSTRAINT ' + @ObjectName)
+			EXEC('ALTER TABLE ${table.group} DROP CONSTRAINT ' + @ObjectName);
 		</sql>
 	</changeSet>
 
@@ -679,11 +679,11 @@
 				<indexExists tableName="${table.machine}" indexName="ix_um_machine_name"/>
 			</not>
 		</preConditions>
-		<sql>
-			DECLARE @ObjectName NVARCHAR(100)
+		<sql splitStatements="true">
+			DECLARE @ObjectName NVARCHAR(100);
 			SELECT @ObjectName = OBJECT_NAME([default_object_id]) FROM SYS.COLUMNS
 			WHERE [object_id] = OBJECT_ID('${table.machine}') AND [name] = 'name';
-			EXEC('ALTER TABLE ${table.machine} DROP CONSTRAINT ' + @ObjectName)
+			EXEC('ALTER TABLE ${table.machine} DROP CONSTRAINT ' + @ObjectName);
 		</sql>
 	</changeSet>
 
