@@ -104,7 +104,6 @@ public class ITUserModule
 		assertEquals( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID, directory.getId() );
 
 		Collection<UserDirectory> directories = userDirectoryService.getUserDirectories();
-		assertEquals( 1, directories.size() );
 		assertTrue( directories.contains( directory ) );
 	}
 
@@ -117,7 +116,6 @@ public class ITUserModule
 		assertTrue( saved.getId() > UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
 
 		Collection<UserDirectory> directories = userDirectoryService.getUserDirectories();
-		assertEquals( 2, directories.size() );
 		assertTrue( directories.contains( userDirectoryService.getDefaultUserDirectory() ) );
 		assertTrue( directories.contains( saved ) );
 	}
@@ -325,6 +323,54 @@ public class ITUserModule
 		User user = userService.getUserById( id );
 		assertNotSame( userWithRestriction, user );
 		assertEquals( 1, user.getRestrictions().size() );
+	}
+
+	@Test
+	public void groupNameMustOnlyBeUniqueInsideDirectory() {
+		UserDirectory dto = new UserDirectory();
+		dto.setName( "Group directory" );
+
+		UserDirectory otherDir = userDirectoryService.save( dto );
+		Group group = new Group();
+		group.setName( "dir group" );
+		Group groupInDefaultDir = groupService.save( group );
+
+		group = new Group();
+		group.setName( "dir group" );
+		group.setUserDirectory( otherDir );
+
+		Group groupInOtherDir = groupService.save( group );
+		assertNotEquals( groupInDefaultDir, groupInOtherDir );
+
+		assertEquals( groupInDefaultDir, groupService.getGroupByName( "dir group" ) );
+		assertEquals( groupInDefaultDir,
+		              groupService.getGroupByName( "dir group", groupInDefaultDir.getUserDirectory() ) );
+		assertEquals( groupInOtherDir, groupService.getGroupByName( "dir group", otherDir ) );
+	}
+
+	@Test
+	public void machinePrincipalNameMustOnlyBeUniqueInsideDirectory() {
+		UserDirectory dto = new UserDirectory();
+		dto.setName( "Machine Principal directory" );
+
+		UserDirectory otherDir = userDirectoryService.save( dto );
+		MachinePrincipal machine = new MachinePrincipal();
+		machine.setName( "dir group" );
+		MachinePrincipal machineInDefaultDir = machinePrincipalService.save( machine );
+
+		machine = new MachinePrincipal();
+		machine.setName( "dir group" );
+		machine.setUserDirectory( otherDir );
+
+		MachinePrincipal machineInOtherDir = machinePrincipalService.save( machine );
+		assertNotEquals( machineInDefaultDir, machineInOtherDir );
+
+		assertEquals( machineInDefaultDir, machinePrincipalService.getMachinePrincipalByName( "dir group" ) );
+		assertEquals(
+				machineInDefaultDir,
+				machinePrincipalService.getMachinePrincipalByName( "dir group", machineInDefaultDir.getUserDirectory() )
+		);
+		assertEquals( machineInOtherDir, machinePrincipalService.getMachinePrincipalByName( "dir group", otherDir ) );
 	}
 
 	@Configuration

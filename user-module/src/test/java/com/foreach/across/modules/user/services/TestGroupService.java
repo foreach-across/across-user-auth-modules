@@ -17,6 +17,7 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.GroupRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import com.foreach.common.test.MockedLoader;
@@ -29,6 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
 
 /**
@@ -47,6 +49,20 @@ public class TestGroupService
 
 	@Autowired
 	private GroupService groupService;
+
+	@Test
+	public void getGroupByNameShouldUseDefaultDirectory() {
+		UserDirectory dir = new UserDirectory();
+		dir.setId( 123L );
+		when( defaultUserDirectoryStrategy.getDefaultUserDirectory() ).thenReturn( dir );
+
+		Group expected = new Group();
+		expected.setName( "expected" );
+
+		when( groupRepository.findByNameAndUserDirectory( "groupName", dir ) ).thenReturn( expected );
+
+		assertSame( expected, groupService.getGroupByName( "groupName" ) );
+	}
 
 	@Test
 	public void userDirectoryStrategyShouldBeAppliedBeforeRepositoryCall() {

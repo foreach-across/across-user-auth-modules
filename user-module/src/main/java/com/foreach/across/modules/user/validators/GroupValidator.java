@@ -51,7 +51,11 @@ public class GroupValidator extends EntityValidatorSupport<Group>
 	@Override
 	protected void postValidation( Group entity, Errors errors ) {
 		if ( !errors.hasFieldErrors( "name" ) ) {
-			Group other = groupService.findGroup( QGroup.group.name.equalsIgnoreCase( entity.getName() ) );
+			QGroup query = QGroup.group;
+			Group other = groupService.findGroup(
+					query.name.equalsIgnoreCase( entity.getName() )
+					          .and( query.userDirectory.eq( entity.getUserDirectory() ) )
+			);
 
 			if ( other != null && !other.equals( entity ) ) {
 				errors.rejectValue( "name", "alreadyExists" );

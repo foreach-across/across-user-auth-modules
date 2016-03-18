@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.validators;
 
+import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.QMachinePrincipal;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.junit.Before;
@@ -36,10 +39,22 @@ public class TestMachinePrincipalValidator
 	private Validator validator;
 	private Errors errors;
 
+	private UserDirectory defaultDir;
+
 	@Before
 	public void before() {
+		defaultDir = new UserDirectory();
+		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
+
 		repository = mock( MachinePrincipalRepository.class );
 		defaultUserDirectoryStrategy = mock( DefaultUserDirectoryStrategy.class );
+		doAnswer(
+				i -> {
+					( (BasicSecurityPrincipal) i.getArguments()[0] ).setUserDirectory( defaultDir );
+					return null;
+				}
+		).when( defaultUserDirectoryStrategy ).apply( any( BasicSecurityPrincipal.class ) );
+
 		validator = new MachinePrincipalValidator( repository, defaultUserDirectoryStrategy );
 
 		errors = mock( Errors.class );
@@ -50,7 +65,9 @@ public class TestMachinePrincipalValidator
 		MachinePrincipal machinePrincipal = new MachinePrincipal();
 		machinePrincipal.setName( "PRINCIPAL NAME" );
 
-		when( repository.findOne( QMachinePrincipal.machinePrincipal.name.equalsIgnoreCase( "PRINCIPAL NAME" ) ) )
+		QMachinePrincipal q = QMachinePrincipal.machinePrincipal;
+		when( repository
+				      .findOne( q.name.equalsIgnoreCase( "principal name" ).and( q.userDirectory.eq( defaultDir ) ) ) )
 				.thenReturn( null );
 
 		validator.validate( machinePrincipal, errors );
@@ -65,7 +82,9 @@ public class TestMachinePrincipalValidator
 		MachinePrincipal machinePrincipal = new MachinePrincipal();
 		machinePrincipal.setName( "PRINCIPAL NAME" );
 
-		when( repository.findOne( QMachinePrincipal.machinePrincipal.name.equalsIgnoreCase( "PRINCIPAL NAME" ) ) )
+		QMachinePrincipal q = QMachinePrincipal.machinePrincipal;
+		when( repository
+				      .findOne( q.name.equalsIgnoreCase( "principal name" ).and( q.userDirectory.eq( defaultDir ) ) ) )
 				.thenReturn( machinePrincipal );
 
 		validator.validate( machinePrincipal, errors );
@@ -83,7 +102,9 @@ public class TestMachinePrincipalValidator
 		MachinePrincipal existing = new MachinePrincipal();
 		existing.setName( "principal name" );
 
-		when( repository.findOne( QMachinePrincipal.machinePrincipal.name.equalsIgnoreCase( machinePrincipal.getName() ) ) )
+		QMachinePrincipal q = QMachinePrincipal.machinePrincipal;
+		when( repository
+				      .findOne( q.name.equalsIgnoreCase( "principal name" ).and( q.userDirectory.eq( defaultDir ) ) ) )
 				.thenReturn( existing );
 
 		validator.validate( machinePrincipal, errors );

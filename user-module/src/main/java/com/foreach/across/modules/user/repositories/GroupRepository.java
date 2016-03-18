@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.UserDirectory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 /**
@@ -30,19 +31,20 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  */
 public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, QueryDslPredicateExecutor<Group>
 {
+	String GROUP_KEY = "#result.userDirectory.id + ':' + #result.name";
+
 	@Caching(
 			put = {
-					@CachePut(value = UserModuleCache.GROUPS, key = "#result.name", condition = "#result != null"),
+					@CachePut(value = UserModuleCache.GROUPS, key = GROUP_KEY, condition = "#result != null"),
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
-	@Query("select g from Group g where g.name = ?1")
-	Group getByName( String name );
+	Group findByNameAndUserDirectory( String name, UserDirectory userDirectory );
 
 	@Caching(
 			put = {
-					@CachePut(value = UserModuleCache.GROUPS, key = "#result.name", condition = "#result != null"),
+					@CachePut(value = UserModuleCache.GROUPS, key = GROUP_KEY, condition = "#result != null"),
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}

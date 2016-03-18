@@ -16,7 +16,9 @@
 
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.MachinePrincipal;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import com.foreach.common.test.MockedLoader;
@@ -29,6 +31,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
 
 /**
@@ -47,6 +50,23 @@ public class TestMachinePrincipalService
 
 	@Autowired
 	private MachinePrincipalService machinePrincipalService;
+
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
+
+	@Test
+	public void getMachineByNameShouldUseDefaultDirectory() {
+		UserDirectory dir = new UserDirectory();
+		dir.setId( 123L );
+		when( defaultUserDirectoryStrategy.getDefaultUserDirectory() ).thenReturn( dir );
+
+		MachinePrincipal expected = new MachinePrincipal();
+		expected.setName( "expected" );
+
+		when( securityPrincipalService.getPrincipalByName( "123,expected" ) ).thenReturn( expected );
+
+		assertSame( expected, machinePrincipalService.getMachinePrincipalByName( "EXPECTED" ) );
+	}
 
 	@Test
 	public void userDirectoryStrategyShouldBeAppliedBeforeRepositoryCall() {

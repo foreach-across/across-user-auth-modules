@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.GroupProperties;
+import com.foreach.across.modules.user.business.UserDirectory;
+import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +35,22 @@ public interface GroupService
 
 	Group getGroupById( long id );
 
+	/**
+	 * Get the group with a given name in the default directory.
+	 *
+	 * @param name of the group
+	 * @return instance or {@code null} if not found
+	 */
 	Group getGroupByName( String name );
+
+	/**
+	 * Get the group with a given name in the specified directory.
+	 *
+	 * @param name of the group
+	 * @param userDirectory the group should belong to
+	 * @return instance or {@code null} if not found
+	 */
+	Group getGroupByName( String name, UserDirectory userDirectory );
 
 	Group save( Group groupDto );
 
@@ -46,9 +64,19 @@ public interface GroupService
 
 	void deleteProperties( long groupId );
 
+	/**
+	 * Returns all groups having a specific property value.  Will return all matching
+	 * groups across all user directories.
+	 *
+	 * @param propertyName  name of the property
+	 * @param propertyValue value the property should have
+	 * @return groups
+	 */
 	Collection<Group> getGroupsWithPropertyValue( String propertyName, Object propertyValue );
 
 	Collection<Group> findGroups( Predicate predicate );
+
+	Collection<Group> findGroups( Predicate predicate, OrderSpecifier<?>... orderSpecifiers );
 
 	Page<Group> findGroups( Predicate predicate, Pageable pageable );
 

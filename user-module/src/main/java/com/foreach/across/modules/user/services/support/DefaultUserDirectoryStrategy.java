@@ -17,10 +17,12 @@
 package com.foreach.across.modules.user.services.support;
 
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
+import com.foreach.across.modules.user.business.UserDirectory;
 
 /**
  * Strategy that applies the default {@link com.foreach.across.modules.user.business.UserDirectory}
- * if no directory is set on the security principal.
+ * if no directory is set on the security principal.  Implementation should ensure that a directory
+ * is <u>always</u> set on the principal.
  *
  * @author Arne Vandamme
  * @see DefaultUserDirectoryStrategyImpl
@@ -28,6 +30,11 @@ import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
  */
 public interface DefaultUserDirectoryStrategy
 {
+	/**
+	 * @return the default user directory (should never return {@code null})
+	 */
+	UserDirectory getDefaultUserDirectory();
+
 	/**
 	 * Apply the default directory if required.
 	 *

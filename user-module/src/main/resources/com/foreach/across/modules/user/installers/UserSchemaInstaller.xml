@@ -15,6 +15,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 <databaseChangeLog
 		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -604,7 +605,7 @@
 		</insert>
 	</changeSet>
 
-	<!-- Add user directory to principals -->
+	<!-- AXUM-14 Add user directory to principals -->
 	<changeSet id="201603171258" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -623,5 +624,67 @@
 		                         constraintName="fk_um_principal_did"
 		                         referencedTableName="${table.user_directory}"
 		                         referencedColumnNames="id"/>
+	</changeSet>
+
+	<!-- AXUM-14 remove unique name constraint of group -->
+	<changeSet id="201603181405" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.group}" indexName="ix_um_grp_name"/>
+			</not>
+		</preConditions>
+
+		<comment>Drop constraints on group name and recreate as regular index</comment>
+
+		<addColumn tableName="${table.group}">
+			<column name="new_name" type="java.sql.Types.NVARCHAR(255)"/>
+		</addColumn>
+
+		<sql>
+			update ${table.group} set new_name = name
+		</sql>
+
+		<dropColumn tableName="${table.group}" columnName="name"/>
+
+		<renameColumn tableName="${table.group}" oldColumnName="new_name" newColumnName="name"/>
+
+		<addNotNullConstraint tableName="${table.group}"
+		                      columnName="name"
+		                      columnDataType="java.sql.Types.NVARCHAR(255)"/>
+
+		<createIndex tableName="${table.group}" indexName="ix_um_grp_name" unique="false">
+			<column name="name"/>
+		</createIndex>
+	</changeSet>
+
+	<!-- AXUM-14 remove unique name constraint of machine principal -->
+	<changeSet id="201603181427" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.machine}" indexName="ix_um_machine_name"/>
+			</not>
+		</preConditions>
+
+		<comment>Drop constraints on machine principal name and recreate as regular index</comment>
+
+		<addColumn tableName="${table.machine}">
+			<column name="new_name" type="java.sql.Types.NVARCHAR(255)"/>
+		</addColumn>
+
+		<sql>
+			update ${table.machine} set new_name = name
+		</sql>
+
+		<dropColumn tableName="${table.machine}" columnName="name"/>
+
+		<renameColumn tableName="${table.machine}" oldColumnName="new_name" newColumnName="name"/>
+
+		<addNotNullConstraint tableName="${table.machine}"
+		                      columnName="name"
+		                      columnDataType="java.sql.Types.NVARCHAR(255)"/>
+
+		<createIndex tableName="${table.group}" indexName="ix_um_machine_name" unique="false">
+			<column name="name"/>
+		</createIndex>
 	</changeSet>
 </databaseChangeLog>

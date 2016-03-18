@@ -52,8 +52,9 @@ public class MachinePrincipalValidator extends EntityValidatorSupport<MachinePri
 	@Override
 	protected void postValidation( MachinePrincipal entity, Errors errors ) {
 		if ( !errors.hasFieldErrors( "name" ) ) {
+			QMachinePrincipal q = QMachinePrincipal.machinePrincipal;
 			MachinePrincipal other = machinePrincipalRepository.findOne(
-					QMachinePrincipal.machinePrincipal.name.equalsIgnoreCase( entity.getName() )
+					q.name.equalsIgnoreCase( entity.getName() ).and( q.userDirectory.eq( entity.getUserDirectory() ) )
 			);
 
 			if ( other != null && !other.equals( entity ) ) {

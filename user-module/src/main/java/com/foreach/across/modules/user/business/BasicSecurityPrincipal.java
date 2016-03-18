@@ -123,11 +123,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 
 	private void prefixPrincipalName() {
 		if ( !StringUtils.isBlank( principalName ) ) {
-			principalName = DIRECTORY_PREFIXED.matcher( principalName ).replaceFirst( "" );
-			if ( userDirectory != null
-					&& !Objects.equals( userDirectory.getId(), UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID ) ) {
-				principalName = userDirectory.getId() + "," + principalName;
-			}
+			principalName = uniquePrincipalName( principalName, userDirectory );
 		}
 	}
 
@@ -228,5 +224,20 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 	@Override
 	public final String toString() {
 		return getPrincipalName();
+	}
+
+	/**
+	 *
+	 * @param name current or partial principal name
+	 * @param userDirectory user directory
+	 * @return unique principal name
+	 */
+	public static String uniquePrincipalName( String name, UserDirectory userDirectory ) {
+		String principalName = StringUtils.lowerCase( DIRECTORY_PREFIXED.matcher( name ).replaceFirst( "" ) );
+		if ( userDirectory != null
+				&& !Objects.equals( userDirectory.getId(), UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID ) ) {
+			principalName = userDirectory.getId() + "," + principalName;
+		}
+		return principalName;
 	}
 }

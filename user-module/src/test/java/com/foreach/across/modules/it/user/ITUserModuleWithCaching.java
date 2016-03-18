@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
@@ -167,6 +168,7 @@ public class ITUserModuleWithCaching
 		assertEquals( 1, groupCache.size() );
 
 		Group created = groupService.save( principalDto );
+		String cacheItemName = created.getUserDirectory().getId() + ":" + created.getName();
 		assertNotNull( created );
 
 		assertTrue( securityPrincipalCache.isEmpty() );
@@ -176,7 +178,7 @@ public class ITUserModuleWithCaching
 		assertEquals( created, byName );
 		assertEquals( 1, groupCache.size() );
 		assertEquals( 2, securityPrincipalCache.size() );
-		assertSame( byName, groupCache.get( created.getName() ) );
+		assertSame( byName, groupCache.get( cacheItemName ) );
 		assertSame( byName, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byName, securityPrincipalCache.get( created.getPrincipalName() ) );
 
@@ -186,7 +188,7 @@ public class ITUserModuleWithCaching
 		assertSame( byName, byId );
 		assertEquals( 1, groupCache.size() );
 		assertEquals( 2, securityPrincipalCache.size() );
-		assertSame( byId, groupCache.get( created.getName() ) );
+		assertSame( byId, groupCache.get( cacheItemName ) );
 		assertSame( byId, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byId, securityPrincipalCache.get( created.getPrincipalName() ) );
 

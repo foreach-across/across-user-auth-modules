@@ -16,8 +16,10 @@
 
 package com.foreach.across.modules.user.validators;
 
+import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.QGroup;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.junit.Before;
@@ -37,10 +39,22 @@ public class TestGroupValidator
 	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
 	private Errors errors;
 
+	private UserDirectory defaultDir;
+
 	@Before
 	public void before() {
+		defaultDir = new UserDirectory();
+		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
+
 		groupService = mock( GroupService.class );
 		defaultUserDirectoryStrategy = mock( DefaultUserDirectoryStrategy.class );
+		doAnswer(
+				i -> {
+					( (BasicSecurityPrincipal) i.getArguments()[0] ).setUserDirectory( defaultDir );
+					return null;
+				}
+		).when( defaultUserDirectoryStrategy ).apply( any( BasicSecurityPrincipal.class ) );
+
 		validator = new GroupValidator( groupService, defaultUserDirectoryStrategy );
 
 		errors = mock( Errors.class );
@@ -51,7 +65,10 @@ public class TestGroupValidator
 		Group group = new Group();
 		group.setName( "GROUP NAME" );
 
-		when( groupService.findGroup( QGroup.group.name.equalsIgnoreCase( "GROUP NAME" ) ) ).thenReturn( null );
+		QGroup q = QGroup.group;
+		when( groupService.findGroup(
+				q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) )
+		) ).thenReturn( null );
 
 		validator.validate( group, errors );
 
@@ -65,7 +82,10 @@ public class TestGroupValidator
 		Group group = new Group();
 		group.setName( "GROUP NAME" );
 
-		when( groupService.findGroup( QGroup.group.name.equalsIgnoreCase( "GROUP NAME" ) ) ).thenReturn( group );
+		QGroup q = QGroup.group;
+		when( groupService.findGroup(
+				q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) )
+		) ).thenReturn( group );
 
 		validator.validate( group, errors );
 
@@ -75,14 +95,17 @@ public class TestGroupValidator
 	}
 
 	@Test
-	public void groupNameMustBeUnique() {
+	public void groupNameMustBeUniqueInSameDirectory() {
 		Group group = new Group();
 		group.setName( "GROUP NAME" );
 
 		Group existing = new Group();
 		existing.setName( "group name" );
 
-		when( groupService.findGroup( QGroup.group.name.equalsIgnoreCase( "GROUP NAME" ) ) ).thenReturn( existing );
+		QGroup q = QGroup.group;
+		when( groupService.findGroup(
+				q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) )
+		) ).thenReturn( existing );
 
 		validator.validate( group, errors );
 

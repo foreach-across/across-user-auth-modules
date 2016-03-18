@@ -19,7 +19,9 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.hibernate.util.BasicServiceHelper;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.MachinePrincipal;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +59,13 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 
 	@Override
 	public MachinePrincipal getMachinePrincipalByName( String name ) {
-		return (MachinePrincipal) securityPrincipalService.getPrincipalByName( name );
+		return getMachinePrincipalByName( name, defaultUserDirectoryStrategy.getDefaultUserDirectory() );
+	}
+
+	@Override
+	public MachinePrincipal getMachinePrincipalByName( String name, UserDirectory userDirectory ) {
+		String principalName = BasicSecurityPrincipal.uniquePrincipalName( name, userDirectory );
+		return (MachinePrincipal) securityPrincipalService.getPrincipalByName( principalName );
 	}
 
 	@Override

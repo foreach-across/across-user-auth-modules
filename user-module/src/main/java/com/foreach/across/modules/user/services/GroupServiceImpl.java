@@ -21,8 +21,10 @@ import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.GroupProperties;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.GroupRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
+import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -64,7 +66,13 @@ public class GroupServiceImpl implements GroupService
 	@Cacheable(value = UserModuleCache.GROUPS, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public Group getGroupByName( String name ) {
-		return groupRepository.getByName( name );
+		return getGroupByName( name, defaultUserDirectoryStrategy.getDefaultUserDirectory() );
+	}
+
+	@Cacheable(value = UserModuleCache.GROUPS, key="#p0 + ':' + #p1.id", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
+	@Override
+	public Group getGroupByName( String name, UserDirectory directory ) {
+		return groupRepository.findByNameAndUserDirectory( name, directory );
 	}
 
 	@Override
@@ -116,6 +124,11 @@ public class GroupServiceImpl implements GroupService
 	@Override
 	public Collection<Group> findGroups( Predicate predicate ) {
 		return (Collection<Group>) groupRepository.findAll( predicate );
+	}
+
+	@Override
+	public Collection<Group> findGroups( Predicate predicate, OrderSpecifier<?>... orderSpecifiers ) {
+		return (Collection<Group>) groupRepository.findAll( predicate, orderSpecifiers );
 	}
 
 	@Override

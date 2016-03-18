@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.MachinePrincipal;
+import com.foreach.across.modules.user.business.UserDirectory;
 
 import java.util.Collection;
 
@@ -24,11 +26,29 @@ import java.util.Collection;
  */
 public interface MachinePrincipalService
 {
+	/**
+	 * @return all registered machine principals
+	 */
 	Collection<MachinePrincipal> getMachinePrincipals();
 
 	MachinePrincipal getMachinePrincipalById( long id );
 
+	/**
+	 * Get the machine with a given name in the default directory.
+	 *
+	 * @param name of the machine
+	 * @return instance or {@code null} if not found
+	 */
 	MachinePrincipal getMachinePrincipalByName( String name );
+
+	/**
+	 * Get the group with a given name in the specified directory.
+	 *
+	 * @param name of the machine
+	 * @param userDirectory the machine should belong to
+	 * @return instance or {@code null} if not found
+	 */
+	MachinePrincipal getMachinePrincipalByName( String name, UserDirectory userDirectory );
 
 	MachinePrincipal save( MachinePrincipal machinePrincipalDto );
 }

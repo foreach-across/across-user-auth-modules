@@ -41,6 +41,14 @@ public class TestDefaultUserDirectoryStrategy
 	}
 
 	@Test
+	public void defaultIsReturned() {
+		UserDirectory dir = new UserDirectory();
+
+		when( userDirectoryService.getDefaultUserDirectory() ).thenReturn( dir );
+		assertSame( dir, userDirectoryStrategy.getDefaultUserDirectory() );
+	}
+
+	@Test
 	public void aSetDirectoryIsNeverReplaced() {
 		UserDirectory one = new UserDirectory();
 

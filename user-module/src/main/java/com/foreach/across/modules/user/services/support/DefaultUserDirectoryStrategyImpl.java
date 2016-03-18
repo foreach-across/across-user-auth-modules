@@ -17,6 +17,7 @@
 package com.foreach.across.modules.user.services.support;
 
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserDirectoryService;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,11 @@ public class DefaultUserDirectoryStrategyImpl implements DefaultUserDirectoryStr
 
 	public DefaultUserDirectoryStrategyImpl( UserDirectoryService userDirectoryService ) {
 		this.userDirectoryService = userDirectoryService;
+	}
+
+	@Override
+	public UserDirectory getDefaultUserDirectory() {
+		return userDirectoryService.getDefaultUserDirectory();
 	}
 
 	@Override
