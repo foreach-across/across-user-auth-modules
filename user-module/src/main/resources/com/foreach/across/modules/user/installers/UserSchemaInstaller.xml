@@ -627,6 +627,20 @@
 	</changeSet>
 
 	<!-- AXUM-14 remove unique name constraint of group -->
+	<changeSet id="201603182121" author="arne" dbms="mssql">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.group}" indexName="ix_um_grp_name"/>
+			</not>
+		</preConditions>
+		<sql>
+			DECLARE @ObjectName NVARCHAR(100)
+			SELECT @ObjectName = OBJECT_NAME([default_object_id]) FROM SYS.COLUMNS
+			WHERE [object_id] = OBJECT_ID('${table.group}') AND [name] = 'name';
+			EXEC('ALTER TABLE ${table.group} DROP CONSTRAINT ' + @ObjectName)
+		</sql>
+	</changeSet>
+
 	<changeSet id="201603181405" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -659,6 +673,20 @@
 	</changeSet>
 
 	<!-- AXUM-14 remove unique name constraint of machine principal -->
+	<changeSet id="201603182122" author="arne" dbms="mssql">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.machine}" indexName="ix_um_machine_name"/>
+			</not>
+		</preConditions>
+		<sql>
+			DECLARE @ObjectName NVARCHAR(100)
+			SELECT @ObjectName = OBJECT_NAME([default_object_id]) FROM SYS.COLUMNS
+			WHERE [object_id] = OBJECT_ID('${table.machine}') AND [name] = 'name';
+			EXEC('ALTER TABLE ${table.machine} DROP CONSTRAINT ' + @ObjectName)
+		</sql>
+	</changeSet>
+
 	<changeSet id="201603181427" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
