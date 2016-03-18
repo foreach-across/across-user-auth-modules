@@ -646,7 +646,8 @@
 
 		<dropColumn tableName="${table.group}" columnName="name"/>
 
-		<renameColumn tableName="${table.group}" oldColumnName="new_name" newColumnName="name"/>
+		<renameColumn tableName="${table.group}" oldColumnName="new_name" newColumnName="name"
+		              columnDataType="java.sql.Types.NVARCHAR(255)"/>
 
 		<addNotNullConstraint tableName="${table.group}"
 		                      columnName="name"
@@ -677,7 +678,8 @@
 
 		<dropColumn tableName="${table.machine}" columnName="name"/>
 
-		<renameColumn tableName="${table.machine}" oldColumnName="new_name" newColumnName="name"/>
+		<renameColumn tableName="${table.machine}" oldColumnName="new_name" newColumnName="name"
+		              columnDataType="java.sql.Types.NVARCHAR(255)"/>
 
 		<addNotNullConstraint tableName="${table.machine}"
 		                      columnName="name"
