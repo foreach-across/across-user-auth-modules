@@ -230,3 +230,6 @@ Custom security principal
 If you want your application to authenticate against your own User concept, you can provide a custom security principal object by extending from the BasicSecurityPrincipal class and implementing the UserDetails interface. In case your application uses an encoding algorithm different from BCrypt, don't forget to configure your custom PasswordEncoder implementation as in the example above (see section Password Encryption).
 Make sure to call setPrincipalName() in the setter method of the field that serves as the principal username.
 
+UserDirectories
+* deactive user directories
+* defaultuserdirectorystrategy

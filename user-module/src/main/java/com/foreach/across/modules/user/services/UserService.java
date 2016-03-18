@@ -26,10 +26,6 @@ import java.util.Collection;
 
 public interface UserService
 {
-	boolean isUseEmailAsUsername();
-
-	boolean isRequireEmailUnique();
-
 	Collection<User> getUsers();
 
 	User getUserById( long id );

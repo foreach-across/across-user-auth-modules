@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.repositories.UserRepository;
 import com.foreach.common.test.MockedLoader;
@@ -22,8 +24,6 @@ import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,13 +55,9 @@ public class TestUserServiceWithEmailAsUserName
 	public void resetMocks() {
 		reset( userRepository );
 
-		when( userRepository.save( any( User.class ) ) ).thenAnswer( new Answer<User>()
-		{
-			@Override
-			public User answer( InvocationOnMock invocationOnMock ) throws Throwable {
-				return (User) invocationOnMock.getArguments()[0];
-			}
-		} );
+		when( userRepository.save( any( User.class ) ) ).thenAnswer(
+				invocationOnMock -> invocationOnMock.getArguments()[0]
+		);
 	}
 
 	@Test
@@ -165,12 +161,19 @@ public class TestUserServiceWithEmailAsUserName
 	{
 		@Bean
 		public UserService userService() {
-			return spy( new UserServiceImpl( passwordEncoder(), true, true ) );
+			return spy( new UserServiceImpl() );
 		}
 
 		@Bean
-		public PasswordEncoder passwordEncoder() {
+		public PasswordEncoder userPasswordEncoder() {
 			return new BCryptPasswordEncoder();
+		}
+
+		@Bean
+		public UserModuleSettings userModuleSettings() {
+			UserModuleSettings settings = new UserModuleSettings();
+			settings.setUseEmailAsUsername( true );
+			return settings;
 		}
 
 		@Bean

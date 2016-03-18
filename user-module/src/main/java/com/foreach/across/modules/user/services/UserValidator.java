@@ -18,6 +18,7 @@ package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,9 @@ public class UserValidator implements Validator
 	private UserService userService;
 
 	@Autowired
+	private UserModuleSettings settings;
+
+	@Autowired
 	private EmailValidator emailValidator;
 
 	@Autowired
@@ -48,14 +52,14 @@ public class UserValidator implements Validator
 			User userDto = (User) target;
 			defaultUserDirectoryStrategy.apply( userDto );
 
-			if ( userService.isRequireEmailUnique() ) {
+			if ( settings.isRequireEmailUnique() ) {
 				User userByEmail = userService.getUserByEmail( userDto.getEmail() );
 				if ( userByEmail != null && !userByEmail.getId().equals( userDto.getId() ) ) {
 					errors.reject( null, "email already exists" );
 				}
 			}
 
-			if ( userService.isUseEmailAsUsername() || userService.isRequireEmailUnique() ) {
+			if ( settings.isUseEmailAsUsername() || settings.isRequireEmailUnique() ) {
 				if ( StringUtils.isBlank( userDto.getEmail() ) ) {
 					errors.rejectValue( "email", null, "email cannot be empty" );
 				}
@@ -79,7 +83,7 @@ public class UserValidator implements Validator
 			if ( !errors.hasFieldErrors( "email" ) ) {
 				String principalName = userDto.getUsername();
 
-				if ( userService.isUseEmailAsUsername() && StringUtils.isBlank( principalName ) ) {
+				if ( settings.isUseEmailAsUsername() && StringUtils.isBlank( principalName ) ) {
 					principalName = userDto.getEmail();
 				}
 

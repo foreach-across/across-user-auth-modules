@@ -30,6 +30,7 @@ import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,6 +81,7 @@ public class UserModuleConfiguration
 		return new MachinePrincipalServiceImpl();
 	}
 
+	@ConditionalOnMissingBean(name = "userPasswordEncoder")
 	@Bean(name = "userPasswordEncoder")
 	public PasswordEncoder userPasswordEncoder() {
 		PasswordEncoder encoder = settings.getPasswordEncoder();
@@ -116,9 +118,7 @@ public class UserModuleConfiguration
 
 	@Bean
 	public UserService userService() {
-		return new UserServiceImpl( userPasswordEncoder(),
-		                            settings.isUseEmailAsUsername(),
-		                            settings.isRequireEmailUnique() );
+		return new UserServiceImpl();
 	}
 
 	@Bean

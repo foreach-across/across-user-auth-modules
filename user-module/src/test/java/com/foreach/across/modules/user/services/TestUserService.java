@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
@@ -27,8 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.util.collections.Sets;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,13 +66,9 @@ public class TestUserService
 	public void resetMocks() {
 		reset( userRepository );
 
-		when( userRepository.save( any( User.class ) ) ).thenAnswer( new Answer<User>()
-		{
-			@Override
-			public User answer( InvocationOnMock invocationOnMock ) throws Throwable {
-				return (User) invocationOnMock.getArguments()[0];
-			}
-		} );
+		when( userRepository.save( any( User.class ) ) ).thenAnswer(
+				invocationOnMock -> invocationOnMock.getArguments()[0]
+		);
 	}
 
 	@Test
@@ -326,11 +322,16 @@ public class TestUserService
 	{
 		@Bean
 		public UserService userService() {
-			return new UserServiceImpl( passwordEncoder(), false, false );
+			return new UserServiceImpl();
 		}
 
 		@Bean
-		public PasswordEncoder passwordEncoder() {
+		public UserModuleSettings userModuleSettings() {
+			return new UserModuleSettings();
+		}
+
+		@Bean
+		public PasswordEncoder userPasswordEncoder() {
 			return new BCryptPasswordEncoder();
 		}
 

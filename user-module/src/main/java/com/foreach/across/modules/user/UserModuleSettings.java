@@ -65,7 +65,7 @@ public class UserModuleSettings
 	}
 
 	public boolean isRequireEmailUnique() {
-		return requireEmailUnique;
+		return requireEmailUnique || isUseEmailAsUsername();
 	}
 
 	public void setRequireEmailUnique( boolean requireEmailUnique ) {

@@ -28,17 +28,16 @@ import com.mysema.query.types.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
-import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -60,32 +59,12 @@ public class UserServiceImpl implements UserService
 	@Autowired
 	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
 
-	private final PasswordEncoder passwordEncoder;
-	private final boolean useEmailAsUsername;
-	private final boolean requireEmailUnique;
+	@Autowired
+	private UserModuleSettings settings;
 
-	public UserServiceImpl( PasswordEncoder passwordEncoder, boolean useEmailAsUsername, boolean requireEmailUnique ) {
-		Assert.notNull( passwordEncoder, "A UserService must be configured with a valid PasswordEncoder" );
-		this.passwordEncoder = passwordEncoder;
-		this.useEmailAsUsername = useEmailAsUsername;
-		this.requireEmailUnique = requireEmailUnique;
-	}
-
-	@PostConstruct
-	protected void validateServiceConfiguration() {
-		if ( useEmailAsUsername && !requireEmailUnique ) {
-			throw new RuntimeException(
-					UserModuleSettings.REQUIRE_EMAIL_UNIQUE + " must be TRUE if " + UserModuleSettings.USE_EMAIL_AS_USERNAME + " is TRUE" );
-		}
-	}
-
-	public boolean isUseEmailAsUsername() {
-		return useEmailAsUsername;
-	}
-
-	public boolean isRequireEmailUnique() {
-		return requireEmailUnique;
-	}
+	@Autowired
+	@Qualifier("userPasswordEncoder")
+	private PasswordEncoder userPasswordEncoder;
 
 	@Override
 	public Collection<User> getUsers() {
@@ -147,7 +126,7 @@ public class UserServiceImpl implements UserService
 			user.setPassword( currentPassword );
 		}
 
-		if ( useEmailAsUsername ) {
+		if ( settings.isUseEmailAsUsername() ) {
 			if ( StringUtils.isBlank( userDto.getUsername() ) ) {
 				userDto.setUsername( userDto.getEmail() );
 			}
@@ -174,7 +153,7 @@ public class UserServiceImpl implements UserService
 
 		// Only modify password if password on the dto is not blank
 		if ( !StringUtils.isBlank( userDto.getPassword() ) ) {
-			user.setPassword( passwordEncoder.encode( userDto.getPassword() ) );
+			user.setPassword( userPasswordEncoder.encode( userDto.getPassword() ) );
 		}
 
 		if ( StringUtils.isBlank( user.getDisplayName() ) ) {
