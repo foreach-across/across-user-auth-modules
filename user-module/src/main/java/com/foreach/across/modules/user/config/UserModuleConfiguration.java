@@ -82,7 +82,7 @@ public class UserModuleConfiguration
 
 	@Bean(name = "userPasswordEncoder")
 	public PasswordEncoder userPasswordEncoder() {
-		PasswordEncoder encoder = settings.getProperty( UserModuleSettings.PASSWORD_ENCODER, PasswordEncoder.class );
+		PasswordEncoder encoder = settings.getPasswordEncoder();
 
 		if ( encoder != null ) {
 			LOG.debug( "Using the PasswordEncoder instance configured on the UserModule: {}", encoder );
@@ -118,7 +118,7 @@ public class UserModuleConfiguration
 	public UserService userService() {
 		return new UserServiceImpl( userPasswordEncoder(),
 		                            settings.isUseEmailAsUsername(),
-		                            settings.isRequireUniqueEmail() );
+		                            settings.isRequireEmailUnique() );
 	}
 
 	@Bean

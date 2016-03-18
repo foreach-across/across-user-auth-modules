@@ -13,65 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user;
 
-import com.foreach.across.core.AcrossModuleSettings;
-import com.foreach.across.core.AcrossModuleSettingsRegistry;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class UserModuleSettings extends AcrossModuleSettings
+@ConfigurationProperties("userModule")
+@SuppressWarnings( "unused" )
+public class UserModuleSettings
 {
+	public static final String PASSWORD_ENCODER = "userModule.passwordEncoder";
+	public static final String USE_EMAIL_AS_USERNAME = "userModule.useEmailAsUsername";
+	public static final String REQUIRE_EMAIL_UNIQUE = "userModule.requireEmailUnique";
+	public static final String ENABLE_DEFAULT_ACLS = "userModule.enableDefaultAcls";
+
 	/**
 	 * Optional PasswordEncoder instance to be used.
-	 * <p/>
-	 * PasswordEncoder instance
-	 *
-	 * @see org.springframework.security.crypto.password.PasswordEncoder
 	 */
-	public static final String PASSWORD_ENCODER = "userModule.passwordEncoder";
+	private PasswordEncoder passwordEncoder;
 
 	/**
 	 * Specifies whether to use the email for login and registration instead of username.
-	 * <p/>
-	 * True/False
 	 */
-	public static final String USE_EMAIL_AS_USERNAME = "userModule.useEmailAsUsername";
+	private boolean useEmailAsUsername;
 
 	/**
-	 * Specifies whether the email field is unique, must be true when useEmailAsUsername is True.
-	 * <p/>
-	 * True/False
+	 * Specifies whether the email field is unique, must be true when useEmailAsUsername is true.
 	 */
-	public static final String REQUIRE_EMAIL_UNIQUE = "userModule.requireEmailUnique";
+	private boolean requireEmailUnique;
 
 	/**
 	 * Specifies whether default ACLs should be created via interceptors, such as for Groups.
-	 * <p/>
-	 * True/False
 	 */
-	public static final String ENABLE_DEFAULT_ACLS = "userModule.enableDefaultAcls";
+	private boolean enableDefaultAcls;
 
-	@Override
-	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
-		registry.register( PASSWORD_ENCODER, PasswordEncoder.class, null,
-		                   "PasswordEncoder instance that should be used." );
-		registry.register( USE_EMAIL_AS_USERNAME, Boolean.class, false,
-		                   "Specifies whether to use the email for login and registration instead of username." );
-		registry.register( REQUIRE_EMAIL_UNIQUE, Boolean.class, false,
-		                   "Specifies whether the email field is unique, must be true when useEmailAsUsername is True." );
-		registry.register( ENABLE_DEFAULT_ACLS, Boolean.class, false,
-		                   "Specifies whether default ACLs should be created via interceptors, such as for Groups.");
+	public PasswordEncoder getPasswordEncoder() {
+		return passwordEncoder;
+	}
+
+	public void setPasswordEncoder( PasswordEncoder passwordEncoder ) {
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	public boolean isUseEmailAsUsername() {
-		return getProperty( USE_EMAIL_AS_USERNAME, Boolean.class );
+		return useEmailAsUsername;
 	}
 
-	public boolean isRequireUniqueEmail() {
-		return getProperty( REQUIRE_EMAIL_UNIQUE, Boolean.class );
+	public void setUseEmailAsUsername( boolean useEmailAsUsername ) {
+		this.useEmailAsUsername = useEmailAsUsername;
+	}
+
+	public boolean isRequireEmailUnique() {
+		return requireEmailUnique;
+	}
+
+	public void setRequireEmailUnique( boolean requireEmailUnique ) {
+		this.requireEmailUnique = requireEmailUnique;
 	}
 
 	public boolean isEnableDefaultAcls() {
-		return getProperty( ENABLE_DEFAULT_ACLS, Boolean.class );
+		return enableDefaultAcls;
+	}
+
+	public void setEnableDefaultAcls( boolean enableDefaultAcls ) {
+		this.enableDefaultAcls = enableDefaultAcls;
 	}
 }

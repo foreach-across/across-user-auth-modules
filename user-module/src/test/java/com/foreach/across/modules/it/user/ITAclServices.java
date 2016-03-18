@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
@@ -23,6 +24,7 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Refreshable;
 import com.foreach.across.core.context.info.AcrossContextInfo;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
+import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
@@ -106,6 +108,9 @@ public class ITAclServices
 
 	@Autowired
 	private MachinePrincipalService machinePrincipalService;
+
+	@Autowired
+	private AcrossContextBeanRegistry beanRegistry;
 
 	private Group group;
 	private User userOne, userTwo, userThree, userFour;
@@ -391,8 +396,9 @@ public class ITAclServices
 		assertNotNull( groupsSecurityEntity.getLastModifiedBy() );
 
 		//Not sure if I should be doing this here...
-		acrossContextInfo.getModuleInfo( UserModule.NAME ).getModule().setProperty(
-				UserModuleSettings.ENABLE_DEFAULT_ACLS, false );
+		UserModuleSettings settings = beanRegistry.getBeanOfTypeFromModule( UserModule.NAME, UserModuleSettings.class );
+		settings.setEnableDefaultAcls( false );
+
 		Group group2Dto = new Group();
 		group2Dto.setName( "Test-group-2" );
 		Group savedGroup2 = groupService.save( group2Dto );
@@ -406,8 +412,7 @@ public class ITAclServices
 		assertNotNull( aclSecurityEntityService.getSecurityEntityByName( "groups" ) );
 
 		//Back to the original situation
-		acrossContextInfo.getModuleInfo( UserModule.NAME ).getModule().setProperty(
-				UserModuleSettings.ENABLE_DEFAULT_ACLS, true );
+		settings.setEnableDefaultAcls( true );
 	}
 
 	@Test

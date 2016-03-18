@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user;
 
 import com.foreach.across.core.AcrossModule;
@@ -23,11 +24,6 @@ import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
  */
 public class TestUserModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	@Override
-	protected boolean hasSettings() {
-		return true;
-	}
-
 	@Override
 	protected AcrossModule createModule() {
 		return new UserModule();

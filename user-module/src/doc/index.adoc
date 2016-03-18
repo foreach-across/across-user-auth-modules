@@ -1,6 +1,28 @@
-= UserModule
-:toc:
+= DebugWebModule
+Arne Vandamme
+1.2.0-SNAPSHOT
+:toc: left
+:sectanchors:
+:module-version: 1.2.0-SNAPSHOT
+:module-name: UserModule
+:module-artifact: user-module
+:module-url: https://foreach.atlassian.net/wiki/display/AX/UserModule
+:application-info-url: https://foreach.atlassian.net/wiki/display/AX/ApplicationInfoModule
+:spring-security-module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityModule
 
+[copyright,verbatim]
+--
+Copyright (C) 2014-2015 +
+[small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
+--
+
+[abstract]
+== About
+...
+
+Module website: {module-url}
+
+:numbered:
 == General information
 
 === Artifact
@@ -9,13 +31,16 @@
 ----
 	<dependencies>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>user-module</artifactId>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>{module-artifact}</artifactId>
+			<version>{module-version}</version>
 		</dependency>
 	</dependencies>
 ----
 
 === Module dependencies
+
+{module-name} only has a required dependency on AcrossWebModule.
 
 .Module dependencies
 |===
@@ -28,12 +53,46 @@
 
 === Module settings
 
+All properties start with the *userModule.* prefix.
+
 |===
-|Property |Description |Default
+|Property |Type |Description |Default
+
+|password-encoder
+|`org.springframework.security.crypto.password.PasswordEncoder`
+|Optional PasswordEncoder instance to be used.  Defaults to BCrypt if none is specified.
+|
+
+|use-email-as-username
+|`boolean`
+|Specifies whether to use the email for login and registration instead of username.
+|_false_
+
+|require-email-unique
+|`boolean`
+|Specifies whether the email field is unique, must be true if use-email-as-username is true.
+|_false_
+
+|enable-default-acls
+|`boolean`
+|Specifies whether default ACLs should be created via interceptors, such as for Groups.
+Only relevant if SpringSecurityAclModule is active.
+|_false_
 
 |===
 
-== About the UserModule
+== What's new in this version?
+:numbered!:
+=== 1.2.0-SNAPSHOT
+
+* settings now support Spring configuration metadata
+
+
+=== 1.1.0.RELEASE
+Initial public release available on http://search.maven.org/[Maven central].
+
+:numbered:
+== How {module-name} works
 
 == Integration with other modules
 
