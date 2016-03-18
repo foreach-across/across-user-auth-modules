@@ -86,6 +86,7 @@ Only relevant if SpringSecurityAclModule is active.
 === 1.2.0-SNAPSHOT
 
 * settings now support Spring configuration metadata
+* `UserService`, `GroupService` and `MachinePrincipalService` have been refactored to implement `QueryDslPredicateExecutor` (breaking change)
 
 
 === 1.1.0.RELEASE

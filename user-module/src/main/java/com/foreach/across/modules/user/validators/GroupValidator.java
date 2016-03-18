@@ -52,7 +52,7 @@ public class GroupValidator extends EntityValidatorSupport<Group>
 	protected void postValidation( Group entity, Errors errors ) {
 		if ( !errors.hasFieldErrors( "name" ) ) {
 			QGroup query = QGroup.group;
-			Group other = groupService.findGroup(
+			Group other = groupService.findOne(
 					query.name.equalsIgnoreCase( entity.getName() )
 					          .and( query.userDirectory.eq( entity.getUserDirectory() ) )
 			);

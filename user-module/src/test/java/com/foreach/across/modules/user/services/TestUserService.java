@@ -51,7 +51,7 @@ import static org.mockito.Mockito.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = MockedLoader.class, classes = TestUserService.Config.class)
 @DirtiesContext
-public class TestUserService
+public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -69,6 +69,11 @@ public class TestUserService
 		when( userRepository.save( any( User.class ) ) ).thenAnswer(
 				invocationOnMock -> invocationOnMock.getArguments()[0]
 		);
+	}
+
+	@Test
+	public void serviceDelegatesToRepositoryForQueryDslPredicateExecutor() {
+		queryDslPredicateExecutorTest( userService, userRepository );
 	}
 
 	@Test

@@ -685,7 +685,7 @@
 		                      columnName="name"
 		                      columnDataType="java.sql.Types.NVARCHAR(255)"/>
 
-		<createIndex tableName="${table.group}" indexName="ix_um_machine_name" unique="false">
+		<createIndex tableName="${table.machine}" indexName="ix_um_machine_name" unique="false">
 			<column name="name"/>
 		</createIndex>
 	</changeSet>

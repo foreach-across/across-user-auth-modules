@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = MockedLoader.class, classes = TestGroupService.Config.class)
-public class TestGroupService
+public class TestGroupService extends AbstractQueryDslPredicateExecutorTest
 {
 	@Autowired
 	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
@@ -49,6 +49,11 @@ public class TestGroupService
 
 	@Autowired
 	private GroupService groupService;
+
+	@Test
+	public void serviceDelegatesToRepositoryForQueryDslPredicateExecutor() {
+		queryDslPredicateExecutorTest( groupService, groupRepository );
+	}
 
 	@Test
 	public void getGroupByNameShouldUseDefaultDirectory() {

@@ -24,8 +24,12 @@ import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -72,5 +76,30 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 	public MachinePrincipal save( MachinePrincipal machinePrincipalDto ) {
 		defaultUserDirectoryStrategy.apply( machinePrincipalDto );
 		return BasicServiceHelper.save( machinePrincipalDto, machinePrincipalRepository );
+	}
+
+	@Override
+	public MachinePrincipal findOne( Predicate predicate ) {
+		return machinePrincipalRepository.findOne( predicate );
+	}
+
+	@Override
+	public Collection<MachinePrincipal> findAll( Predicate predicate ) {
+		return (Collection<MachinePrincipal>) machinePrincipalRepository.findAll( predicate );
+	}
+
+	@Override
+	public Collection<MachinePrincipal> findAll( Predicate predicate, OrderSpecifier<?>... orderSpecifiers ) {
+		return (Collection<MachinePrincipal>) machinePrincipalRepository.findAll( predicate, orderSpecifiers );
+	}
+
+	@Override
+	public Page<MachinePrincipal> findAll( Predicate predicate, Pageable pageable ) {
+		return machinePrincipalRepository.findAll( predicate, pageable );
+	}
+
+	@Override
+	public long count( Predicate predicate ) {
+		return machinePrincipalRepository.count( predicate );
 	}
 }

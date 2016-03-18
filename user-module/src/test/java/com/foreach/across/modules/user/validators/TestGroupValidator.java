@@ -66,7 +66,7 @@ public class TestGroupValidator
 		group.setName( "GROUP NAME" );
 
 		QGroup q = QGroup.group;
-		when( groupService.findGroup(
+		when( groupService.findOne(
 				q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) )
 		) ).thenReturn( null );
 
@@ -83,7 +83,7 @@ public class TestGroupValidator
 		group.setName( "GROUP NAME" );
 
 		QGroup q = QGroup.group;
-		when( groupService.findGroup(
+		when( groupService.findOne(
 				q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) )
 		) ).thenReturn( group );
 
@@ -103,7 +103,7 @@ public class TestGroupValidator
 		existing.setName( "group name" );
 
 		QGroup q = QGroup.group;
-		when( groupService.findGroup(
+		when( groupService.findOne(
 				q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) )
 		) ).thenReturn( existing );
 

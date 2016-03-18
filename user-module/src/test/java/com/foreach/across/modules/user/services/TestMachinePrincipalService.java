@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = MockedLoader.class, classes = TestMachinePrincipalService.Config.class)
-public class TestMachinePrincipalService
+public class TestMachinePrincipalService extends AbstractQueryDslPredicateExecutorTest
 {
 	@Autowired
 	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
@@ -53,6 +53,11 @@ public class TestMachinePrincipalService
 
 	@Autowired
 	private SecurityPrincipalService securityPrincipalService;
+
+	@Test
+	public void serviceDelegatesToRepositoryForQueryDslPredicateExecutor() {
+		queryDslPredicateExecutorTest( machinePrincipalService, machinePrincipalRepository );
+	}
 
 	@Test
 	public void getMachineByNameShouldUseDefaultDirectory() {

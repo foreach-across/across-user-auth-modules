@@ -69,7 +69,7 @@ public class GroupServiceImpl implements GroupService
 		return getGroupByName( name, defaultUserDirectoryStrategy.getDefaultUserDirectory() );
 	}
 
-	@Cacheable(value = UserModuleCache.GROUPS, key="#p0 + ':' + #p1.id", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
+	@Cacheable(value = UserModuleCache.GROUPS, key = "#p0 + ':' + #p1.id", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
 	public Group getGroupByName( String name, UserDirectory directory ) {
 		return groupRepository.findByNameAndUserDirectory( name, directory );
@@ -122,22 +122,27 @@ public class GroupServiceImpl implements GroupService
 	}
 
 	@Override
-	public Collection<Group> findGroups( Predicate predicate ) {
+	public Collection<Group> findAll( Predicate predicate ) {
 		return (Collection<Group>) groupRepository.findAll( predicate );
 	}
 
 	@Override
-	public Collection<Group> findGroups( Predicate predicate, OrderSpecifier<?>... orderSpecifiers ) {
+	public Collection<Group> findAll( Predicate predicate, OrderSpecifier<?>... orderSpecifiers ) {
 		return (Collection<Group>) groupRepository.findAll( predicate, orderSpecifiers );
 	}
 
 	@Override
-	public Page<Group> findGroups( Predicate predicate, Pageable pageable ) {
+	public Page<Group> findAll( Predicate predicate, Pageable pageable ) {
 		return groupRepository.findAll( predicate, pageable );
 	}
 
 	@Override
-	public Group findGroup( Predicate predicate ) {
+	public long count( Predicate predicate ) {
+		return groupRepository.count( predicate );
+	}
+
+	@Override
+	public Group findOne( Predicate predicate ) {
 		return groupRepository.findOne( predicate );
 	}
 }

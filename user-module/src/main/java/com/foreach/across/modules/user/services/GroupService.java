@@ -23,13 +23,14 @@ import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import java.util.Collection;
 
 /**
  * @author Arne Vandamme
  */
-public interface GroupService
+public interface GroupService extends QueryDslPredicateExecutor<Group>
 {
 	Collection<Group> getGroups();
 
@@ -46,7 +47,7 @@ public interface GroupService
 	/**
 	 * Get the group with a given name in the specified directory.
 	 *
-	 * @param name of the group
+	 * @param name          of the group
 	 * @param userDirectory the group should belong to
 	 * @return instance or {@code null} if not found
 	 */
@@ -74,11 +75,18 @@ public interface GroupService
 	 */
 	Collection<Group> getGroupsWithPropertyValue( String propertyName, Object propertyValue );
 
-	Collection<Group> findGroups( Predicate predicate );
+	@Override
+	Group findOne( Predicate predicate );
 
-	Collection<Group> findGroups( Predicate predicate, OrderSpecifier<?>... orderSpecifiers );
+	@Override
+	Collection<Group> findAll( Predicate predicate );
 
-	Page<Group> findGroups( Predicate predicate, Pageable pageable );
+	@Override
+	Collection<Group> findAll( Predicate predicate, OrderSpecifier<?>... orderSpecifiers );
 
-	Group findGroup( Predicate predicate );
+	@Override
+	Page<Group> findAll( Predicate predicate, Pageable pageable );
+
+	@Override
+	long count( Predicate predicate );
 }

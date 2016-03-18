@@ -77,7 +77,7 @@ public class ITEntityModuleDependency
 	public void entityQueryExecutor() {
 		Group group = createTestUserAndGroup();
 
-		Collection<User> users = userService.findUsers( QUser.user.groups.contains( group ) );
+		Collection<User> users = userService.findAll( QUser.user.groups.contains( group ) );
 		assertEquals( 1, users.size() );
 		assertEquals( Long.valueOf( -9875L ), users.iterator().next().getId() );
 

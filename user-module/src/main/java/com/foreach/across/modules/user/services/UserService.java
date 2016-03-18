@@ -18,13 +18,15 @@ package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserProperties;
+import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import java.util.Collection;
 
-public interface UserService
+public interface UserService extends QueryDslPredicateExecutor<User>
 {
 	Collection<User> getUsers();
 
@@ -48,7 +50,18 @@ public interface UserService
 
 	Collection<User> getUsersWithPropertyValue( String propertyName, Object propertyValue );
 
-	Collection<User> findUsers( Predicate predicate );
+	@Override
+	User findOne( Predicate predicate );
 
-	Page<User> findUsers( Predicate predicate, Pageable pageable );
+	@Override
+	Collection<User> findAll( Predicate predicate );
+
+	@Override
+	Collection<User> findAll( Predicate predicate, OrderSpecifier<?>... orderSpecifiers );
+
+	@Override
+	Page<User> findAll( Predicate predicate, Pageable pageable );
+
+	@Override
+	long count( Predicate predicate );
 }

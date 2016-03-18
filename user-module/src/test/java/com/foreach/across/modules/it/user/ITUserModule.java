@@ -211,7 +211,7 @@ public class ITUserModule
 	public void queryDslUserFinding() {
 		QUser user = QUser.user;
 
-		Page<User> found = userService.findUsers( user.email.eq( "some@email.com" ), new QPageRequest( 0, 10 ) );
+		Page<User> found = userService.findAll( user.email.eq( "some@email.com" ), new QPageRequest( 0, 10 ) );
 		assertEquals( 0, found.getTotalElements() );
 		assertEquals( 0, found.getTotalPages() );
 
@@ -225,17 +225,17 @@ public class ITUserModule
 
 		created = userService.save( created );
 
-		found = userService.findUsers( user.email.eq( "some@email.com" ), new QPageRequest( 0, 10 ) );
+		found = userService.findAll( user.email.eq( "some@email.com" ), new QPageRequest( 0, 10 ) );
 		assertEquals( 1, found.getTotalElements() );
 		assertEquals( 1, found.getTotalPages() );
 		assertEquals( created, found.getContent().get( 0 ) );
 
-		found = userService.findUsers( user.lastName.startsWithIgnoreCase( "user" ), new QPageRequest( 0, 10 ) );
+		found = userService.findAll( user.lastName.startsWithIgnoreCase( "user" ), new QPageRequest( 0, 10 ) );
 		assertTrue( found.getTotalElements() >= 1 );
 		assertEquals( 1, found.getTotalPages() );
 		assertTrue( found.getContent().contains( created ) );
 
-		found = userService.findUsers( user.email.eq( "none@email.com" ), new QPageRequest( 0, 10 ) );
+		found = userService.findAll( user.email.eq( "none@email.com" ), new QPageRequest( 0, 10 ) );
 		assertEquals( 0, found.getTotalElements() );
 		assertEquals( 0, found.getTotalPages() );
 	}
@@ -279,16 +279,16 @@ public class ITUserModule
 
 		QUser user = QUser.user;
 
-		Collection<User> found = userService.findUsers( user.groups.contains( groupOne ) );
+		Collection<User> found = userService.findAll( user.groups.contains( groupOne ) );
 		assertEquals( 2, found.size() );
 		assertTrue( found.contains( userInGroupOne ) );
 		assertTrue( found.contains( userInBoth ) );
 
-		found = userService.findUsers( user.groups.contains( groupTwo ) );
+		found = userService.findAll( user.groups.contains( groupTwo ) );
 		assertEquals( 1, found.size() );
 		assertTrue( found.contains( userInBoth ) );
 
-		found = userService.findUsers( user.groups.contains( groupThree ).and( user.groups.contains( groupOne ) ) );
+		found = userService.findAll( user.groups.contains( groupThree ).and( user.groups.contains( groupOne ) ) );
 		assertTrue( found.isEmpty() );
 	}
 

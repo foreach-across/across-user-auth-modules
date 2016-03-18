@@ -24,6 +24,7 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.repositories.UserRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
+import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -212,12 +213,27 @@ public class UserServiceImpl implements UserService
 	}
 
 	@Override
-	public Collection<User> findUsers( Predicate predicate ) {
+	public Collection<User> findAll( Predicate predicate ) {
 		return (Collection<User>) userRepository.findAll( predicate );
 	}
 
 	@Override
-	public Page<User> findUsers( Predicate predicate, Pageable pageable ) {
+	public User findOne( Predicate predicate ) {
+		return userRepository.findOne( predicate );
+	}
+
+	@Override
+	public Collection<User> findAll( Predicate predicate, OrderSpecifier<?>... orderSpecifiers ) {
+		return (Collection<User>) userRepository.findAll( predicate, orderSpecifiers );
+	}
+
+	@Override
+	public Page<User> findAll( Predicate predicate, Pageable pageable ) {
 		return userRepository.findAll( predicate, pageable );
+	}
+
+	@Override
+	public long count( Predicate predicate ) {
+		return userRepository.count( predicate );
 	}
 }
