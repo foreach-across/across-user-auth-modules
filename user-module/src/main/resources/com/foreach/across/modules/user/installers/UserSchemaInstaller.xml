@@ -591,11 +591,22 @@
 			<column name="name" type="java.sql.Types.NVARCHAR(255)">
 				<constraints nullable="false" unique="true"/>
 			</column>
+			<column name="directory_type" type="java.sql.Types.VARCHAR(100)" defaultValue="internal">
+				<constraints nullable="false" />
+			</column>
+			<column name="order" type="java.sql.Types.INTEGER" defaultValue="1">
+				<constraints nullable="false" />
+			</column>
+			<column name="active" type="java.sql.Types.BOOLEAN" defaultValueBoolean="true">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 
 		<insert tableName="${table.user_directory}">
 			<column name="id">1</column>
 			<column name="name">Default internal directory</column>
+			<column name="directory_type">internal</column>
+			<column name="order">0</column>
 		</insert>
 
 		<!-- Ensure that sequence starts higher -->

@@ -18,6 +18,7 @@ package com.foreach.across.modules.user.extensions;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.user.security.UserDirectoryAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -45,6 +46,11 @@ public class SpringSecurityUserDetailsConfiguration
 				UserModule.NAME,
 				UserDetailsService.class
 		);
+
+		UserDirectoryAuthenticationProvider userDirectoryAuthenticationProvider
+				= contextBeanRegistry.getBeanOfTypeFromModule( UserModule.NAME,
+				                                               UserDirectoryAuthenticationProvider.class );
+		auth.authenticationProvider( userDirectoryAuthenticationProvider );
 
 		auth.userDetailsService( userDetailsService ).passwordEncoder( userPasswordEncoder );
 	}

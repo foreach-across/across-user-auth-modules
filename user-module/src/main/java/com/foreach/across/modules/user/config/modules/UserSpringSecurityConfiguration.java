@@ -29,6 +29,7 @@ import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
 import com.foreach.across.modules.user.security.CurrentUserProxyImpl;
 import com.foreach.across.modules.user.security.UserDetailsServiceImpl;
+import com.foreach.across.modules.user.security.UserDirectoryAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,6 +81,11 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 		return new FixedEntityAllowableActionsBuilder(
 				AuthorityMatchingAllowableActions.forSecurityPrincipal( securityPrincipal, actionAuthorityMatcherMap )
 		);
+	}
+
+	@Bean
+	public UserDirectoryAuthenticationProvider userDirectoryAuthenticationProvider() {
+		return new UserDirectoryAuthenticationProvider();
 	}
 
 	@Bean
