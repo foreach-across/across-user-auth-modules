@@ -19,6 +19,9 @@ package com.foreach.across.modules.ldap;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
+import com.foreach.across.modules.hibernate.provider.HibernatePackageConfiguringModule;
+import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
+import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.web.AcrossWebModule;
 
 /**
@@ -27,9 +30,9 @@ import com.foreach.across.modules.web.AcrossWebModule;
  */
 @AcrossDepends(
 		required = { AcrossWebModule.NAME, AcrossHibernateJpaModule.NAME },
-		optional = { "AdminWebModule", "EntityModule", "UserModule" }
+		optional = { "AdminWebModule", "EntityModule", "UserModule", "PropertiesModule" }
 )
-public class LdapModule extends AcrossModule
+public class LdapModule extends AcrossModule implements HibernatePackageConfiguringModule
 {
 	public static final String NAME = "LdapModule";
 
@@ -41,5 +44,10 @@ public class LdapModule extends AcrossModule
 	@Override
 	public String getDescription() {
 		return "Provides a domain model and services for connecting to LDAP directories.";
+	}
+
+	@Override
+	public void configureHibernatePackage( HibernatePackageRegistry hibernatePackage ) {
+		hibernatePackage.addPackageToScan( LdapConnector.class );
 	}
 }

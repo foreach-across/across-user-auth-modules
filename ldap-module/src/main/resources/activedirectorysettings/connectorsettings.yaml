@@ -1,0 +1,39 @@
+msad:
+  settings:
+    ldapUserObjectClass: user
+    ldapUserObjectFilter: (&(objectCategory=Person)(sAMAccountName=*))
+    ldapUsername: sAMAccountName
+    ldapUserEmail: mail
+    ldapUserFirstName: givenName
+    ldapUserLastName: sn
+    ldapUserDisplayName: displayName
+    ldapUserPassword: unicodePwd
+    ldapGroupObjectClass: group
+    ldapGroupObjectFilter: (objectCategory=Group)
+    ldapGroupName: cn
+apache15:
+  settings:
+    ldapUserObjectClass: inetorgperson
+    ldapUserObjectFilter: (objectclass=inetorgperson)
+    ldapUsername: cn
+    ldapUserEmail: mail
+    ldapUserFirstName: givenName
+    ldapUserLastName: sn
+    ldapUserDisplayName: displayName
+    ldapUserPassword: userpassword
+    ldapGroupObjectClass: groupOfUniqueNames
+    ldapGroupObjectFilter: (objectclass=groupOfUniqueNames)
+    ldapGroupName: cn
+opends:
+  settings:
+    ldapUserObjectClass: inetorgperson
+    ldapUserObjectFilter: (objectclass=inetorgperson)
+    ldapUsername: uid
+    ldapUserEmail: mail
+    ldapUserFirstName: givenName
+    ldapUserLastName: sn
+    ldapUserDisplayName: cn
+    ldapUserPassword: userpassword
+    ldapGroupObjectClass: groupOfUniqueNames
+    ldapGroupObjectFilter: (objectclass=groupOfUniqueNames)
+    ldapGroupName: cn
