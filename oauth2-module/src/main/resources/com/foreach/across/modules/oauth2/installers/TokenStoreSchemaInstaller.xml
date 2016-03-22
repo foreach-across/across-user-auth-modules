@@ -196,4 +196,16 @@
 		</createIndex>
 	</changeSet>
 
+	<changeSet id="201603111104" author="jgoossens">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="oauth_access_token" columnName="date_created"/>
+			</not>
+		</preConditions>
+		<addColumn tableName="oauth_access_token">
+			<column defaultValueComputed="CURRENT_TIMESTAMP" name="date_created" type="java.sql.Types.TIMESTAMP">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
 </databaseChangeLog>
