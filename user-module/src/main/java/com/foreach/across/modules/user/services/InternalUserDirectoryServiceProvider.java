@@ -19,10 +19,9 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.UserDirectory;
+import com.foreach.across.modules.user.security.InternalUserDirectoryAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.Validator;
 
@@ -36,7 +35,7 @@ import org.springframework.validation.Validator;
 public class InternalUserDirectoryServiceProvider implements UserDirectoryServiceProvider
 {
 	@Autowired
-	private UserDetailsService userDetailsService;
+	private UserService userService;
 
 	@Autowired
 	private PasswordEncoder userPasswordEncoder;
@@ -49,12 +48,13 @@ public class InternalUserDirectoryServiceProvider implements UserDirectoryServic
 	@Override
 	public AuthenticationProvider getAuthenticationProvider( UserDirectory userDirectory ) {
 		try {
-			DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-			daoAuthenticationProvider.setPasswordEncoder( userPasswordEncoder );
-			daoAuthenticationProvider.setUserDetailsService( userDetailsService );
-			daoAuthenticationProvider.afterPropertiesSet();
+			InternalUserDirectoryAuthenticationProvider authenticationProvider = new InternalUserDirectoryAuthenticationProvider();
+			authenticationProvider.setPasswordEncoder( userPasswordEncoder );
+			authenticationProvider.setUserDirectory( userDirectory );
+			authenticationProvider.setUserService( userService );
+			authenticationProvider.afterPropertiesSet();
 
-			return daoAuthenticationProvider;
+			return authenticationProvider;
 		}
 		catch ( Exception e ) {
 			throw new RuntimeException( e );

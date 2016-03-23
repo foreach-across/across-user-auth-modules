@@ -20,7 +20,9 @@ import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.UserModuleSettings;
+import com.foreach.across.modules.user.business.QUser;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.across.modules.user.repositories.UserRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
@@ -82,6 +84,18 @@ public class UserServiceImpl implements UserService
 	@Override
 	public User getUserByEmail( String email ) {
 		return userRepository.findByEmail( email );
+	}
+
+	@Override
+	public User getUserByEmail( String email, UserDirectory userDirectory ) {
+		QUser query = QUser.user;
+		return userRepository.findOne( query.email.eq( email ).and( query.userDirectory.eq( userDirectory ) )  );
+	}
+
+	@Override
+	public User getUserByUsername( String username, UserDirectory userDirectory ) {
+		QUser query = QUser.user;
+		return userRepository.findOne( query.username.eq( username ).and( query.userDirectory.eq( userDirectory ) )  );
 	}
 
 	@Cacheable(value = UserModuleCache.USERS, key = "('username:' + #username).toLowerCase()", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)

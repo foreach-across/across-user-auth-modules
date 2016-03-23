@@ -17,6 +17,7 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.business.UserProperties;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
@@ -34,7 +35,11 @@ public interface UserService extends QueryDslPredicateExecutor<User>
 
 	User getUserByEmail( String email );
 
+	User getUserByEmail( String email, UserDirectory userDirectory );
+
 	User getUserByUsername( String username );
+
+	User getUserByUsername( String username, UserDirectory userDirectory );
 
 	User save( User user );
 
