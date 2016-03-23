@@ -600,6 +600,8 @@
 			<column name="active" type="java.sql.Types.BOOLEAN" defaultValueBoolean="true">
 				<constraints nullable="false"/>
 			</column>
+			<column name="settings_id" type="java.sql.Types.BIGINT" />
+			<column name="settings_key" type="java.sql.Types.VARCHAR(255)" />
 		</createTable>
 
 		<insert tableName="${table.user_directory}">
