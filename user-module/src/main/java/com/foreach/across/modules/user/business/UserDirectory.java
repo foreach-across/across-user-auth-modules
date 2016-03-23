@@ -27,13 +27,21 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 
 /**
+ * Base class for user directory implementations.
+ *
  * @author Arne Vandamme
+ * @see InternalUserDirectory
  * @since 1.2.0
  */
 @NotThreadSafe
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_USER_DIRECTORY)
-public class UserDirectory extends SettableIdAuditableEntity<UserDirectory>
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+		name = "directory_type",
+		discriminatorType = DiscriminatorType.STRING
+)
+public abstract class UserDirectory extends SettableIdAuditableEntity<UserDirectory>
 {
 	/**
 	 * Unique id of the default internal directory. This directory should always exist.
@@ -58,6 +66,12 @@ public class UserDirectory extends SettableIdAuditableEntity<UserDirectory>
 	@Column(name = "name")
 	private String name;
 
+	@Column(name = "order")
+	private int order = 1;
+
+	@Column(name = "active")
+	private boolean active;
+
 	@Override
 	public Long getId() {
 		return id;
@@ -74,5 +88,21 @@ public class UserDirectory extends SettableIdAuditableEntity<UserDirectory>
 
 	public void setName( String name ) {
 		this.name = name;
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder( int order ) {
+		this.order = order;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive( boolean active ) {
+		this.active = active;
 	}
 }

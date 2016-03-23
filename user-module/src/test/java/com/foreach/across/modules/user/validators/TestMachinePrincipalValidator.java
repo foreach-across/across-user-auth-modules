@@ -16,10 +16,7 @@
 
 package com.foreach.across.modules.user.validators;
 
-import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
-import com.foreach.across.modules.user.business.MachinePrincipal;
-import com.foreach.across.modules.user.business.QMachinePrincipal;
-import com.foreach.across.modules.user.business.UserDirectory;
+import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.junit.Before;
@@ -43,7 +40,7 @@ public class TestMachinePrincipalValidator
 
 	@Before
 	public void before() {
-		defaultDir = new UserDirectory();
+		defaultDir = new InternalUserDirectory();
 		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
 
 		repository = mock( MachinePrincipalRepository.class );

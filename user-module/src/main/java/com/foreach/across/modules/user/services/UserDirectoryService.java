@@ -42,6 +42,13 @@ public interface UserDirectoryService
 	Collection<UserDirectory> getUserDirectories();
 
 	/**
+	 * Get the list of user directories that should be used for authentication, in authentication precedence order.
+	 *
+	 * @return active user directories sorted according to their order property
+	 */
+	Collection<UserDirectory> getActiveUserDirectories();
+
+	/**
 	 * Create or update a directory instance.
 	 *
 	 * @param userDirectory dto

@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.user.services.support;
 
+import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserDirectoryService;
@@ -42,7 +43,7 @@ public class TestDefaultUserDirectoryStrategy
 
 	@Test
 	public void defaultIsReturned() {
-		UserDirectory dir = new UserDirectory();
+		UserDirectory dir = new InternalUserDirectory();
 
 		when( userDirectoryService.getDefaultUserDirectory() ).thenReturn( dir );
 		assertSame( dir, userDirectoryStrategy.getDefaultUserDirectory() );
@@ -50,7 +51,7 @@ public class TestDefaultUserDirectoryStrategy
 
 	@Test
 	public void aSetDirectoryIsNeverReplaced() {
-		UserDirectory one = new UserDirectory();
+		UserDirectory one = new InternalUserDirectory();
 
 		User user = new User();
 		user.setUserDirectory( one );
@@ -63,7 +64,7 @@ public class TestDefaultUserDirectoryStrategy
 
 	@Test
 	public void defaultInternalUserDirectoryIsSetIfRequired() {
-		UserDirectory defaultDir = new UserDirectory();
+		UserDirectory defaultDir = new InternalUserDirectory();
 		when( userDirectoryService.getDefaultUserDirectory() ).thenReturn( defaultDir );
 
 		User user = new User();

@@ -109,7 +109,7 @@ public class ITUserModule
 
 	@Test
 	public void additionalUserDirectoryCanBeCreatedAndShouldHaveHigherId() {
-		UserDirectory dto = new UserDirectory();
+		UserDirectory dto = new InternalUserDirectory();
 		dto.setName( "Additional dir" );
 
 		UserDirectory saved = userDirectoryService.save( dto );
@@ -327,7 +327,7 @@ public class ITUserModule
 
 	@Test
 	public void groupNameMustOnlyBeUniqueInsideDirectory() {
-		UserDirectory dto = new UserDirectory();
+		UserDirectory dto = new InternalUserDirectory();
 		dto.setName( "Group directory" );
 
 		UserDirectory otherDir = userDirectoryService.save( dto );
@@ -350,7 +350,7 @@ public class ITUserModule
 
 	@Test
 	public void machinePrincipalNameMustOnlyBeUniqueInsideDirectory() {
-		UserDirectory dto = new UserDirectory();
+		UserDirectory dto = new InternalUserDirectory();
 		dto.setName( "Machine Principal directory" );
 
 		UserDirectory otherDir = userDirectoryService.save( dto );

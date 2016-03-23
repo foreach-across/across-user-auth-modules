@@ -29,6 +29,7 @@ public class UserSchemaConfiguration extends SchemaConfiguration
 	public static final String TABLE_ROLE_PERMISSION = "um_role_permission";
 	public static final String TABLE_USER = "um_user";
 	public static final String TABLE_USER_DIRECTORY = "um_user_directory";
+	public static final String TABLE_USER_DIRECTORY_INTERNAL = "um_user_directory_internal";
 	public static final String TABLE_USER_PROPERTIES = "um_user_properties";
 	public static final String TABLE_PRINCIPAL = "um_principal";
 	public static final String TABLE_PRINCIPAL_ROLE = "um_principal_role";
@@ -52,7 +53,9 @@ public class UserSchemaConfiguration extends SchemaConfiguration
 		                      new SchemaObject( "table.principal_group", TABLE_PRINCIPAL_GROUP ),
 		                      new SchemaObject( "table.user", TABLE_USER ),
 		                      new SchemaObject( "table.user_directory", TABLE_USER_DIRECTORY ),
+		                      new SchemaObject( "table.user_directory_internal", TABLE_USER_DIRECTORY_INTERNAL ),
 		                      new SchemaObject( "table.user_properties", TABLE_USER_PROPERTIES ),
 		                      new SchemaObject( "table.machine", TABLE_MACHINE_PRINCIPAL ) ) );
 	}
 }
+

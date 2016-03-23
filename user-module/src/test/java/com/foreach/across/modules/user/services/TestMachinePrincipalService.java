@@ -17,6 +17,7 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
@@ -61,7 +62,7 @@ public class TestMachinePrincipalService extends AbstractQueryDslPredicateExecut
 
 	@Test
 	public void getMachineByNameShouldUseDefaultDirectory() {
-		UserDirectory dir = new UserDirectory();
+		UserDirectory dir = new InternalUserDirectory();
 		dir.setId( 123L );
 		when( defaultUserDirectoryStrategy.getDefaultUserDirectory() ).thenReturn( dir );
 

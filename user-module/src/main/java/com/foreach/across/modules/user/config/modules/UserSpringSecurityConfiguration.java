@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.registry.IncrementalRefreshableRegistry;
+import com.foreach.across.core.registry.RefreshableRegistry;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -30,6 +33,10 @@ import com.foreach.across.modules.user.security.CurrentUserProxy;
 import com.foreach.across.modules.user.security.CurrentUserProxyImpl;
 import com.foreach.across.modules.user.security.UserDetailsServiceImpl;
 import com.foreach.across.modules.user.security.UserDirectoryAuthenticationProvider;
+import com.foreach.across.modules.user.services.InternalUserDirectoryServiceProvider;
+import com.foreach.across.modules.user.services.UserDirectoryService;
+import com.foreach.across.modules.user.services.UserDirectoryServiceProvider;
+import com.foreach.across.modules.user.services.UserDirectoryServiceProviderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -84,8 +91,25 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 	}
 
 	@Bean
-	public UserDirectoryAuthenticationProvider userDirectoryAuthenticationProvider() {
-		return new UserDirectoryAuthenticationProvider();
+	public UserDirectoryServiceProviderManager userDirectoryServiceProviderManager() {
+		return new UserDirectoryServiceProviderManager( userDirectoryServiceProviders() );
+	}
+
+	@Bean
+	public RefreshableRegistry<UserDirectoryServiceProvider> userDirectoryServiceProviders() {
+		return new IncrementalRefreshableRegistry<>( UserDirectoryServiceProvider.class, true );
+	}
+
+	@Bean
+	public UserDirectoryAuthenticationProvider userDirectoryAuthenticationProvider(
+			UserDirectoryService userDirectoryService,
+			UserDirectoryServiceProviderManager userDirectoryServiceProviderManager ) {
+		return new UserDirectoryAuthenticationProvider( userDirectoryService, userDirectoryServiceProviderManager );
+	}
+
+	@Bean
+	public InternalUserDirectoryServiceProvider internalUserDirectoryServiceProvider() {
+		return new InternalUserDirectoryServiceProvider();
 	}
 
 	@Bean

@@ -38,10 +38,10 @@ public interface UserDirectoryServiceProvider
 	 * @param userDirectoryClass user directory implementation
 	 * @return {@code true} if the user directory type is supported
 	 */
-	boolean support( Class<? extends UserDirectory> userDirectoryClass );
+	boolean supports( Class<? extends UserDirectory> userDirectoryClass );
 
 	/**
-	 * Get the {@link AuthenticationProvider} required for authenticatin principals for this directory.
+	 * Get the {@link AuthenticationProvider} required for authenticating principals for this directory.
 	 *
 	 * @param userDirectory instance
 	 * @return provider instance

@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * @author Arne Vandamme
@@ -37,6 +38,14 @@ public class UserDirectoryServiceImpl implements UserDirectoryService
 	@Override
 	public UserDirectory getDefaultUserDirectory() {
 		return userDirectoryRepository.findOne( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
+	}
+
+	@Override
+	public Collection<UserDirectory> getActiveUserDirectories() {
+		return getUserDirectories().stream()
+		                           .filter( UserDirectory::isActive )
+		                           .sorted( ( l, r ) -> Integer.compare( l.getOrder(), r.getOrder() ) )
+		                           .collect( Collectors.toList() );
 	}
 
 	@Override

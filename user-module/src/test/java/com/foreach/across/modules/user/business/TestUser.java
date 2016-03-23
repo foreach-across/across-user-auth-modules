@@ -33,18 +33,18 @@ public class TestUser
 		user.setUsername( "my.Username" );
 		assertEquals( "my.username", user.getPrincipalName() );
 
-		UserDirectory defaultDir = new UserDirectory();
+		UserDirectory defaultDir = new InternalUserDirectory();
 		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
 
 		user.setUserDirectory( defaultDir );
 		assertEquals( "my.username", user.getPrincipalName() );
 
-		UserDirectory neg = new UserDirectory();
+		UserDirectory neg = new InternalUserDirectory();
 		neg.setId( -399L );
 		user.setUserDirectory( neg );
 		assertEquals( "-399,my.username", user.getPrincipalName() );
 
-		UserDirectory other = new UserDirectory();
+		UserDirectory other = new InternalUserDirectory();
 		other.setId( 2L );
 		user.setUserDirectory( other );
 		assertEquals( "2,my.username", user.getPrincipalName() );
@@ -52,7 +52,7 @@ public class TestUser
 		user.setUsername( "otherUserName" );
 		assertEquals( "2,otherusername", user.getPrincipalName() );
 
-		UserDirectory third = new UserDirectory();
+		UserDirectory third = new InternalUserDirectory();
 		third.setId( 40L );
 		user.setUserDirectory( third );
 		assertEquals( "40,otherusername", user.getPrincipalName() );

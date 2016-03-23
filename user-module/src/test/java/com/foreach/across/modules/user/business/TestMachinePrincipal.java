@@ -94,18 +94,18 @@ public class TestMachinePrincipal
 		machinePrincipal.setName( "my.PrincipalName" );
 		assertEquals( "my.principalname", machinePrincipal.getPrincipalName() );
 
-		UserDirectory defaultDir = new UserDirectory();
+		UserDirectory defaultDir = new InternalUserDirectory();
 		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
 
 		machinePrincipal.setUserDirectory( defaultDir );
 		assertEquals( "my.principalname", machinePrincipal.getPrincipalName() );
 
-		UserDirectory neg = new UserDirectory();
+		UserDirectory neg = new InternalUserDirectory();
 		neg.setId( -399L );
 		machinePrincipal.setUserDirectory( neg );
 		assertEquals( "-399,my.principalname", machinePrincipal.getPrincipalName() );
 
-		UserDirectory other = new UserDirectory();
+		UserDirectory other = new InternalUserDirectory();
 		other.setId( 2L );
 		machinePrincipal.setUserDirectory( other );
 		assertEquals( "2,my.principalname", machinePrincipal.getPrincipalName() );
@@ -113,7 +113,7 @@ public class TestMachinePrincipal
 		machinePrincipal.setName( "otherPrincipalName" );
 		assertEquals( "2,otherprincipalname", machinePrincipal.getPrincipalName() );
 
-		UserDirectory third = new UserDirectory();
+		UserDirectory third = new InternalUserDirectory();
 		third.setId( 40L );
 		machinePrincipal.setUserDirectory( third );
 		assertEquals( "40,otherprincipalname", machinePrincipal.getPrincipalName() );

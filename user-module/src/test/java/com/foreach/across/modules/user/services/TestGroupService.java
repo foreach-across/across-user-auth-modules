@@ -17,6 +17,7 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.GroupRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
@@ -57,7 +58,7 @@ public class TestGroupService extends AbstractQueryDslPredicateExecutorTest
 
 	@Test
 	public void getGroupByNameShouldUseDefaultDirectory() {
-		UserDirectory dir = new UserDirectory();
+		UserDirectory dir = new InternalUserDirectory();
 		dir.setId( 123L );
 		when( defaultUserDirectoryStrategy.getDefaultUserDirectory() ).thenReturn( dir );
 
