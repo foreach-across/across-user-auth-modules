@@ -3216,6 +3216,7 @@ ou: Accounting
 ou: People
 uidNumber: 1002
 gidNumber: 1000
+uniqueMember: cn=Accounting Managers,ou=groups,dc=foreach,dc=com
 
 dn: uid=sfarmer,ou=People,dc=foreach,dc=com
 objectClass: person
@@ -3575,6 +3576,7 @@ ou: Accounting
 ou: People
 uidNumber: 1003
 gidNumber: 1000
+uniqueMember: Accounting Managers,ou=groups,dc=foreach,dc=com
 
 dn: uid=tpierce,ou=People,dc=foreach,dc=com
 objectClass: person

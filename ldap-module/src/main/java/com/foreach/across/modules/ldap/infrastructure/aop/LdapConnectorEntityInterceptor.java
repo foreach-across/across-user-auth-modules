@@ -17,13 +17,11 @@
 package com.foreach.across.modules.ldap.infrastructure.aop;
 
 import com.foreach.across.modules.hibernate.aop.EntityInterceptorAdapter;
-import com.foreach.across.modules.ldap.business.ActiveDirectorySettings;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapConnectorType;
+import com.foreach.across.modules.ldap.business.LdapDirectorySettings;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
-import com.foreach.across.modules.user.business.UserDirectory;
-import com.foreach.across.modules.user.services.UserDirectoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -38,10 +36,7 @@ public class LdapConnectorEntityInterceptor extends EntityInterceptorAdapter<Lda
 	private LdapConnectorSettingsService ldapConnectorSettingsService;
 
 	@Autowired
-	private List<ActiveDirectorySettings> activeDirectorySettings;
-
-	@Autowired
-	private UserDirectoryService userDirectoryService;
+	private List<LdapDirectorySettings> ldapDirectorySettings;
 
 	@Override
 	public boolean handles( Class<?> entityClass ) {
@@ -62,15 +57,9 @@ public class LdapConnectorEntityInterceptor extends EntityInterceptorAdapter<Lda
 		LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties( entity.getId() );
 
 		LdapConnectorType ldapConnectorType = entity.getLdapConnectorType();
-		for ( ActiveDirectorySettings settings : activeDirectorySettings ) {
+		for ( LdapDirectorySettings settings : ldapDirectorySettings ) {
 			if ( settings.getConnectorType().equals( ldapConnectorType ) ) {
 				ldapConnectorSettings.putAll( settings.getSettings() );
-
-				UserDirectory userDirectory = new UserDirectory();
-				userDirectory.setName( "LdapConnector " + entity.getHostName() + entity.getPort() + " User Directory" );
-				userDirectoryService.save( userDirectory );
-
-				ldapConnectorSettings.put( "user_directory_id", userDirectory.getId() );
 
 				ldapConnectorSettingsService.saveProperties( ldapConnectorSettings );
 

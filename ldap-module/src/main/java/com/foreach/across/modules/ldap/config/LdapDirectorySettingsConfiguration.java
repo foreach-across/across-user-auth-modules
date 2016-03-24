@@ -16,8 +16,8 @@
 
 package com.foreach.across.modules.ldap.config;
 
-import com.foreach.across.modules.ldap.business.ActiveDirectorySettings;
 import com.foreach.across.modules.ldap.business.LdapConnectorType;
+import com.foreach.across.modules.ldap.business.LdapDirectorySettings;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.env.YamlPropertySourceLoader;
@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties
-public class ActiveDirectorySettingsConfiguration
+public class LdapDirectorySettingsConfiguration
 {
 	@Bean
 	public YamlPropertySourceLoader yamlPropertySourceLoader() {
@@ -39,8 +39,8 @@ public class ActiveDirectorySettingsConfiguration
 
 	@Bean
 	@ConfigurationProperties(prefix = "msad", locations = "classpath:activedirectorysettings/connectorsettings.yaml")
-	public ActiveDirectorySettings microsoftActiveDirectorySettings() {
-		return new ActiveDirectorySettings()
+	public LdapDirectorySettings microsoftActiveDirectorySettings() {
+		return new LdapDirectorySettings()
 		{
 			@Override
 			public LdapConnectorType getConnectorType() {
@@ -51,8 +51,8 @@ public class ActiveDirectorySettingsConfiguration
 
 	@Bean
 	@ConfigurationProperties(prefix = "opends", locations = "classpath:activedirectorysettings/connectorsettings.yaml")
-	public ActiveDirectorySettings openDsSettings() {
-		return new ActiveDirectorySettings()
+	public LdapDirectorySettings openDsSettings() {
+		return new LdapDirectorySettings()
 		{
 			@Override
 			public LdapConnectorType getConnectorType() {
@@ -63,8 +63,8 @@ public class ActiveDirectorySettingsConfiguration
 
 	@Bean
 	@ConfigurationProperties(prefix = "apache15", locations = "classpath:activedirectorysettings/connectorsettings.yaml")
-	public ActiveDirectorySettings apacheDirectoryService15() {
-		return new ActiveDirectorySettings()
+	public LdapDirectorySettings apacheDirectoryService15() {
+		return new LdapDirectorySettings()
 		{
 			@Override
 			public LdapConnectorType getConnectorType() {

@@ -49,6 +49,10 @@ public class LdapConnectorSettings extends EntityProperties<Long>
 		return getValue( "ldapUserObjectFilter" );
 	}
 
+	public String getUserObjectFilterForUser() {
+		return getValue( "ldapUserObjectFilterForUser" );
+	}
+
 	public String getUsername() {
 		return getValue( "ldapUsername" );
 	}
@@ -79,6 +83,14 @@ public class LdapConnectorSettings extends EntityProperties<Long>
 
 	public String getGroupName() {
 		return getValue( "ldapGroupName" );
+	}
+
+	public String getGroupUserNames() {
+		return getValue( "ldapGroupUsernames" );
+	}
+
+	public String getUserMemberOf() {
+		return getValue( "ldapUserGroup" );
 	}
 
 }

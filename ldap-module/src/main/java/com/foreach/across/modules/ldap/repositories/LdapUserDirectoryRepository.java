@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.ldap.business;
+package com.foreach.across.modules.ldap.repositories;
 
-import java.util.LinkedHashMap;
+import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 
 /**
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
-public abstract class ActiveDirectorySettings
+public interface LdapUserDirectoryRepository extends IdBasedEntityJpaRepository<LdapUserDirectory>
 {
-
-	private LinkedHashMap<String, String> settings;
-
-	public LinkedHashMap<String, String> getSettings() {
-		return settings;
-	}
-
-	public void setSettings( LinkedHashMap<String, String> settings ) {
-		this.settings = settings;
-	}
-
-	public abstract LdapConnectorType getConnectorType();
 }

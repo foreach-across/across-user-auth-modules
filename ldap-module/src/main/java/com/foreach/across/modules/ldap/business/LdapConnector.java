@@ -29,6 +29,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 /**
  * Represents a connection to an Ldap service
@@ -53,6 +54,11 @@ public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 			}
 	)
 	private Long id;
+
+	@NotBlank
+	@Column(name = "name")
+	@Size(max = 255)
+	private String name;
 
 	@NotBlank
 	@Column(name = "hostname")
@@ -102,6 +108,9 @@ public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 	@Size(max = 255)
 	private String additionalGroupDn;
 
+	@OneToMany(mappedBy = "ldapConnector", fetch = FetchType.EAGER)
+	private List<LdapUserDirectory> userDirectories;
+
 	@Override
 	public void setId( Long id ) {
 		this.id = id;
@@ -110,6 +119,14 @@ public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 	@Override
 	public Long getId() {
 		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName( String name ) {
+		this.name = name;
 	}
 
 	public String getHostName() {
@@ -198,5 +215,13 @@ public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 
 	public void setLdapConnectorType( LdapConnectorType ldapConnectorType ) {
 		this.ldapConnectorType = ldapConnectorType;
+	}
+
+	public List<LdapUserDirectory> getUserDirectories() {
+		return userDirectories;
+	}
+
+	public void setUserDirectories( List<LdapUserDirectory> userDirectories ) {
+		this.userDirectories = userDirectories;
 	}
 }

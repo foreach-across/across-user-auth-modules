@@ -16,16 +16,12 @@
 
 package com.foreach.across.modules.test.ldap;
 
-import com.foreach.across.modules.ldap.business.ActiveDirectorySettings;
-import com.foreach.across.modules.ldap.business.LdapConnector;
-import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
-import com.foreach.across.modules.ldap.business.LdapConnectorType;
-import com.foreach.across.modules.ldap.config.ActiveDirectorySettingsConfiguration;
+import com.foreach.across.modules.ldap.business.*;
+import com.foreach.across.modules.ldap.config.LdapDirectorySettingsConfiguration;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationServiceImpl;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
 import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserDirectoryService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.common.spring.properties.PropertyTypeRegistry;
@@ -46,6 +42,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.naming.NamingException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +74,7 @@ public class TestLdapConnectorSynchronization
 	private LdapConnectorSettingsService ldapConnectorSettingsService;
 
 	@Autowired
-	private List<ActiveDirectorySettings> activeDirectorySettingsList;
+	private List<LdapDirectorySettings> ldapDirectorySettingsList;
 
 	@Autowired
 	private ConversionService conversionService;
@@ -88,8 +85,11 @@ public class TestLdapConnectorSynchronization
 	@Autowired
 	private UserDirectoryService userDirectoryService;
 
+	@Autowired
+	private ApacheDSContainer apacheDSContainer;
+
 	@Before
-	public void resetMocks() {
+	public void resetMocks() throws NamingException {
 		reset( userService, userDirectoryService );
 	}
 
@@ -108,9 +108,9 @@ public class TestLdapConnectorSynchronization
 		LdapConnectorSettings ldapConnectorSettings = new LdapConnectorSettings( ldapConnector.getId(),
 		                                                                         registry,
 		                                                                         () -> {
-			                                                                         Optional<ActiveDirectorySettings>
+			                                                                         Optional<LdapDirectorySettings>
 					                                                                         activeDirectorySettingsOptional =
-					                                                                         activeDirectorySettingsList
+					                                                                         ldapDirectorySettingsList
 							                                                                         .stream().filter(
 							                                                                         item -> item
 									                                                                         .getConnectorType() == ldapConnector
@@ -126,7 +126,7 @@ public class TestLdapConnectorSynchronization
 			                                                                         }
 		                                                                         } );
 		when( ldapConnectorSettingsService.getProperties( ldapConnector.getId() ) ).thenReturn( ldapConnectorSettings );
-		when( userDirectoryService.getDefaultUserDirectory() ).thenReturn( new UserDirectory() );
+		when( userDirectoryService.getDefaultUserDirectory() ).thenReturn( new LdapUserDirectory() );
 		ldapSynchronizationService.synchronizeData( ldapConnector );
 
 		verify( userService, times( 150 ) ).save( any( User.class ) );
@@ -141,7 +141,7 @@ public class TestLdapConnectorSynchronization
 	}
 
 	@Configuration
-	@Import(ActiveDirectorySettingsConfiguration.class)
+	@Import(LdapDirectorySettingsConfiguration.class)
 	protected static class Config
 	{
 		@Bean
@@ -159,6 +159,14 @@ public class TestLdapConnectorSynchronization
 			ldapConnector.setHostName( "127.0.0.1" );
 			ldapConnector.setPort( 53389 );
 			ldapConnector.setLdapConnectorType( LdapConnectorType.OPENDS );
+
+			LdapUserDirectory ldapUserDirectory = new LdapUserDirectory();
+			ldapUserDirectory.setName( "OpenDS User Directory" );
+			ldapUserDirectory.setId( 2L );
+			ldapUserDirectory.setActive( true );
+			ldapUserDirectory.setLdapConnector( ldapConnector );
+
+			ldapConnector.setUserDirectories( Collections.singletonList( ldapUserDirectory ) );
 			return ldapConnector;
 		}
 

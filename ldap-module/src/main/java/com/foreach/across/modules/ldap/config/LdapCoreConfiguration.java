@@ -21,7 +21,9 @@ import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcross
 import com.foreach.across.modules.ldap.repositories.LdapConnectorRepository;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationServiceImpl;
+import com.foreach.across.modules.ldap.services.LdapUserDirectoryServiceProvider;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
+import com.foreach.across.modules.user.services.UserDirectoryServiceProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -36,14 +38,20 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class LdapCoreConfiguration
 {
 	@Bean
-	@AcrossDepends(required = "UserModule")
+	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
 	public LdapSynchronizationTask ldapSynchronizationTask() {
 		return new LdapSynchronizationTask();
 	}
 
 	@Bean
-	@AcrossDepends(required = "UserModule")
+	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
 	public LdapSynchronizationService ldapSynchronizationService() {
 		return new LdapSynchronizationServiceImpl();
+	}
+
+	@Bean
+	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
+	public UserDirectoryServiceProvider ldapUserDirectoryServiceProvider() {
+		return new LdapUserDirectoryServiceProvider();
 	}
 }
