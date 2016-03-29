@@ -55,6 +55,7 @@ public class InternalUserDirectoryAuthenticationProvider extends AbstractUserInD
 	private SaltSource saltSource;
 
 	public InternalUserDirectoryAuthenticationProvider() {
+		setThrowExceptionIfUserNotFound( false );
 		setPasswordEncoder( new PlaintextPasswordEncoder() );
 	}
 
