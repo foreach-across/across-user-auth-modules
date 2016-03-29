@@ -85,6 +85,7 @@ Only relevant if SpringSecurityAclModule is active.
 :numbered!:
 === 1.2.0-SNAPSHOT
 
+* Introduction of `UserDirectory` object with a default `InternalUserDirectory` for storing `User` and `Group` objects in several <<integration:user-directories,user directories>>
 * settings now support Spring configuration metadata
 * `UserService`, `GroupService` and `MachinePrincipalService` have been refactored to implement `QueryDslPredicateExecutor` (breaking change)
 
@@ -94,6 +95,120 @@ Initial public release available on http://search.maven.org/[Maven central].
 
 :numbered:
 == How {module-name} works
+
+== User directories
+
+[[integration:user-directories]]
+
+The `UserModule` installs an `InternalUserDirectory` by default. This is where the default `admin` user resides.
+
+It is possible to create your own `AuthenticationProvider` by implementing `UserDirectoryServiceProvider` and extending `AbstractUserInDirectoryAuthenticationProvider`.
+The implementation of `UserDirectoryServiceProvider` generally creates the new instance of your `AbstractUserInDirectoryAuthenticationProvider` class.
+
+Example implementation of `LdapUserDirectoryServiceProvider` used in the https://foreach.atlassian.net/wiki/display/AX/LdapModule[LdapModule]
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+public class LdapUserDirectoryServiceProvider implements UserDirectoryServiceProvider
+{
+	@Override
+	public boolean supports( Class<? extends UserDirectory> userDirectoryClass ) {
+		return LdapUserDirectory.class.isAssignableFrom( userDirectoryClass );
+	}
+
+	@Override
+	public AuthenticationProvider getAuthenticationProvider( UserDirectory userDirectory ) {
+		try {
+			LdapUserDirectory ldapUserDirectory = (LdapUserDirectory) userDirectory;
+			LdapConnector ldapConnector = ldapUserDirectory.getLdapConnector();
+			LdapAuthenticationProvider ldapAuthenticationProvider = new LdapAuthenticationProvider();
+			ldapAuthenticationProvider.setUserService( userService );
+			ldapAuthenticationProvider.setUserDirectory( userDirectory );
+			ldapAuthenticationProvider.setLdapContextSource( ldapConnector );
+			ldapAuthenticationProvider.afterPropertiesSet();
+			return ldapAuthenticationProvider;
+		}
+		catch ( Exception e ) {
+			throw new RuntimeException( e );
+		}
+	}
+
+	@Override
+	public Validator getValidator( UserDirectory userDirectory,
+	                               Class<? extends BasicSecurityPrincipal> securityPrincipalClass ) {
+		return null;
+	}
+}
+----
+
+Example of the default InternalUserDirectoryAuthenticationProvider used in the https://foreach.atlassian.net/wiki/display/AX/LdapModule[LdapModule]
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+public class LdapAuthenticationProvider extends AbstractUserInDirectoryAuthenticationProvider
+{
+	@Override
+	protected void additionalAuthenticationChecks( UserDetails userDetails,
+	                                               UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
+		BindAuthenticator ldapAuthenticator = new BindAuthenticator( ldapContextSource );
+		FilterBasedLdapUserSearch search = new FilterBasedLdapUserSearch( "", searchFilter,
+		                                                                  ldapContextSource );
+		ldapAuthenticator.setUserSearch( search );
+
+		DirContextOperations dirContextOperations = ldapAuthenticator.authenticate( authentication );
+		if( dirContextOperations == null ) {
+			throw new BadCredentialsException( "Cannot authenticate user with LDAP" );
+		}
+	}
+
+	@Override
+	protected void doAfterPropertiesSet() throws Exception {
+		Assert.isTrue( userDirectory instanceof LdapUserDirectory,
+		               "Only LdapUserDirectory types are supported" );
+	}
+
+	@Override
+	protected UserDetails buildUserDetails( User user,
+	                                        UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
+		return user;
+	}
+
+	@Override
+	public boolean supports( Class<?> authentication ) {
+		return UsernamePasswordAuthenticationToken.class.isAssignableFrom( authentication );
+	}
+}
+
+----
+
+The `UserDirectory` class must also be extended, by providing a unique `@DiscriminatorValue` for your `UserDirectory`.
+This is the sample implementation of `LdapUserDirectory` from the https://foreach.atlassian.net/wiki/display/AX/LdapModule[LdapModule]
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@NotThreadSafe
+@Entity
+@DiscriminatorValue("ldap")
+public class LdapUserDirectory extends UserDirectory
+{
+	@OneToOne(optional = false)
+	@JoinColumn(name = "settings_id")
+	private LdapConnector ldapConnector;
+
+	public LdapConnector getLdapConnector() {
+		return ldapConnector;
+	}
+
+	public void setLdapConnector( LdapConnector ldapConnector ) {
+		this.ldapConnector = ldapConnector;
+	}
+}
+----
+
+Note the `settings_id` column, which can be used to optionally link your `UserDirectory` to another `@Entity` object in your module.
 
 == Integration with other modules
 
