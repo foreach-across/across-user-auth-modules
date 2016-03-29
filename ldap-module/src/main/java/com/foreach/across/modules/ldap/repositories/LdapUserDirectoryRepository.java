@@ -19,10 +19,13 @@ package com.foreach.across.modules.ldap.repositories;
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 
+import java.util.List;
+
 /**
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
 public interface LdapUserDirectoryRepository extends IdBasedEntityJpaRepository<LdapUserDirectory>
 {
+	List<LdapUserDirectory> findAllByActiveTrue();
 }

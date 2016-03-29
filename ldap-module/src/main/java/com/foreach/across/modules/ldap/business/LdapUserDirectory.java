@@ -22,7 +22,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 
 /**
  * Represents an LDAP user directory {@link UserDirectory}.
@@ -35,7 +36,8 @@ import javax.persistence.ManyToOne;
 @DiscriminatorValue("ldap")
 public class LdapUserDirectory extends UserDirectory
 {
-	@ManyToOne(optional = false)
+	@OneToOne(optional = false)
+	@NotNull
 	@JoinColumn(name = "settings_id")
 	private LdapConnector ldapConnector;
 

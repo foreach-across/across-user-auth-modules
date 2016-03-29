@@ -17,24 +17,23 @@
 package com.foreach.across.modules.test.ldap;
 
 import com.foreach.across.modules.ldap.business.LdapConnector;
+import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapConnectorType;
-import com.foreach.across.modules.ldap.config.LdapDirectorySettingsConfiguration;
+import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.services.LdapAuthenticationProvider;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.server.ApacheDSContainer;
-import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -54,14 +53,27 @@ public class TestLdapAuthenticationProvider
 	private LdapAuthenticationProvider ldapAuthenticationProvider;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private LdapUserDirectory ldapUserDirectory;
 
 	@Before
 	public void resetMocks() {
 		reset( userService );
+		ldapAuthenticationProvider.setThrowExceptionIfUserNotFound( false );
+		ldapAuthenticationProvider.setSearchFilter( null );
 	}
 
-	@Test(expected = BadCredentialsException.class)
-	public void testThatUnknownUserDoesNotGetAuthenticated() throws Exception {
+	@Test(expected = InternalAuthenticationServiceException.class)
+	public void testThatUnknownUserThrowsExceptionWhenThrowExceptionIfUserNotFoundIsTrue() throws Exception {
+		ldapAuthenticationProvider.setThrowExceptionIfUserNotFound( true );
+		Authentication
+				authentication = ldapAuthenticationProvider.authenticate(
+				new UsernamePasswordAuthenticationToken( "username", "password" ) );
+		assertTrue( "shouldn't come here", false );
+	}
+
+	@Test
+	public void testThatUnknownUserThrowsExceptionWhenThrowExceptionIfUserNotFoundIsFalse() throws Exception {
 		Authentication
 				authentication = ldapAuthenticationProvider.authenticate(
 				new UsernamePasswordAuthenticationToken( "username", "password" ) );
@@ -69,26 +81,38 @@ public class TestLdapAuthenticationProvider
 	}
 
 	@Test
-	@Ignore
 	public void testThatKnownUserGetsAuthenticated() throws Exception {
 		User user = new User();
-		when( userService.getUserByUsername( "abergin" ) ).thenReturn( user );
+		user.setUsername( "abergin" );
+		user.setPassword( "inflict" );
+		when( userService.getUserByUsername( "abergin", ldapUserDirectory ) ).thenReturn( user );
+		LdapConnectorSettings ldapConnectorSettings = mock( LdapConnectorSettings.class );
+		when( ldapConnectorSettings.getUserObjectFilterForUser() ).thenReturn( "foo" );
+		ldapAuthenticationProvider.setSearchFilter( "(&(objectclass=inetorgperson)(uid={0}))" );
 		Authentication
 				authentication = ldapAuthenticationProvider.authenticate(
 				new UsernamePasswordAuthenticationToken( "abergin", "inflict" ) );
 		assertNotNull( authentication );
-		assertTrue( authentication.getPrincipal() instanceof LdapUserDetails );
-		LdapUserDetails details = (LdapUserDetails) authentication.getPrincipal();
+		assertTrue( authentication.getPrincipal() instanceof User );
+		User details = (User) authentication.getPrincipal();
 		assertEquals( "abergin", details.getUsername() );
 		assertEquals( "inflict", details.getPassword() );
 	}
 
 	@Configuration
-	@Import(LdapDirectorySettingsConfiguration.class)
 	protected static class Config
 	{
 		@Bean
 		public LdapAuthenticationProvider ldapAuthenticationProvider() {
+			LdapAuthenticationProvider ldapAuthenticationProvider = new LdapAuthenticationProvider();
+			ldapAuthenticationProvider.setUserService( userService() );
+			ldapAuthenticationProvider.setLdapContextSource( ldapConnector() );
+			ldapAuthenticationProvider.setUserDirectory( ldapUserDirectory( ldapConnector() ) );
+			return ldapAuthenticationProvider;
+		}
+
+		@Bean
+		public LdapConnector ldapConnector() {
 			LdapConnector ldapConnector = new LdapConnector();
 			ldapConnector.setId( 1L );
 			ldapConnector.setUsername( "uid=admin,ou=system" );
@@ -98,11 +122,14 @@ public class TestLdapAuthenticationProvider
 			ldapConnector.setAdditionalUserDn( "ou=People" );
 			ldapConnector.setPort( 53389 );
 			ldapConnector.setLdapConnectorType( LdapConnectorType.OPENDS );
+			return ldapConnector;
+		}
 
-			LdapAuthenticationProvider ldapAuthenticationProvider = new LdapAuthenticationProvider();
-			ldapAuthenticationProvider.setUserService( userService() );
-			ldapAuthenticationProvider.setLdapContextSource( ldapConnector );
-			return ldapAuthenticationProvider;
+		@Bean
+		public UserDirectory ldapUserDirectory( LdapConnector ldapConnector ) {
+			LdapUserDirectory ldapUserDirectory = new LdapUserDirectory();
+			ldapUserDirectory.setLdapConnector( ldapConnector );
+			return ldapUserDirectory;
 		}
 
 		@Bean

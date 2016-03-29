@@ -21,8 +21,12 @@ import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
 import com.foreach.across.modules.ldap.services.support.LdapContextSourceHelper;
-import com.foreach.across.modules.user.business.*;
+import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.QGroup;
+import com.foreach.across.modules.user.business.QUser;
+import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.services.GroupService;
+import com.foreach.across.modules.user.services.UserDirectoryService;
 import com.foreach.across.modules.user.services.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -59,75 +63,79 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 	@Autowired
 	private LdapConnectorSettingsService ldapConnectorSettingsService;
 
-	private Set<LdapConnector> busy = new HashSet<>();
+	@Autowired
+	private UserDirectoryService userDirectoryService;
 
-	public boolean synchronizeData( LdapConnector connector ) {
-		if ( !busy.contains( connector ) ) {
-			busy.add( connector );
+	private Set<LdapUserDirectory> busy = new HashSet<>();
 
-			LOG.info( "Synchronizing directory {}", connector.getHostName() );
+	public boolean synchronizeData( LdapUserDirectory ldapUserDirectory ) {
+		if ( !busy.contains( ldapUserDirectory ) ) {
+			busy.add( ldapUserDirectory );
+
+			LOG.info( "Synchronizing directory {}", ldapUserDirectory.getName() );
 
 			StopWatch watch = new StopWatch();
 			watch.start();
 			int totalUsersSynchronized = 0, totalGroupsSynchronized = 0;
 
 			try {
-				Map<String, Group> groups = performGroupSynchronization( connector );
-				Set<User> users = performUserSynchronization( connector, groups );
+				Map<String, Group> groups = performGroupSynchronization( ldapUserDirectory );
+				Set<User> users = performUserSynchronization( ldapUserDirectory, groups );
 				totalUsersSynchronized += users.size();
 				totalGroupsSynchronized += groups.size();
 
 			}
 			catch ( Exception ie ) {
-				LOG.error( "Failed to synchronize directory {}", connector.getHostName(), ie );
+				LOG.error( "Failed to synchronize directory {}", ldapUserDirectory.getName(), ie );
 			}
 
 			watch.stop();
 			LOG.info( "Synchronization of directory {} finished, users synchronized: {}, groups synchronized: {}",
-			          connector.getHostName(), totalUsersSynchronized, totalGroupsSynchronized );
+			          ldapUserDirectory.getName(), totalUsersSynchronized, totalGroupsSynchronized );
 			LOG.info( "Elapsed time: {}", watch.toString() );
 
-			busy.remove( connector );
+			busy.remove( ldapUserDirectory );
 
 			return true;
 		}
 
-		LOG.debug( "Skipping synchronization of directory {}, still busy", connector.getHostName() );
+		LOG.debug( "Skipping synchronization of directory {}, still busy", ldapUserDirectory.getName() );
 		return false;
 	}
 
-	private Set<User> performUserSynchronization( LdapConnector connector, Map<String, Group> groups ) {
-		LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties( connector.getId() );
-		List<LdapUserDirectory> userDirectories = connector.getUserDirectories();
-
-		AndFilter andFilter = new AndFilter();
-		andFilter.and( new EqualsFilter( "objectclass", ldapConnectorSettings.getUserObjectClass() ) );
-		andFilter.and( new HardcodedFilter( ldapConnectorSettings.getUserObjectFilter() ) );
-
+	private Set<User> performUserSynchronization( LdapUserDirectory userDirectory, Map<String, Group> groups ) {
+		LdapConnector connector = userDirectory.getLdapConnector();
 		Set<User> itemsInLdap = new HashSet<>();
-		QUser query = QUser.user;
+		if ( connector != null ) {
+			LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties(
+					connector.getId() );
 
-		performSearch( connector, andFilter, ctx -> {
-			DirContextAdapter adapter = (DirContextAdapter) ctx;
+			AndFilter andFilter = new AndFilter();
+			andFilter.and( new EqualsFilter( "objectclass", ldapConnectorSettings.getUserObjectClass() ) );
+			andFilter.and( new HardcodedFilter( ldapConnectorSettings.getUserObjectFilter() ) );
 
-			String name = adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
-			String[] memberOf = adapter.getStringAttributes( ldapConnectorSettings.getUserMemberOf() );
+			QUser query = QUser.user;
 
-			Set<Group> groupsForUser = new HashSet<>();
-			if ( memberOf != null ) {
-				for ( String member : memberOf ) {
-					Optional<Map.Entry<String, Group>> group = groups.entrySet().stream().filter(
-							i -> i.getKey().equalsIgnoreCase( member ) ).findFirst();
-					if ( group.isPresent() ) {
-						groupsForUser.add( group.get().getValue() );
+			performSearch( connector, andFilter, ctx -> {
+				DirContextAdapter adapter = (DirContextAdapter) ctx;
+
+				String name = adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
+				String[] memberOf = adapter.getStringAttributes( ldapConnectorSettings.getUserMemberOf() );
+
+				Set<Group> groupsForUser = new HashSet<>();
+				if ( memberOf != null ) {
+					for ( String member : memberOf ) {
+						Optional<Map.Entry<String, Group>> group = groups.entrySet().stream().filter(
+								i -> i.getKey().equalsIgnoreCase( member ) ).findFirst();
+						if ( group.isPresent() ) {
+							groupsForUser.add( group.get().getValue() );
+						}
 					}
 				}
-			}
 
-			if ( StringUtils.isNotBlank( name ) ) {
-				Collection<User> users = userService.findAll( query.username.equalsIgnoreCase( name ) );
-				if ( users.isEmpty() ) {
-					userDirectories.forEach( userDirectory -> {
+				if ( StringUtils.isNotBlank( name ) ) {
+					Collection<User> users = userService.findAll( query.username.equalsIgnoreCase( name ) );
+					if ( users.isEmpty() ) {
 						User user = new User();
 						user.setUsername( name );
 						user.setEmail( adapter.getStringAttribute( ldapConnectorSettings.getUserEmail() ) );
@@ -135,87 +143,83 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						user.setFirstName( adapter.getStringAttribute( ldapConnectorSettings.getFirstName() ) );
 						user.setLastName( adapter.getStringAttribute( ldapConnectorSettings.getLastName() ) );
 						user.setDisplayName( adapter.getStringAttribute( ldapConnectorSettings.getDiplayName() ) );
-						user.setRestrictions( Collections.singleton( UserRestriction.DISABLED ) );
 						user.setPassword( UUID.randomUUID().toString() );
 						user.setUserDirectory( userDirectory );
 						user.setGroups( groupsForUser );
 						userService.save( user );
 						itemsInLdap.add( user );
-					} );
+					}
+					else {
+						users.stream().forEach( user -> {
+							user.setEmail( adapter.getStringAttribute(
+									ldapConnectorSettings.getUserEmail() ) );
+							user.setFirstName( adapter.getStringAttribute(
+									ldapConnectorSettings.getFirstName() ) );
+							user.setLastName( adapter.getStringAttribute(
+									ldapConnectorSettings.getLastName() ) );
+							user.setDisplayName( adapter.getStringAttribute(
+									ldapConnectorSettings.getDiplayName() ) );
+							user.setDeleted( false );
+							user.setGroups( groupsForUser );
+							userService.save( user );
+							itemsInLdap.add( user );
+
+						} );
+					}
 				}
-				else {
-					users.stream().forEach( user ->
-							                        userDirectories.forEach( userDirectory -> {
-								                        user.setEmail( adapter.getStringAttribute(
-										                        ldapConnectorSettings.getUserEmail() ) );
-								                        user.setFirstName( adapter.getStringAttribute(
-										                        ldapConnectorSettings.getFirstName() ) );
-								                        user.setLastName( adapter.getStringAttribute(
-										                        ldapConnectorSettings.getLastName() ) );
-								                        user.setDisplayName( adapter.getStringAttribute(
-										                        ldapConnectorSettings.getDiplayName() ) );
-								                        user.setDeleted( false );
-								                        user.setGroups( groupsForUser );
-								                        userService.save( user );
-								                        itemsInLdap.add( user );
-							                        } )
 
-					);
-				}
-			}
+				return adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
+			} );
 
-			return adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
-		} );
-
-		userDirectories.forEach( userDirectory -> {
+			// Mark users as deleted that are not in AD anymore
 			Collection<User> deletedUsers = userService.findAll(
 					query.notIn( itemsInLdap ).and( query.userDirectory.eq( userDirectory ) ) );
 			deletedUsers.stream().forEach( user -> {
 				user.setDeleted( true );
 				userService.save( user );
 			} );
-		} );
-		// Mark users as deleted that are not in AD anymore
 
+		}
 		return itemsInLdap;
 	}
 
-	private Map<String, Group> performGroupSynchronization( LdapConnector connector ) {
-		LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties( connector.getId() );
-		List<LdapUserDirectory> userDirectories = connector.getUserDirectories();
-
-		AndFilter andFilter = new AndFilter();
-		andFilter.and( new EqualsFilter( "objectclass", ldapConnectorSettings.getGroupObjectClass() ) );
-		andFilter.and( new HardcodedFilter( ldapConnectorSettings.getGroupObjectFilter() ) );
-
+	private Map<String, Group> performGroupSynchronization( LdapUserDirectory userDirectory ) {
+		LdapConnector connector = userDirectory.getLdapConnector();
 		Map<String, Group> itemsInLdap = new HashMap<>();
-		QGroup query = QGroup.group;
+		if ( connector != null ) {
+			LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties(
+					connector.getId() );
 
-		performSearch( connector, andFilter, ctx -> {
-			DirContextAdapter adapter = (DirContextAdapter) ctx;
-			String name = adapter.getStringAttribute( ldapConnectorSettings.getGroupName() );
+			AndFilter andFilter = new AndFilter();
+			andFilter.and( new EqualsFilter( "objectclass", ldapConnectorSettings.getGroupObjectClass() ) );
+			andFilter.and( new HardcodedFilter( ldapConnectorSettings.getGroupObjectFilter() ) );
 
-			if ( StringUtils.isNotBlank( name ) ) {
-				Collection<Group> groups = groupService.findAll( query.name.equalsIgnoreCase( name ) );
-				if ( groups.isEmpty() ) {
-					userDirectories.forEach( userDirectory -> {
+			QGroup query = QGroup.group;
+
+			performSearch( connector, andFilter, ctx -> {
+				DirContextAdapter adapter = (DirContextAdapter) ctx;
+				String name = adapter.getStringAttribute( ldapConnectorSettings.getGroupName() );
+
+				if ( StringUtils.isNotBlank( name ) ) {
+					Collection<Group> groups = groupService.findAll( query.name.equalsIgnoreCase( name ) );
+					if ( groups.isEmpty() ) {
 						Group group = new Group();
 						group.setName( adapter.getStringAttribute( ldapConnectorSettings.getGroupName() ) );
 						group.setUserDirectory( userDirectory );
 						groupService.save( group );
 						itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), group );
-					} );
+					}
+					else {
+						itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), groups.iterator().next() );
+					}
+
 				}
-				else {
-					itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), groups.iterator().next() );
-				}
+				return adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
+			} );
 
-			}
-			return adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
-		} );
+			//TODO: implement group deletion?
 
-		//TODO: implement group deletion?
-
+		}
 		return itemsInLdap;
 	}
 

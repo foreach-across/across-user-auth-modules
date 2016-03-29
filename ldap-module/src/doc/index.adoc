@@ -88,4 +88,99 @@ Initial public release available on http://search.maven.org/[Maven central].
 
 :numbered:
 == Configuration
-...
+
+Adding the dependency to {admin-web-module-url}[LdapModule] will automatically register a synchronization task which runs every 30 seconds.
+The task will not run until an `LdapConnector` and `LdapUserDirectory` are created.
+
+=== Configuration via AdminWebModule
+The configuration of an `LdapConnector` and `LdapUserDirectory` is easiest done by using the {admin-web-module-url}[AdminWebModule].
+After logging into the {admin-web-module-url}[AdminWebModule], create a new `LdapConnector` by using the navigation.
+
+Currently, the LdapModule support following LDAP directories:
+
+* https://directory.apache.org/apacheds/[Apache Directory Service 1.5]
+* https://opends.java.net/[OpenDS]
+* https://msdn.microsoft.com/en-us/library/bb742424.aspx[Microsoft Active Directory]
+
+==== LdapConnector fields
+
+|===
+|Field |Description |Default
+
+|Name
+|A logical name for your connector
+|
+
+|Host name
+|The hostname or IP address of your Active Directory
+|
+
+|Port
+|The port of your Active Directory
+|
+
+|Ldap connector type
+|The implementation of your Active Directory
+|
+
+|Read timeout
+|Unused
+|
+
+|Search timeout
+|How long an LDAP query may run before aborting (in milliseconds)
+|0 = unlimited
+
+|Connection timeout
+|Unused: How long the socket should wait while attempting to create a connection and finally aborting (in milliseconds)
+|
+
+|Username
+|The username used to bind to the active directory. For Microsoft Active Directory, the domain is not necessary and should be the "cn" of a user. For example "David Croft".
+|
+
+|Password
+|The password used to bind to the active directory.
+|
+
+|Base dn
+|The base tree where to start search. For example: dc=organisation,dc=com
+|
+
+|Additional user dn
+|Unused: The base tree to look for users.
+|
+
+|Additional group dn
+|Unused: The base tree to look for groups.
+|
+|===
+
+.Note
+- When using Microsoft Active Directory, use port 389 instead of 3268 (Global Catalog). This because the Global Catalog is read-only.
+
+
+After creating an `LdapConnector` you can create an `LdapUserDirectory` and link this `LdapConnector` to it.
+
+==== LdapUserDirectory fields
+
+|===
+|Field |Description |Default
+
+|Ldap connector
+|The ldap connector to which this User Directory is linked to
+|
+
+|Name
+|A logical name for your User Directory
+|
+
+|Order
+|The order in the tree of UserDirectoryServiceProviders
+|
+
+|Active
+|If the User Directory is active and the synchronization should be executed
+|false
+
+|===

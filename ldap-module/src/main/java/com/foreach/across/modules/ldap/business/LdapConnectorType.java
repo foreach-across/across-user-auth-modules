@@ -17,24 +17,50 @@
 package com.foreach.across.modules.ldap.business;
 
 import com.foreach.across.modules.hibernate.types.IdLookup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author Marc Vanbrabant
  */
 public enum LdapConnectorType implements IdLookup<Integer>
 {
-	MICROSOFT_ACTIVE_DIRECTORY( 1 ),
-	OPENDS( 2 ),
-	APACHEDS_1_5( 3 );
+	// TODO: Make this a registry at some point
+	MICROSOFT_ACTIVE_DIRECTORY( 1, "msad" ),
+	OPENDS( 2, "apache15" ),
+	APACHEDS_1_5( 3, "opends" );
 
 	private int id;
+	private Map<String, String> settings = Collections.emptyMap();
+	private Logger LOG = LoggerFactory.getLogger( LdapConnectorType.class );
 
-	LdapConnectorType( int id ) {
+	@SuppressWarnings("unchecked")
+	LdapConnectorType( int id, String identifier ) {
 		this.id = id;
+		try {
+			settings =
+					(LinkedHashMap<String, String>) new Yaml().load(
+							new ClassPathResource( "activedirectorysettings/" + identifier + ".yaml" )
+									.getInputStream() );
+		}
+		catch ( IOException e ) {
+			LOG.error( "Failed to load yaml file {}", identifier );
+		}
 	}
 
 	@Override
 	public Integer getId() {
 		return id;
+	}
+
+	public Map<String, String> getSettings() {
+		return settings;
 	}
 }

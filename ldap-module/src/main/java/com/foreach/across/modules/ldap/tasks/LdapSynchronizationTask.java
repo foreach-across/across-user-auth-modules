@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.ldap.tasks;
 
-import com.foreach.across.modules.ldap.repositories.LdapConnectorRepository;
+import com.foreach.across.modules.ldap.repositories.LdapUserDirectoryRepository;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,11 +32,11 @@ public class LdapSynchronizationTask implements Runnable
 	private LdapSynchronizationService ldapSynchronizationService;
 
 	@Autowired
-	private LdapConnectorRepository ldapConnectorRepository;
+	private LdapUserDirectoryRepository ldapUserDirectoryRepository;
 
 	@Scheduled(fixedRate = 30000)
 	@Override
 	public void run() {
-		ldapConnectorRepository.findAll().forEach( ldapSynchronizationService::synchronizeData );
+		ldapUserDirectoryRepository.findAllByActiveTrue().forEach( ldapSynchronizationService::synchronizeData );
 	}
 }

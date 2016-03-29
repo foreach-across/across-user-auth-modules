@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.ldap.services;
 
-import com.foreach.across.modules.ldap.business.LdapConnector;
+import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 
 /**
  * @author Marc Vanbrabant
@@ -27,8 +27,8 @@ public interface LdapSynchronizationService
 	/**
 	 * Synchronize all users and groups from the corresponding ldap service.
 	 *
-	 * @param connector instance
+	 * @param ldapUserDirectory instance
 	 * @return true if synchronization started, false if there was already a synchronization busy
 	 */
-	boolean synchronizeData( LdapConnector connector );
+	boolean synchronizeData( LdapUserDirectory ldapUserDirectory );
 }

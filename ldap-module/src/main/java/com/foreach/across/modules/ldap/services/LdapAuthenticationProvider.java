@@ -17,84 +17,59 @@
 package com.foreach.across.modules.ldap.services;
 
 import com.foreach.across.modules.ldap.business.LdapConnector;
+import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.services.support.LdapContextSourceHelper;
 import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.services.UserService;
+import com.foreach.across.modules.user.security.AbstractUserInDirectoryAuthenticationProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
-import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
-import org.springframework.util.StringUtils;
+import org.springframework.util.Assert;
 
 /**
  * @author Marc Vanbrabant
  */
-public class LdapAuthenticationProvider implements AuthenticationProvider, MessageSourceAware
+public class LdapAuthenticationProvider extends AbstractUserInDirectoryAuthenticationProvider
 {
 	private final Log LOG = LogFactory.getLog( LdapAuthenticationProvider.class );
 	private String searchFilter;
-	private UserService userService;
 	private LdapContextSource ldapContextSource;
-	private MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
-	public void setUserService( UserService userService ) {
-		this.userService = userService;
+	public LdapAuthenticationProvider() {
+		setThrowExceptionIfUserNotFound( false );
 	}
 
 	@Override
-	public Authentication authenticate( Authentication authentication ) throws AuthenticationException {
-		final UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) authentication;
-
-		String username = userToken.getName();
-		String password = (String) authentication.getCredentials();
-
-		if ( LOG.isDebugEnabled() ) {
-			LOG.debug( "Processing authentication request for user: " + username );
-		}
-
-		if ( !StringUtils.hasLength( username ) ) {
-			throw new BadCredentialsException( messages.getMessage( "LdapAuthenticationProvider.emptyUsername",
-			                                                        "Empty Username" ) );
-		}
-		if ( !StringUtils.hasLength( password ) ) {
-			throw new BadCredentialsException( messages.getMessage( "AbstractLdapAuthenticationProvider.emptyPassword",
-			                                                        "Empty Password" ) );
-		}
-
-		User user = userService.getUserByUsername( username );
-
-		if ( user == null ) {
-			throw new BadCredentialsException( "User not found" );
-		}
-
+	protected void additionalAuthenticationChecks( UserDetails userDetails,
+	                                               UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
 		BindAuthenticator ldapAuthenticator = new BindAuthenticator( ldapContextSource );
-
 		FilterBasedLdapUserSearch search = new FilterBasedLdapUserSearch( "", searchFilter,
 		                                                                  ldapContextSource );
 		ldapAuthenticator.setUserSearch( search );
-		org.springframework.security.ldap.authentication.LdapAuthenticationProvider ldapAuthenticationProvider =
-				new org.springframework.security.ldap.authentication.LdapAuthenticationProvider( ldapAuthenticator );
 
-		return ldapAuthenticationProvider.authenticate( userToken );
+		DirContextOperations dirContextOperations = ldapAuthenticator.authenticate( authentication );
+		if ( dirContextOperations == null ) {
+			throw new BadCredentialsException( "Cannot authenticate user with LDAP" );
+		}
 	}
 
 	@Override
-	public boolean supports( Class<?> authentication ) {
-		return UsernamePasswordAuthenticationToken.class.isAssignableFrom( authentication );
+	protected void doAfterPropertiesSet() throws Exception {
+		Assert.isTrue( userDirectory instanceof LdapUserDirectory,
+		               "Only LdapUserDirectory types are supported" );
 	}
 
-	public void setMessageSource( MessageSource messageSource ) {
-		this.messages = new MessageSourceAccessor( messageSource );
+	@Override
+	protected UserDetails buildUserDetails( User user,
+	                                        UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
+		return user;
 	}
 
 	public void setSearchFilter( String searchFilter ) {

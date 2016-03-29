@@ -16,8 +16,10 @@
 
 package com.foreach.across.modules.test.ldap;
 
-import com.foreach.across.modules.ldap.business.*;
-import com.foreach.across.modules.ldap.config.LdapDirectorySettingsConfiguration;
+import com.foreach.across.modules.ldap.business.LdapConnector;
+import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
+import com.foreach.across.modules.ldap.business.LdapConnectorType;
+import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationServiceImpl;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
@@ -34,7 +36,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.security.ldap.server.ApacheDSContainer;
@@ -43,9 +44,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.naming.NamingException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -72,9 +70,6 @@ public class TestLdapConnectorSynchronization
 
 	@Autowired
 	private LdapConnectorSettingsService ldapConnectorSettingsService;
-
-	@Autowired
-	private List<LdapDirectorySettings> ldapDirectorySettingsList;
 
 	@Autowired
 	private ConversionService conversionService;
@@ -107,27 +102,13 @@ public class TestLdapConnectorSynchronization
 		registry.setDefaultConversionService( conversionService );
 		LdapConnectorSettings ldapConnectorSettings = new LdapConnectorSettings( ldapConnector.getId(),
 		                                                                         registry,
-		                                                                         () -> {
-			                                                                         Optional<LdapDirectorySettings>
-					                                                                         activeDirectorySettingsOptional =
-					                                                                         ldapDirectorySettingsList
-							                                                                         .stream().filter(
-							                                                                         item -> item
-									                                                                         .getConnectorType() == ldapConnector
-									                                                                         .getLdapConnectorType() )
-							                                                                         .findFirst();
-			                                                                         if ( activeDirectorySettingsOptional
-					                                                                         .isPresent() ) {
-				                                                                         return activeDirectorySettingsOptional
-						                                                                         .get().getSettings();
-			                                                                         }
-			                                                                         else {
-				                                                                         return Collections.emptyMap();
-			                                                                         }
-		                                                                         } );
+		                                                                         () -> ldapConnector
+				                                                                         .getLdapConnectorType()
+				                                                                         .getSettings() );
 		when( ldapConnectorSettingsService.getProperties( ldapConnector.getId() ) ).thenReturn( ldapConnectorSettings );
-		when( userDirectoryService.getDefaultUserDirectory() ).thenReturn( new LdapUserDirectory() );
-		ldapSynchronizationService.synchronizeData( ldapConnector );
+		LdapUserDirectory ldapUserDirectory = new LdapUserDirectory();
+		ldapUserDirectory.setLdapConnector( ldapConnector );
+		ldapSynchronizationService.synchronizeData( ldapUserDirectory );
 
 		verify( userService, times( 150 ) ).save( any( User.class ) );
 	}
@@ -135,13 +116,14 @@ public class TestLdapConnectorSynchronization
 	@Test
 	public void testThatLdapSynchronizationFails() throws Exception {
 		when( userService.findAll( any() ) ).thenThrow( new RuntimeException( "Failure" ) );
-		ldapSynchronizationService.synchronizeData( ldapConnector );
+		LdapUserDirectory ldapUserDirectory = new LdapUserDirectory();
+		ldapUserDirectory.setLdapConnector( ldapConnector );
+		ldapSynchronizationService.synchronizeData( ldapUserDirectory );
 
 		verify( userService, times( 0 ) ).save( any( User.class ) );
 	}
 
 	@Configuration
-	@Import(LdapDirectorySettingsConfiguration.class)
 	protected static class Config
 	{
 		@Bean
@@ -165,8 +147,6 @@ public class TestLdapConnectorSynchronization
 			ldapUserDirectory.setId( 2L );
 			ldapUserDirectory.setActive( true );
 			ldapUserDirectory.setLdapConnector( ldapConnector );
-
-			ldapConnector.setUserDirectories( Collections.singletonList( ldapUserDirectory ) );
 			return ldapConnector;
 		}
 

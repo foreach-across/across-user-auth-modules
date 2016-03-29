@@ -20,11 +20,8 @@ import com.foreach.across.modules.hibernate.aop.EntityInterceptorAdapter;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapConnectorType;
-import com.foreach.across.modules.ldap.business.LdapDirectorySettings;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 /**
  * @author Marc Vanbrabant
@@ -34,9 +31,6 @@ public class LdapConnectorEntityInterceptor extends EntityInterceptorAdapter<Lda
 {
 	@Autowired
 	private LdapConnectorSettingsService ldapConnectorSettingsService;
-
-	@Autowired
-	private List<LdapDirectorySettings> ldapDirectorySettings;
 
 	@Override
 	public boolean handles( Class<?> entityClass ) {
@@ -57,14 +51,7 @@ public class LdapConnectorEntityInterceptor extends EntityInterceptorAdapter<Lda
 		LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties( entity.getId() );
 
 		LdapConnectorType ldapConnectorType = entity.getLdapConnectorType();
-		for ( LdapDirectorySettings settings : ldapDirectorySettings ) {
-			if ( settings.getConnectorType().equals( ldapConnectorType ) ) {
-				ldapConnectorSettings.putAll( settings.getSettings() );
-
-				ldapConnectorSettingsService.saveProperties( ldapConnectorSettings );
-
-				break;
-			}
-		}
+		ldapConnectorSettings.putAll( ldapConnectorType.getSettings() );
+		ldapConnectorSettingsService.saveProperties( ldapConnectorSettings );
 	}
 }

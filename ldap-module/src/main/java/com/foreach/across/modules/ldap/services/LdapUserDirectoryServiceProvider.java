@@ -52,7 +52,9 @@ public class LdapUserDirectoryServiceProvider implements UserDirectoryServicePro
 			LdapConnector ldapConnector = ldapUserDirectory.getLdapConnector();
 			LdapAuthenticationProvider ldapAuthenticationProvider = new LdapAuthenticationProvider();
 			ldapAuthenticationProvider.setUserService( userService );
+			ldapAuthenticationProvider.setUserDirectory( userDirectory );
 			ldapAuthenticationProvider.setLdapContextSource( ldapConnector );
+			ldapAuthenticationProvider.afterPropertiesSet();
 
 			//TODO, move this to a better place?
 			LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties(
