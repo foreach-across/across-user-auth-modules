@@ -78,9 +78,11 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 				.property( "group-membership" ).displayName( "GroupUsers" ).spelValueFetcher( "groups.size()" ).and()
 				.property( "role-membership" ).displayName( "Roles" ).spelValueFetcher( "roles.size()" );
 
+		@SuppressWarnings("unchecked")
 		// Use the UserService for persisting User - as that one takes care of password handling
-		EntityModelImpl userModel = (EntityModelImpl) entityRegistry.getMutableEntityConfiguration( User.class )
-		                                                            .getEntityModel();
+				EntityModelImpl<User, ? extends Serializable> userModel =
+				(EntityModelImpl) entityRegistry.getMutableEntityConfiguration( User.class )
+				                                .getEntityModel();
 		userModel.setCrudInvoker( new CrudInvoker<User>()
 		{
 			@Override

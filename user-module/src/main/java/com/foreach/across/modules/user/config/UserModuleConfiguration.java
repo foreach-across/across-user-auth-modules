@@ -26,6 +26,7 @@ import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStra
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategyImpl;
 import com.foreach.across.modules.user.validators.GroupValidator;
 import com.foreach.across.modules.user.validators.MachinePrincipalValidator;
+import com.foreach.across.modules.user.validators.UserDirectoryValidator;
 import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,6 +115,11 @@ public class UserModuleConfiguration
 	@Bean
 	public UserDirectoryService userDirectoryService() {
 		return new UserDirectoryServiceImpl();
+	}
+
+	@Bean
+	public UserDirectoryValidator userDirectoryValidator() {
+		return new UserDirectoryValidator( userDirectoryService() );
 	}
 
 	@Bean
