@@ -66,7 +66,7 @@ public abstract class UserDirectory extends SettableIdAuditableEntity<UserDirect
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "order")
+	@Column(name = "authentication_order")
 	private int order = 1;
 
 	@Column(name = "active")
