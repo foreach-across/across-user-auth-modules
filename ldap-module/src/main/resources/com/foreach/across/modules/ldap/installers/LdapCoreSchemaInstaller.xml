@@ -23,13 +23,13 @@
 	<!-- Default table names -->
 	<property name="table.ldap_connector" value="ldap_connector"/>
 
-	<changeSet id="201603171005" author="marc" runAlways="true" dbms="oracle">
+	<changeSet id="201603171006" author="marc" runAlways="true" dbms="oracle">
 		<sql>
 			ALTER session SET nls_length_semantics=CHAR;
 		</sql>
 	</changeSet>
 
-	<changeSet id="201603171005" author="marc">
+	<changeSet id="201603171007" author="marc">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="${table.ldap_connector}"/>
