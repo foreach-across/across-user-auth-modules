@@ -18,11 +18,10 @@ package com.foreach.across.modules.ldap.config;
 
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import com.foreach.across.modules.ldap.controllers.AjaxTestLdapConnectorController;
 import com.foreach.across.modules.ldap.repositories.LdapConnectorRepository;
 import com.foreach.across.modules.ldap.repositories.LdapUserDirectoryRepository;
-import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
-import com.foreach.across.modules.ldap.services.LdapSynchronizationServiceImpl;
-import com.foreach.across.modules.ldap.services.LdapUserDirectoryServiceProvider;
+import com.foreach.across.modules.ldap.services.*;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
 import com.foreach.across.modules.user.services.UserDirectoryServiceProvider;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
@@ -62,5 +61,15 @@ public class LdapCoreConfiguration
 	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
 	public UserDirectoryServiceProvider ldapUserDirectoryServiceProvider() {
 		return new LdapUserDirectoryServiceProvider();
+	}
+
+	@Bean
+	public LdapSearchService ldapSearchService() {
+		return new LdapSearchServiceImpl();
+	}
+
+	@Bean
+	public AjaxTestLdapConnectorController ajaxTestLdapConnectorController() {
+		return new AjaxTestLdapConnectorController();
 	}
 }

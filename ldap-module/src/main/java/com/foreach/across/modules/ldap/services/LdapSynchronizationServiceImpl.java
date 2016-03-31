@@ -20,30 +20,22 @@ import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
-import com.foreach.across.modules.ldap.services.support.LdapContextSourceHelper;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.QGroup;
 import com.foreach.across.modules.user.business.QUser;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.services.GroupService;
-import com.foreach.across.modules.user.services.UserDirectoryService;
 import com.foreach.across.modules.user.services.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ldap.control.PagedResultsDirContextProcessor;
-import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.ldap.filter.Filter;
 import org.springframework.ldap.filter.HardcodedFilter;
 
-import javax.naming.directory.SearchControls;
 import java.util.*;
 
 /**
@@ -64,7 +56,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 	private LdapConnectorSettingsService ldapConnectorSettingsService;
 
 	@Autowired
-	private UserDirectoryService userDirectoryService;
+	private LdapSearchService ldapSearchService;
 
 	private Set<LdapUserDirectory> busy = new HashSet<>();
 
@@ -116,7 +108,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 			QUser query = QUser.user;
 
-			performSearch( connector, andFilter, ctx -> {
+			ldapSearchService.performSearch( connector, andFilter, ctx -> {
 				DirContextAdapter adapter = (DirContextAdapter) ctx;
 
 				String name = adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
@@ -196,7 +188,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 			QGroup query = QGroup.group;
 
-			performSearch( connector, andFilter, ctx -> {
+			ldapSearchService.performSearch( connector, andFilter, ctx -> {
 				DirContextAdapter adapter = (DirContextAdapter) ctx;
 				String name = adapter.getStringAttribute( ldapConnectorSettings.getGroupName() );
 
@@ -221,34 +213,5 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 		}
 		return itemsInLdap;
-	}
-
-	private void performSearch( LdapConnector connector, Filter filter, ContextMapper<String> ctx ) {
-		SearchControls controls = new SearchControls();
-		controls.setSearchScope( SearchControls.SUBTREE_SCOPE );
-		controls.setTimeLimit( connector.getSearchTimeout() );
-		controls.setCountLimit( 0 );
-		controls.setReturningObjFlag( true );
-		controls.setReturningAttributes( null );
-
-		//TODO: detect if connector is pageable, or store the page size on the connector?
-		PagedResultsDirContextProcessor processor = new PagedResultsDirContextProcessor( 20 );
-
-		LdapTemplate ldapTemplate = ldapTemplate( connector );
-
-		do {
-			ldapTemplate.search( "", filter.encode(), controls, ctx, processor );
-			processor = new PagedResultsDirContextProcessor( processor.getPageSize(), processor.getCookie() );
-		}
-		while ( processor.getCookie().getCookie() != null );
-	}
-
-	private LdapTemplate ldapTemplate( LdapConnector connector ) {
-		LdapContextSource source = LdapContextSourceHelper.createLdapContextSource( connector );
-
-		LdapTemplate ldapTemplate = new LdapTemplate( source );
-		// TODO: put this in a setting? Microsoft Active Directory cannot follow referrals when in the root context
-		ldapTemplate.setIgnorePartialResultException( true );
-		return ldapTemplate;
 	}
 }
