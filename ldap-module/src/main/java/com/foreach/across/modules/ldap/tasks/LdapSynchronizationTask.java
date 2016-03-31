@@ -18,6 +18,10 @@ package com.foreach.across.modules.ldap.tasks;
 
 import com.foreach.across.modules.ldap.repositories.LdapUserDirectoryRepository;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
+import com.foreach.common.concurrent.locks.distributed.DistributedLock;
+import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -27,16 +31,43 @@ import org.springframework.scheduling.annotation.Scheduled;
  */
 public class LdapSynchronizationTask implements Runnable
 {
+	private static final Logger LOG = LoggerFactory.getLogger( LdapSynchronizationTask.class );
+	public static final String LOCK_NAME = "LdapSynchronizationTask";
+
+	private final LdapSynchronizationService ldapSynchronizationService;
+	private final LdapUserDirectoryRepository ldapUserDirectoryRepository;
+	private final DistributedLock lock;
 
 	@Autowired
-	private LdapSynchronizationService ldapSynchronizationService;
-
-	@Autowired
-	private LdapUserDirectoryRepository ldapUserDirectoryRepository;
+	public LdapSynchronizationTask( LdapSynchronizationService ldapSynchronizationService,
+	                                LdapUserDirectoryRepository ldapUserDirectoryRepository,
+	                                DistributedLockRepository distributedLockRepository,
+	                                String serverName ) {
+		this.ldapSynchronizationService = ldapSynchronizationService;
+		this.ldapUserDirectoryRepository = ldapUserDirectoryRepository;
+		lock = distributedLockRepository.createSharedLock( serverName, "LdapSynchronizationTask" );
+	}
 
 	@Scheduled(fixedRate = 30000)
 	@Override
 	public void run() {
-		ldapUserDirectoryRepository.findAllByActiveTrue().forEach( ldapSynchronizationService::synchronizeData );
+		try {
+			LOG.info( "Trying to get lock for {} and owner {}", lock.getOwnerId(), lock.getKey() );
+			if ( lock.tryLock() ) {
+				LOG.info( "Got lock for {} and owner {}", lock.getOwnerId(), lock.getKey() );
+				ldapUserDirectoryRepository.findAllByActiveTrue().forEach(
+						ldapSynchronizationService::synchronizeData );
+			}
+			else {
+				LOG.info( "Could not get lock for {} and owner {}", lock.getOwnerId(), lock.getKey() );
+			}
+		}
+		catch ( Throwable t ) {
+			LOG.error( "Error in LdapSynchronizationTask", t );
+		}
+		finally {
+			LOG.info( "Finished task" );
+			lock.unlock();
+		}
 	}
 }

@@ -19,14 +19,20 @@ package com.foreach.across.modules.ldap.config;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.ldap.repositories.LdapConnectorRepository;
+import com.foreach.across.modules.ldap.repositories.LdapUserDirectoryRepository;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationServiceImpl;
 import com.foreach.across.modules.ldap.services.LdapUserDirectoryServiceProvider;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
 import com.foreach.across.modules.user.services.UserDirectoryServiceProvider;
+import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @author Marc Vanbrabant
@@ -39,8 +45,11 @@ public class LdapCoreConfiguration
 {
 	@Bean
 	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
-	public LdapSynchronizationTask ldapSynchronizationTask() {
-		return new LdapSynchronizationTask();
+	@ConditionalOnProperty(value = "disableSynchronizationTask", prefix = "ldapModule", havingValue = "false", matchIfMissing = true)
+	public LdapSynchronizationTask ldapSynchronizationTask( LdapUserDirectoryRepository ldapUserDirectoryRepository,
+	                                                        DistributedLockRepository lockRepository ) throws UnknownHostException {
+		return new LdapSynchronizationTask( ldapSynchronizationService(), ldapUserDirectoryRepository,
+		                                    lockRepository, InetAddress.getLocalHost().getHostName() );
 	}
 
 	@Bean
