@@ -69,6 +69,7 @@ public class LdapCoreConfiguration
 	}
 
 	@Bean
+	@AcrossDepends(required = { "EntityModule" })
 	public AjaxTestLdapConnectorController ajaxTestLdapConnectorController() {
 		return new AjaxTestLdapConnectorController();
 	}

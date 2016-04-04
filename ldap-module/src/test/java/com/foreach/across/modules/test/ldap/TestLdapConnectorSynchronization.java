@@ -20,6 +20,8 @@ import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapConnectorType;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
+import com.foreach.across.modules.ldap.services.LdapSearchService;
+import com.foreach.across.modules.ldap.services.LdapSearchServiceImpl;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationServiceImpl;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
@@ -129,6 +131,11 @@ public class TestLdapConnectorSynchronization
 		@Bean
 		public LdapSynchronizationService ldapSynchronizationService() {
 			return new LdapSynchronizationServiceImpl();
+		}
+
+		@Bean
+		public LdapSearchService ldapSearchService() {
+			return new LdapSearchServiceImpl();
 		}
 
 		@Bean
