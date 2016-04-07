@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @Installer(
 		description = "Adds the auditable columns to the um_principal and um_user_directory tables",
-		version = 1
+		version = 2
 )
 public class BasicSecurityPrincipalAuditableInstaller extends AuditableSchemaInstaller
 {
