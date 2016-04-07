@@ -227,6 +227,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 	}
 
 	/**
+	 * Converts a partial principal name to a globally unique principal name including the user directory.
 	 *
 	 * @param name current or partial principal name
 	 * @param userDirectory user directory

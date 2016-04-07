@@ -27,6 +27,7 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AuthorityMatchingAllowableActions;
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserAuthorities;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
@@ -113,8 +114,9 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 	}
 
 	@Bean
-	public UserDetailsService userDetailsServiceImpl() {
-		return new UserDetailsServiceImpl();
+	public UserDetailsService userDetailsServiceImpl( SecurityPrincipalService securityPrincipalService,
+	                                                  UserDirectoryService userDirectoryService ) {
+		return new UserDetailsServiceImpl( securityPrincipalService, userDirectoryService );
 	}
 
 	@Bean

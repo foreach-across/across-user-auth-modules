@@ -23,6 +23,8 @@ import com.foreach.across.modules.user.security.UserDirectoryAuthenticationProvi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Configuration to load inside the SpringSecurityModule ApplicationContext.
@@ -37,20 +39,21 @@ public class SpringSecurityUserDetailsConfiguration
 	@Autowired
 	@SuppressWarnings("SignatureDeclareThrowsException")
 	public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-//		PasswordEncoder userPasswordEncoder = contextBeanRegistry.getBeanOfTypeFromModule(
-//				UserModule.NAME,
-//				PasswordEncoder.class
-//		);
-//		UserDetailsService userDetailsService = contextBeanRegistry.getBeanOfTypeFromModule(
-//				UserModule.NAME,
-//				UserDetailsService.class
-//		);
+		PasswordEncoder userPasswordEncoder = contextBeanRegistry.getBeanOfTypeFromModule(
+				UserModule.NAME,
+				PasswordEncoder.class
+		);
+		UserDetailsService userDetailsService = contextBeanRegistry.getBeanOfTypeFromModule(
+				UserModule.NAME,
+				UserDetailsService.class
+		);
 
 		UserDirectoryAuthenticationProvider userDirectoryAuthenticationProvider
 				= contextBeanRegistry.getBeanOfTypeFromModule( UserModule.NAME,
 				                                               UserDirectoryAuthenticationProvider.class );
 		auth.authenticationProvider( userDirectoryAuthenticationProvider );
 
-		//auth.userDetailsService( userDetailsService ).passwordEncoder( userPasswordEncoder );
+		// Configure the global user details for remember me functionality
+		auth.userDetailsService( userDetailsService ).passwordEncoder( userPasswordEncoder );
 	}
 }

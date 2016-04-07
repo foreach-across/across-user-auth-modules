@@ -23,6 +23,7 @@ import com.foreach.across.modules.user.services.UserDirectoryServiceProvider;
 import com.foreach.across.modules.user.services.UserDirectoryServiceProviderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -68,7 +69,7 @@ public class UserDirectoryAuthenticationProvider extends EntityInterceptorAdapte
 			}
 		}
 
-		return null;
+		throw new BadCredentialsException( "Bad credentials" );
 	}
 
 	private Collection<AuthenticationProvider> retrieveDirectoryAuthenticationProviders() {

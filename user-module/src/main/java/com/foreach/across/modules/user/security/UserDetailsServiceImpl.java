@@ -18,26 +18,53 @@ package com.foreach.across.modules.user.security;
 
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
+import com.foreach.across.modules.user.business.UserDirectory;
+import com.foreach.across.modules.user.services.UserDirectoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementation of {@link UserDetailsService} that dispatches lookups to a backing {@link SecurityPrincipalService}.
+ * A lookup by username will loop through all active user directories ({@link UserDirectoryService#getActiveUserDirectories()}
+ * and build a unique principal name for that particular directory.  The first non-null {@link UserDetails} implementation
+ * returned from the {@link SecurityPrincipalService} will be returned.
+ * <p>
+ * In case of several directories this lookup will incur a performance hit, adequate caching is advised.
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService
 {
+	private final SecurityPrincipalService securityPrincipalService;
+
+	private final UserDirectoryService userDirectoryService;
+
 	@Autowired
-	private SecurityPrincipalService securityPrincipalService;
+	public UserDetailsServiceImpl( SecurityPrincipalService securityPrincipalService,
+	                               UserDirectoryService userDirectoryService ) {
+		this.securityPrincipalService = securityPrincipalService;
+		this.userDirectoryService = userDirectoryService;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername( String username ) throws UsernameNotFoundException {
-		SecurityPrincipal principal = securityPrincipalService.getPrincipalByName( username );
-		if( principal != null && principal instanceof UserDetails ){
-			return ( UserDetails ) principal;
-		} else {
-			throw new UsernameNotFoundException( "No user found with username: " + username );
+		for ( UserDirectory userDirectory : userDirectoryService.getActiveUserDirectories() ) {
+			String principalName = buildPrincipalName( username, userDirectory );
+			SecurityPrincipal principal = securityPrincipalService.getPrincipalByName( principalName );
+
+			if ( principal != null && principal instanceof UserDetails ) {
+				return (UserDetails) principal;
+			}
 		}
+
+		throw new UsernameNotFoundException( "No user found with username: " + username );
+	}
+
+	private String buildPrincipalName( String username, UserDirectory userDirectory ) {
+		return BasicSecurityPrincipal.uniquePrincipalName( username, userDirectory );
 	}
 
 }

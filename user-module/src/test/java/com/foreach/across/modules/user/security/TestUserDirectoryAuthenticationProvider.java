@@ -26,11 +26,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -58,6 +60,11 @@ public class TestUserDirectoryAuthenticationProvider
 		                                                                  userDirectoryServiceProviderManager );
 	}
 
+	@Test(expected = BadCredentialsException.class)
+	public void badCredentialsExceptionIfNoUserFound() {
+		authenticationProvider.authenticate( auth );
+	}
+
 	@Test
 	public void providerAcceptsUsernamePasswordAuthentication() {
 		assertTrue( authenticationProvider.supports( UsernamePasswordAuthenticationToken.class ) );
@@ -66,22 +73,22 @@ public class TestUserDirectoryAuthenticationProvider
 
 	@Test
 	public void providersWillBeBuiltOnFirstRequestOnly() {
-		authenticationProvider.authenticate( auth );
-		authenticationProvider.authenticate( auth );
+		silent( () -> authenticationProvider.authenticate( auth ) );
+		silent( () -> authenticationProvider.authenticate( auth ) );
 
 		verify( userDirectoryService, times( 1 ) ).getActiveUserDirectories();
 	}
 
 	@Test
 	public void reloadForcesProvidersToBeRebuilt() {
-		authenticationProvider.authenticate( auth );
-		authenticationProvider.authenticate( auth );
+		silent( () -> authenticationProvider.authenticate( auth ) );
+		silent( () -> authenticationProvider.authenticate( auth ) );
 
 		verify( userDirectoryService, times( 1 ) ).getActiveUserDirectories();
 
 		authenticationProvider.reload();
-		authenticationProvider.authenticate( auth );
-		authenticationProvider.authenticate( auth );
+		silent( () -> authenticationProvider.authenticate( auth ) );
+		silent( () -> authenticationProvider.authenticate( auth ) );
 
 		verify( userDirectoryService, times( 2 ) ).getActiveUserDirectories();
 	}
@@ -93,7 +100,7 @@ public class TestUserDirectoryAuthenticationProvider
 		when( userDirectoryService.getActiveUserDirectories() ).thenReturn( Collections.singletonList( dirOne ) );
 		when( userDirectoryServiceProviderManager.getServiceProvider( dirOne ) ).thenReturn( null );
 
-		Authentication actual = authenticationProvider.authenticate( auth );
+		Authentication actual = silent( () -> authenticationProvider.authenticate( auth ) );
 		assertNull( actual );
 		verify( userDirectoryServiceProviderManager ).getServiceProvider( dirOne );
 	}
@@ -107,7 +114,7 @@ public class TestUserDirectoryAuthenticationProvider
 		when( userDirectoryServiceProviderManager.getServiceProvider( dirOne ) ).thenReturn( spOne );
 		when( spOne.getAuthenticationProvider( dirOne ) ).thenReturn( null );
 
-		Authentication actual = authenticationProvider.authenticate( auth );
+		Authentication actual = silent( () -> authenticationProvider.authenticate( auth ) );
 		assertNull( actual );
 		verify( spOne ).getAuthenticationProvider( dirOne );
 	}
@@ -130,7 +137,7 @@ public class TestUserDirectoryAuthenticationProvider
 		when( spOne.getAuthenticationProvider( dirOne ) ).thenReturn( one );
 		when( spTwo.getAuthenticationProvider( dirTwo ) ).thenReturn( two );
 
-		Authentication actual = authenticationProvider.authenticate( auth );
+		Authentication actual = silent( () -> authenticationProvider.authenticate( auth ) );
 		assertNull( actual );
 		verify( one ).authenticate( auth );
 		verify( two ).authenticate( auth );
@@ -142,5 +149,14 @@ public class TestUserDirectoryAuthenticationProvider
 		assertNotNull( actual );
 		assertSame( expected, actual );
 		verify( two, never() ).authenticate( auth );
+	}
+
+	public Authentication silent( Supplier<Authentication> supplier ) {
+		try {
+			return supplier.get();
+		}
+		catch ( BadCredentialsException ignore ) {
+			return null;
+		}
 	}
 }
