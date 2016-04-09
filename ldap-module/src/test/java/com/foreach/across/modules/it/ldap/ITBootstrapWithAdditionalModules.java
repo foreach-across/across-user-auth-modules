@@ -25,6 +25,7 @@ import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.controllers.ViewRequestValidator;
 import com.foreach.across.modules.ldap.LdapModule;
+import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
@@ -126,7 +127,7 @@ public class ITBootstrapWithAdditionalModules
 
 		@Profile("usermodule")
 		@Configuration
-		public static class UserModuleProfile
+		public static class UserModuleProfile extends SpringSecurityWebConfigurerAdapter
 		{
 			@Bean
 			public AcrossModule userModule() {
