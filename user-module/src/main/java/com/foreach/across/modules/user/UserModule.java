@@ -27,6 +27,7 @@ import com.foreach.across.modules.hibernate.provider.HibernatePackageConfiguring
 import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
 import com.foreach.across.modules.hibernate.provider.TableAliasProvider;
 import com.foreach.across.modules.properties.PropertiesModule;
+import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.extensions.SpringSecurityUserDetailsConfiguration;
@@ -34,8 +35,7 @@ import com.foreach.across.modules.user.installers.*;
 import org.apache.commons.lang3.StringUtils;
 
 @AcrossDepends(
-		required = { AcrossHibernateJpaModule.NAME, PropertiesModule.NAME,
-		             SpringSecurityInfrastructureModule.NAME },
+		required = { AcrossHibernateJpaModule.NAME, PropertiesModule.NAME, SpringSecurityModule.NAME },
 		optional = { "AdminWebModule", SpringSecurityInfrastructureModule.ACL_MODULE, "EntityModule" }
 )
 public class UserModule extends AcrossModule implements HibernatePackageConfiguringModule, HasSchemaConfiguration
