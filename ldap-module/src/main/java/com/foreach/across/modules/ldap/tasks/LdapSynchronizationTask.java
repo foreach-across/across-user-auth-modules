@@ -23,7 +23,6 @@ import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * @author Marc Vanbrabant
@@ -48,7 +47,6 @@ public class LdapSynchronizationTask implements Runnable
 		lock = distributedLockRepository.createSharedLock( serverName, "LdapSynchronizationTask" );
 	}
 
-	@Scheduled(fixedRate = 30000)
 	@Override
 	public void run() {
 		try {

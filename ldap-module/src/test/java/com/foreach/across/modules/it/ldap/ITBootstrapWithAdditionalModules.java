@@ -17,9 +17,6 @@
 package com.foreach.across.modules.it.ldap;
 
 import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.filters.BeanFilter;
-import com.foreach.across.core.filters.BeanFilterComposite;
-import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
@@ -103,9 +100,7 @@ public class ITBootstrapWithAdditionalModules
 			@Bean
 			public AcrossModule entityModule() {
 				EntityModule entityModule = new EntityModule();
-				BeanFilter exposeViewRequestValidator = new ClassBeanFilter( ViewRequestValidator.class );
-				entityModule.setExposeFilter(
-						new BeanFilterComposite( entityModule.getExposeFilter(), exposeViewRequestValidator ) );
+				entityModule.expose( ViewRequestValidator.class );
 				return entityModule;
 			}
 

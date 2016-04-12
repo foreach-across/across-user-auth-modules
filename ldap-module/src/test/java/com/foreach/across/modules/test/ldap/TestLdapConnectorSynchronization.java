@@ -82,9 +82,6 @@ public class TestLdapConnectorSynchronization
 	@Autowired
 	private UserDirectoryService userDirectoryService;
 
-	@Autowired
-	private ApacheDSContainer apacheDSContainer;
-
 	@Before
 	public void resetMocks() throws NamingException {
 		reset( userService, userDirectoryService );

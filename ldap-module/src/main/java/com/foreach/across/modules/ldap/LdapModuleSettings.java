@@ -27,8 +27,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class LdapModuleSettings
 {
 	public static final String DISABLE_SYNCHRONIZATION_TASK = "ldapModule.disableSynchronizationTask";
+	public static final String SYNCHRONIZATION_TASK_INTERVAL_IN_MILLIS =
+			"ldapModule.synchronizationTaskIntervalInMillis";
 
 	private boolean disableSynchronizationTask;
+	private long synchronizationTaskIntervalInMillis = 300000;
 
 	public boolean isDisableSynchronizationTask() {
 		return disableSynchronizationTask;
@@ -36,5 +39,13 @@ public class LdapModuleSettings
 
 	public void setDisableSynchronizationTask( boolean disableSynchronizationTask ) {
 		this.disableSynchronizationTask = disableSynchronizationTask;
+	}
+
+	public long getSynchronizationTaskIntervalInMillis() {
+		return synchronizationTaskIntervalInMillis;
+	}
+
+	public void setSynchronizationTaskIntervalInMillis( long synchronizationTaskIntervalInMillis ) {
+		this.synchronizationTaskIntervalInMillis = synchronizationTaskIntervalInMillis;
 	}
 }

@@ -28,7 +28,6 @@ import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -38,7 +37,6 @@ import java.net.UnknownHostException;
  * @since 1.0.0
  */
 @Configuration
-@EnableScheduling
 @EnableAcrossJpaRepositories(basePackageClasses = LdapConnectorRepository.class)
 public class LdapCoreConfiguration
 {
