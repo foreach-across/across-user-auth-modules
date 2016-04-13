@@ -23,6 +23,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -44,11 +45,10 @@ public enum LdapConnectorType implements IdLookup<Integer>
 	@SuppressWarnings("unchecked")
 	LdapConnectorType( int id, String identifier ) {
 		this.id = id;
-		try {
+		try (InputStream is = new ClassPathResource( "activedirectorysettings/" + identifier + ".yaml" )
+				.getInputStream()) {
 			settings =
-					(LinkedHashMap<String, String>) new Yaml().load(
-							new ClassPathResource( "activedirectorysettings/" + identifier + ".yaml" )
-									.getInputStream() );
+					(LinkedHashMap<String, String>) new Yaml().load( is );
 		}
 		catch ( IOException e ) {
 			LOG.error( "Failed to load yaml file {}", identifier );
