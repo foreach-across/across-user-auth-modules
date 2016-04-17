@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package om.foreach.across.modules.ldap.test;
+
 import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.filters.BeanFilter;
