@@ -29,9 +29,14 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.repository.core.CrudInvoker;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.support.RepositoryInvoker;
+import org.springframework.util.MultiValueMap;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Map;
 
 @AcrossDepends(required = "EntityModule")
 @Configuration
@@ -83,16 +88,70 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 				EntityModelImpl<User, ? extends Serializable> userModel =
 				(EntityModelImpl) entityRegistry.getMutableEntityConfiguration( User.class )
 				                                .getEntityModel();
-		userModel.setCrudInvoker( new CrudInvoker<User>()
+
+		userModel.setCrudInvoker( new RepositoryInvoker()
 		{
 			@Override
-			public User invokeSave( User object ) {
-				return userService.save( object );
+			public boolean hasSaveMethod() {
+				return true;
 			}
 
 			@Override
-			public User invokeFindOne( Serializable id ) {
-				return userService.getUserById( (Long) id );
+			public boolean hasDeleteMethod() {
+				return false;
+			}
+
+			@Override
+			public boolean hasFindOneMethod() {
+				return true;
+			}
+
+			@Override
+			public boolean hasFindAllMethod() {
+				return false;
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T> T invokeSave( T object ) {
+				return (T) userService.save( (User) object );
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T> T invokeFindOne( Serializable id ) {
+				return (T) userService.getUserById( (Long) id );
+			}
+
+			@Override
+			public Iterable<Object> invokeFindAll( Pageable pageable ) {
+				return null;
+			}
+
+			@Override
+			public Iterable<Object> invokeFindAll( Sort sort ) {
+				return null;
+			}
+
+			@Override
+			public void invokeDelete( Serializable id ) {
+
+			}
+
+			@Override
+			public Object invokeQueryMethod( Method method,
+			                                 Map<String, String[]> parameters,
+			                                 Pageable pageable,
+			                                 Sort sort ) {
+				return null;
+			}
+
+			@Override
+			public Object invokeQueryMethod( Method method,
+			                                 MultiValueMap<String, ? extends Object> parameters,
+			                                 Pageable pageable,
+			                                 Sort sort ) {
+				return null;
 			}
 		} );
 

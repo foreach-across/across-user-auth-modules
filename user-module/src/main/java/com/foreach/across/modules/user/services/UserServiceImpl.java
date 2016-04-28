@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -232,6 +233,11 @@ public class UserServiceImpl implements UserService
 	}
 
 	@Override
+	public Iterable<User> findAll( Predicate predicate, Sort sort ) {
+		return null;
+	}
+
+	@Override
 	public User findOne( Predicate predicate ) {
 		return userRepository.findOne( predicate );
 	}
@@ -242,6 +248,11 @@ public class UserServiceImpl implements UserService
 	}
 
 	@Override
+	public Iterable<User> findAll( OrderSpecifier<?>... orders ) {
+		return userRepository.findAll( orders );
+	}
+
+	@Override
 	public Page<User> findAll( Predicate predicate, Pageable pageable ) {
 		return userRepository.findAll( predicate, pageable );
 	}
@@ -249,5 +260,10 @@ public class UserServiceImpl implements UserService
 	@Override
 	public long count( Predicate predicate ) {
 		return userRepository.count( predicate );
+	}
+
+	@Override
+	public boolean exists( Predicate predicate ) {
+		return userRepository.exists( predicate );
 	}
 }

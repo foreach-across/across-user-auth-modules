@@ -23,6 +23,7 @@ import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import java.util.Collection;
@@ -65,8 +66,17 @@ public interface UserService extends QueryDslPredicateExecutor<User>
 	Collection<User> findAll( Predicate predicate, OrderSpecifier<?>... orderSpecifiers );
 
 	@Override
+	Iterable<User> findAll( Predicate predicate, Sort sort );
+
+	@Override
 	Page<User> findAll( Predicate predicate, Pageable pageable );
 
 	@Override
+	Iterable<User> findAll( OrderSpecifier<?>... orders );
+
+	@Override
 	long count( Predicate predicate );
+
+	@Override
+	boolean exists( Predicate predicate );
 }
