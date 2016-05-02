@@ -1,0 +1,130 @@
+= OAuth2Module
+Arne Vandamme
+1.2.0-SNAPSHOT
+:toc: left
+:sectanchors:
+:module-version: 1.2.0-SNAPSHOT
+:module-name: OAuth2Module
+:module-artifact: oauth2-module
+:module-url: https://foreach.atlassian.net/wiki/display/AX/OAuth2Module
+[copyright,verbatim]
+--
+Copyright (C) 2014-2015 +
+[small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
+--
+
+[abstract]
+== About
+...
+
+Module website: {module-url}
+
+:numbered:
+== General information
+
+=== Artifact
+[source,xml,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>{module-artifact}</artifactId>
+			<version>{module-version}</version>
+		</dependency>
+	</dependencies>
+----
+
+=== Module dependencies
+
+{module-name} has a required dependency on `UserModule` and `SpringSecurityModule`. {module-name} also has an optional dependency on EhcacheModule.
+
+.Module dependencies
+|===
+|Module |Type |Description
+
+|UserModule
+|required
+|`OAuth2Module` requires the `UserModule`. This is because the `OAuth2Client` extends `BasicSecurityPrincipal`.
+It also sets the `UserDirectory` when none was specified.
+
+|SpringSecurityModule
+|required
+|`OAuth2Module` requires the `SpringSecurityModule`. The `SpringSecurityModule` is used to secure the `AuthorizationServer` and `ResourceServer`.
+
+|<<integration:ehcache,EhcacheModule>>
+|required
+|In combination with the `EhcacheModule` this enable caching on several business objects.
+
+|===
+
+=== Module settings
+
+All properties start with the *OAuth2Module.* prefix.
+
+|===
+|Property |Type |Description |Default
+
+|approval.formEndpoint
+|`java.util.String`
+|Optional Specifies whether the default spring endpoint for the approval form should be used (when left empty) or the custom endpoint that redirects to a custom form.
+|""
+
+|approval.handler
+|`com.foreach.across.modules.oauth2.ApprovalHandler`
+|Optional Specify how user approvals should be handled and remembered (defaults to storing approvals in an approval store).
+|_APPROVAL_STORE_
+
+|approval.store
+|`com.foreach.across.modules.oauth2.ApprovalStore`
+|Optional Specify the type of approval store that should be used (defaults to jdbc - storing approvals in database).
+|_JDBC_
+
+|useJdbcAuthorizationCodeServices
+|`boolean`
+|Optional Specifies whether the authorization process should use a jdbcAuthorizationCodeService instead of the default inMemoryAuthorizationCodeService.
+Only relevant if SpringSecurityAclModule is active.
+|_false_
+
+|===
+
+== What's new in this version?
+:numbered!:
+=== 1.2.0-SNAPSHOT
+
+* Compatibility update with Spring 4.2.
+* When saving an `OAuth2Client` the `UserDirectory` will automatically be set to the default `UserDirectory` when it is none set.
+
+=== 1.1.1-SNAPSHOT
+* Added a dated_created database column on the oauth_access_token table.
+
+=== 1.1.0.RELEASE
+Initial public release available on http://search.maven.org/[Maven central].
+
+:numbered:
+== How {module-name} works
+
+TODO
+
+== Integration with other modules
+
+[[integration:ehcache]]
+==== EhcacheModule
+
+The `OAuth2Module` will automatically use caching on `OAuth2Client` objects and access tokens when a cache with the following names are found:
+
+* oauth2ClientCache
+* oauth2AuthenticationByAccessTokenCache
+
+.Example ehcache configuration
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+
+    <cache name="oauth2ClientCache" statistics="true" maxElementsInMemory="10"
+     timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LRU">
+    </cache>
+    <cache name="oauth2AuthenticationByAccessTokenCache" statistics="true" maxElementsInMemory="100"
+     timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LRU">
+    </cache>
+----
