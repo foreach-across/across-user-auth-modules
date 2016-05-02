@@ -1,4 +1,4 @@
-= DebugWebModule
+= UserModule
 Arne Vandamme
 1.2.0-SNAPSHOT
 :toc: left
