@@ -85,6 +85,7 @@ Only relevant if SpringSecurityAclModule is active.
 :numbered!:
 === 1.2.0-SNAPSHOT
 
+* Compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
 * Introduction of `UserDirectory` object with a default `InternalUserDirectory` for storing `User` and `Group` objects in several <<integration:user-directories,user directories>>
 * settings now support Spring configuration metadata
 * `UserService`, `GroupService` and `MachinePrincipalService` have been refactored to implement `QueryDslPredicateExecutor` (breaking change)
