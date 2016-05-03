@@ -22,7 +22,7 @@ import com.foreach.across.core.installers.InstallerPhase;
 @Installer(
 		description = "Creates the database schema for all token stores.",
 		phase = InstallerPhase.BeforeContextBootstrap,
-		version = 7
+		version = 8
 )
 public class TokenStoreSchemaInstaller extends AcrossLiquibaseInstaller
 {
