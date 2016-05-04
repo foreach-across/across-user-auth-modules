@@ -1,9 +1,9 @@
 = OAuth2Module
 Arne Vandamme
-1.2.0-SNAPSHOT
+2.0.0-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 1.2.0-SNAPSHOT
+:module-version: 2.0.0-SNAPSHOT
 :module-name: OAuth2Module
 :module-artifact: oauth2-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/OAuth2Module
@@ -90,7 +90,7 @@ Only relevant if SpringSecurityAclModule is active.
 
 == What's new in this version?
 :numbered!:
-=== 1.2.0-SNAPSHOT
+=== 2.0.0-SNAPSHOT
 
 * Compatibility update with Spring 4.2.
 * When saving an `OAuth2Client` the `UserDirectory` will automatically be set to the default `UserDirectory` when it is none set.
