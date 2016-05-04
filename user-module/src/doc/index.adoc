@@ -1,9 +1,9 @@
 = UserModule
 Arne Vandamme
-1.2.0-SNAPSHOT
+2.0.0-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 1.2.0-SNAPSHOT
+:module-version: 2.0.0-SNAPSHOT
 :module-name: UserModule
 :module-artifact: user-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/UserModule
@@ -83,7 +83,7 @@ Only relevant if SpringSecurityAclModule is active.
 
 == What's new in this version?
 :numbered!:
-=== 1.2.0-SNAPSHOT
+=== 2.0.0-SNAPSHOT
 
 * Compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
 * Introduction of `UserDirectory` object with a default `InternalUserDirectory` for storing `User` and `Group` objects in several <<integration:user-directories,user directories>>

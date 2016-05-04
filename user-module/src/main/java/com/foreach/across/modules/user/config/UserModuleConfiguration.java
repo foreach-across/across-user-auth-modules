@@ -27,7 +27,7 @@ import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStra
 import com.foreach.across.modules.user.validators.GroupValidator;
 import com.foreach.across.modules.user.validators.MachinePrincipalValidator;
 import com.foreach.across.modules.user.validators.UserDirectoryValidator;
-import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
+import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

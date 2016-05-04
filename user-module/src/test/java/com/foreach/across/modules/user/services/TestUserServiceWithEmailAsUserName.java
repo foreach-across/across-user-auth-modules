@@ -20,7 +20,7 @@ import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.repositories.UserRepository;
 import com.foreach.common.test.MockedLoader;
-import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
+import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
