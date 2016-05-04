@@ -127,8 +127,18 @@ public class GroupServiceImpl implements GroupService
 	}
 
 	@Override
+	public Iterable<Group> findAll( Predicate predicate, Sort sort ) {
+		return groupRepository.findAll( predicate, sort );
+	}
+
+	@Override
 	public Collection<Group> findAll( Predicate predicate, OrderSpecifier<?>... orderSpecifiers ) {
 		return (Collection<Group>) groupRepository.findAll( predicate, orderSpecifiers );
+	}
+
+	@Override
+	public Iterable<Group> findAll( OrderSpecifier<?>... orders ) {
+		return groupRepository.findAll( orders );
 	}
 
 	@Override
@@ -139,6 +149,11 @@ public class GroupServiceImpl implements GroupService
 	@Override
 	public long count( Predicate predicate ) {
 		return groupRepository.count( predicate );
+	}
+
+	@Override
+	public boolean exists( Predicate predicate ) {
+		return groupRepository.exists( predicate );
 	}
 
 	@Override

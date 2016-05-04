@@ -89,8 +89,18 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 	}
 
 	@Override
+	public Iterable<MachinePrincipal> findAll( Predicate predicate, Sort sort ) {
+		return machinePrincipalRepository.findAll( predicate, sort );
+	}
+
+	@Override
 	public Collection<MachinePrincipal> findAll( Predicate predicate, OrderSpecifier<?>... orderSpecifiers ) {
 		return (Collection<MachinePrincipal>) machinePrincipalRepository.findAll( predicate, orderSpecifiers );
+	}
+
+	@Override
+	public Iterable<MachinePrincipal> findAll( OrderSpecifier<?>... orders ) {
+		return machinePrincipalRepository.findAll( orders );
 	}
 
 	@Override
@@ -101,5 +111,10 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 	@Override
 	public long count( Predicate predicate ) {
 		return machinePrincipalRepository.count( predicate );
+	}
+
+	@Override
+	public boolean exists( Predicate predicate ) {
+		return machinePrincipalRepository.exists( predicate );
 	}
 }
