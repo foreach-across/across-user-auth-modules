@@ -25,11 +25,6 @@ import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 public class TestSpringSecurityAclModuleConventions extends AbstractAcrossModuleConventionsTest
 {
 	@Override
-	protected boolean hasSettings() {
-		return false;
-	}
-
-	@Override
 	protected AcrossModule createModule() {
 		return new SpringSecurityAclModule();
 	}
