@@ -135,7 +135,7 @@ public class ITUserModule
 		User user = new User();
 		user.setUsername( RandomStringUtils.random( 10, 33, 127, false, false ) );
 		//TODO set the domain part back to 63 after https://hibernate.atlassian.net/browse/HV-1066 is fixed
-		user.setEmail( RandomStringUtils.randomAlphanumeric( 6 ) + "@" + RandomStringUtils.randomAlphanumeric(
+		user.setEmail( RandomStringUtils.randomAlphanumeric( 62 ) + "@" + RandomStringUtils.randomAlphanumeric(
 				62 ) + ".com" );
 		user.setPassword( RandomStringUtils.randomAscii( 30 ) );
 		user.setFirstName( RandomStringUtils.randomAscii( 25 ) + "明美" );
