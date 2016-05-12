@@ -30,6 +30,7 @@ import com.foreach.across.modules.user.services.UserDirectoryService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.common.spring.properties.PropertyTypeRegistry;
 import com.foreach.common.test.MockedLoader;
+import com.mysema.query.types.Predicate;
 import org.apache.directory.shared.ldap.entry.Entry;
 import org.apache.directory.shared.ldap.name.LdapDN;
 import org.junit.Before;
@@ -114,7 +115,7 @@ public class TestLdapConnectorSynchronization
 
 	@Test
 	public void testThatLdapSynchronizationFails() throws Exception {
-		when( userService.findAll( any() ) ).thenThrow( new RuntimeException( "Failure" ) );
+		when( userService.findAll( any( Predicate.class ) ) ).thenThrow( new RuntimeException( "Failure" ) );
 		LdapUserDirectory ldapUserDirectory = new LdapUserDirectory();
 		ldapUserDirectory.setLdapConnector( ldapConnector );
 		ldapSynchronizationService.synchronizeData( ldapUserDirectory );
