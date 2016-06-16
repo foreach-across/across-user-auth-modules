@@ -29,7 +29,7 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="201603171007" author="marc">
+	<changeSet id="201606161418" author="marc">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="${table.ldap_connector}"/>
@@ -40,7 +40,7 @@
 
 		<createTable tableName="${table.ldap_connector}">
 			<column name="id" type="java.sql.Types.BIGINT">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_omg_project"/>
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_ldap_connector"/>
 			</column>
 			<column name="name" type="java.sql.Types.NVARCHAR(255)">
 				<constraints nullable="false" unique="false"/>
