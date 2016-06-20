@@ -20,10 +20,7 @@ import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
-import com.foreach.across.modules.user.business.Group;
-import com.foreach.across.modules.user.business.QGroup;
-import com.foreach.across.modules.user.business.QUser;
-import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -138,6 +135,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						user.setPassword( UUID.randomUUID().toString() );
 						user.setUserDirectory( userDirectory );
 						user.setGroups( groupsForUser );
+						setRestrictions( user, ldapConnectorSettings, adapter );
 						userService.save( user );
 						itemsInLdap.add( user );
 					}
@@ -153,6 +151,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 									ldapConnectorSettings.getDiplayName() ) );
 							user.setDeleted( false );
 							user.setGroups( groupsForUser );
+							setRestrictions( user, ldapConnectorSettings, adapter );
 							userService.save( user );
 							itemsInLdap.add( user );
 
@@ -173,6 +172,24 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 		}
 		return itemsInLdap;
+	}
+
+	private void setRestrictions( User user, LdapConnectorSettings ldapConnectorSettings, DirContextAdapter adapter ) {
+		String userAccountControlProperty = adapter.getStringAttribute( ldapConnectorSettings.getUserAccountControl() );
+		if ( StringUtils.isNumeric( userAccountControlProperty ) ) {
+			int userAccountControl = Integer.parseInt( userAccountControlProperty );
+
+			// For codes see: https://support.microsoft.com/en-us/kb/305144
+			if ( ( userAccountControl & 2 ) == 2 ) {
+				user.getRestrictions().add( UserRestriction.DISABLED );
+			}
+			if ( ( userAccountControl & 16 ) == 16 ) {
+				user.getRestrictions().add( UserRestriction.LOCKED );
+			}
+			if ( ( userAccountControl & 8388608 ) == 8388608 ) {
+				user.getRestrictions().add( UserRestriction.EXPIRED );
+			}
+		}
 	}
 
 	private Map<String, Group> performGroupSynchronization( LdapUserDirectory userDirectory ) {

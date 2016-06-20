@@ -12,3 +12,4 @@ ldapGroupObjectFilter: (objectclass=groupOfUniqueNames)
 ldapGroupName: cn
 ldapGroupUsernames: uniqueMember
 ldapUserGroup: uniqueMember
+ldapUserAccountControl: userAccountControl

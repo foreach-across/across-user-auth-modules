@@ -12,3 +12,4 @@ ldapGroupObjectFilter: (objectCategory=Group)
 ldapGroupName: cn
 ldapGroupUsernames: member
 ldapUserGroup: memberOf
+ldapUserAccountControl: userAccountControl

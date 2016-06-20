@@ -93,4 +93,7 @@ public class LdapConnectorSettings extends EntityProperties<Long>
 		return getValue( "ldapUserGroup" );
 	}
 
+	public String getUserAccountControl() {
+		return getValue( "ldapUserAccountControl" );
+	}
 }
