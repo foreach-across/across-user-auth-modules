@@ -79,10 +79,10 @@ All properties start with the ldapModule. prefix.
 | Enable or disable the ldap synchronization task for all user directories.
 |_false_
 
-|ldapModule.synchronizationTaskIntervalInMillis
+|ldapModule.synchronizationTaskIntervalInSeconds
 |`Long`
 | The interval for the synchronization task in milliseconds.
-|_300000_ (5 minutes)
+|_300_ (5 minutes)
 
 |===
 
