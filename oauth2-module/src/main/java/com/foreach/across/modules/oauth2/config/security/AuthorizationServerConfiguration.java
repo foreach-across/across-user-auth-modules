@@ -20,10 +20,16 @@ import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
 import com.foreach.across.modules.oauth2.services.*;
 import com.foreach.across.modules.spring.security.infrastructure.config.SecurityInfrastructure;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -33,7 +39,6 @@ import org.springframework.security.oauth2.provider.approval.*;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 import javax.sql.DataSource;
@@ -41,8 +46,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@EnableAspectJAutoProxy
-public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter
+//@EnableAspectJAutoProxy
+public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter implements BeanFactoryAware
 {
 	@Autowired
 	private SecurityInfrastructure securityInfrastructure;
@@ -61,6 +66,13 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Autowired
 	private OAuth2ModuleSettings oAuth2ModuleSettings;
 
+	private BeanFactory beanFactory;
+
+	@Override
+	public void setBeanFactory( BeanFactory beanFactory ) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
+
 	@Bean
 	public ClientOAuth2AuthenticationSerializer clientOAuth2AuthenticationSerializer() {
 		return new ClientOAuth2AuthenticationSerializer();
@@ -71,10 +83,13 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		return new UserDetailsOAuth2AuthenticationSerializer();
 	}
 
-	@Bean
+	/**
+	 * Overrides the default baen in {@link org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration}
+	 */
+	@Bean(name = { "defaultAuthorizationServerTokenServices", "tokenServices" })
 	@Primary
-	public AuthorizationServerTokenServices tokenServices() {
-		DefaultTokenServices tokenServices = new CustomTokenServices( cacheManager );
+	public AuthorizationServerTokenServices defaultAuthorizationServerTokenServices() {
+		CustomTokenServices tokenServices = new CustomTokenServices( cacheManager );
 		tokenServices.setTokenStore( tokenStore() );
 		tokenServices.setSupportRefreshToken( true );
 		tokenServices.setClientDetailsService( clientDetailsService );
@@ -102,7 +117,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		}
 
 		endpoints.tokenStore( tokenStore() )
-		         .tokenServices( tokenServices() )
+		         .tokenServices( beanFactory.getBean( AuthorizationServerTokenServices.class ) )
 		         .requestFactory( oAuth2RequestFactory() )
 		         .authenticationManager( securityInfrastructure.authenticationManager() )
 		         .userApprovalHandler( userApprovalHandler() )

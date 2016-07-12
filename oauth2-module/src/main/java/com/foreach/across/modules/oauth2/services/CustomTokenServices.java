@@ -25,7 +25,9 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class CustomTokenServices extends DefaultTokenServices
 {
 	private TokenStore tokenStore;
