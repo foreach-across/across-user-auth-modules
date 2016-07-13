@@ -19,6 +19,7 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.oauth2.OAuth2ModuleSettings;
 import com.foreach.across.modules.oauth2.services.*;
 import com.foreach.across.modules.spring.security.infrastructure.config.SecurityInfrastructure;
+import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -89,10 +90,15 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Bean(name = { "defaultAuthorizationServerTokenServices", "tokenServices" })
 	@Primary
 	public AuthorizationServerTokenServices defaultAuthorizationServerTokenServices() {
-		CustomTokenServices tokenServices = new CustomTokenServices( cacheManager );
+		CachingAndLockingTokenServices tokenServices = new CachingAndLockingTokenServices( cacheManager );
 		tokenServices.setTokenStore( tokenStore() );
 		tokenServices.setSupportRefreshToken( true );
 		tokenServices.setClientDetailsService( clientDetailsService );
+
+		if ( oAuth2ModuleSettings.isUseLockingForTokenCreation() ) {
+			// delayed get of DistributedLockRepository, don't force across to create it if not to be used
+			tokenServices.setObjectLockRepository( beanFactory.getBean( DistributedLockRepository.class ) );
+		}
 		//tokenServices.setTokenEnhancer(tokenEnchancer());
 
 		return tokenServices;

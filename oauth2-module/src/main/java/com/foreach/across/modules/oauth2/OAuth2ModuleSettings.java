@@ -59,6 +59,12 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 	 */
 	public static final String USE_JDBC_AUTHORIZATION_CODE_SERVICE = "OAuth2Module.useJdbcAuthorizationCodeServices";
 
+	/**
+	 * Should distributed locking be used for token creation.
+	 * Defaults to true which incurs a performance hit but ensures compatibility when scaling out to multiple servers.
+	 */
+	public static final String USE_LOCKING_FOR_TOKEN_CREATION = "OAuth2Module.useLockingForTokenCreation";
+
 	@Override
 	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
 		registry.register( APPROVAL_HANDLER, ApprovalHandler.class, ApprovalHandler.APPROVAL_STORE,
@@ -71,6 +77,8 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 		registry.register( USE_JDBC_AUTHORIZATION_CODE_SERVICE, Boolean.class, false, "Specifies whether the " +
 				"authorization process should use a jdbcAuthorizationCodeService instead of the default " +
 				" inMemoryAuthorizationCodeService" );
+		registry.register( USE_LOCKING_FOR_TOKEN_CREATION, Boolean.class, true,
+		                   "Should distributed locking be used for token creation." );
 	}
 
 	public String getCustomApprovalForm() {
@@ -87,5 +95,9 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 
 	public ApprovalStore getApprovalStore() {
 		return getProperty( APPROVAL_STORE, ApprovalStore.class );
+	}
+
+	public boolean isUseLockingForTokenCreation() {
+		return getProperty( USE_LOCKING_FOR_TOKEN_CREATION, Boolean.class );
 	}
 }
