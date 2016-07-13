@@ -61,7 +61,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import static java.util.Calendar.YEAR;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -104,8 +103,9 @@ public class ITConcurrentTokenCreation
 		clientScope.setOAuth2Client( dto );
 		dto.setOAuth2ClientScopes( Collections.singleton( clientScope ) );
 
-		dto.setAccessTokenValiditySeconds( YEAR * 10 );
-		dto.setRefreshTokenValiditySeconds( YEAR * 10 );
+		dto.setAccessTokenValiditySeconds( 86400 );
+		dto.setRefreshTokenValiditySeconds( 86400 );
+
 		oAuth2Service.saveClient( dto );
 	}
 
