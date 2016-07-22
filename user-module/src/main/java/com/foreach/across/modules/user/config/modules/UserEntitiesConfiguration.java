@@ -64,24 +64,25 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 		             .association( "user.groups" ).show();
 
 		configuration.entity( User.class )
-				//.view( EntityListView.SUMMARY_VIEW_NAME ).template( "th/user/bla" ).and()
+		             //.view( EntityListView.SUMMARY_VIEW_NAME ).template( "th/user/bla" ).and()
 					 /*.properties()
 						.order( "id", "email", "displayName" )
 						.property( "created", "Created", new AuditableCreatedPrinter() ).and()
 						.property( "lastModified", "Last modified", new AuditableLastModifiedPrinter() ).and()
 						.hide( "createdDate", "createdBy", "lastModifiedDate", "lastModifiedBy" )
 						.and()*/
-				.listView( EntityListView.VIEW_NAME )
-				.properties(
-						"id",
-						"email",
-						"displayName",
-						"group-membership",
-						"role-membership",
-						"lastModifiedDate"
-				)
-				.property( "group-membership" ).displayName( "GroupUsers" ).spelValueFetcher( "groups.size()" ).and()
-				.property( "role-membership" ).displayName( "Roles" ).spelValueFetcher( "roles.size()" );
+					 .listView( EntityListView.VIEW_NAME )
+					 .properties(
+							 "id",
+							 "email",
+							 "displayName",
+							 "group-membership",
+							 "role-membership",
+							 "lastModifiedDate"
+					 )
+					 .property( "group-membership" ).displayName( "GroupUsers" ).spelValueFetcher( "groups.size()" )
+					 .and()
+					 .property( "role-membership" ).displayName( "Roles" ).spelValueFetcher( "roles.size()" );
 
 		@SuppressWarnings("unchecked")
 		// Use the UserService for persisting User - as that one takes care of password handling
@@ -89,7 +90,7 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 				(EntityModelImpl) entityRegistry.getMutableEntityConfiguration( User.class )
 				                                .getEntityModel();
 
-		userModel.setCrudInvoker( new RepositoryInvoker()
+		userModel.setRepositoryInvoker( new RepositoryInvoker()
 		{
 			@Override
 			public boolean hasSaveMethod() {
