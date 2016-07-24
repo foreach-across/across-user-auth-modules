@@ -16,6 +16,8 @@
 package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
+import com.foreach.common.concurrent.locks.CloseableObjectLock;
+import com.foreach.common.concurrent.locks.ObjectLockRepository;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.core.AuthenticationException;
@@ -25,30 +27,55 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.transaction.annotation.Transactional;
 
-public class CustomTokenServices extends DefaultTokenServices
+import java.util.Objects;
+
+/**
+ * Custom extension of {@link DefaultTokenServices} that uses a cache for access token based authentication lookups
+ * and applies locking to token creation if a {@link com.foreach.common.concurrent.locks.ObjectLockRepository} is set.
+ */
+@Transactional
+public class CachingAndLockingTokenServices extends DefaultTokenServices
 {
+	private final Cache cache;
+
 	private TokenStore tokenStore;
+	private ObjectLockRepository<String> objectLockRepository;
 
-	private Cache cache;
-
-	public CustomTokenServices( CacheManager cacheManager ) {
+	public CachingAndLockingTokenServices( CacheManager cacheManager ) {
 		cache = cacheManager.getCache( OAuth2ModuleCache.ACCESS_TOKENS_TO_AUTHENTICATION );
 	}
 
-	@Override
-	public synchronized OAuth2AccessToken createAccessToken(
-			OAuth2Authentication authentication ) throws AuthenticationException {
-		// https://github.com/spring-projects/spring-security-oauth/issues/276
-		return super.createAccessToken( authentication );
+	public void setObjectLockRepository( ObjectLockRepository<String> objectLockRepository ) {
+		this.objectLockRepository = objectLockRepository;
 	}
 
 	@Override
-	public synchronized OAuth2AccessToken refreshAccessToken(
-			String refreshTokenValue, TokenRequest request ) {
-		// https://github.com/spring-projects/spring-security-oauth/issues/276
+	public OAuth2AccessToken createAccessToken( OAuth2Authentication authentication ) throws AuthenticationException {
+		if ( objectLockRepository != null ) {
+			try (CloseableObjectLock ignore
+					     = objectLockRepository.lock( Objects.toString( authentication.getPrincipal() ) )) {
+				return super.createAccessToken( authentication );
+			}
+		}
+		else {
+			return super.createAccessToken( authentication );
+		}
+	}
+
+	@Override
+	public OAuth2AccessToken refreshAccessToken( String refreshTokenValue, TokenRequest request ) {
 		try {
-			return super.refreshAccessToken( refreshTokenValue, request );
+			if ( objectLockRepository != null ) {
+				try (CloseableObjectLock ignore
+						     = objectLockRepository.lock( refreshTokenValue )) {
+					return super.refreshAccessToken( refreshTokenValue, request );
+				}
+			}
+			else {
+				return super.refreshAccessToken( refreshTokenValue, request );
+			}
 		}
 		catch ( RemoveTokenException e ) {
 			throw new InvalidGrantException( "User is invalid" );
