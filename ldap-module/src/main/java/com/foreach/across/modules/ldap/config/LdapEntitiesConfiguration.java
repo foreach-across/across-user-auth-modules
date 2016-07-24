@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.WebDataBinder;
 
+import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
+
 /**
  * @author Marc Vanbrabant
  */
@@ -67,9 +69,10 @@ public class LdapEntitiesConfiguration implements EntityConfigurer
 		protected void extendViewModel( EntityFormView view ) {
 			LdapConnector connector = view.getEntity();
 
-			view.getViewElements()
-					.<ContainerViewElement>get( EntityFormViewFactory.FORM_RIGHT )
-					.add( new TemplateViewElement( "th/ldapmodule/includes/testLdapConnector" ) );
+			find( view.getViewElements(), EntityFormViewFactory.FORM_RIGHT, ContainerViewElement.class )
+					.ifPresent(
+							c -> c.addChild( new TemplateViewElement( "th/ldapmodule/includes/testLdapConnector" ) )
+					);
 		}
 	}
 
