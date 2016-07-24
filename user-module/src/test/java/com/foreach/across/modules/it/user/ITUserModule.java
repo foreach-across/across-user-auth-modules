@@ -24,6 +24,7 @@ import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.*;
@@ -68,6 +69,9 @@ public class ITUserModule
 
 	@Autowired
 	private UserDirectoryService userDirectoryService;
+
+	@Autowired
+	private SecurityPrincipalLabelResolverStrategy securityPrincipalLabelResolverStrategy;
 
 	@Test
 	public void verifyBootstrapped() {
@@ -372,6 +376,11 @@ public class ITUserModule
 				machinePrincipalService.getMachinePrincipalByName( "dir group", machineInDefaultDir.getUserDirectory() )
 		);
 		assertEquals( machineInOtherDir, machinePrincipalService.getMachinePrincipalByName( "dir group", otherDir ) );
+
+		assertEquals(
+				"dir group",
+				securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( machineInOtherDir.getPrincipalName() )
+		);
 	}
 
 	@Configuration

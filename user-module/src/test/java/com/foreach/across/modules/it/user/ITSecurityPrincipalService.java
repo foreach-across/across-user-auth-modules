@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.it.user;
 
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.GroupProperties;
@@ -52,6 +53,9 @@ public class ITSecurityPrincipalService
 	@Autowired
 	private SecurityPrincipalService securityPrincipalService;
 
+	@Autowired
+	private SecurityPrincipalLabelResolverStrategy securityPrincipalLabelResolverStrategy;
+
 	@Test
 	public void userPrincipals() {
 		User expectedUserOne = createUser( UUID.randomUUID().toString() );
@@ -82,6 +86,15 @@ public class ITSecurityPrincipalService
 		assertEquals( 2, users.size() );
 		assertTrue( users.contains( expectedUserOne ) );
 		assertTrue( users.contains( expectedUserTwo ) );
+
+		assertEquals(
+				expectedUserOne.getLabel(),
+				securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( expectedUserOne.getPrincipalName() )
+		);
+		assertEquals(
+				expectedUserTwo.getLabel(),
+				securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( expectedUserTwo.getPrincipalName() )
+		);
 	}
 
 	@Test
@@ -114,6 +127,15 @@ public class ITSecurityPrincipalService
 		assertEquals( 2, groups.size() );
 		assertTrue( groups.contains( expectedGroupOne ) );
 		assertTrue( groups.contains( expectedGroupTwo ) );
+
+		assertEquals(
+				expectedGroupOne.getName(),
+				securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( expectedGroupOne.getPrincipalName() )
+		);
+		assertEquals(
+				expectedGroupTwo.getName(),
+				securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( expectedGroupTwo.getPrincipalName() )
+		);
 	}
 
 	private Group createGroup( String name ) {

@@ -189,4 +189,26 @@ public class TestUser
 		assertEquals( user.getRestrictions(), dto.getRestrictions() );
 		assertNotSame( user.getRestrictions(), dto.getRestrictions() );
 	}
+
+	@Test
+	public void userLabel() {
+		User user = new User();
+		assertEquals( "", user.getLabel() );
+
+		user.setUsername( "uname" );
+		assertEquals( "uname", user.getLabel() );
+
+		user.setFirstName( "John" );
+		assertEquals( "John", user.getLabel() );
+
+		user.setFirstName( "" );
+		user.setLastName( "Doe" );
+		assertEquals( "Doe", user.getLabel() );
+
+		user.setFirstName( "John" );
+		assertEquals( "John Doe", user.getLabel() );
+
+		user.setDisplayName( "johnny" );
+		assertEquals( "johnny", user.getLabel() );
+	}
 }

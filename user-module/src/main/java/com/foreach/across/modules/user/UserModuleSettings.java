@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ConfigurationProperties("userModule")
-@SuppressWarnings( "unused" )
+@SuppressWarnings("unused")
 public class UserModuleSettings
 {
 	public static final String PASSWORD_ENCODER = "userModule.passwordEncoder";
@@ -47,6 +47,11 @@ public class UserModuleSettings
 	 * Specifies whether default ACLs should be created via interceptors, such as for Groups.
 	 */
 	private boolean enableDefaultAcls;
+
+	/**
+	 * Default SpEL expression (eg. property) for the display label of a User entity.
+	 */
+	private String userLabelExpression = "label";
 
 	public PasswordEncoder getPasswordEncoder() {
 		return passwordEncoder;
@@ -78,5 +83,13 @@ public class UserModuleSettings
 
 	public void setEnableDefaultAcls( boolean enableDefaultAcls ) {
 		this.enableDefaultAcls = enableDefaultAcls;
+	}
+
+	public String getUserLabelExpression() {
+		return userLabelExpression;
+	}
+
+	public void setUserLabelExpression( String userLabelExpression ) {
+		this.userLabelExpression = userLabelExpression;
 	}
 }

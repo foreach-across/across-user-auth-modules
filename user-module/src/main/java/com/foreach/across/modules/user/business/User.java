@@ -120,6 +120,22 @@ public class User extends GroupedPrincipal<User> implements UserDetails, Undelet
 		this.email = StringUtils.lowerCase( email );
 	}
 
+	/**
+	 * Returns a display label for this user.  Uses the display name if set, else first and last name and falls back
+	 * to username if none of them are set.
+	 *
+	 * @return label
+	 */
+	public String getLabel() {
+		String label = StringUtils.defaultString( displayName );
+
+		if ( label.length() == 0 ) {
+			label = StringUtils.join( firstName, " ", lastName ).trim();
+		}
+
+		return label.length() > 0 ? label : StringUtils.defaultString( username );
+	}
+
 	public String getPassword() {
 		return password;
 	}

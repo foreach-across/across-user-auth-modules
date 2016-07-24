@@ -29,6 +29,7 @@ import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserAuthorities;
+import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.security.CurrentUserProxy;
 import com.foreach.across.modules.user.security.CurrentUserProxyImpl;
@@ -38,6 +39,7 @@ import com.foreach.across.modules.user.services.InternalUserDirectoryServiceProv
 import com.foreach.across.modules.user.services.UserDirectoryService;
 import com.foreach.across.modules.user.services.UserDirectoryServiceProvider;
 import com.foreach.across.modules.user.services.UserDirectoryServiceProviderManager;
+import com.foreach.across.modules.user.services.support.ExpressionBasedSecurityPrincipalLabelResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,6 +58,9 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 {
 	@Autowired
 	private CurrentSecurityPrincipalProxy securityPrincipal;
+
+	@Autowired
+	private UserModuleSettings userModuleSettings;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
@@ -124,4 +129,20 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 		return new CurrentUserProxyImpl();
 	}
 
+	@Bean
+	public ExpressionBasedSecurityPrincipalLabelResolver userLabelResolver() {
+		return new ExpressionBasedSecurityPrincipalLabelResolver(
+				User.class, userModuleSettings.getUserLabelExpression()
+		);
+	}
+
+	@Bean
+	public ExpressionBasedSecurityPrincipalLabelResolver groupLabelResolver() {
+		return new ExpressionBasedSecurityPrincipalLabelResolver( Group.class, "name" );
+	}
+
+	@Bean
+	public ExpressionBasedSecurityPrincipalLabelResolver machinePrincipalLabelResolver() {
+		return new ExpressionBasedSecurityPrincipalLabelResolver( MachinePrincipal.class, "name" );
+	}
 }
