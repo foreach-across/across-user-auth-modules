@@ -31,7 +31,9 @@ import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModule;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.modules.web.AcrossWebModule;
+import com.foreach.across.test.AcrossTestConfiguration;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +47,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentMap;
@@ -56,8 +56,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
-@ContextConfiguration(classes = ITOAuth2ModuleWithCaching.Config.class)
+@AcrossWebAppConfiguration(classes = ITOAuth2ModuleWithCaching.Config.class)
 public class ITOAuth2ModuleWithCaching
 {
 	@Autowired
@@ -113,7 +112,7 @@ public class ITOAuth2ModuleWithCaching
 	}
 
 	@Configuration
-	@AcrossTestWebConfiguration
+	@AcrossTestConfiguration(modules = AcrossWebModule.NAME)
 	static class Config implements AcrossContextConfigurer
 	{
 		@Bean(name = SpringSecurityModuleCache.SECURITY_PRINCIPAL)

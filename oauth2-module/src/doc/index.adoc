@@ -91,9 +91,11 @@ Only relevant if SpringSecurityAclModule is active.
 == What's new in this version?
 :numbered!:
 === 2.0.0-SNAPSHOT
+Requires Across 2.0.0+
 
-* Compatibility update with Spring 4.2.
-* When saving an `OAuth2Client` the `UserDirectory` will automatically be set to the default `UserDirectory` when it is none set.
+* compatibility update with Spring 4.2.
+* added support for multiple user directories
+* added default `SecurityPrincipalLabelResolver` for `OAuth2Client`
 
 === 1.1.1-SNAPSHOT
 * Added a dated_created database column on the oauth_access_token table.
