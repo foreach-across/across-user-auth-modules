@@ -51,8 +51,7 @@ import java.util.Set;
 )
 public class OAuth2Module extends AcrossModule implements HibernatePackageConfiguringModule, HasSchemaConfiguration
 {
-
-	public static final String NAME = "Oauth2Module";
+	public static final String NAME = "OAuth2Module";
 
 	private final SchemaConfiguration schemaConfiguration = new OAuth2SchemaConfiguration();
 

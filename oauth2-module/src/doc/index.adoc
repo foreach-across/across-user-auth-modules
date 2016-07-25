@@ -86,6 +86,12 @@ All properties start with the *OAuth2Module.* prefix.
 Only relevant if SpringSecurityAclModule is active.
 |_false_
 
+|useLockingForTokenCreation
+|`boolean`
+|Should the `DistributedLockRepository` be used for locking on token creation.
+Incurs a performance hit but ensures compatibility in a scaled out scenario.
+|_true_
+
 |===
 
 == What's new in this version?
@@ -97,8 +103,11 @@ Requires Across 2.0.0+
 * added support for multiple user directories
 * added default `SecurityPrincipalLabelResolver` for `OAuth2Client`
 
-=== 1.1.1-SNAPSHOT
-* Added a dated_created database column on the oauth_access_token table.
+=== 1.1.2.RELEASE
+* implemented `CachingAndLockingTokenServices` - token creation now uses distributed locking by default
+
+=== 1.1.1.RELEASE
+* added a dated_created database column on the oauth_access_token table.
 
 === 1.1.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].
