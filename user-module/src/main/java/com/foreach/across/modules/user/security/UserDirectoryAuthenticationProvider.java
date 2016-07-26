@@ -40,7 +40,7 @@ import java.util.List;
  *
  * @author Arne Vandamme
  * @see com.foreach.across.modules.user.services.UserDirectoryServiceProviderManager
- * @since 1.2.0
+ * @since 2.0.0
  */
 // TODO: hook up to entity modified event once available
 @Component

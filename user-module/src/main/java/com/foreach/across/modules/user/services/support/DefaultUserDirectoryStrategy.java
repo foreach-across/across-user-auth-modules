@@ -26,7 +26,7 @@ import com.foreach.across.modules.user.business.UserDirectory;
  *
  * @author Arne Vandamme
  * @see DefaultUserDirectoryStrategyImpl
- * @since 1.2.0
+ * @since 2.0.0
  */
 public interface DefaultUserDirectoryStrategy
 {

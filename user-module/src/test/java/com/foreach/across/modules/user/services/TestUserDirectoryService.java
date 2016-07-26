@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = MockedLoader.class, classes = TestUserDirectoryService.Config.class)

@@ -22,7 +22,7 @@ import java.util.Collection;
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 public interface UserDirectoryService
 {

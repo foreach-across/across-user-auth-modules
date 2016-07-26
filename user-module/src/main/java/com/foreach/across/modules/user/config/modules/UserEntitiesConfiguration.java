@@ -19,7 +19,6 @@ package com.foreach.across.modules.user.config.modules;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.registry.EntityModelImpl;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.user.business.MachinePrincipal;
@@ -29,14 +28,6 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.support.RepositoryInvoker;
-import org.springframework.util.MultiValueMap;
-
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.Map;
 
 @AcrossDepends(required = "EntityModule")
 @Configuration
@@ -64,6 +55,10 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 		             .association( "user.groups" ).show();
 
 		configuration.entity( User.class )
+		             // Use the UserService for persisting User - as that one takes care of password handling
+		             .entityModel().saveMethod( userService::save )
+		             .and()
+
 		             //.view( EntityListView.SUMMARY_VIEW_NAME ).template( "th/user/bla" ).and()
 					 /*.properties()
 						.order( "id", "email", "displayName" )
@@ -80,82 +75,9 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 							 "role-membership",
 							 "lastModifiedDate"
 					 )
-					 .property( "group-membership" ).displayName( "GroupUsers" ).spelValueFetcher( "groups.size()" )
+					 .property( "group-membership" ).displayName( "Groups" ).spelValueFetcher( "groups.size()" )
 					 .and()
 					 .property( "role-membership" ).displayName( "Roles" ).spelValueFetcher( "roles.size()" );
-
-		@SuppressWarnings("unchecked")
-		// Use the UserService for persisting User - as that one takes care of password handling
-				EntityModelImpl<User, ? extends Serializable> userModel =
-				(EntityModelImpl) entityRegistry.getMutableEntityConfiguration( User.class )
-				                                .getEntityModel();
-
-		userModel.setRepositoryInvoker( new RepositoryInvoker()
-		{
-			@Override
-			public boolean hasSaveMethod() {
-				return true;
-			}
-
-			@Override
-			public boolean hasDeleteMethod() {
-				return false;
-			}
-
-			@Override
-			public boolean hasFindOneMethod() {
-				return true;
-			}
-
-			@Override
-			public boolean hasFindAllMethod() {
-				return false;
-			}
-
-			@Override
-			@SuppressWarnings("unchecked")
-			public <T> T invokeSave( T object ) {
-				return (T) userService.save( (User) object );
-			}
-
-			@Override
-			@SuppressWarnings("unchecked")
-			public <T> T invokeFindOne( Serializable id ) {
-				return (T) userService.getUserById( (Long) id );
-			}
-
-			@Override
-			public Iterable<Object> invokeFindAll( Pageable pageable ) {
-				return null;
-			}
-
-			@Override
-			public Iterable<Object> invokeFindAll( Sort sort ) {
-				return null;
-			}
-
-			@Override
-			public void invokeDelete( Serializable id ) {
-
-			}
-
-			@Override
-			public Object invokeQueryMethod( Method method,
-			                                 Map<String, String[]> parameters,
-			                                 Pageable pageable,
-			                                 Sort sort ) {
-				return null;
-			}
-
-			@Override
-			public Object invokeQueryMethod( Method method,
-			                                 MultiValueMap<String, ? extends Object> parameters,
-			                                 Pageable pageable,
-			                                 Sort sort ) {
-				return null;
-			}
-		} );
-
 
 		/*
 		configuration.entity( Role.class )

@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 public class TestDefaultUserDirectoryStrategy
 {

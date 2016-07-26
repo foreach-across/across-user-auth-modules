@@ -28,7 +28,7 @@ import org.springframework.validation.Validator;
  *
  * @author Arne Vandamme
  * @see UserDirectoryServiceProviderManager
- * @since 1.2.0
+ * @since 2.0.0
  */
 public interface UserDirectoryServiceProvider
 {

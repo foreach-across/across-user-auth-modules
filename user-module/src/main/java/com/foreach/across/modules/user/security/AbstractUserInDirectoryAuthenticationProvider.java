@@ -44,7 +44,7 @@ import org.springframework.util.Assert;
  *
  * @author Arne Vandamme
  * @see UserDirectoryAuthenticationProvider
- * @since 1.2.0
+ * @since 2.0.0
  */
 public abstract class AbstractUserInDirectoryAuthenticationProvider implements AuthenticationProvider, InitializingBean,
 		MessageSourceAware

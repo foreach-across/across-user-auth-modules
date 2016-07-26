@@ -21,7 +21,7 @@ import com.foreach.across.modules.user.business.UserDirectory;
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 public interface UserDirectoryRepository extends IdBasedEntityJpaRepository<UserDirectory>
 {

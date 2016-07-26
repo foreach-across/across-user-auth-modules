@@ -24,7 +24,7 @@ import javax.persistence.Entity;
  * Represents a standard internal {@link UserDirectory}.
  *
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 @NotThreadSafe
 @Entity

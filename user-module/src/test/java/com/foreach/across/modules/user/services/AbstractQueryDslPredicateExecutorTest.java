@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 public abstract class AbstractQueryDslPredicateExecutorTest
 {

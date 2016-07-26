@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  * to a user directory does not break compatibility with pre-userdirectory installations.
  *
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 @Service
 public class DefaultUserDirectoryStrategyImpl implements DefaultUserDirectoryStrategy

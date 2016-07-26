@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  * Authenticates a user against a {@link InternalUserDirectory}.
  *
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 public class InternalUserDirectoryAuthenticationProvider extends AbstractUserInDirectoryAuthenticationProvider
 {

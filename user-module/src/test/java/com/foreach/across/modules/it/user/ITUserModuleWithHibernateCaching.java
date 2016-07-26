@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
@@ -87,7 +88,8 @@ public class ITUserModuleWithHibernateCaching
 			assertTrue( true ); //If we get this exception, the desired result has been achieved.
 		}
 
-		CacheManager cacheManager = CacheManager.getCacheManager( "hibernate" );
+		// todo: getting a cachemanager by name has been removed in ehcache version, refactor to a more robust approach?
+		CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get( 0 );
 		Cache cache = cacheManager.getCache( BasicSecurityPrincipal.class.getName() );
 		cache.flush();
 		assertEquals( 0, cache.getSize() );

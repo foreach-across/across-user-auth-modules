@@ -31,7 +31,7 @@ import javax.persistence.*;
  *
  * @author Arne Vandamme
  * @see InternalUserDirectory
- * @since 1.2.0
+ * @since 2.0.0
  */
 @NotThreadSafe
 @Entity

@@ -28,7 +28,7 @@ import java.util.Collection;
  * matches a {@link UserDirectory}.
  *
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 @Service
 public class UserDirectoryServiceProviderManager

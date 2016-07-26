@@ -30,7 +30,7 @@ import org.springframework.validation.Validator;
  * {@link com.foreach.across.modules.user.business.InternalUserDirectory}.
  *
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 public class InternalUserDirectoryServiceProvider implements UserDirectoryServiceProvider
 {
