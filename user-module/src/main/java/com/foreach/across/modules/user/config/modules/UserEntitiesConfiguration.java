@@ -20,13 +20,17 @@ import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListView;
-import com.foreach.across.modules.user.business.MachinePrincipal;
-import com.foreach.across.modules.user.business.Permission;
-import com.foreach.across.modules.user.business.PermissionGroup;
-import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
+import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.UserService;
+import com.foreach.across.modules.user.ui.RolePermissionsFormElementBuilder;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @AcrossDepends(required = "EntityModule")
@@ -53,6 +57,19 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 		configuration.entity( User.class )
 		             .properties().property( "groups" ).hidden( true ).and().and()
 		             .association( "user.groups" ).show();
+
+		configuration.entity( Role.class )
+		             .properties()
+		             .property( "permissions" )
+		             .viewElementBuilder( ViewElementMode.CONTROL, rolePermissionsFormElementBuilder() )
+		             .and().and()
+		             .updateFormView().addProcessor( new WebViewProcessorAdapter()
+		{
+			@Override
+			protected void modifyViewElements( ContainerViewElement elements ) {
+				ContainerViewElementUtils.move( elements, "formGroup-permissions", EntityFormViewFactory.FORM_RIGHT );
+			}
+		} );
 
 		configuration.entity( User.class )
 		             // Use the UserService for persisting User - as that one takes care of password handling
@@ -88,5 +105,10 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 		             .view( EntityListView.VIEW_NAME ).properties( "description", "name" );
 		             */
 
+	}
+
+	@Bean
+	protected RolePermissionsFormElementBuilder rolePermissionsFormElementBuilder() {
+		return new RolePermissionsFormElementBuilder();
 	}
 }
