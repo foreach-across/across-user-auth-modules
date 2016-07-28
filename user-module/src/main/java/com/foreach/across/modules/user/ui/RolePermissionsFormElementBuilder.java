@@ -25,7 +25,6 @@ import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 /**
- *
  * @author Arne Vandamme
  * @since 2.0.0
  */
@@ -67,7 +65,11 @@ public class RolePermissionsFormElementBuilder implements ViewElementBuilder<Con
 						         .thenComparing( Comparator.comparing( Permission::getName ) ) )
 				.collect( Collectors.groupingBy( Permission::getGroup, LinkedHashMap::new, toList() ) );
 
-		ContainerViewElementBuilder container = bootstrapUi.container();
+		NodeViewElementBuilder container = bootstrapUi.node( "div" )
+		                                              .css( "panel-group" )
+		                                              .htmlId( "group-permissions" )
+		                                              .attribute( "aria-multiselectable", true )
+		                                              .attribute( "role", "tablist" );
 
 		permissionsByGroup.forEach( ( group, permissions ) -> {
 
@@ -102,7 +104,12 @@ public class RolePermissionsFormElementBuilder implements ViewElementBuilder<Con
 							                      .css( "panel-heading" )
 							                      .add( bootstrapUi.node( "strong" )
 							                                       .add( bootstrapUi.text( group.getTitle() ) ) ) )
-					           .add( body )
+					           .add(
+							           bootstrapUi.div()
+							                      .css( "panel-collapse", "collapse", "in" )
+							                      .attribute( "role", "tabpanel" )
+							                      .add( body )
+					           )
 			);
 		} );
 
