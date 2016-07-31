@@ -29,20 +29,10 @@ import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.modules.user.ui.RolePermissionsFormElementBuilder;
-import com.foreach.across.modules.web.ui.MutableViewElement;
-import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @AcrossDepends(required = "EntityModule")
 @Configuration
@@ -75,27 +65,14 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 		configuration.entity( Role.class )
 		             .properties()
 		             .property( "permissions" )
-		             .viewElementBuilder( ViewElementMode.CONTROL,
-		                                  ctx -> new TemplateViewElement( "th/UserModule/role :: permissions" )
-		             )
+		             .viewElementBuilder( ViewElementMode.CONTROL, rolePermissionsFormElementBuilder() )
 		             .and().and()
 		             .updateFormView().addProcessor( new WebViewProcessorAdapter()
 		{
 			@Override
 			protected void extendViewModel( EntityView view ) {
-				Map<PermissionGroup, List<Permission>> permissionsByGroup = permissionService
-						.getPermissions().stream()
-						.sorted( Comparator.<Permission, String>comparing(
-								permission -> permission.getGroup().getName() )
-								         .thenComparing( Comparator.comparing( Permission::getName ) ) )
-						.collect( Collectors.groupingBy( Permission::getGroup, LinkedHashMap::new, toList() ) );
-
-				view.addAttribute( "permissionsByGroup", permissionsByGroup );
-
 				ContainerViewElementUtils.move( view.getViewElements(), "formGroup-permissions",
 				                                EntityFormViewFactory.FORM_RIGHT );
-				ContainerViewElementUtils.find( view.getViewElements(), "permissions", MutableViewElement.class )
-				                         .ifPresent( e -> e.setCustomTemplate( "th/UserModule/test" ) );
 			}
 		} );
 

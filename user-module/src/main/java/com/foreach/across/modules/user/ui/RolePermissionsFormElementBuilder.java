@@ -16,16 +16,12 @@
 
 package com.foreach.across.modules.user.ui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.PermissionGroup;
-import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Comparator;
@@ -37,82 +33,42 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 /**
+ * Custom renderer that renders the permissions as an accordion grouped by by permission group.
+ * Requires the builder context to have an attribute *permissionsByPermissionGroup*.  If that attribute is
+ * not yet present, it will be added by fetching all permissions, sorting them by name and grouping them
+ * by {@link PermissionGroup} (in turn sorted by name).
+ * <p/>
+ * Defers actual rendering to the Thymeleaf fragment <strong>permissions</strong> in the <strong>role.thtml</strong> resource.
+ *
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class RolePermissionsFormElementBuilder implements ViewElementBuilder<ContainerViewElement>
+public class RolePermissionsFormElementBuilder implements ViewElementBuilder<TemplateViewElement>
 {
+	public static final String TEMPLATE = "th/UserModule/role :: permissions";
+	public static final String ATTRIBUTE = "permissionsByPermissionGroup";
+
 	private PermissionService permissionService;
-	private BootstrapUiFactory bootstrapUi;
 
 	@Autowired
 	public void setPermissionService( PermissionService permissionService ) {
 		this.permissionService = permissionService;
 	}
 
-	@Autowired
-	public void setBootstrapUiFactory( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
+	@Override
+	public TemplateViewElement build( ViewElementBuilderContext viewElementBuilderContext ) {
+		if ( !viewElementBuilderContext.hasAttribute( ATTRIBUTE ) ) {
+			viewElementBuilderContext.setAttribute( ATTRIBUTE, fetchPermissionsByPermissionGroup() );
+		}
+
+		return new TemplateViewElement( TEMPLATE );
 	}
 
-	@Override
-	public ContainerViewElement build( ViewElementBuilderContext viewElementBuilderContext ) {
-		Role role = EntityViewElementUtils.currentEntity( viewElementBuilderContext, Role.class );
-
-		Map<PermissionGroup, List<Permission>> permissionsByGroup = permissionService
+	private Map<PermissionGroup, List<Permission>> fetchPermissionsByPermissionGroup() {
+		return permissionService
 				.getPermissions().stream()
 				.sorted( Comparator.<Permission, String>comparing( permission -> permission.getGroup().getName() )
 						         .thenComparing( Comparator.comparing( Permission::getName ) ) )
 				.collect( Collectors.groupingBy( Permission::getGroup, LinkedHashMap::new, toList() ) );
-
-		NodeViewElementBuilder container = bootstrapUi.node( "div" )
-		                                              .css( "panel-group" )
-		                                              .htmlId( "group-permissions" )
-		                                              .attribute( "aria-multiselectable", true )
-		                                              .attribute( "role", "tablist" );
-
-		permissionsByGroup.forEach( ( group, permissions ) -> {
-
-			NodeViewElementBuilder body = bootstrapUi
-					.div()
-					.css( "panel-body" )
-					.add(
-							bootstrapUi.paragraph()
-							           .add( bootstrapUi.text( group.getDescription() ) )
-					);
-
-			permissions.forEach( permission -> {
-				body.add(
-						bootstrapUi.checkbox()
-						           .controlName( "entity.permissions" )
-						           .value( permission.getId() )
-						           .selected( role.hasPermission( permission ) )
-						           .label( permission.getName() )
-						           .add(
-								           bootstrapUi.div()
-								                      .css( "small", "text-muted" )
-								                      .add( bootstrapUi.text( permission.getDescription() ) )
-						           )
-				);
-			} );
-
-			container.add(
-					bootstrapUi.div()
-					           .css( "panel", "panel-default" )
-					           .add(
-							           bootstrapUi.div()
-							                      .css( "panel-heading" )
-							                      .add( bootstrapUi.node( "strong" )
-							                                       .add( bootstrapUi.text( group.getTitle() ) ) ) )
-					           .add(
-							           bootstrapUi.div()
-							                      .css( "panel-collapse", "collapse", "in" )
-							                      .attribute( "role", "tabpanel" )
-							                      .add( body )
-					           )
-			);
-		} );
-
-		return container.build( viewElementBuilderContext );
 	}
 }
