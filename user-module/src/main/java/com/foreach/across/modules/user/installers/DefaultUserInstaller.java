@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.installers;
 
 import com.foreach.across.core.annotations.Installer;
@@ -102,7 +103,7 @@ public class DefaultUserInstaller implements UserAuthorities
 
 		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
 		if ( adminRole == null ) {
-			roleService.defineRole( "ROLE_ADMIN", "Administrator",
+			roleService.defineRole( "ROLE_ADMIN", "Administrator", "System administrator role, has all major permissions.",
 			                        Arrays.asList( "access administration",
 			                                       MANAGE_USERS,
 			                                       MANAGE_GROUPS,
@@ -115,9 +116,11 @@ public class DefaultUserInstaller implements UserAuthorities
 
 		Role managerRole = roleService.getRole( "ROLE_MANAGER" );
 		if ( managerRole == null ) {
-			roleService.defineRole( "ROLE_MANAGER", "Manager", Arrays.asList( "access administration",
-			                                                                  MANAGE_USERS,
-			                                                                  MANAGE_GROUPS ) );
+			roleService.defineRole( "ROLE_MANAGER", "Manager",
+			                        "Restricted administrator role, can manage users and groups.",
+			                        Arrays.asList( "access administration",
+			                                       MANAGE_USERS,
+			                                       MANAGE_GROUPS ) );
 		}
 		else {
 			managerRole.addPermission( MANAGE_GROUPS );
@@ -134,7 +137,7 @@ public class DefaultUserInstaller implements UserAuthorities
 			user.setPassword( "admin" );
 			user.setFirstName( "" );
 			user.setLastName( "" );
-			user.setDisplayName( "Root administrator" );
+			user.setDisplayName( "System administrator" );
 			user.setEmail( "admin@localhost" );
 			user.setDeleted( false );
 			user.setEmailConfirmed( true );

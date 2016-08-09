@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
-import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
+import com.foreach.across.modules.hibernate.business.SettableIdAuditableEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
@@ -27,17 +28,26 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * Role has a diverging equals implementation.  Two role instances are considered equal if they have the same
+ * id value (default behaviour of {@link com.foreach.across.modules.hibernate.business.SettableIdBasedEntity}.
+ * However a role is considered equal to any other type of {@link GrantedAuthority} if it has
+ * the same {@link #getAuthority()} value.
+ * <p/>
+ * This implementation is subject to be changed in the future as it is quite confusing.
+ */
 @NotThreadSafe
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_ROLE)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class Role extends SettableIdBasedEntity<Role>
+public class Role extends SettableIdAuditableEntity<Role>
 		implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable
 {
 	private static final long serialVersionUID = 1L;
@@ -57,6 +67,7 @@ public class Role extends SettableIdBasedEntity<Role>
 	@NotBlank
 	@Size(max = 255)
 	@Column(name = "authority", nullable = false, unique = true)
+	@Pattern(regexp = "^ROLE_[0-9A-Z_]+$")
 	private String authority;
 
 	@NotBlank
@@ -104,7 +115,11 @@ public class Role extends SettableIdBasedEntity<Role>
 	}
 
 	public void setAuthority( String authority ) {
-		this.authority = authority;
+		this.authority = StringUtils.replacePattern( StringUtils.upperCase( authority ), "\\s", "_" );
+
+		if ( !StringUtils.isBlank( this.authority ) && !StringUtils.startsWith( this.authority, "ROLE_" ) ) {
+			this.authority = "ROLE_" + this.authority;
+		}
 	}
 
 	public String getName() {
@@ -163,6 +178,11 @@ public class Role extends SettableIdBasedEntity<Role>
 		if ( this == o ) {
 			return true;
 		}
+
+		if ( o != null && o instanceof Role ) {
+			return super.equals( o );
+		}
+
 		if ( o == null || !( o instanceof GrantedAuthority ) ) {
 			return false;
 		}

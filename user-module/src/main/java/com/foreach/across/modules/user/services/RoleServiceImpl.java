@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
@@ -21,7 +22,6 @@ import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.repositories.PermissionRepository;
 import com.foreach.across.modules.user.repositories.RoleRepository;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +48,14 @@ public class RoleServiceImpl implements RoleService
 
 	@Override
 	public Role defineRole( String authority, String name, Collection<String> permissionNames ) {
+		return defineRole( authority, name, null, permissionNames );
+	}
+
+	@Override
+	public Role defineRole( String authority, String name, String description, Collection<String> permissionNames ) {
 		Assert.isTrue( StringUtils.isNotEmpty( name ) );
 		Role role = new Role( authority, name );
+		role.setDescription( description );
 
 		Set<Permission> permissions = new TreeSet<>();
 
@@ -74,14 +80,8 @@ public class RoleServiceImpl implements RoleService
 				Collection<Permission> difference = CollectionUtils.disjunction( existing.getPermissions(),
 				                                                                 role.getPermissions() );
 				Collection<String> permissionNames = CollectionUtils.collect( difference,
-				                                                              new Transformer<Permission, String>()
-				                                                              {
-					                                                              @Override
-					                                                              public String transform( Permission input ) {
-						                                                              return input.getName();
-					                                                              }
-				                                                              },
-				                                                              new ArrayList<String>()
+				                                                              Permission::getName,
+				                                                              new ArrayList<>()
 				);
 				LOG.error(
 						"Cannot redefine role '{}' because it would loose the permissions: '{}', you should .addPermission() instead",

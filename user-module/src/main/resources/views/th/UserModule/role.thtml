@@ -15,7 +15,8 @@
   -->
 
 <!--/* Renders permissions by group as an accordeon */-->
-<div th:fragment="permissions" th:inline="text" class="panel-group" id="permissions-accordion" role="tablist" aria-multiselectable="true">
+<div th:fragment="permissions(component)" th:inline="text" th:with="permissionsByPermissionGroup=${component.getAttribute('permissionsByPermissionGroup')}"
+     class="panel-group" id="permissions-accordion" role="tablist" aria-multiselectable="true">
 	<div th:each="entry,entryStat : ${permissionsByPermissionGroup}" th:with="group=${entry.key},permissions=${entry.value}" class="panel panel-default">
 		<div class="panel-heading" role="tab" th:id="${#ids.seq('pg-heading')}">
 			<h4 class="panel-title" th:with="bodyId=${#ids.seq('pg-body')}">

@@ -45,7 +45,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class RolePermissionsFormElementBuilder implements ViewElementBuilder<TemplateViewElement>
 {
-	public static final String TEMPLATE = "th/UserModule/role :: permissions";
+	public static final String TEMPLATE = "th/UserModule/role :: permissions(${component})";
 	public static final String ATTRIBUTE = "permissionsByPermissionGroup";
 
 	private PermissionService permissionService;
@@ -57,11 +57,10 @@ public class RolePermissionsFormElementBuilder implements ViewElementBuilder<Tem
 
 	@Override
 	public TemplateViewElement build( ViewElementBuilderContext viewElementBuilderContext ) {
-		if ( !viewElementBuilderContext.hasAttribute( ATTRIBUTE ) ) {
-			viewElementBuilderContext.setAttribute( ATTRIBUTE, fetchPermissionsByPermissionGroup() );
-		}
+		TemplateViewElement template = new TemplateViewElement( TEMPLATE );
+		template.setAttribute( ATTRIBUTE, fetchPermissionsByPermissionGroup() );
 
-		return new TemplateViewElement( TEMPLATE );
+		return template;
 	}
 
 	private Map<PermissionGroup, List<Permission>> fetchPermissionsByPermissionGroup() {

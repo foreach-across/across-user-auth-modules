@@ -19,33 +19,23 @@ package com.foreach.across.modules.user.config.modules;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
-import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListView;
-import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
 import com.foreach.across.modules.user.business.*;
-import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.UserService;
+import com.foreach.across.modules.user.ui.RoleFormProcessorAdapter;
 import com.foreach.across.modules.user.ui.RolePermissionsFormElementBuilder;
-import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Sort;
 
 @AcrossDepends(required = "EntityModule")
 @Configuration
 public class UserEntitiesConfiguration implements EntityConfigurer
 {
 	@Autowired
-	private MutableEntityRegistry entityRegistry;
-
-	@Autowired
 	private UserService userService;
-
-	@Autowired
-	private PermissionService permissionService;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
@@ -65,16 +55,14 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 		configuration.entity( Role.class )
 		             .properties()
 		             .property( "permissions" )
-		             .viewElementBuilder( ViewElementMode.CONTROL, rolePermissionsFormElementBuilder() )
-		             .and().and()
-		             .updateFormView().addProcessor( new WebViewProcessorAdapter()
-		{
-			@Override
-			protected void extendViewModel( EntityView view ) {
-				ContainerViewElementUtils.move( view.getViewElements(), "formGroup-permissions",
-				                                EntityFormViewFactory.FORM_RIGHT );
-			}
-		} );
+		             .viewElementBuilder( ViewElementMode.CONTROL, rolePermissionsFormElementBuilder() ).and()
+		             .and()
+		             .listView()
+		             .defaultSort( new Sort( "name" ) )
+		             .properties( "name", "authority", "description", "lastModified" ).and()
+		             .and()
+		             .updateFormView().addProcessor( roleFormProcessorAdapter() ).and()
+		             .createFormView().addProcessor( roleFormProcessorAdapter() );
 
 		configuration.entity( User.class )
 		             // Use the UserService for persisting User - as that one takes care of password handling
@@ -100,16 +88,11 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 					 .property( "group-membership" ).displayName( "Groups" ).spelValueFetcher( "groups.size()" )
 					 .and()
 					 .property( "role-membership" ).displayName( "Roles" ).spelValueFetcher( "roles.size()" );
+	}
 
-		/*
-		configuration.entity( Role.class )
-		             .properties()
-		             .property( "name", "Key" )
-		             .property( "description", "Name" )
-		             .and()
-		             .view( EntityListView.VIEW_NAME ).properties( "description", "name" );
-		             */
-
+	@Bean
+	protected RoleFormProcessorAdapter roleFormProcessorAdapter() {
+		return new RoleFormProcessorAdapter();
 	}
 
 	@Bean

@@ -28,17 +28,21 @@ import java.util.Collection;
  * @author Andy Somers
  */
 @Installer(
-		description = "Adds the auditable columns to the um_principal and um_user_directory tables",
-		version = 2
+		name = "AuditableTablesInstaller",
+		description = "Adds the auditable columns to required tables"
 )
-public class BasicSecurityPrincipalAuditableInstaller extends AuditableSchemaInstaller
+public class AuditableTablesInstaller extends AuditableSchemaInstaller
 {
-	public BasicSecurityPrincipalAuditableInstaller( SchemaConfiguration schemaConfiguration ) {
+	public AuditableTablesInstaller( SchemaConfiguration schemaConfiguration ) {
 		super( schemaConfiguration );
 	}
 
 	@Override
 	protected Collection<String> getTableNames() {
-		return Arrays.asList( UserSchemaConfiguration.TABLE_PRINCIPAL, UserSchemaConfiguration.TABLE_USER_DIRECTORY );
+		return Arrays.asList(
+				UserSchemaConfiguration.TABLE_PRINCIPAL,
+				UserSchemaConfiguration.TABLE_USER_DIRECTORY,
+				UserSchemaConfiguration.TABLE_ROLE
+		);
 	}
 }

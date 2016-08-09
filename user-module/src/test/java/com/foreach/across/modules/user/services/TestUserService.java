@@ -113,7 +113,7 @@ public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 		assertEquals( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ), userDto.getRestrictions() );
 		assertEquals( true, userDto.hasRestrictions() );
 
-		assertEquals( Sets.newSet( new SimpleGrantedAuthority( "role 1" ),
+		assertEquals( Sets.newSet( new SimpleGrantedAuthority( "ROLE_1" ),
 		                           new SimpleGrantedAuthority( "permission 1" ),
 		                           new SimpleGrantedAuthority( "permission 2" ) ),
 		              user.getAuthorities() );

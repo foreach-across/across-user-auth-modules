@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user;
 
 import com.foreach.across.core.AcrossModule;
@@ -61,7 +62,7 @@ public class UserModule extends AcrossModule implements HibernatePackageConfigur
 				new GroupPropertiesSchemaInstaller( schemaConfiguration ),
 				new UserPropertiesSchemaInstaller( schemaConfiguration ),
 				new UserSchemaInstaller( schemaConfiguration ),
-				new BasicSecurityPrincipalAuditableInstaller( schemaConfiguration ),
+				new AuditableTablesInstaller( schemaConfiguration ),
 				DefaultUserInstaller.class,
 				AclPermissionsInstaller.class
 		};

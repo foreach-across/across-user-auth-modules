@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
@@ -29,22 +30,11 @@ import static org.junit.Assert.*;
 public class TestRole
 {
 	@Test
-	public void equals() {
-		Role left = new Role( "some role" );
-		left.setDescription( "description left" );
-
-		Role right = new Role( "some role" );
-
-		assertEquals( left, right );
-		assertNotEquals( left, new Role( "other role" ) );
-	}
-
-	@Test
 	public void caseIsIgnored() {
 		Role left = new Role( "some role" );
 		left.setDescription( "description left" );
 
-		Role right = new Role( "SOME role" );
+		GrantedAuthority right = new Permission( "role_some_role" );
 
 		assertEquals( left, right );
 	}
@@ -67,13 +57,16 @@ public class TestRole
 
 	@Test
 	public void authorityMatching() {
+		Role role = new Role( "ROLE_ADMIN" );
+		role.setId( 123L );
+
 		Set<GrantedAuthority> actuals = new HashSet<>();
-		actuals.add( new Role( "ROLE_ADMIN" ) );
+		actuals.add( role );
 
 		AuthorityMatcher matcher = AuthorityMatcher.allOf( "ROLE_ADMIN" );
 		assertTrue( matcher.matches( actuals ) );
 
-		matcher = AuthorityMatcher.allOf( new Role( "ROLE_ADMIN" ) );
+		matcher = AuthorityMatcher.allOf( role );
 		assertTrue( matcher.matches( actuals ) );
 	}
 
@@ -89,8 +82,34 @@ public class TestRole
 	}
 
 	@Test
+	public void rolesAreEqualById() {
+		Role roleOne = new Role( "ROLE_TEST" );
+		Role roleTwo = new Role( "ROLE_TEST" );
+		assertNotEquals( roleOne, roleTwo );
+
+		roleOne.setId( 123L );
+		roleTwo.setId( 456L );
+		assertNotEquals( roleOne, roleTwo );
+
+		roleTwo.setId( 123L );
+		assertEquals( roleOne, roleTwo );
+
+		roleTwo.setAuthority( "ROLE_OTHER" );
+		assertEquals( roleOne, roleTwo );
+	}
+
+	@Test
+	public void nonRoleAuthoritiesAreEqualByAuthorityValue() {
+		GrantedAuthority perm = new Permission( "ROLE_TEST" );
+
+		assertEquals( perm, new Role( "ROLE_TEST" ) );
+		assertNotEquals( perm, new Role( "ROLE_OTHER" ) );
+	}
+
+	@Test
 	public void roleDto() {
 		Role role = new Role( "some role" );
+		role.setId( 123L );
 		role.setPermissions( Arrays.asList( new Permission( "one" ), new Permission( "two" ) ) );
 
 		Role dto = role.toDto();
@@ -99,5 +118,17 @@ public class TestRole
 		assertEquals( role.getName(), dto.getName() );
 		assertEquals( role.getPermissions(), dto.getPermissions() );
 		assertNotSame( role.getPermissions(), dto.getPermissions() );
+	}
+
+	@Test
+	public void authorityValue() {
+		Role role = new Role( "my role" );
+		assertEquals( "ROLE_MY_ROLE", role.getAuthority() );
+
+		role.setAuthority( "role_other_role" );
+		assertEquals( "ROLE_OTHER_ROLE", role.getAuthority() );
+
+		role.setAuthority( "ROLE_TEST ME\tWELL" );
+		assertEquals( "ROLE_TEST_ME_WELL", role.getAuthority() );
 	}
 }

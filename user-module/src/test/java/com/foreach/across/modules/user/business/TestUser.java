@@ -95,6 +95,7 @@ public class TestUser
 	@Test
 	public void hasPermissions() {
 		Role roleOne = new Role( "role one" );
+		roleOne.setId( 123L );
 		roleOne.getPermissions().add( new Permission( "perm three" ) );
 
 		Role roleTwo = new Role( "role two" );

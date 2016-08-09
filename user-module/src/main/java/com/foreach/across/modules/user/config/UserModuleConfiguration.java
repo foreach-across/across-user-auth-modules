@@ -21,11 +21,13 @@ import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcross
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
+import com.foreach.across.modules.user.repositories.RoleRepository;
 import com.foreach.across.modules.user.services.*;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategyImpl;
 import com.foreach.across.modules.user.validators.GroupValidator;
 import com.foreach.across.modules.user.validators.MachinePrincipalValidator;
+import com.foreach.across.modules.user.validators.RoleValidator;
 import com.foreach.across.modules.user.validators.UserDirectoryValidator;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
@@ -75,6 +77,11 @@ public class UserModuleConfiguration
 	@Bean
 	public MachinePrincipalValidator machinePrincipalValidator( MachinePrincipalRepository machinePrincipalRepository ) {
 		return new MachinePrincipalValidator( machinePrincipalRepository, defaultUserDirectoryStrategy() );
+	}
+
+	@Bean
+	public RoleValidator roleValidator( RoleRepository roleRepository ) {
+		return new RoleValidator( roleRepository );
 	}
 
 	@Bean
