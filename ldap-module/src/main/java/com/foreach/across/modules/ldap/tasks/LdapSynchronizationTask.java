@@ -44,7 +44,7 @@ public class LdapSynchronizationTask implements Runnable
 	                                String serverName ) {
 		this.ldapSynchronizationService = ldapSynchronizationService;
 		this.ldapUserDirectoryRepository = ldapUserDirectoryRepository;
-		lock = distributedLockRepository.createSharedLock( serverName, "LdapSynchronizationTask" );
+		lock = distributedLockRepository.getLock( serverName, "LdapSynchronizationTask" );
 	}
 
 	@Override

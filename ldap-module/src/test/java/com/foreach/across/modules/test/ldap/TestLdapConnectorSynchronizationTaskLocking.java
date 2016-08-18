@@ -55,7 +55,6 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration(loader = MockedLoader.class, classes = TestLdapConnectorSynchronizationTaskLocking.Config.class)
 public class TestLdapConnectorSynchronizationTaskLocking
 {
-
 	private static final Logger LOG = LoggerFactory.getLogger( TestLdapConnectorSynchronizationTaskLocking.class );
 
 	@Autowired

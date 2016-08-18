@@ -25,7 +25,7 @@ import org.springframework.core.annotation.Order;
  * @since 1.0.0
  */
 @Order(1)
-@Installer(description = "Installs the base schema for the Ldap Module.", version = 1)
+@Installer(description = "Installs the base schema for the Ldap Module.", version = 2)
 public class LdapCoreSchemaInstaller extends AcrossLiquibaseInstaller
 {
 }

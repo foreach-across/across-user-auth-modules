@@ -107,6 +107,10 @@ public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 	@Size(max = 255)
 	private String additionalGroupDn;
 
+	@Column(name = "authenticate_as")
+	@Size(max = 255)
+	private String synchronizationPrincipalName;
+
 	@Override
 	public void setId( Long id ) {
 		this.id = id;
@@ -211,5 +215,13 @@ public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 
 	public void setLdapConnectorType( LdapConnectorType ldapConnectorType ) {
 		this.ldapConnectorType = ldapConnectorType;
+	}
+
+	public String getSynchronizationPrincipalName() {
+		return synchronizationPrincipalName;
+	}
+
+	public void setSynchronizationPrincipalName( String synchronizationPrincipalName ) {
+		this.synchronizationPrincipalName = synchronizationPrincipalName;
 	}
 }

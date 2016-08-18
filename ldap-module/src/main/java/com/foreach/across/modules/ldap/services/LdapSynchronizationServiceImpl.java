@@ -20,6 +20,10 @@ import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalAuthenticationToken;
+import com.foreach.across.modules.spring.security.infrastructure.services.CloseableAuthentication;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.UserService;
@@ -55,9 +59,13 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 	@Autowired
 	private LdapSearchService ldapSearchService;
 
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
+
 	private Set<LdapUserDirectory> busy = new HashSet<>();
 
 	public boolean synchronizeData( LdapUserDirectory ldapUserDirectory ) {
+
 		if ( !busy.contains( ldapUserDirectory ) ) {
 			busy.add( ldapUserDirectory );
 
@@ -66,6 +74,8 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 			StopWatch watch = new StopWatch();
 			watch.start();
 			int totalUsersSynchronized = 0, totalGroupsSynchronized = 0;
+
+			CloseableAuthentication authentication = authenticateAsConnector( ldapUserDirectory.getLdapConnector() );
 
 			try {
 				Map<String, Group> groups = performGroupSynchronization( ldapUserDirectory );
@@ -76,6 +86,11 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 			}
 			catch ( Exception ie ) {
 				LOG.error( "Failed to synchronize directory {}", ldapUserDirectory.getName(), ie );
+			}
+			finally {
+				if ( authentication != null ) {
+					authentication.close();
+				}
 			}
 
 			watch.stop();
@@ -90,6 +105,17 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 		LOG.debug( "Skipping synchronization of directory {}, still busy", ldapUserDirectory.getName() );
 		return false;
+	}
+
+	private CloseableAuthentication authenticateAsConnector( LdapConnector connector ) {
+		if ( connector.getSynchronizationPrincipalName() != null ) {
+			SecurityPrincipal principal = securityPrincipalService.getPrincipalByName(
+					connector.getSynchronizationPrincipalName() );
+			if ( principal != null ) {
+				return new CloseableAuthentication( new SecurityPrincipalAuthenticationToken( principal ) );
+			}
+		}
+		return null;
 	}
 
 	private Set<User> performUserSynchronization( LdapUserDirectory userDirectory, Map<String, Group> groups ) {

@@ -64,4 +64,20 @@
 			<column name="last_modified_date" type="java.sql.Types.TIMESTAMP"/>
 		</createTable>
 	</changeSet>
+
+	<changeSet id="201608181433" author="arne">
+		<preConditions>
+			<not>
+				<columnExists tableName="${table.ldap_connector}" columnName="authenticate_as"/>
+			</not>
+		</preConditions>
+
+		<comment>Adds authenticate_as column to LDAP connector table</comment>
+
+		<addColumn tableName="${table.ldap_connector}">
+			<column name="authenticate_as" type="java.sql.Types.VARCHAR(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
 </databaseChangeLog>
