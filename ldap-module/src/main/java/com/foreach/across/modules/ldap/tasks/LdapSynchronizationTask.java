@@ -53,8 +53,15 @@ public class LdapSynchronizationTask implements Runnable
 			LOG.info( "Trying to get lock for {} and owner {}", lock.getOwnerId(), lock.getKey() );
 			if ( lock.tryLock() ) {
 				LOG.info( "Got lock for {} and owner {}", lock.getOwnerId(), lock.getKey() );
-				ldapUserDirectoryRepository.findAllByActiveTrue().forEach(
-						ldapSynchronizationService::synchronizeData );
+				ldapUserDirectoryRepository.findAllByActiveTrue().forEach( userDirectory -> {
+					try {
+						UserDirectorySyncHolder.setUserDirectory( userDirectory );
+						ldapSynchronizationService.synchronizeData( userDirectory );
+					}
+					finally {
+						UserDirectorySyncHolder.clearUserDirectory();
+					}
+				} );
 			}
 			else {
 				LOG.info( "Could not get lock for {} and owner {}", lock.getOwnerId(), lock.getKey() );
