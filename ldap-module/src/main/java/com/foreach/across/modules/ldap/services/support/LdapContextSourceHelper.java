@@ -17,6 +17,7 @@
 package com.foreach.across.modules.ldap.services.support;
 
 import com.foreach.across.modules.ldap.business.LdapConnector;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
@@ -24,6 +25,14 @@ import org.springframework.ldap.core.support.LdapContextSource;
  */
 public class LdapContextSourceHelper
 {
+	public static LdapTemplate createLdapTemplate( LdapConnector ldapConnector ) {
+		LdapContextSource ldapContextSource = createLdapContextSource( ldapConnector );
+		LdapTemplate ldapTemplate = new LdapTemplate( ldapContextSource );
+		// TODO: put this in a setting? Microsoft Active Directory cannot follow referrals when in the root context
+		ldapTemplate.setIgnorePartialResultException( true );
+		return ldapTemplate;
+	}
+
 	public static LdapContextSource createLdapContextSource( LdapConnector connector ) {
 		LdapContextSource source = new LdapContextSource();
 		source.setPooled( true );

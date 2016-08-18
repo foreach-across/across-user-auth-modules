@@ -16,9 +16,11 @@
 
 package com.foreach.across.modules.ldap.services;
 
+import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
+import com.foreach.across.modules.ldap.events.LdapEntitySavedEvent;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalAuthenticationToken;
@@ -61,6 +63,9 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 	@Autowired
 	private SecurityPrincipalService securityPrincipalService;
+
+	@Autowired
+	private AcrossEventPublisher eventPublisher;
 
 	private Set<LdapUserDirectory> busy = new HashSet<>();
 
@@ -163,6 +168,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						user.setGroups( groupsForUser );
 						setRestrictions( user, ldapConnectorSettings, adapter );
 						userService.save( user );
+						eventPublisher.publish( new LdapEntitySavedEvent<>( user, adapter ) );
 						itemsInLdap.add( user );
 					}
 					else {
@@ -178,6 +184,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 							user.setDeleted( false );
 							user.setGroups( groupsForUser );
 							setRestrictions( user, ldapConnectorSettings, adapter );
+							eventPublisher.publish( new LdapEntitySavedEvent<>( user, adapter ) );
 							userService.save( user );
 							itemsInLdap.add( user );
 
@@ -242,6 +249,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						group.setName( adapter.getStringAttribute( ldapConnectorSettings.getGroupName() ) );
 						group.setUserDirectory( userDirectory );
 						groupService.save( group );
+						eventPublisher.publish( new LdapEntitySavedEvent<>( group, adapter ) );
 						itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), group );
 					}
 					else {

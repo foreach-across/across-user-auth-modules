@@ -21,7 +21,6 @@ import com.foreach.across.modules.ldap.services.support.LdapContextSourceHelper;
 import org.springframework.ldap.control.PagedResultsDirContextProcessor;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.filter.Filter;
 
 import javax.naming.directory.SearchControls;
@@ -43,21 +42,12 @@ public class LdapSearchServiceImpl implements LdapSearchService
 		//TODO: detect if connector is pageable, or store the page size on the connector?
 		PagedResultsDirContextProcessor processor = new PagedResultsDirContextProcessor( 20 );
 
-		LdapTemplate ldapTemplate = ldapTemplate( connector );
+		LdapTemplate ldapTemplate = LdapContextSourceHelper.createLdapTemplate( connector );
 
 		do {
 			ldapTemplate.search( "", filter.encode(), controls, ctx, processor );
 			processor = new PagedResultsDirContextProcessor( processor.getPageSize(), processor.getCookie() );
 		}
 		while ( processor.getCookie().getCookie() != null );
-	}
-
-	private LdapTemplate ldapTemplate( LdapConnector connector ) {
-		LdapContextSource source = LdapContextSourceHelper.createLdapContextSource( connector );
-
-		LdapTemplate ldapTemplate = new LdapTemplate( source );
-		// TODO: put this in a setting? Microsoft Active Directory cannot follow referrals when in the root context
-		ldapTemplate.setIgnorePartialResultException( true );
-		return ldapTemplate;
 	}
 }
