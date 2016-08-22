@@ -20,6 +20,9 @@ import com.foreach.across.modules.ldap.business.LdapConnector;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Marc Vanbrabant
  */
@@ -40,6 +43,10 @@ public class LdapContextSourceHelper
 		source.setBase( connector.getBaseDn() );
 		source.setUserDn( connector.getUsername() );
 		source.setPassword( connector.getPassword() );
+		//TODO: move the binary decoding settings somewhere else ?
+		Map<String, Object> baseEnvironmentProperties = new HashMap<>();
+		baseEnvironmentProperties.put( "java.naming.ldap.attributes.binary", "objectGUID" );
+		source.setBaseEnvironmentProperties( baseEnvironmentProperties );
 		source.afterPropertiesSet();
 		return source;
 	}

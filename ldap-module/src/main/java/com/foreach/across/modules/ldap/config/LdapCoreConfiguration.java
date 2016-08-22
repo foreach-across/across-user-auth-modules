@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.ldap.config;
 
+import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.ldap.controllers.AjaxTestLdapConnectorController;
@@ -23,11 +24,14 @@ import com.foreach.across.modules.ldap.repositories.LdapConnectorRepository;
 import com.foreach.across.modules.ldap.repositories.LdapUserDirectoryRepository;
 import com.foreach.across.modules.ldap.services.*;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
+import com.foreach.across.modules.user.services.GroupPropertiesRegistry;
 import com.foreach.across.modules.user.services.UserDirectoryServiceProvider;
+import com.foreach.across.modules.user.services.UserPropertiesRegistry;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.TypeDescriptor;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -47,6 +51,22 @@ public class LdapCoreConfiguration
 	                                                        DistributedLockRepository lockRepository ) throws UnknownHostException {
 		return new LdapSynchronizationTask( ldapSynchronizationService(), ldapUserDirectoryRepository,
 		                                    lockRepository, InetAddress.getLocalHost().getHostName() );
+	}
+
+	@Bean
+	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
+	public LdapPropertiesService ldapPropertiesService( AcrossModule currentModule,
+	                                                    UserPropertiesRegistry userPropertiesRegistry,
+	                                                    GroupPropertiesRegistry groupPropertiesRegistry ) {
+		userPropertiesRegistry.register( currentModule, LdapPropertyConstants.OBJECT_GUID, TypeDescriptor.valueOf(
+				String.class ) );
+		userPropertiesRegistry.register( currentModule, LdapPropertyConstants.DISTINGUISHED_NAME,
+		                                 TypeDescriptor.valueOf( String.class ) );
+		groupPropertiesRegistry.register( currentModule, LdapPropertyConstants.OBJECT_GUID, TypeDescriptor.valueOf(
+				String.class ) );
+		groupPropertiesRegistry.register( currentModule, LdapPropertyConstants.DISTINGUISHED_NAME,
+		                                  TypeDescriptor.valueOf( String.class ) );
+		return new LdapPropertiesServiceImpl();
 	}
 
 	@Bean

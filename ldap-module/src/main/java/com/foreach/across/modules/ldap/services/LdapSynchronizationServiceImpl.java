@@ -67,6 +67,9 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 	@Autowired
 	private AcrossEventPublisher eventPublisher;
 
+	@Autowired
+	private LdapPropertiesService ldapPropertiesService;
+
 	private Set<LdapUserDirectory> busy = new HashSet<>();
 
 	public boolean synchronizeData( LdapUserDirectory ldapUserDirectory ) {
@@ -83,8 +86,9 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 			CloseableAuthentication authentication = authenticateAsConnector( ldapUserDirectory.getLdapConnector() );
 
 			try {
+				Set<User> users = performUserSynchronization( ldapUserDirectory );
 				Map<String, Group> groups = performGroupSynchronization( ldapUserDirectory );
-				Set<User> users = performUserSynchronization( ldapUserDirectory, groups );
+				synchronizeUserMemberships( ldapUserDirectory, users, groups );
 				totalUsersSynchronized += users.size();
 				totalGroupsSynchronized += groups.size();
 
@@ -123,7 +127,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 		return null;
 	}
 
-	private Set<User> performUserSynchronization( LdapUserDirectory userDirectory, Map<String, Group> groups ) {
+	private Set<User> performUserSynchronization( LdapUserDirectory userDirectory ) {
 		LdapConnector connector = userDirectory.getLdapConnector();
 		Set<User> itemsInLdap = new HashSet<>();
 		if ( connector != null ) {
@@ -140,18 +144,6 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 				DirContextAdapter adapter = (DirContextAdapter) ctx;
 
 				String name = adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
-				String[] memberOf = adapter.getStringAttributes( ldapConnectorSettings.getUserMemberOf() );
-
-				Set<Group> groupsForUser = new HashSet<>();
-				if ( memberOf != null ) {
-					for ( String member : memberOf ) {
-						Optional<Map.Entry<String, Group>> group = groups.entrySet().stream().filter(
-								i -> i.getKey().equalsIgnoreCase( member ) ).findFirst();
-						if ( group.isPresent() ) {
-							groupsForUser.add( group.get().getValue() );
-						}
-					}
-				}
 
 				if ( StringUtils.isNotBlank( name ) ) {
 					Collection<User> users = userService.findAll( query.username.equalsIgnoreCase( name ) );
@@ -165,14 +157,13 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						user.setDisplayName( adapter.getStringAttribute( ldapConnectorSettings.getDiplayName() ) );
 						user.setPassword( UUID.randomUUID().toString() );
 						user.setUserDirectory( userDirectory );
-						user.setGroups( groupsForUser );
 						setRestrictions( user, ldapConnectorSettings, adapter );
 						userService.save( user );
-						eventPublisher.publish( new LdapEntitySavedEvent<>( user, adapter ) );
 						itemsInLdap.add( user );
+						ldapPropertiesService.saveLdapProperties( user, adapter );
 					}
 					else {
-						users.stream().forEach( user -> {
+						users.forEach( user -> {
 							user.setEmail( adapter.getStringAttribute(
 									ldapConnectorSettings.getUserEmail() ) );
 							user.setFirstName( adapter.getStringAttribute(
@@ -182,12 +173,10 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 							user.setDisplayName( adapter.getStringAttribute(
 									ldapConnectorSettings.getDiplayName() ) );
 							user.setDeleted( false );
-							user.setGroups( groupsForUser );
 							setRestrictions( user, ldapConnectorSettings, adapter );
-							eventPublisher.publish( new LdapEntitySavedEvent<>( user, adapter ) );
 							userService.save( user );
 							itemsInLdap.add( user );
-
+							ldapPropertiesService.saveLdapProperties( user, adapter );
 						} );
 					}
 				}
@@ -198,13 +187,56 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 			// Mark users as deleted that are not in AD anymore
 			Collection<User> deletedUsers = userService.findAll(
 					query.notIn( itemsInLdap ).and( query.userDirectory.eq( userDirectory ) ) );
-			deletedUsers.stream().forEach( user -> {
+			deletedUsers.forEach( user -> {
 				user.setDeleted( true );
 				userService.save( user );
 			} );
 
 		}
 		return itemsInLdap;
+	}
+
+	private void synchronizeUserMemberships( LdapUserDirectory userDirectory,
+	                                         Set<User> users,
+	                                         Map<String, Group> groups ) {
+		LdapConnector connector = userDirectory.getLdapConnector();
+		if ( connector != null ) {
+			LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties(
+					connector.getId() );
+
+			AndFilter andFilter = new AndFilter();
+			andFilter.and( new EqualsFilter( "objectclass", ldapConnectorSettings.getUserObjectClass() ) );
+			andFilter.and( new HardcodedFilter( ldapConnectorSettings.getUserObjectFilter() ) );
+
+			ldapSearchService.performSearch( connector, andFilter, ctx -> {
+				DirContextAdapter adapter = (DirContextAdapter) ctx;
+
+				String name = adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
+				String[] memberOf = adapter.getStringAttributes( ldapConnectorSettings.getUserMemberOf() );
+
+				Set<Group> groupsForUser = new HashSet<>();
+				if ( memberOf != null ) {
+					for ( String member : memberOf ) {
+						groups.entrySet().stream().filter(
+								i -> i.getKey().equalsIgnoreCase( member ) ).findFirst().ifPresent(
+								g -> groupsForUser.add( g.getValue() ) );
+					}
+				}
+
+				if ( StringUtils.isNotBlank( name ) ) {
+					users.stream().filter( i -> i.getUsername().equalsIgnoreCase( name ) )
+					     .findFirst().ifPresent( user -> {
+						                             user.setGroups( groupsForUser );
+						                             userService.save( user );
+						                             eventPublisher.publish( new LdapEntitySavedEvent<>( user, adapter ) );
+					                             }
+					);
+
+				}
+
+				return adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
+			} );
+		}
 	}
 
 	private void setRestrictions( User user, LdapConnectorSettings ldapConnectorSettings, DirContextAdapter adapter ) {
@@ -249,6 +281,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						group.setName( adapter.getStringAttribute( ldapConnectorSettings.getGroupName() ) );
 						group.setUserDirectory( userDirectory );
 						groupService.save( group );
+						ldapPropertiesService.saveLdapProperties( group, adapter );
 						eventPublisher.publish( new LdapEntitySavedEvent<>( group, adapter ) );
 						itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), group );
 					}

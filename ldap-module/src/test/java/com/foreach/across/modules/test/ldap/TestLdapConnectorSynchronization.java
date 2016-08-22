@@ -110,7 +110,7 @@ public class TestLdapConnectorSynchronization
 		ldapUserDirectory.setLdapConnector( ldapConnector );
 		ldapSynchronizationService.synchronizeData( ldapUserDirectory );
 
-		verify( userService, times( 150 ) ).save( any( User.class ) );
+		verify( userService, times( 300 ) ).save( any( User.class ) );
 	}
 
 	@Test
