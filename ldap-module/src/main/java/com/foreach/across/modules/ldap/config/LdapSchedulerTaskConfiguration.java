@@ -47,14 +47,15 @@ public class LdapSchedulerTaskConfiguration implements SchedulingConfigurer
 
 	@Override
 	public void configureTasks( ScheduledTaskRegistrar taskRegistrar ) {
+		taskRegistrar.setScheduler( taskScheduler() );
 		this.taskRegistrar = taskRegistrar;
 	}
 
 	@Event
 	public void registerTasks( AcrossContextBootstrappedEvent contextBootstrappedEvent ) {
-		taskRegistrar.setScheduler( taskScheduler() );
 		taskRegistrar.addFixedRateTask( ldapSynchronizationTask,
 		                                ldapModuleSettings.getSynchronizationTaskIntervalInSeconds() * 1000 );
+		taskRegistrar.afterPropertiesSet();
 	}
 
 	@Bean(destroyMethod = "shutdown")
