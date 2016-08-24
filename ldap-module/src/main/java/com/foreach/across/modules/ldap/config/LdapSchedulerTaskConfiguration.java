@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.ldap.config;
 
+import com.foreach.across.core.annotations.Event;
+import com.foreach.across.core.events.AcrossContextBootstrappedEvent;
 import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +43,15 @@ public class LdapSchedulerTaskConfiguration implements SchedulingConfigurer
 	private LdapSynchronizationTask ldapSynchronizationTask;
 	@Autowired
 	private LdapModuleSettings ldapModuleSettings;
+	private ScheduledTaskRegistrar taskRegistrar;
 
 	@Override
 	public void configureTasks( ScheduledTaskRegistrar taskRegistrar ) {
+		this.taskRegistrar = taskRegistrar;
+	}
+
+	@Event
+	public void registerTasks( AcrossContextBootstrappedEvent contextBootstrappedEvent ) {
 		taskRegistrar.setScheduler( taskScheduler() );
 		taskRegistrar.addFixedRateTask( ldapSynchronizationTask,
 		                                ldapModuleSettings.getSynchronizationTaskIntervalInSeconds() * 1000 );
