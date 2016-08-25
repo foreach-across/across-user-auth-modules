@@ -29,6 +29,7 @@ import com.foreach.across.modules.spring.security.infrastructure.services.Securi
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.UserService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -86,6 +87,8 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 				Set<User> users = performUserSynchronization( ldapUserDirectory );
 				Map<String, Group> groups = performGroupSynchronization( ldapUserDirectory );
 				synchronizeUserMemberships( ldapUserDirectory, users, groups );
+				removeDeletedGroups( ldapUserDirectory, groups );
+				removeDeletedUsers( ldapUserDirectory, users );
 				totalUsersSynchronized += users.size();
 				totalGroupsSynchronized += groups.size();
 
@@ -111,6 +114,26 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 		LOG.debug( "Skipping synchronization of directory {}, still busy", ldapUserDirectory.getName() );
 		return false;
+	}
+
+	private void removeDeletedUsers( LdapUserDirectory ldapUserDirectory, Set<User> users ) {
+		CollectionUtils.subtract( userService.findAll( QUser.user.userDirectory.eq( ldapUserDirectory ) ), users )
+		               .forEach( u -> {
+			               u.getGroups().clear();
+			               userService.save( u );
+			               userService.delete( u.getId() );
+		               } );
+	}
+
+	private void removeDeletedGroups( LdapUserDirectory ldapUserDirectory, Map<String, Group> groups ) {
+		CollectionUtils.subtract( groupService.findAll( QGroup.group.userDirectory.eq( ldapUserDirectory ) ),
+		                          groups.values() ).forEach( g -> {
+			userService.findAll( QUser.user.groups.contains( g ) ).forEach( u -> {
+				u.getGroups().remove( g );
+				userService.save( u );
+			} );
+			groupService.delete( g.getId() );
+		} );
 	}
 
 	private CloseableAuthentication authenticateAsConnector( LdapConnector connector ) {
@@ -280,8 +303,6 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 				}
 				return adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
 			} );
-
-			//TODO: implement group deletion?
 
 		}
 		return itemsInLdap;

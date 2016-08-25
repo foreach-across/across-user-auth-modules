@@ -20,6 +20,7 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.controllers.entity.EntityControllerSupport;
 import com.foreach.across.modules.entity.controllers.entity.EntityListController;
+import com.foreach.across.modules.entity.controllers.entity.EntityViewController;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.ldap.business.LdapConnector;
@@ -41,7 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since 1.0.0
  */
 @AdminWebController
-@RequestMapping(EntityListController.PATH + "/test")
+@RequestMapping(value = { EntityListController.PATH + "/test", EntityViewController.PATH + "/test" })
 public class AjaxTestLdapConnectorController extends EntityControllerSupport
 {
 	@Autowired
