@@ -23,18 +23,17 @@ import com.foreach.across.modules.entity.controllers.entity.EntityListController
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.ldap.business.LdapConnector;
+import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.services.LdapSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.filter.PresentFilter;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import javax.naming.NamingException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -63,23 +62,36 @@ public class AjaxTestLdapConnectorController extends EntityControllerSupport
 		LdapConnector ldapConnector = (LdapConnector) viewRequest.getEntity();
 		LdapUserDirectory ldapUserDirectory = new LdapUserDirectory();
 		ldapUserDirectory.setLdapConnector( ldapConnector );
-		AtomicInteger numberOfEntries = new AtomicInteger();
+		AtomicInteger numberOfUsers = new AtomicInteger();
+		AtomicInteger numberOfGroups = new AtomicInteger();
+		DummyLdapConnectorSettings ldapConnectorSettings = new DummyLdapConnectorSettings( ldapConnector );
 		try {
-			ldapSearchService.performSearch( ldapConnector, new PresentFilter( "cn" ),
-			                                 new ContextMapper<String>()
-			                                 {
-				                                 @Override
-				                                 public String mapFromContext( Object ctx ) throws NamingException {
-					                                 numberOfEntries.incrementAndGet();
-					                                 return null;
-				                                 }
+			ldapSearchService.performSearch( ldapConnector, ldapConnector.getAdditionalUserDn(),
+			                                 ldapSearchService.getUserFilter( ldapConnectorSettings )
+			                                                  .and( new PresentFilter( "cn" ) ),
+			                                 ctx -> {
+				                                 numberOfUsers.incrementAndGet();
+				                                 return null;
+			                                 } );
+		}
+		catch ( Exception e ) {
+			return ResponseEntity.ok( new TestResponse( "<pre>" + e.getMessage() + "</pre>" ) );
+		}
+		try {
+			ldapSearchService.performSearch( ldapConnector, ldapConnector.getAdditionalGroupDn(),
+			                                 ldapSearchService.getGroupFilter( ldapConnectorSettings )
+			                                                  .and( new PresentFilter( "cn" ) ),
+			                                 ctx -> {
+				                                 numberOfGroups.incrementAndGet();
+				                                 return null;
 			                                 } );
 		}
 		catch ( Exception e ) {
 			return ResponseEntity.ok( new TestResponse( "<pre>" + e.getMessage() + "</pre>" ) );
 		}
 
-		return ResponseEntity.ok( new TestResponse( "Success: " + numberOfEntries + " 'cn' entries retrieved" ) );
+		return ResponseEntity.ok(
+				new TestResponse( "Found " + numberOfUsers + " users and " + numberOfGroups + " groups." ) );
 	}
 
 	@Override
@@ -97,6 +109,36 @@ public class AjaxTestLdapConnectorController extends EntityControllerSupport
 
 		public String getResponse() {
 			return response;
+		}
+	}
+
+	private static class DummyLdapConnectorSettings extends LdapConnectorSettings
+	{
+		private final LdapConnector ldapConnector;
+
+		DummyLdapConnectorSettings( LdapConnector ldapConnector ) {
+			super( 0, null, null );
+			this.ldapConnector = ldapConnector;
+		}
+
+		@Override
+		public String getUserObjectClass() {
+			return ldapConnector.getLdapConnectorType().getSettings().get( "ldapUserObjectClass" );
+		}
+
+		@Override
+		public String getGroupObjectClass() {
+			return ldapConnector.getLdapConnectorType().getSettings().get( "ldapGroupObjectClass" );
+		}
+
+		@Override
+		public String getUserObjectFilter() {
+			return ldapConnector.getLdapConnectorType().getSettings().get( "ldapUserObjectFilter" );
+		}
+
+		@Override
+		public String getGroupObjectFilter() {
+			return ldapConnector.getLdapConnectorType().getSettings().get( "ldapGroupObjectFilter" );
 		}
 	}
 }

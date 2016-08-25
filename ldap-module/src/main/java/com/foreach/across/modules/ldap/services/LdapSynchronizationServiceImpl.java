@@ -35,9 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.DirContextAdapter;
-import org.springframework.ldap.filter.AndFilter;
-import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.ldap.filter.HardcodedFilter;
 
 import java.util.*;
 
@@ -134,13 +131,10 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 			LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties(
 					connector.getId() );
 
-			AndFilter andFilter = new AndFilter();
-			andFilter.and( new EqualsFilter( "objectclass", ldapConnectorSettings.getUserObjectClass() ) );
-			andFilter.and( new HardcodedFilter( ldapConnectorSettings.getUserObjectFilter() ) );
-
 			QUser query = QUser.user;
 
-			ldapSearchService.performSearch( connector, andFilter, ctx -> {
+			ldapSearchService.performSearch( connector, connector.getAdditionalUserDn(),
+			                                 ldapSearchService.getUserFilter( ldapConnectorSettings ), ctx -> {
 				DirContextAdapter adapter = (DirContextAdapter) ctx;
 
 				String name = adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
@@ -204,11 +198,8 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 			LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties(
 					connector.getId() );
 
-			AndFilter andFilter = new AndFilter();
-			andFilter.and( new EqualsFilter( "objectclass", ldapConnectorSettings.getUserObjectClass() ) );
-			andFilter.and( new HardcodedFilter( ldapConnectorSettings.getUserObjectFilter() ) );
-
-			ldapSearchService.performSearch( connector, andFilter, ctx -> {
+			ldapSearchService.performSearch( connector, connector.getAdditionalUserDn(),
+			                                 ldapSearchService.getUserFilter( ldapConnectorSettings ), ctx -> {
 				DirContextAdapter adapter = (DirContextAdapter) ctx;
 
 				String name = adapter.getStringAttribute( ldapConnectorSettings.getUsername() );
@@ -264,13 +255,10 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 			LdapConnectorSettings ldapConnectorSettings = ldapConnectorSettingsService.getProperties(
 					connector.getId() );
 
-			AndFilter andFilter = new AndFilter();
-			andFilter.and( new EqualsFilter( "objectclass", ldapConnectorSettings.getGroupObjectClass() ) );
-			andFilter.and( new HardcodedFilter( ldapConnectorSettings.getGroupObjectFilter() ) );
-
 			QGroup query = QGroup.group;
 
-			ldapSearchService.performSearch( connector, andFilter, ctx -> {
+			ldapSearchService.performSearch( connector, connector.getAdditionalGroupDn(),
+			                                 ldapSearchService.getGroupFilter( ldapConnectorSettings ), ctx -> {
 				DirContextAdapter adapter = (DirContextAdapter) ctx;
 				String name = adapter.getStringAttribute( ldapConnectorSettings.getGroupName() );
 

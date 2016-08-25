@@ -37,6 +37,7 @@ $( document ).ready( function ()
                                                   {
                                                       enableOrDisableTestButton();
                                                   } );
+                         enableOrDisableTestButton();
 
                          function enableOrDisableTestButton()
                          {

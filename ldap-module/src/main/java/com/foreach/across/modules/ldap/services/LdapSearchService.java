@@ -17,7 +17,9 @@
 package com.foreach.across.modules.ldap.services;
 
 import com.foreach.across.modules.ldap.business.LdapConnector;
+import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import org.springframework.ldap.core.ContextMapper;
+import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.Filter;
 
 /**
@@ -25,5 +27,9 @@ import org.springframework.ldap.filter.Filter;
  */
 public interface LdapSearchService
 {
-	void performSearch( LdapConnector connector, Filter filter, ContextMapper<String> ctx );
+	void performSearch( LdapConnector connector, String additionalBase, Filter filter, ContextMapper<String> ctx );
+
+	AndFilter getUserFilter( LdapConnectorSettings ldapConnectorSettings );
+
+	AndFilter getGroupFilter( LdapConnectorSettings ldapConnectorSettings );
 }
