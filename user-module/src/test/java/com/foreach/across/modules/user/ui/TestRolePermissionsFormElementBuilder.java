@@ -21,9 +21,9 @@ import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.PermissionGroup;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.services.PermissionService;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Before;
@@ -93,7 +93,7 @@ public class TestRolePermissionsFormElementBuilder extends AbstractViewElementTe
 		when( permissionService.getPermissions() )
 				.thenReturn( Arrays.asList( two, four, one, three ) );
 
-		ViewElementBuilderContext ctx = new ViewElementBuilderContextImpl();
+		ViewElementBuilderContext ctx = new DefaultViewElementBuilderContext();
 		ctx.setAttribute( RolePermissionsFormElementBuilder.ATTRIBUTE, Collections.emptyMap() );
 
 		Role role = mock( Role.class );
