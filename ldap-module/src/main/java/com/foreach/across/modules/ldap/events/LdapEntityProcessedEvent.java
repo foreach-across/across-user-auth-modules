@@ -23,12 +23,12 @@ import org.springframework.ldap.core.DirContextAdapter;
 /**
  * @author Marc Vanbrabant
  */
-public class LdapEntitySavedEvent<T> implements ParameterizedAcrossEvent
+public class LdapEntityProcessedEvent<T> implements ParameterizedAcrossEvent
 {
 	private T entity;
 	private DirContextAdapter adapter;
 
-	public LdapEntitySavedEvent( T entity, DirContextAdapter adapter ) {
+	public LdapEntityProcessedEvent( T entity, DirContextAdapter adapter ) {
 		this.entity = entity;
 		this.adapter = adapter;
 	}

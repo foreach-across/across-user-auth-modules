@@ -20,7 +20,7 @@ import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
-import com.foreach.across.modules.ldap.events.LdapEntitySavedEvent;
+import com.foreach.across.modules.ldap.events.LdapEntityProcessedEvent;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalAuthenticationToken;
@@ -242,7 +242,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 					     .findFirst().ifPresent( user -> {
 						                             user.setGroups( groupsForUser );
 						                             userService.save( user );
-						                             eventPublisher.publish( new LdapEntitySavedEvent<>( user, adapter ) );
+						eventPublisher.publish( new LdapEntityProcessedEvent<>( user, adapter ) );
 					                             }
 					);
 
@@ -293,11 +293,13 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						group.setUserDirectory( userDirectory );
 						groupService.save( group );
 						ldapPropertiesService.saveLdapProperties( group, adapter );
-						eventPublisher.publish( new LdapEntitySavedEvent<>( group, adapter ) );
+						eventPublisher.publish( new LdapEntityProcessedEvent<>( group, adapter ) );
 						itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), group );
 					}
 					else {
-						itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), groups.iterator().next() );
+						Group group = groups.iterator().next();
+						eventPublisher.publish( new LdapEntityProcessedEvent<>( group, adapter ) );
+						itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), group );
 					}
 
 				}
