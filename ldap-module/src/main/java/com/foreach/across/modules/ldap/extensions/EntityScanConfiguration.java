@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.ldap;
+package com.foreach.across.modules.ldap.extensions;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
-import com.foreach.across.modules.web.AcrossWebModule;
+import com.foreach.across.modules.hibernate.provider.HibernatePackageConfigurer;
+import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
+import com.foreach.across.modules.ldap.business.LdapConnector;
 
 /**
- * @author Arne Vandamme
- * @since 1.0.0
+ * @author Marc Vanbrabant
+ * @since 6/04/2016
  */
-@AcrossDepends(
-		required = { AcrossWebModule.NAME, AcrossHibernateJpaModule.NAME },
-		optional = { "AdminWebModule", "EntityModule", "UserModule", "PropertiesModule" }
-)
-public class LdapModule extends AcrossModule
+@ModuleConfiguration(AcrossHibernateJpaModule.NAME)
+public class EntityScanConfiguration implements HibernatePackageConfigurer
 {
-	public static final String NAME = "LdapModule";
 
 	@Override
-	public String getName() {
-		return NAME;
-	}
-
-	@Override
-	public String getDescription() {
-		return "Provides a domain model and services for connecting to LDAP directories.";
+	public void configureHibernatePackage( HibernatePackageRegistry hibernatePackage ) {
+		hibernatePackage.addPackageToScan( LdapConnector.class );
 	}
 }
