@@ -76,7 +76,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 			name = UserSchemaConfiguration.TABLE_PRINCIPAL_ROLE,
 			joinColumns = @JoinColumn(name = "principal_id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles = new TreeSet<>();
+	private Set<Role> roles = new HashSet<>();
 
 	@Column(name = "created_by", nullable = true)
 	private String createdBy;
@@ -178,8 +178,21 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		}
 	}
 
+	/**
+	 * Does the user have a role with the given authority string.
+	 * This will perform an authority check, but only within the collection of roles.
+	 *
+	 * @param authority string the role should have
+	 * @return {@code true} if a role with that authority was present
+	 */
 	public boolean hasRole( String authority ) {
-		return hasRole( new Role( authority ) );
+		String authorityString = Role.authorityString( authority );
+		for ( Role role : getRoles() ) {
+			if ( StringUtils.equals( authorityString, role.getAuthority() ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean hasRole( Role role ) {
@@ -194,8 +207,20 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		getRoles().remove( role );
 	}
 
-	public boolean hasPermission( String name ) {
-		return hasPermission( new Permission( name ) );
+	/**
+	 * Does the user have a permission with the requested authority string.
+	 *
+	 * @param authority string to check
+	 * @return {@code true} if permission is present
+	 */
+	public boolean hasPermission( String authority ) {
+		for ( Role role : getRoles() ) {
+			if ( role.hasPermission( authority ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public boolean hasPermission( Permission permission ) {
@@ -229,7 +254,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 	/**
 	 * Converts a partial principal name to a globally unique principal name including the user directory.
 	 *
-	 * @param name current or partial principal name
+	 * @param name          current or partial principal name
 	 * @param userDirectory user directory
 	 * @return unique principal name
 	 */

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.installers;
 
 import com.foreach.across.core.annotations.AcrossDepends;
@@ -28,6 +29,7 @@ import com.foreach.across.modules.spring.security.acl.services.AclSecurityServic
 import com.foreach.across.modules.spring.security.infrastructure.services.CloseableAuthentication;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.MachinePrincipal;
+import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.PermissionGroup;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
@@ -91,18 +93,24 @@ public class AclPermissionsInstaller
 
 	public void createPermissionsAndAddToAdminRole() {
 		// Create the individual permissions
-		permissionService.definePermission( AclAuthorities.TAKE_OWNERSHIP,
-		                                    "Allows the user to change the ownership of any ACL.  " +
-				                                    "This permission is also required to manage ACL security entities.",
-		                                    SpringSecurityAclModule.NAME );
-		permissionService.definePermission( AclAuthorities.MODIFY_ACL,
-		                                    "Allows the user to modify the entries of any ACL.",
-		                                    SpringSecurityAclModule.NAME );
-		permissionService.definePermission( AclAuthorities.AUDIT_ACL,
-		                                    "Allows the user to modify the auditing settings of an ACL.  " +
-				                                    "This permission is also required to change the auditing " +
-				                                    "settings of an ACL already owned by the user.",
-		                                    SpringSecurityAclModule.NAME );
+		Permission takeOwnership = permissionService.definePermission(
+				AclAuthorities.TAKE_OWNERSHIP,
+				"Allows the user to change the ownership of any ACL.  " +
+						"This permission is also required to manage ACL security entities.",
+				SpringSecurityAclModule.NAME
+		);
+		Permission modifyAcl = permissionService.definePermission(
+				AclAuthorities.MODIFY_ACL,
+				"Allows the user to modify the entries of any ACL.",
+				SpringSecurityAclModule.NAME
+		);
+		Permission auditAcl = permissionService.definePermission(
+				AclAuthorities.AUDIT_ACL,
+				"Allows the user to modify the auditing settings of an ACL.  " +
+						"This permission is also required to change the auditing " +
+						"settings of an ACL already owned by the user.",
+				SpringSecurityAclModule.NAME
+		);
 
 		// Update permission group for ACL permissions
 		PermissionGroup group = permissionService.getPermissionGroup( SpringSecurityAclModule.NAME );
@@ -116,9 +124,7 @@ public class AclPermissionsInstaller
 		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
 
 		if ( adminRole != null ) {
-			adminRole.addPermission( AclAuthorities.TAKE_OWNERSHIP,
-			                         AclAuthorities.MODIFY_ACL,
-			                         AclAuthorities.AUDIT_ACL );
+			adminRole.addPermission( takeOwnership, modifyAcl, auditAcl );
 			roleService.save( adminRole );
 		}
 	}

@@ -94,9 +94,10 @@ public class TestUser
 
 	@Test
 	public void hasPermissions() {
+		Permission permissionThree = new Permission( "perm three" );
 		Role roleOne = new Role( "role one" );
 		roleOne.setId( 123L );
-		roleOne.getPermissions().add( new Permission( "perm three" ) );
+		roleOne.getPermissions().add( permissionThree );
 
 		Role roleTwo = new Role( "role two" );
 		roleTwo.getPermissions().addAll( Arrays.asList( new Permission( "perm one" ), new Permission( "perm two" ) ) );
@@ -108,15 +109,16 @@ public class TestUser
 		assertFalse( user.hasRole( new Role( "some role" ) ) );
 
 		assertTrue( user.hasRole( "role one" ) );
-		assertTrue( user.hasRole( new Role( "role two" ) ) );
+		assertFalse( user.hasRole( new Role( "role two" ) ) );
+		assertTrue( user.hasRole( roleTwo ) );
 
 		assertFalse( user.hasPermission( "perm" ) );
 		assertTrue( user.hasPermission( "perm three" ) );
 		assertTrue( user.hasPermission( "perm one" ) );
 		assertTrue( user.hasPermission( "perm two" ) );
-		assertTrue( user.hasPermission( new Permission( "perm three" ) ) );
-		assertTrue( user.hasPermission( new Permission( "perm one" ) ) );
-		assertTrue( user.hasPermission( new Permission( "perm two" ) ) );
+		assertTrue( user.hasPermission( permissionThree ) );
+		assertFalse( user.hasPermission( new Permission( "perm one" ) ) );
+		assertFalse( user.hasPermission( new Permission( "perm two" ) ) );
 	}
 
 	@Test

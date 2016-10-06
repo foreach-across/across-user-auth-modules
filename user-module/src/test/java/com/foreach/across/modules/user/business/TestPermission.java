@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
@@ -26,35 +27,32 @@ import static org.junit.Assert.*;
 public class TestPermission
 {
 	@Test
-	public void equals() {
-		Permission left = new Permission( "some permission" );
-		left.setDescription( "description left" );
-
-		Permission right = new Permission( "some permission" );
-
-		assertEquals( left, right );
-		assertNotEquals( left, new Permission( "other permission" ) );
+	public void authorityEqualsPermissionName() {
+		Permission p = new Permission( "my Permission" );
+		assertEquals( "my Permission", p.getAuthority() );
+		assertEquals( "my Permission", Permission.authorityString( "my Permission" ) );
 	}
 
 	@Test
-	public void caseIsIgnored() {
-		Permission left = new Permission( "some permission" );
-		left.setDescription( "description left" );
-
-		Permission right = new Permission( "SOME permission" );
-
-		assertEquals( left, right );
+	public void toStringReturnsAuthority() {
+		Permission p = new Permission( "some Permission" );
+		assertEquals( "some Permission", p.toString() );
 	}
 
 	@Test
 	public void authorityMatching() {
+		Permission p = new Permission( "some permission" );
+
 		Set<Permission> actuals = new HashSet<>();
-		actuals.add( new Permission( "some permission" ) );
+		actuals.add( p );
 
 		AuthorityMatcher matcher = AuthorityMatcher.allOf( "some permission" );
 		assertTrue( matcher.matches( actuals ) );
 
 		matcher = AuthorityMatcher.allOf( new Permission( "some permission" ) );
+		assertFalse( matcher.matches( actuals ) );
+
+		matcher = AuthorityMatcher.allOf( p );
 		assertTrue( matcher.matches( actuals ) );
 	}
 }

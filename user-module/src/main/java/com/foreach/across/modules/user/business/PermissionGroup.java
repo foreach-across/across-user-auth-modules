@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
@@ -28,9 +29,9 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 
 @NotThreadSafe
 @Entity
@@ -66,7 +67,7 @@ public class PermissionGroup extends SettableIdBasedEntity<PermissionGroup>
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "group")
 	@BatchSize(size = 50)
-	private Set<Permission> permissions = new TreeSet<>();
+	private Set<Permission> permissions = new HashSet<>();
 
 	public Long getId() {
 		return id;

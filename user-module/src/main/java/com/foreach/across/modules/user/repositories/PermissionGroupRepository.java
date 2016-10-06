@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
@@ -20,5 +21,5 @@ import com.foreach.across.modules.user.business.PermissionGroup;
 
 public interface PermissionGroupRepository extends IdBasedEntityJpaRepository<PermissionGroup>
 {
-	PermissionGroup findByName( String name );
+	PermissionGroup findByNameIgnoringCase( String name );
 }
