@@ -233,6 +233,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		return false;
 	}
 
+	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
 

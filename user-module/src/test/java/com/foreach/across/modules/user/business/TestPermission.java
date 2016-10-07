@@ -22,7 +22,8 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestPermission
 {
@@ -50,7 +51,7 @@ public class TestPermission
 		assertTrue( matcher.matches( actuals ) );
 
 		matcher = AuthorityMatcher.allOf( new Permission( "some permission" ) );
-		assertFalse( matcher.matches( actuals ) );
+		assertTrue( matcher.matches( actuals ) );
 
 		matcher = AuthorityMatcher.allOf( p );
 		assertTrue( matcher.matches( actuals ) );

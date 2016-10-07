@@ -74,7 +74,7 @@ public class TestRole
 		assertTrue( matcher.matches( actuals ) );
 
 		matcher = AuthorityMatcher.allOf( new Role( "ROLE_ADMIN" ) );
-		assertFalse( matcher.matches( actuals ) );
+		assertTrue( matcher.matches( actuals ) );
 	}
 
 	@Test
