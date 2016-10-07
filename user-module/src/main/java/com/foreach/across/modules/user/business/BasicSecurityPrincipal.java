@@ -235,16 +235,20 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
+		TreeSet<GrantedAuthority> authorities
+				= new TreeSet<>( Comparator.comparing( GrantedAuthority::getAuthority ) );
+		buildAuthoritySet( authorities );
 
+		return Collections.unmodifiableSet( authorities );
+	}
+
+	protected void buildAuthoritySet( Set<GrantedAuthority> authorities ) {
 		for ( Role role : getRoles() ) {
 			authorities.add( role );
 			for ( Permission permission : role.getPermissions() ) {
 				authorities.add( permission );
 			}
 		}
-
-		return authorities;
 	}
 
 	@Override

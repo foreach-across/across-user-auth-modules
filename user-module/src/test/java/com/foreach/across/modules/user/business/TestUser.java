@@ -17,11 +17,14 @@
 package com.foreach.across.modules.user.business;
 
 import org.junit.Test;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -213,5 +216,27 @@ public class TestUser
 
 		user.setDisplayName( "johnny" );
 		assertEquals( "johnny", user.getLabel() );
+	}
+
+	@Test
+	public void retrieveAuthorities() {
+		Role role = new Role( "b role" );
+		Permission perm = new Permission( "A permission" );
+		role.addPermission( perm );
+
+		Role groupRole = new Role( "a role" );
+		Permission groupPerm = new Permission( "B permission" );
+		groupRole.addPermission( groupPerm );
+
+		Group g = new Group();
+		g.setName( "my group" );
+		g.addRole( groupRole );
+
+		User u = new User();
+		u.addRole( role );
+		u.addGroup( g );
+
+		List<? extends GrantedAuthority> authorities = new ArrayList<>( u.getAuthorities() );
+		assertEquals( Arrays.asList( perm, groupPerm, g.asGrantedAuthority(), groupRole, role ), authorities );
 	}
 }

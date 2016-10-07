@@ -17,11 +17,15 @@
 package com.foreach.across.modules.user.business;
 
 import org.junit.Test;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -30,6 +34,23 @@ import static org.junit.Assert.*;
  */
 public class TestGroup
 {
+	@Test
+	public void authorityString() {
+		assertNull( Group.authorityString( null ) );
+		assertEquals( "GROUP_Administrative personel", Group.authorityString( "Administrative personel" ) );
+		assertEquals( "GROUP_managers", Group.authorityString( "GROUP_managers" ) );
+		assertEquals( "GROUP_meh meh", Group.authorityString( "group_meh meh" ) );
+	}
+
+	@Test
+	public void asGrantedAuthority() {
+		Group group = new Group();
+		assertNull( group.asGrantedAuthority() );
+
+		group.setName( "my group" );
+		assertEquals( new SimpleGrantedAuthority( "GROUP_my group" ), group.asGrantedAuthority() );
+	}
+
 	@Test
 	public void nullValuesForRolesIsSameAsEmpty() {
 		Group group = new Group();
@@ -104,5 +125,19 @@ public class TestGroup
 
 		group.setUserDirectory( defaultDir );
 		assertEquals( "group:renamed group", group.getPrincipalName() );
+	}
+
+	@Test
+	public void retrieveAuthorities() {
+		Role role = new Role( "b role" );
+		Permission perm = new Permission( "A permission" );
+
+		role.addPermission( perm );
+
+		Group g = new Group();
+		g.addRole( role );
+
+		List<? extends GrantedAuthority> authorities = new ArrayList<>( g.getAuthorities() );
+		assertEquals( Arrays.asList( perm, role ), authorities );
 	}
 }

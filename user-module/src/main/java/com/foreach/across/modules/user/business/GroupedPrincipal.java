@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
@@ -88,21 +89,13 @@ public abstract class GroupedPrincipal<T extends SettableIdBasedEntity<?>>
 	}
 
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> authorities = new LinkedHashSet<>();
-
-		for ( Role role : getRoles() ) {
-			authorities.add( role );
-			for ( Permission permission : role.getPermissions() ) {
-				authorities.add( permission );
-			}
-		}
+	protected void buildAuthoritySet( Set<GrantedAuthority> authorities ) {
+		super.buildAuthoritySet( authorities );
 
 		for ( Group group : getGroups() ) {
+			authorities.add( group.asGrantedAuthority() );
 			authorities.addAll( group.getAuthorities() );
 		}
-
-		return authorities;
 	}
 
 	@Override
