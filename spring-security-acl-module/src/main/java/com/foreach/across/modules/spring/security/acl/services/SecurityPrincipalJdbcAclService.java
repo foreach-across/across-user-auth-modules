@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.spring.security.acl.services;
 
 import com.foreach.across.modules.spring.security.acl.config.AclSecurityConfiguration;
@@ -103,19 +104,14 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 		}
 
 		Object[] args = { ownerId };
-		List<ObjectIdentity> objects = jdbcTemplate.query( SELECT_OBJECT_IDENTITIES_FOR_SID, args,
-		                                                   new RowMapper<ObjectIdentity>()
-		                                                   {
-			                                                   public ObjectIdentity mapRow( ResultSet rs,
-			                                                                                 int rowNum ) throws SQLException {
-				                                                   String javaType = rs.getString( "class" );
-				                                                   Long identifier = rs.getLong( "obj_id" );
+		return jdbcTemplate.query( SELECT_OBJECT_IDENTITIES_FOR_SID, args,
+		                           ( rs, rowNum ) -> {
+			                           String javaType = rs.getString( "class" );
+			                           Long identifier = rs.getLong( "obj_id" );
 
-				                                                   return new ObjectIdentityImpl( javaType,
-				                                                                                  identifier );
-			                                                   }
-		                                                   } );
-		return objects;
+			                           return new ObjectIdentityImpl( javaType,
+			                                                          identifier );
+		                           } );
 	}
 
 	@Override
@@ -135,8 +131,7 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 				Class<?> clazz = ClassUtils.getClass( className );
 				classes.add( clazz );
 			}
-			catch ( ClassNotFoundException cnfe ) {
-				/* ignore */
+			catch ( ClassNotFoundException ignore ) {
 			}
 		}
 

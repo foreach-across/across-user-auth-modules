@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/spring-security-acl-module/spring-security-acl-module.iml" filepath="$PROJECT_DIR$/spring-security-acl-module/spring-security-acl-module.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-security-acl-module/spring-security-acl-module.iml" filepath="$PROJECT_DIR$/spring-security-acl-module/spring-security-acl-module.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-security-acl-module-project.iml" filepath="$PROJECT_DIR$/spring-security-acl-module-project.iml" />
     </modules>
   </component>

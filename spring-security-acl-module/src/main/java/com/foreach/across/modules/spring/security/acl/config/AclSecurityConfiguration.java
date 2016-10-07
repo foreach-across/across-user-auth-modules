@@ -13,31 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.spring.security.acl.config;
 
 import com.foreach.across.core.database.DatabaseInfo;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCache;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
-import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
-import com.foreach.across.modules.spring.security.acl.services.AclSecurityServiceImpl;
-import com.foreach.across.modules.spring.security.acl.services.SecurityPrincipalAclService;
-import com.foreach.across.modules.spring.security.acl.services.SecurityPrincipalJdbcAclService;
+import com.foreach.across.modules.spring.security.acl.services.*;
 import com.foreach.across.modules.spring.security.acl.strategy.SecurityPrincipalSidRetrievalStrategy;
-import com.foreach.across.modules.spring.security.authority.NamedGrantedAuthority;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.acls.AclPermissionEvaluator;
-import org.springframework.security.acls.domain.*;
+import org.springframework.security.acls.domain.AclAuthorizationStrategy;
+import org.springframework.security.acls.domain.ConsoleAuditLogger;
+import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
+import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.LookupStrategy;
 import org.springframework.security.acls.model.AclCache;
 import org.springframework.security.acls.model.PermissionGrantingStrategy;
 import org.springframework.security.acls.model.SidRetrievalStrategy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.sql.DataSource;
 
@@ -110,10 +109,10 @@ public class AclSecurityConfiguration
 
 	@Bean
 	public AclAuthorizationStrategy aclAuthorizationStrategy() {
-		AclAuthorizationStrategyImpl strategy = new AclAuthorizationStrategyImpl(
-				new NamedGrantedAuthority( AclAuthorities.TAKE_OWNERSHIP ),
-				new NamedGrantedAuthority( AclAuthorities.AUDIT_ACL ),
-				new NamedGrantedAuthority( AclAuthorities.MODIFY_ACL )
+		DefaultAclAuthorizationStrategy strategy = new DefaultAclAuthorizationStrategy(
+				new SimpleGrantedAuthority( AclAuthorities.TAKE_OWNERSHIP ),
+				new SimpleGrantedAuthority( AclAuthorities.AUDIT_ACL ),
+				new SimpleGrantedAuthority( AclAuthorities.MODIFY_ACL )
 		);
 		strategy.setSidRetrievalStrategy( sidRetrievalStrategy() );
 
