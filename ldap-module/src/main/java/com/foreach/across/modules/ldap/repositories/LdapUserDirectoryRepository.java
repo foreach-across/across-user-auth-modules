@@ -16,8 +16,11 @@
 
 package com.foreach.across.modules.ldap.repositories;
 
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import java.util.List;
 
@@ -25,7 +28,10 @@ import java.util.List;
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
-public interface LdapUserDirectoryRepository extends IdBasedEntityJpaRepository<LdapUserDirectory>
+@Exposed
+public interface LdapUserDirectoryRepository extends IdBasedEntityJpaRepository<LdapUserDirectory>, QueryDslPredicateExecutor<LdapUserDirectory>
 {
+	LdapUserDirectory findByLdapConnector( LdapConnector connector );
+
 	List<LdapUserDirectory> findAllByActiveTrue();
 }

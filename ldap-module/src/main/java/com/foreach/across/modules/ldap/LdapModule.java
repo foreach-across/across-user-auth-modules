@@ -41,6 +41,7 @@ public class LdapModule extends AcrossModule implements HibernatePackageConfigur
 		return NAME;
 	}
 
+
 	@Override
 	public String getDescription() {
 		return "Provides a domain model and services for connecting to LDAP directories.";

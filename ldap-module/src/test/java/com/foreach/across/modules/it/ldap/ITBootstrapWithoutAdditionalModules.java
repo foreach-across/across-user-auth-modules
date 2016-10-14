@@ -21,8 +21,12 @@ import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arne Vandamme
@@ -32,8 +36,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @AcrossWebAppConfiguration
 public class ITBootstrapWithoutAdditionalModules
 {
+	@Autowired
+	private ApplicationContext applicationContext;
+
 	@Test
-	public void servicesShouldBeExposed() {
+	public void repositoriesShouldBeExposed() {
+		assertTrue( applicationContext.containsBean( "ldapConnectorRepository" ) );
 	}
 
 	@Configuration
