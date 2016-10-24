@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
@@ -66,7 +67,7 @@ public class PermissionServiceImpl implements PermissionService
 	@Transactional(HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	public Permission definePermission( Permission permissionDto ) {
-		Permission existing = permissionRepository.findByName( permissionDto.getName() );
+		Permission existing = permissionRepository.findByNameIgnoringCase( permissionDto.getName() );
 
 		if ( existing != null ) {
 			existing.setName( permissionDto.getName() );
@@ -91,7 +92,7 @@ public class PermissionServiceImpl implements PermissionService
 
 	@Override
 	public PermissionGroup getPermissionGroup( String name ) {
-		return permissionGroupRepository.findByName( name );
+		return permissionGroupRepository.findByNameIgnoringCase( name );
 	}
 
 	@Override
@@ -114,7 +115,7 @@ public class PermissionServiceImpl implements PermissionService
 
 	@Override
 	public Permission getPermission( String name ) {
-		return permissionRepository.findByName( name );
+		return permissionRepository.findByNameIgnoringCase( name );
 	}
 
 	@Override

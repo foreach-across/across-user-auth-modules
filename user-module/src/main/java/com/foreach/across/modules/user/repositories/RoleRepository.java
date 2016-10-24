@@ -22,5 +22,5 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 public interface RoleRepository extends IdBasedEntityJpaRepository<Role>, QueryDslPredicateExecutor<Role>
 {
-	Role findByAuthority( String authority );
+	Role findByAuthorityIgnoringCase( String authority );
 }

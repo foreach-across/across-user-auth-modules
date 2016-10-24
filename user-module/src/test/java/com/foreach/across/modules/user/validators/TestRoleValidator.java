@@ -55,7 +55,7 @@ public class TestRoleValidator
 		validator.validate( role, errors );
 
 		verify( repository, never() ).findOne( QRole.role.name.equalsIgnoreCase( "My role" ) );
-		verify( repository ).findOne( QRole.role.authority.equalsIgnoreCase( "ROLE_MY_AUTH" ) );
+		verify( repository ).findOne( QRole.role.authority.equalsIgnoreCase( "ROLE_my auth" ) );
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class TestRoleValidator
 		other.setName( "My role" );
 
 		QRole q = QRole.role;
-		when( repository.findOne( q.authority.equalsIgnoreCase( "ROLE_MY_AUTH" ) ) )
+		when( repository.findOne( q.authority.equalsIgnoreCase( "ROLE_my auth" ) ) )
 				.thenReturn( other );
 
 		validator.validate( role, errors );

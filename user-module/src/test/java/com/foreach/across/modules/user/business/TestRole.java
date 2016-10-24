@@ -30,13 +30,17 @@ import static org.junit.Assert.*;
 public class TestRole
 {
 	@Test
-	public void caseIsIgnored() {
-		Role left = new Role( "some role" );
-		left.setDescription( "description left" );
+	public void authorityString() {
+		assertNull( Role.authorityString( null ) );
+		assertEquals( "ROLE_some administrator", Role.authorityString( "some administrator" ) );
+		assertEquals( "ROLE_manager", Role.authorityString( "ROLE_manager" ) );
+		assertEquals( "ROLE_meh meh", Role.authorityString( "role_meh meh" ) );
+	}
 
-		GrantedAuthority right = new Permission( "role_some_role" );
-
-		assertEquals( left, right );
+	@Test
+	public void toStringReturnsAuthority() {
+		Role r = new Role( "my Custom Role" );
+		assertEquals( "ROLE_my Custom Role", r.toString() );
 	}
 
 	@Test
@@ -50,8 +54,8 @@ public class TestRole
 
 		assertFalse( role.hasPermission( "not existing" ) );
 		assertFalse( role.hasPermission( new Permission( "another not existing" ) ) );
+		assertFalse( role.hasPermission( new Permission( "two" ) ) );
 		assertTrue( role.hasPermission( "one" ) );
-		assertTrue( role.hasPermission( new Permission( "TWO" ) ) );
 		assertTrue( role.hasPermission( three ) );
 	}
 
@@ -68,6 +72,9 @@ public class TestRole
 
 		matcher = AuthorityMatcher.allOf( role );
 		assertTrue( matcher.matches( actuals ) );
+
+		matcher = AuthorityMatcher.allOf( new Role( "ROLE_ADMIN" ) );
+		assertTrue( matcher.matches( actuals ) );
 	}
 
 	@Test
@@ -79,31 +86,6 @@ public class TestRole
 
 		role.setPermissions( null );
 		assertTrue( role.getPermissions().isEmpty() );
-	}
-
-	@Test
-	public void rolesAreEqualById() {
-		Role roleOne = new Role( "ROLE_TEST" );
-		Role roleTwo = new Role( "ROLE_TEST" );
-		assertNotEquals( roleOne, roleTwo );
-
-		roleOne.setId( 123L );
-		roleTwo.setId( 456L );
-		assertNotEquals( roleOne, roleTwo );
-
-		roleTwo.setId( 123L );
-		assertEquals( roleOne, roleTwo );
-
-		roleTwo.setAuthority( "ROLE_OTHER" );
-		assertEquals( roleOne, roleTwo );
-	}
-
-	@Test
-	public void nonRoleAuthoritiesAreEqualByAuthorityValue() {
-		GrantedAuthority perm = new Permission( "ROLE_TEST" );
-
-		assertEquals( perm, new Role( "ROLE_TEST" ) );
-		assertNotEquals( perm, new Role( "ROLE_OTHER" ) );
 	}
 
 	@Test
@@ -123,12 +105,27 @@ public class TestRole
 	@Test
 	public void authorityValue() {
 		Role role = new Role( "my role" );
-		assertEquals( "ROLE_MY_ROLE", role.getAuthority() );
+		assertEquals( "ROLE_my role", role.getAuthority() );
 
 		role.setAuthority( "role_other_role" );
-		assertEquals( "ROLE_OTHER_ROLE", role.getAuthority() );
+		assertEquals( "ROLE_other_role", role.getAuthority() );
 
-		role.setAuthority( "ROLE_TEST ME\tWELL" );
-		assertEquals( "ROLE_TEST_ME_WELL", role.getAuthority() );
+		role.setAuthority( "ROLE_some other role" );
+		assertEquals( "ROLE_some other role", role.getAuthority() );
+	}
+
+	@Test
+	public void constructors() {
+		Role role = new Role();
+		assertNull( role.getName() );
+		assertNull( role.getAuthority() );
+
+		role = new Role( "my authority" );
+		assertEquals( "my authority", role.getName() );
+		assertEquals( Role.authorityString( "my authority" ), role.getAuthority() );
+
+		role = new Role( "my auth", "Manager" );
+		assertEquals( "Manager", role.getName() );
+		assertEquals( Role.authorityString( "my auth" ), role.getAuthority() );
 	}
 }

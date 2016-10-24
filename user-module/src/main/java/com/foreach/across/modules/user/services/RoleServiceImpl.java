@@ -32,8 +32,8 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Service
 public class RoleServiceImpl implements RoleService
@@ -57,10 +57,10 @@ public class RoleServiceImpl implements RoleService
 		Role role = new Role( authority, name );
 		role.setDescription( description );
 
-		Set<Permission> permissions = new TreeSet<>();
+		Set<Permission> permissions = new HashSet<>();
 
 		for ( String permissionName : permissionNames ) {
-			Permission permission = permissionRepository.findByName( permissionName );
+			Permission permission = permissionRepository.findByNameIgnoringCase( permissionName );
 			Assert.notNull( permission, "Invalid permission: " + permissionName );
 
 			permissions.add( permission );
@@ -73,7 +73,7 @@ public class RoleServiceImpl implements RoleService
 
 	@Override
 	public Role defineRole( Role role ) {
-		Role existing = roleRepository.findByAuthority( role.getAuthority() );
+		Role existing = roleRepository.findByAuthorityIgnoringCase( role.getAuthority() );
 
 		if ( existing != null ) {
 			if ( existing.getPermissions().size() != role.getPermissions().size() ) {
@@ -103,19 +103,19 @@ public class RoleServiceImpl implements RoleService
 
 	@Override
 	public Role getRole( String authority ) {
-		return roleRepository.findByAuthority( authority );
+		return roleRepository.findByAuthorityIgnoringCase( Role.authorityString( authority ) );
 	}
 
 	@Transactional(HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	public Role save( Role role ) {
-		Set<Permission> actualPermissions = new TreeSet<>();
+		Set<Permission> actualPermissions = new HashSet<>();
 
 		for ( Permission permission : role.getPermissions() ) {
-			Permission existing = permissionRepository.findByName( permission.getName() );
+			Permission existing = permissionRepository.findByNameIgnoringCase( permission.getName() );
 
 			if ( existing == null ) {
-				throw new RuntimeException( "No permission defined with name: " + permission.getName() );
+				throw new IllegalArgumentException( "No permission defined with name: " + permission.getName() );
 			}
 
 			actualPermissions.add( existing );

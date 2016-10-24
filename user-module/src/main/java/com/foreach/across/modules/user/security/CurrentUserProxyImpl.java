@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.security;
 
+import com.foreach.across.modules.spring.security.AuthenticationUtils;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +30,8 @@ import org.springframework.stereotype.Service;
 public class CurrentUserProxyImpl implements CurrentUserProxy
 {
 	@Override
-	public long getId() {
-		return isAuthenticated() ? getUser().getId() : 0;
+	public Long getId() {
+		return isAuthenticated() ? getUser().getId() : null;
 	}
 
 	@Override
@@ -38,6 +42,11 @@ public class CurrentUserProxyImpl implements CurrentUserProxy
 	@Override
 	public String getUsername() {
 		return isAuthenticated() ? getUser().getUsername() : null;
+	}
+
+	@Override
+	public boolean isMemberOf( Group group ) {
+		return isAuthenticated() && getUser().isMemberOf( group );
 	}
 
 	@Override
@@ -61,8 +70,17 @@ public class CurrentUserProxyImpl implements CurrentUserProxy
 	}
 
 	@Override
-	public boolean hasAuthority( String name ) {
-		return isAuthenticated() && hasPermission( name );
+	public boolean hasAuthority( String authority ) {
+		return isAuthenticated() && AuthenticationUtils.hasAuthority(
+				SecurityContextHolder.getContext().getAuthentication(), authority
+		);
+	}
+
+	@Override
+	public boolean hasAuthority( GrantedAuthority authority ) {
+		return isAuthenticated() && AuthenticationUtils.hasAuthority(
+				SecurityContextHolder.getContext().getAuthentication(), authority.getAuthority()
+		);
 	}
 
 	@Override

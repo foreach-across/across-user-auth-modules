@@ -23,10 +23,7 @@ import com.foreach.across.modules.spring.security.infrastructure.services.Closea
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserAuthorities;
 import com.foreach.across.modules.user.UserModule;
-import com.foreach.across.modules.user.business.MachinePrincipal;
-import com.foreach.across.modules.user.business.PermissionGroup;
-import com.foreach.across.modules.user.business.Role;
-import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
@@ -98,19 +95,20 @@ public class DefaultUserInstaller implements UserAuthorities
 		                                    UserModule.NAME );
 
 		permissionService.definePermission( MANAGE_USERS, "Manage user accounts", UserModule.NAME );
-		permissionService.definePermission( MANAGE_GROUPS, "Manage groups", UserModule.NAME );
+		Permission manageGroups = permissionService.definePermission( MANAGE_GROUPS, "Manage groups", UserModule.NAME );
 		permissionService.definePermission( MANAGE_USER_ROLES, "Manage user roles", UserModule.NAME );
 
 		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
 		if ( adminRole == null ) {
-			roleService.defineRole( "ROLE_ADMIN", "Administrator", "System administrator role, has all major permissions.",
+			roleService.defineRole( "ROLE_ADMIN", "Administrator",
+			                        "System administrator role, has all major permissions.",
 			                        Arrays.asList( "access administration",
 			                                       MANAGE_USERS,
 			                                       MANAGE_GROUPS,
 			                                       MANAGE_USER_ROLES ) );
 		}
 		else {
-			adminRole.addPermission( MANAGE_GROUPS );
+			adminRole.addPermission( manageGroups );
 			roleService.save( adminRole );
 		}
 
@@ -123,7 +121,7 @@ public class DefaultUserInstaller implements UserAuthorities
 			                                       MANAGE_GROUPS ) );
 		}
 		else {
-			managerRole.addPermission( MANAGE_GROUPS );
+			managerRole.addPermission( manageGroups );
 			roleService.save( managerRole );
 		}
 	}

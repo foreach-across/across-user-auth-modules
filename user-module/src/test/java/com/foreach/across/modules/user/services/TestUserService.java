@@ -17,6 +17,7 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.UserModuleSettings;
+import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
@@ -32,7 +33,6 @@ import org.mockito.internal.util.collections.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
@@ -94,7 +94,10 @@ public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 		user.setRestrictions( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ) );
 
 		Role role_1 = new Role( "role 1" );
-		role_1.addPermission( "permission 1", "permission 2" );
+
+		Permission perm1 = new Permission( "permission 1" );
+		Permission perm2 = new Permission( "permission 2" );
+		role_1.addPermission( perm1, perm2 );
 
 		user.setRoles( Sets.newSet( role_1 ) );
 
@@ -113,10 +116,7 @@ public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 		assertEquals( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ), userDto.getRestrictions() );
 		assertEquals( true, userDto.hasRestrictions() );
 
-		assertEquals( Sets.newSet( new SimpleGrantedAuthority( "ROLE_1" ),
-		                           new SimpleGrantedAuthority( "permission 1" ),
-		                           new SimpleGrantedAuthority( "permission 2" ) ),
-		              user.getAuthorities() );
+		assertEquals( Sets.newSet( role_1, perm1, perm2 ), user.getAuthorities() );
 	}
 
 	@Test

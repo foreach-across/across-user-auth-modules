@@ -25,6 +25,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.util.Assert;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
@@ -32,25 +33,22 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
- * Role has a diverging equals implementation.  Two role instances are considered equal if they have the same
- * id value (default behaviour of {@link com.foreach.across.modules.hibernate.business.SettableIdBasedEntity}.
- * However a role is considered equal to any other type of {@link GrantedAuthority} if it has
- * the same {@link #getAuthority()} value.
- * <p/>
- * This implementation is subject to be changed in the future as it is quite confusing.
+ * A role represents a number of permissions that can be applied for a principal.
+ * The role is by itself also a {@link GrantedAuthority} that can be used for security checking.
  */
 @NotThreadSafe
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_ROLE)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Role extends SettableIdAuditableEntity<Role>
-		implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable
+		implements GrantedAuthority, Serializable
 {
 	private static final long serialVersionUID = 1L;
+	public static final String AUTHORITY_PREFIX = "ROLE_";
 
 	@Id
 	@GeneratedValue(generator = "seq_um_role_id")
@@ -67,7 +65,7 @@ public class Role extends SettableIdAuditableEntity<Role>
 	@NotBlank
 	@Size(max = 255)
 	@Column(name = "authority", nullable = false, unique = true)
-	@Pattern(regexp = "^ROLE_[0-9A-Z_]+$")
+	@Pattern(regexp = "^ROLE_[0-9A-Z_].*$", flags = Pattern.Flag.CASE_INSENSITIVE)
 	private String authority;
 
 	@NotBlank
@@ -86,13 +84,13 @@ public class Role extends SettableIdAuditableEntity<Role>
 			name = UserSchemaConfiguration.TABLE_ROLE_PERMISSION,
 			joinColumns = @JoinColumn(name = "role_id"),
 			inverseJoinColumns = @JoinColumn(name = "permission_id"))
-	private Set<Permission> permissions = new TreeSet<Permission>();
+	private Set<Permission> permissions = new HashSet<>();
 
 	public Role() {
 	}
 
 	public Role( String authority ) {
-		setAuthority( authority );
+		this( authority, authority );
 	}
 
 	public Role( String authority, String name ) {
@@ -111,15 +109,11 @@ public class Role extends SettableIdAuditableEntity<Role>
 	}
 
 	public String getAuthority() {
-		return authority;
+		return authorityString( authority );
 	}
 
 	public void setAuthority( String authority ) {
-		this.authority = StringUtils.replacePattern( StringUtils.upperCase( authority ), "\\s", "_" );
-
-		if ( !StringUtils.isBlank( this.authority ) && !StringUtils.startsWith( this.authority, "ROLE_" ) ) {
-			this.authority = "ROLE_" + this.authority;
-		}
+		this.authority = authorityString( authority );
 	}
 
 	public String getName() {
@@ -149,24 +143,27 @@ public class Role extends SettableIdAuditableEntity<Role>
 		}
 	}
 
-	public void addPermission( String... names ) {
-		Permission[] permissions = new Permission[names.length];
-
-		for ( int i = 0; i < names.length; i++ ) {
-			permissions[i] = new Permission( names[i] );
-		}
-
-		addPermission( permissions );
-	}
-
 	public void addPermission( Permission... permissions ) {
 		for ( Permission permission : permissions ) {
+			Assert.notNull( permission );
 			getPermissions().add( permission );
 		}
 	}
 
-	public boolean hasPermission( String name ) {
-		return hasPermission( new Permission( name ) );
+	/**
+	 * Does the user have a permission with the requested authority string.
+	 *
+	 * @param authority string to check
+	 * @return {@code true} if permission is present
+	 */
+	public boolean hasPermission( String authority ) {
+		String authorityString = Permission.authorityString( authority );
+		for ( Permission p : getPermissions() ) {
+			if ( StringUtils.equals( p.getAuthority(), authorityString ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean hasPermission( Permission permission ) {
@@ -174,36 +171,18 @@ public class Role extends SettableIdAuditableEntity<Role>
 	}
 
 	@Override
-	public boolean equals( Object o ) {
-		if ( this == o ) {
-			return true;
-		}
-
-		if ( o != null && o instanceof Role ) {
-			return super.equals( o );
-		}
-
-		if ( o == null || !( o instanceof GrantedAuthority ) ) {
-			return false;
-		}
-
-		GrantedAuthority that = (GrantedAuthority) o;
-
-		return StringUtils.equalsIgnoreCase( getAuthority(), that.getAuthority() );
-	}
-
-	@Override
-	public int compareTo( GrantedAuthority o ) {
-		return getAuthority().compareTo( o.getAuthority() );
-	}
-
-	@Override
-	public int hashCode() {
-		return getAuthority() != null ? getAuthority().hashCode() : 0;
-	}
-
-	@Override
 	public String toString() {
 		return getAuthority();
+	}
+
+	/**
+	 * Generate the authority string for a role, applies the prefix if is not yet present.
+	 *
+	 * @param role authority name of the role
+	 * @return authority string
+	 */
+	public static String authorityString( String role ) {
+		return StringUtils.isBlank( role ) ? null : AUTHORITY_PREFIX + StringUtils.removeStartIgnoreCase( role,
+		                                                                                                  AUTHORITY_PREFIX );
 	}
 }

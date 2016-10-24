@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotBlank;
@@ -34,13 +34,16 @@ import java.io.Serializable;
 
 /**
  * A single permission that can be checked against.
+ * Note that this class implements {@link GrantedAuthority} and can be used in Spring security
+ * {@code hasAuthority(String)} checks but not {@code hasPermission()} checks.  The latter in Spring security
+ * refers to ACL based security.
  */
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_PERMISSION)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Permission
 		extends SettableIdBasedEntity<Permission>
-		implements GrantedAuthority, Comparable<GrantedAuthority>, Serializable
+		implements GrantedAuthority, Serializable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -95,12 +98,12 @@ public class Permission
 	}
 
 	public void setName( String name ) {
-		this.name = StringUtils.lowerCase( name );
+		this.name = name;
 	}
 
 	@Override
 	public String getAuthority() {
-		return getName();
+		return authorityString( getName() );
 	}
 
 	public String getDescription() {
@@ -120,30 +123,6 @@ public class Permission
 	}
 
 	@Override
-	public boolean equals( Object o ) {
-		if ( this == o ) {
-			return true;
-		}
-		if ( o == null || !( o instanceof GrantedAuthority ) ) {
-			return false;
-		}
-
-		GrantedAuthority that = (GrantedAuthority) o;
-
-		return StringUtils.equalsIgnoreCase( getAuthority(), that.getAuthority() );
-	}
-
-	@Override
-	public int compareTo( GrantedAuthority o ) {
-		return getAuthority().compareTo( o.getAuthority() );
-	}
-
-	@Override
-	public int hashCode() {
-		return getName() != null ? getName().hashCode() : 0;
-	}
-
-	@Override
 	public String toString() {
 		return getName();
 	}
@@ -154,5 +133,17 @@ public class Permission
 
 	private void readObject( ObjectInputStream ois ) throws IOException, ClassNotFoundException {
 		name = (String) ois.readObject();
+	}
+
+	/**
+	 * Generate the authority string for a permission name.  In this case the authority string is
+	 * identical to the permission name.  Method is provided to be in line with {@link Role} and
+	 * {@link Group} authorities.
+	 *
+	 * @param permissionName name of the permission
+	 * @return authority string
+	 */
+	public static String authorityString( String permissionName ) {
+		return permissionName;
 	}
 }

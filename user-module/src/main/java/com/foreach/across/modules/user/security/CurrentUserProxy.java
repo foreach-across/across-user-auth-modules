@@ -13,22 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.user.security;
 
+import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Provides access to the user attached to the request or current thread.
+ * Provides access to the authenticated user attached to the request or current thread.
+ * Requires the authenticated principal to be of type {@link User}, calls to {@link #isAuthenticated()} should
+ * return {@code false} if that is not the case.
+ * <p/>
+ * Unless you are only interested in {@link User} authentications,
+ * favour the more generic {@link CurrentSecurityPrincipalProxy} instead.
+ *
+ * @see CurrentSecurityPrincipalProxy
  */
 public interface CurrentUserProxy
 {
-	long getId();
+	Long getId();
 
 	String getEmail();
 
 	String getUsername();
+
+	boolean isMemberOf( Group group );
 
 	boolean hasRole( String name );
 
@@ -38,7 +51,9 @@ public interface CurrentUserProxy
 
 	boolean hasPermission( Permission permission );
 
-	boolean hasAuthority( String name );
+	boolean hasAuthority( String authority );
+
+	boolean hasAuthority( GrantedAuthority authority );
 
 	User getUser();
 
