@@ -30,6 +30,8 @@ import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.*;
 import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.dialect.SQLServer2008Dialect;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -389,7 +391,12 @@ public class ITUserModule
 	{
 		@Override
 		public void configure( AcrossContext context ) {
-			context.addModule( new AcrossHibernateJpaModule() );
+			AcrossHibernateJpaModule module = new AcrossHibernateJpaModule();
+			if ( "mssql".equals( System.getProperty( "acrossTest.datasource" ) ) ) {
+				// TODO:
+				module.setHibernateProperty( AvailableSettings.DIALECT, SQLServer2008Dialect.class.getName() );
+			}
+			context.addModule( module );
 			context.addModule( userModule() );
 			context.addModule( propertiesModule() );
 			context.addModule( new SpringSecurityModule() );
