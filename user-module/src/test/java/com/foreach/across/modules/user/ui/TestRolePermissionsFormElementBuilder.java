@@ -116,7 +116,7 @@ public class TestRolePermissionsFormElementBuilder extends AbstractViewElementTe
 						"\t\t</div>\n" +
 						"\t\t<div class='panel-collapse collapse in' role='tabpanel' aria-labelledby='pg-heading1' id='pg-body1'>\n" +
 						"\t\t\t<div class='panel-body'>\n" +
-						"\t\t\t\tnull\n" +
+						"\t\t\t\t\n" +
 						"\t\t\t\t<div class='checkbox'>\n" +
 						"\t\t\t\t\t<label>\n" +
 						"\t\t\t\t\t\t<input type='checkbox' name='entity.permissions' checked='checked' value='3' />\n" +
@@ -148,7 +148,7 @@ public class TestRolePermissionsFormElementBuilder extends AbstractViewElementTe
 						"\t\t</div>\n" +
 						"\t\t<div class='panel-collapse collapse' role='tabpanel' aria-labelledby='pg-heading2' id='pg-body2'>\n" +
 						"\t\t\t<div class='panel-body'>\n" +
-						"\t\t\t\tnull\n" +
+						"\t\t\t\t\n" +
 						"\t\t\t\t<div class='checkbox'>\n" +
 						"\t\t\t\t\t<label>\n" +
 						"\t\t\t\t\t\t<input type='checkbox' name='entity.permissions' value='2' />\n" +
