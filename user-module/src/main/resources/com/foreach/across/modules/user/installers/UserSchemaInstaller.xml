@@ -728,4 +728,18 @@
 			<column name="name"/>
 		</createIndex>
 	</changeSet>
+
+	<!-- AX-57 Liquibase upgrade to 3.5.3 introduced quoting of columns on reserved keywords, this broke the "password" column -->
+	<changeSet id="201611080826" author="marc">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="${table.user}" columnName="user_pwd"/>
+			</not>
+		</preConditions>
+
+		<comment>Rename the password column to user_pwd, as this is a reserved keyword in Oracle</comment>
+
+		<renameColumn tableName="${table.user}" oldColumnName="password" newColumnName="user_pwd"
+		              columnDataType="java.sql.Types.NVARCHAR(255)"/>
+	</changeSet>
 </databaseChangeLog>
