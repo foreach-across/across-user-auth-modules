@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.spring.security.acl.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
@@ -27,8 +28,6 @@ import com.foreach.across.modules.spring.security.acl.validators.AclSecurityEnti
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AuthorityMatchingAllowableActions;
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
-import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,9 +41,6 @@ import java.util.Map;
 @AcrossDepends(required = "EntityModule")
 public class EntityUiModuleConfiguration implements EntityConfigurer
 {
-	@Autowired
-	private CurrentSecurityPrincipalProxy securityPrincipal;
-
 	@Bean
 	public AclSecurityEntityValidator aclSecurityEntityValidator( AclSecurityEntityService aclSecurityEntityService ) {
 		return new AclSecurityEntityValidator( aclSecurityEntityService );
@@ -52,10 +48,9 @@ public class EntityUiModuleConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
-		configuration.entity( AclSecurityEntity.class )
+		configuration.withType( AclSecurityEntity.class )
 		             .allowableActionsBuilder( actionsBuilderForAuthority( AclAuthorities.TAKE_OWNERSHIP ) )
-		             .listView()
-		             .properties( "name", "parent.name", "lastModified" );
+		             .listView( lvb -> lvb.showProperties( "name", "parent.name", "lastModified" ) );
 	}
 
 	private EntityConfigurationAllowableActionsBuilder actionsBuilderForAuthority( String authority ) {
@@ -66,7 +61,7 @@ public class EntityUiModuleConfiguration implements EntityConfigurer
 		actionAuthorityMatcherMap.put( AllowableAction.CREATE, AuthorityMatcher.allOf( authority ) );
 
 		return new FixedEntityAllowableActionsBuilder(
-				AuthorityMatchingAllowableActions.forSecurityPrincipal( securityPrincipal, actionAuthorityMatcherMap )
+				AuthorityMatchingAllowableActions.forSecurityContext( actionAuthorityMatcherMap )
 		);
 	}
 }
