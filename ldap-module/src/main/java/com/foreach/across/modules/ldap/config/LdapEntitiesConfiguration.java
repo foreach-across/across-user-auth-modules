@@ -45,10 +45,8 @@ public class LdapEntitiesConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
-		configuration.entity( LdapConnector.class )
-		             .createFormView().addProcessor( viewAdapter )
-		             .and()
-		             .updateFormView().addProcessor( viewAdapter );
+		configuration.withType( LdapConnector.class )
+		             .createOrUpdateFormView( fvb -> fvb.viewProcessor( viewAdapter ) );
 	}
 
 	@Component
