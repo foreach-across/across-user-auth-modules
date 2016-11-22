@@ -26,7 +26,6 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AuthorityMatchingAllowableActions;
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
-import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserAuthorities;
 import com.foreach.across.modules.user.UserModuleSettings;
@@ -57,30 +56,22 @@ import java.util.Map;
 public class UserSpringSecurityConfiguration implements EntityConfigurer
 {
 	@Autowired
-	private CurrentSecurityPrincipalProxy securityPrincipal;
-
-	@Autowired
 	private UserModuleSettings userModuleSettings;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		// Map allowable actions based on the authorities
-		configuration.entity( User.class )
-		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USERS ) )
-		             .and()
-		             .entity( Group.class )
-		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_GROUPS ) )
-		             .and()
-		             .entity( MachinePrincipal.class )
-		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) )
-		             .and()
-		             .entity( Role.class )
-		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) )
-		             .and()
-		             .entity( Permission.class )
-		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) )
-		             .and()
-		             .entity( PermissionGroup.class )
+		configuration.withType( User.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USERS ) );
+		configuration.withType( Group.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_GROUPS ) );
+		configuration.withType( MachinePrincipal.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) );
+		configuration.withType( Role.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) );
+		configuration.withType( Permission.class )
+		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) );
+		configuration.withType( PermissionGroup.class )
 		             .allowableActionsBuilder( actionsBuilderForAuthority( UserAuthorities.MANAGE_USER_ROLES ) );
 	}
 
@@ -92,7 +83,7 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 		actionAuthorityMatcherMap.put( AllowableAction.CREATE, AuthorityMatcher.allOf( authority ) );
 
 		return new FixedEntityAllowableActionsBuilder(
-				AuthorityMatchingAllowableActions.forSecurityPrincipal( securityPrincipal, actionAuthorityMatcherMap )
+				AuthorityMatchingAllowableActions.forSecurityContext( actionAuthorityMatcherMap )
 		);
 	}
 

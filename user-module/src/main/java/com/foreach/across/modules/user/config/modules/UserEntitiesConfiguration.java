@@ -19,7 +19,6 @@ package com.foreach.across.modules.user.config.modules;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.UserService;
@@ -40,54 +39,38 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		// By default permissions cannot be managed through the user interface
-		configuration.entity( Permission.class ).hide().and()
-		             .entity( PermissionGroup.class ).hide();
+		configuration.withType( Permission.class ).hide();
+		configuration.withType( PermissionGroup.class ).hide();
 
 		// Groups should be managed through the association
-		configuration.entity( MachinePrincipal.class )
-		             .properties().property( "groups" ).hidden( true ).and().and()
-		             .association( "machinePrincipal.groups" ).show();
+		configuration.withType( MachinePrincipal.class )
+		             .properties( props -> props.property( "groups" ).hidden( true ) )
+		             .association( ab -> ab.name( "machinePrincipal.groups" ).show() );
 
-		configuration.entity( User.class )
-		             .properties().property( "groups" ).hidden( true ).and().and()
-		             .association( "user.groups" ).show();
+		configuration.withType( Role.class )
+		             .properties(
+				             props -> props
+						             .property( "permissions" )
+						             .viewElementBuilder( ViewElementMode.CONTROL, rolePermissionsFormElementBuilder() )
+		             )
+		             .listView(
+				             lvb -> lvb.defaultSort( new Sort( "name" ) )
+				                       .showProperties( "name", "authority", "description", "lastModified" )
+		             )
+		             .createOrUpdateFormView( fvb -> fvb.viewProcessor( roleFormProcessorAdapter() ) );
 
-		configuration.entity( Role.class )
-		             .properties()
-		             .property( "permissions" )
-		             .viewElementBuilder( ViewElementMode.CONTROL, rolePermissionsFormElementBuilder() ).and()
-		             .and()
-		             .listView()
-		             .defaultSort( new Sort( "name" ) )
-		             .properties( "name", "authority", "description", "lastModified" ).and()
-		             .and()
-		             .updateFormView().addProcessor( roleFormProcessorAdapter() ).and()
-		             .createFormView().addProcessor( roleFormProcessorAdapter() );
+		configuration.withType( User.class )
+		             .entityModel( mb -> mb.saveMethod( userService::save ) )
+		             .properties( props -> props.property( "groups" ).hidden( true ) )
+		             .association( ab -> ab.name( "user.groups" ).show() )
+		             .listView( lvb -> lvb
+				             .defaultSort( "displayName" )
+				             .entityQueryFilter( true )
+				             .showProperties( "displayName", "email", "restrictions", "lastModified" )
+		             );
 
-		configuration.entity( User.class )
-		             // Use the UserService for persisting User - as that one takes care of password handling
-		             .entityModel().saveMethod( userService::save )
-		             .and()
-
-		             //.view( EntityListView.SUMMARY_VIEW_NAME ).template( "th/user/bla" ).and()
-					 /*.properties()
-						.order( "id", "email", "displayName" )
-						.property( "created", "Created", new AuditableCreatedPrinter() ).and()
-						.property( "lastModified", "Last modified", new AuditableLastModifiedPrinter() ).and()
-						.hide( "createdDate", "createdBy", "lastModifiedDate", "lastModifiedBy" )
-						.and()*/
-					 .listView( EntityListView.VIEW_NAME )
-					 .properties(
-							 "id",
-							 "email",
-							 "displayName",
-							 "group-membership",
-							 "role-membership",
-							 "lastModifiedDate"
-					 )
-					 .property( "group-membership" ).displayName( "Groups" ).spelValueFetcher( "groups.size()" )
-					 .and()
-					 .property( "role-membership" ).displayName( "Roles" ).spelValueFetcher( "roles.size()" );
+		configuration.withType( Group.class )
+		             .listView( lvb -> lvb.defaultSort( "name" ).entityQueryFilter( true ) );
 	}
 
 	@Bean
