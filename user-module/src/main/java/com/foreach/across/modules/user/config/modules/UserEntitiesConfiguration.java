@@ -21,12 +21,16 @@ import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.user.business.*;
+import com.foreach.across.modules.user.repositories.RoleRepository;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.modules.user.ui.RoleFormProcessorAdapter;
 import com.foreach.across.modules.user.ui.RolePermissionsFormElementBuilder;
+import com.foreach.across.modules.user.ui.support.EQStringToRoleConverter;
+import com.foreach.across.modules.user.ui.support.EQValueToRoleConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.domain.Sort;
 
 @AcrossDepends(required = "EntityModule")
@@ -35,6 +39,12 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 {
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	public void registerEntityQueryConverters( ConverterRegistry mvcConversionService, RoleRepository roleRepository ) {
+		mvcConversionService.addConverter( new EQValueToRoleConverter( roleRepository ) );
+		mvcConversionService.addConverter( new EQStringToRoleConverter( roleRepository ) );
+	}
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
