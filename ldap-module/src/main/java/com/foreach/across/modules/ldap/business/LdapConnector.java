@@ -91,7 +91,7 @@ public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 	@Size(max = 300)
 	private String username;
 
-	@Column(name = "password")
+	@Column(name = "conn_pwd")
 	@Size(max = 100)
 	private String password;
 
