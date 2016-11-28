@@ -39,7 +39,7 @@ public class MethodLoggingConfiguration
 	}
 
 	@Aspect
-	class MethodExecutionLogger extends MethodLoggerAdapter
+	static class MethodExecutionLogger extends MethodLoggerAdapter
 	{
 		public MethodExecutionLogger() {
 			super( SpringSecurityAclModule.NAME );

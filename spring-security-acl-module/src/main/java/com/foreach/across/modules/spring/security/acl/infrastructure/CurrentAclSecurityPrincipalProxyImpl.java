@@ -36,8 +36,6 @@ public class CurrentAclSecurityPrincipalProxyImpl extends CurrentSecurityPrincip
 
 	@Override
 	public boolean hasAclPermission( IdBasedEntity entity, AclPermission permission ) {
-		SecurityPrincipal securityPrincipal = getPrincipal();
-
 		return aclSecurityService != null
 				&& isAuthenticated()
 				&& aclSecurityService.hasPermission( getPrincipal( SecurityPrincipal.class ), entity, permission );
