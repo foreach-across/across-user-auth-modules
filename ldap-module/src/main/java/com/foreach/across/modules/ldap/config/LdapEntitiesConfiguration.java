@@ -65,8 +65,6 @@ public class LdapEntitiesConfiguration implements EntityConfigurer
 
 		@Override
 		protected void extendViewModel( EntityFormView view ) {
-			LdapConnector connector = view.getEntity();
-
 			find( view.getViewElements(), EntityFormViewFactory.FORM_RIGHT, ContainerViewElement.class )
 					.ifPresent(
 							c -> c.addChild( new TemplateViewElement( "th/ldapmodule/includes/testLdapConnector" ) )
