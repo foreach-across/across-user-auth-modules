@@ -81,7 +81,7 @@ All properties start with the ldapModule. prefix.
 
 |ldapModule.synchronizationTaskIntervalInSeconds
 |`Long`
-| The interval for the synchronization task in milliseconds.
+| The interval for the synchronization task in seconds.
 |_300_ (5 minutes)
 
 |===
@@ -94,7 +94,7 @@ Initial public release available on http://search.maven.org/[Maven central].
 :numbered:
 == Configuration
 
-Adding the dependency to {admin-web-module-url}[LdapModule] will automatically register a synchronization task which runs every 30 seconds.
+Adding the dependency to {admin-web-module-url}[LdapModule] will automatically register a synchronization task which runs every 5 minutes.
 The task will not run until an `LdapConnector` and `LdapUserDirectory` are created.
 
 === Configuration via AdminWebModule
