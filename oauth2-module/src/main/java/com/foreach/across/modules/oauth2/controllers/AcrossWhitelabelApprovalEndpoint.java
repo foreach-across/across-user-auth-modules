@@ -40,7 +40,7 @@ public class AcrossWhitelabelApprovalEndpoint
 	public void getAccessConfirmation( Map<String, Object> model,
 	                                   HttpServletRequest request, HttpServletResponse response ) throws Exception {
 		whitelabelApprovalEndpoint.getAccessConfirmation( model, request );
-		String confirmFormRedirectUrl = oAuth2ModuleSettings.getCustomApprovalForm();
+		String confirmFormRedirectUrl = oAuth2ModuleSettings.getApproval().getFormEndpoint();
 		response.sendRedirect( confirmFormRedirectUrl + ( confirmFormRedirectUrl.contains( "?" ) ? "&" : "?" ) + request
 				.getQueryString() );
 	}
