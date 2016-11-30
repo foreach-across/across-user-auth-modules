@@ -65,6 +65,7 @@
 
 	<modules>
 		<module>oauth2-module</module>
+		<module>oauth2-module-test-website</module>
 	</modules>
 
 	<dependencyManagement>

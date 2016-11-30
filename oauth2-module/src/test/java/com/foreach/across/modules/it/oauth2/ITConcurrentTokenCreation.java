@@ -32,7 +32,8 @@ import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModule;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.modules.web.AcrossWebModule;
+import com.foreach.across.test.AcrossTestConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -152,7 +153,7 @@ public class ITConcurrentTokenCreation
 	}
 
 	@Configuration
-	@AcrossTestWebConfiguration
+	@AcrossTestConfiguration(modules = { AcrossWebModule.NAME })
 	static class Config implements AcrossContextConfigurer
 	{
 		@Bean(name = SpringSecurityModuleCache.SECURITY_PRINCIPAL)

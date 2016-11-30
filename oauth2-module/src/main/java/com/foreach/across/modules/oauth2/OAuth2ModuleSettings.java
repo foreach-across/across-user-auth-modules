@@ -15,10 +15,10 @@
  */
 package com.foreach.across.modules.oauth2;
 
-import com.foreach.across.core.AcrossModuleSettings;
-import com.foreach.across.core.AcrossModuleSettingsRegistry;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-public class OAuth2ModuleSettings extends AcrossModuleSettings
+@ConfigurationProperties("oauth2Module")
+public class OAuth2ModuleSettings
 {
 	/**
 	 * How approvals should be handled and remembered.
@@ -41,15 +41,11 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 		TOKEN
 	}
 
-	/**
-	 * Specifies whether the default spring endpoint for the approval form should be used (when left empty)
-	 * or the custom endpoint that redirects to a custom form
-	 * <p/>
-	 * String
-	 */
-	public static final String APPROVAL_FORM_ENDPOINT = "OAuth2Module.approval.formEndpoint";
-	public static final String APPROVAL_HANDLER = "OAuth2Module.approval.handler";
-	public static final String APPROVAL_STORE = "OAuth2Module.approval.store";
+	public static final String APPROVAL_FORM_ENDPOINT = "oauth2Module.approval.formEndpoint";
+	public static final String APPROVAL_HANDLER = "oauth2Module.approval.handler";
+	public static final String APPROVAL_STORE = "oauth2Module.approval.store";
+	public static final String USE_JDBC_AUTHORIZATION_CODE_SERVICE = "oauth2Module.useJdbcAuthorizationCodeServices";
+	public static final String USE_LOCKING_FOR_TOKEN_CREATION = "oauth2Module.useLockingForTokenCreation";
 
 	/**
 	 * Specifies whether the authorization process should use a jdbcAuthorizationCodeService instead of the default
@@ -57,47 +53,87 @@ public class OAuth2ModuleSettings extends AcrossModuleSettings
 	 * <p/>
 	 * False/True
 	 */
-	public static final String USE_JDBC_AUTHORIZATION_CODE_SERVICE = "OAuth2Module.useJdbcAuthorizationCodeServices";
+	private Boolean useJdbcAuthorizationCodeServices = true;
 
 	/**
 	 * Should distributed locking be used for token creation.
 	 * Defaults to true which incurs a performance hit but ensures compatibility when scaling out to multiple servers.
 	 */
-	public static final String USE_LOCKING_FOR_TOKEN_CREATION = "OAuth2Module.useLockingForTokenCreation";
+	private Boolean useLockingForTokenCreation = true;
 
-	@Override
-	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
-		registry.register( APPROVAL_HANDLER, ApprovalHandler.class, ApprovalHandler.APPROVAL_STORE,
-		                   "Specify how user approvals should be handled and remembers (defaults to storing approvals in an approval store)" );
-		registry.register( APPROVAL_STORE, ApprovalStore.class, ApprovalStore.JDBC,
-		                   "Specify the type of approval store that should be used (defaults to jdbc - storing approvals in database)" );
-		registry.register( APPROVAL_FORM_ENDPOINT, String.class, "",
-		                   "Specifies whether the default spring endpoint for the approval form should be used" +
-				                   " (when left empty) or the custom endpoint that redirects to a custom form" );
-		registry.register( USE_JDBC_AUTHORIZATION_CODE_SERVICE, Boolean.class, false, "Specifies whether the " +
-				"authorization process should use a jdbcAuthorizationCodeService instead of the default " +
-				" inMemoryAuthorizationCodeService" );
-		registry.register( USE_LOCKING_FOR_TOKEN_CREATION, Boolean.class, true,
-		                   "Should distributed locking be used for token creation." );
+	/**
+	 * Specifies whether the default spring endpoint for the approval form should be used (when left empty)
+	 * or the custom endpoint that redirects to a custom form
+	 * <p/>
+	 * String
+	 */
+	private ApprovalSettings approval = new ApprovalSettings();
+
+	public Boolean getUseJdbcAuthorizationCodeServices() {
+		return useJdbcAuthorizationCodeServices;
 	}
 
-	public String getCustomApprovalForm() {
-		return getProperty( APPROVAL_FORM_ENDPOINT, String.class );
+	public void setUseJdbcAuthorizationCodeServices( Boolean useJdbcAuthorizationCodeServices ) {
+		this.useJdbcAuthorizationCodeServices = useJdbcAuthorizationCodeServices;
 	}
 
-	public boolean isUseJdbcAuthorizationCodeService() {
-		return getProperty( USE_JDBC_AUTHORIZATION_CODE_SERVICE, Boolean.class );
+	public Boolean getUseLockingForTokenCreation() {
+		return useLockingForTokenCreation;
 	}
 
-	public ApprovalHandler getApprovalHandler() {
-		return getProperty( APPROVAL_HANDLER, ApprovalHandler.class );
+	public void setUseLockingForTokenCreation( Boolean useLockingForTokenCreation ) {
+		this.useLockingForTokenCreation = useLockingForTokenCreation;
 	}
 
-	public ApprovalStore getApprovalStore() {
-		return getProperty( APPROVAL_STORE, ApprovalStore.class );
+	public ApprovalSettings getApproval() {
+		return approval;
 	}
 
-	public boolean isUseLockingForTokenCreation() {
-		return getProperty( USE_LOCKING_FOR_TOKEN_CREATION, Boolean.class );
+	public void setApproval( ApprovalSettings approval ) {
+		this.approval = approval;
+	}
+
+	public static class ApprovalSettings
+	{
+
+		/**
+		 * Specifies whether the default spring endpoint for the approval form should be used
+		 * (when left empty) or the custom endpoint that redirects to a custom form.
+		 */
+		private String formEndpoint;
+
+		/**
+		 * Specify how user approvals should be handled and remembers (defaults to storing approvals in an approval store)
+		 */
+		private ApprovalHandler handler = ApprovalHandler.APPROVAL_STORE;
+
+		/**
+		 * Specify the type of approval store that should be used (defaults to jdbc - storing approvals in database)
+		 */
+		private ApprovalStore store = ApprovalStore.JDBC;
+
+		public String getFormEndpoint() {
+			return formEndpoint;
+		}
+
+		public void setFormEndpoint( String formEndpoint ) {
+			this.formEndpoint = formEndpoint;
+		}
+
+		public ApprovalHandler getHandler() {
+			return handler;
+		}
+
+		public void setHandler( ApprovalHandler handler ) {
+			this.handler = handler;
+		}
+
+		public ApprovalStore getStore() {
+			return store;
+		}
+
+		public void setStore( ApprovalStore store ) {
+			this.store = store;
+		}
 	}
 }
