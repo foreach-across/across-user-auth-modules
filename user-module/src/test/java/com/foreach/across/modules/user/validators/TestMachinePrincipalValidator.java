@@ -71,6 +71,7 @@ public class TestMachinePrincipalValidator
 
 		verify( defaultUserDirectoryStrategy ).apply( machinePrincipal );
 		verify( errors ).hasFieldErrors( "name" );
+		verify( errors ).hasFieldErrors( "groups" );
 		verifyNoMoreInteractions( errors );
 	}
 
@@ -88,6 +89,7 @@ public class TestMachinePrincipalValidator
 
 		verify( defaultUserDirectoryStrategy ).apply( machinePrincipal );
 		verify( errors ).hasFieldErrors( "name" );
+		verify( errors ).hasFieldErrors( "groups" );
 		verifyNoMoreInteractions( errors );
 	}
 
@@ -109,6 +111,7 @@ public class TestMachinePrincipalValidator
 		verify( defaultUserDirectoryStrategy ).apply( machinePrincipal );
 		verify( errors ).hasFieldErrors( "name" );
 		verify( errors ).rejectValue( "name", "alreadyExists" );
+		verify( errors ).hasFieldErrors( "groups" );
 		verifyNoMoreInteractions( errors );
 	}
 }
