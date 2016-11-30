@@ -82,6 +82,15 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 		configuration.withType( Group.class )
 		             .listView( lvb -> lvb.defaultSort( "name" ).entityQueryFilter( true ) );
 
+		configuration.assignableTo( BasicSecurityPrincipal.class )
+		             .properties(
+				             props -> props.property( "userDirectory" )
+				                           .order( 1 )
+				                           .readable( true )
+				                           .writable( false )
+		             )
+		             .createFormView( fvb -> fvb.showProperties( "~userDirectory", "." ) );
+
 		configuration.assignableTo( GroupedPrincipal.class )
 		             .properties(
 				             props -> props
