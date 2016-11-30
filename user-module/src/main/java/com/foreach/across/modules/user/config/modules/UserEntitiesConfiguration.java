@@ -23,6 +23,8 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.repositories.RoleRepository;
 import com.foreach.across.modules.user.services.UserService;
+import com.foreach.across.modules.user.ui.GroupsFormElementBuilder;
+import com.foreach.across.modules.user.ui.GroupsFormProcessorAdapter;
 import com.foreach.across.modules.user.ui.RoleFormProcessorAdapter;
 import com.foreach.across.modules.user.ui.RolePermissionsFormElementBuilder;
 import com.foreach.across.modules.user.ui.support.EQStringToRoleConverter;
@@ -53,10 +55,10 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 		configuration.withType( PermissionGroup.class ).hide();
 
 		// Groups should be managed through the association
-		configuration.withType( MachinePrincipal.class )
+		/*configuration.withType( MachinePrincipal.class )
 		             .properties( props -> props.property( "groups" ).hidden( true ) )
 		             .association( ab -> ab.name( "machinePrincipal.groups" ).show() );
-
+*/
 		configuration.withType( Role.class )
 		             .properties(
 				             props -> props
@@ -71,8 +73,6 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 
 		configuration.withType( User.class )
 		             .entityModel( mb -> mb.saveMethod( userService::save ) )
-		             .properties( props -> props.property( "groups" ).hidden( true ) )
-		             .association( ab -> ab.name( "user.groups" ).show() )
 		             .listView( lvb -> lvb
 				             .defaultSort( "displayName" )
 				             .entityQueryFilter( true )
@@ -81,6 +81,37 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 
 		configuration.withType( Group.class )
 		             .listView( lvb -> lvb.defaultSort( "name" ).entityQueryFilter( true ) );
+
+		configuration.assignableTo( GroupedPrincipal.class )
+		             .properties(
+				             props -> props
+						             .property( "groups" )
+						             .viewElementBuilder( ViewElementMode.CONTROL, groupsFormElementBuilder() )
+		             )
+		             .createOrUpdateFormView( fvb -> fvb.viewProcessor( groupsFormProcessorAdapter() ) );
+
+			/*
+					temporary commit - association based management
+			configuration.withType( User.class )
+		             .association(
+				             avb -> avb.name( "user.groups" )
+				                       .listView( "groupSelector", lvb ->
+						                       lvb.factoryType( GroupSelectionListViewFactory.class )
+						                          .viewProcessor( new GroupSelectionProcessorAdapter() )
+						                          .entityQueryFilter( false )
+				                       )
+		             );
+		             */
+	}
+
+	@Bean
+	protected GroupsFormElementBuilder groupsFormElementBuilder() {
+		return new GroupsFormElementBuilder();
+	}
+
+	@Bean
+	protected GroupsFormProcessorAdapter groupsFormProcessorAdapter() {
+		return new GroupsFormProcessorAdapter();
 	}
 
 	@Bean

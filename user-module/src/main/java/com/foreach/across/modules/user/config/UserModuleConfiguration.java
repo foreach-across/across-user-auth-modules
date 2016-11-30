@@ -20,6 +20,7 @@ import com.foreach.across.core.context.support.AcrossModuleMessageSource;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleSettings;
+import com.foreach.across.modules.user.controllers.AutoSuggestController;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import com.foreach.across.modules.user.repositories.RoleRepository;
 import com.foreach.across.modules.user.services.*;
@@ -36,11 +37,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@ComponentScan(basePackageClasses = AutoSuggestController.class)
 @EnableAcrossJpaRepositories(basePackageClasses = UserModule.class)
 public class UserModuleConfiguration
 {

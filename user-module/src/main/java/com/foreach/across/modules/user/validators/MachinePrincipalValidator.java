@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.user.validators;
 
-import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.QMachinePrincipal;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
@@ -27,7 +26,7 @@ import org.springframework.validation.Errors;
 /**
  * @author Arne Vandamme
  */
-public class MachinePrincipalValidator extends EntityValidatorSupport<MachinePrincipal>
+public class MachinePrincipalValidator extends GroupedPrincipalValidatorSupport<MachinePrincipal>
 {
 	private final MachinePrincipalRepository machinePrincipalRepository;
 	private final DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
@@ -51,6 +50,8 @@ public class MachinePrincipalValidator extends EntityValidatorSupport<MachinePri
 
 	@Override
 	protected void postValidation( MachinePrincipal entity, Errors errors ) {
+		super.postValidation( entity, errors );
+
 		if ( !errors.hasFieldErrors( "name" ) ) {
 			QMachinePrincipal q = QMachinePrincipal.machinePrincipal;
 			MachinePrincipal other = machinePrincipalRepository.findOne(

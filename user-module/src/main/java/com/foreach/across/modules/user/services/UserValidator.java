@@ -19,7 +19,9 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModuleSettings;
+import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
@@ -91,6 +93,17 @@ public class UserValidator implements Validator
 
 				if ( principal != null && !isSamePrincipal( principal, userDto ) ) {
 					errors.rejectValue( "username", null, "username is not available" );
+				}
+			}
+
+			if ( !errors.hasFieldErrors( "groups" ) ) {
+				UserDirectory expectedUserDirectory = userDto.getUserDirectory();
+
+				for ( Group group : userDto.getGroups() ) {
+					if ( !expectedUserDirectory.equals( group.getUserDirectory() ) ) {
+						errors.rejectValue( "groups", "differentGroupUserDirectory", new Object[] { group.getName() },
+						                    "Groups must be from the same user directory." );
+					}
 				}
 			}
 		}
