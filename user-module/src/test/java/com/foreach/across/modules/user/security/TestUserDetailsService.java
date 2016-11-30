@@ -71,7 +71,7 @@ public class TestUserDetailsService
 		UserDetails details = userDetailsService.loadUserByUsername( "myname" );
 		assertSame( expectedUserDetails, details );
 
-		verify( securityPrincipalService ).getPrincipalByName( "2,myname" );
+		verify( securityPrincipalService ).getPrincipalByName( "2@@@myname" );
 	}
 
 	@Test(expected = UsernameNotFoundException.class)

@@ -108,20 +108,20 @@ public class TestGroup
 		UserDirectory neg = new InternalUserDirectory();
 		neg.setId( -399L );
 		group.setUserDirectory( neg );
-		assertEquals( "-399,group:some group", group.getPrincipalName() );
+		assertEquals( "-399@@@group:some group", group.getPrincipalName() );
 
 		UserDirectory other = new InternalUserDirectory();
 		other.setId( 2L );
 		group.setUserDirectory( other );
-		assertEquals( "2,group:some group", group.getPrincipalName() );
+		assertEquals( "2@@@group:some group", group.getPrincipalName() );
 
 		group.setName( "Renamed Group" );
-		assertEquals( "2,group:renamed group", group.getPrincipalName() );
+		assertEquals( "2@@@group:renamed group", group.getPrincipalName() );
 
 		UserDirectory third = new InternalUserDirectory();
 		third.setId( 40L );
 		group.setUserDirectory( third );
-		assertEquals( "40,group:renamed group", group.getPrincipalName() );
+		assertEquals( "40@@@group:renamed group", group.getPrincipalName() );
 
 		group.setUserDirectory( defaultDir );
 		assertEquals( "group:renamed group", group.getPrincipalName() );

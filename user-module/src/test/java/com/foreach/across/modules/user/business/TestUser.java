@@ -45,20 +45,20 @@ public class TestUser
 		UserDirectory neg = new InternalUserDirectory();
 		neg.setId( -399L );
 		user.setUserDirectory( neg );
-		assertEquals( "-399,my.username", user.getPrincipalName() );
+		assertEquals( "-399@@@my.username", user.getPrincipalName() );
 
 		UserDirectory other = new InternalUserDirectory();
 		other.setId( 2L );
 		user.setUserDirectory( other );
-		assertEquals( "2,my.username", user.getPrincipalName() );
+		assertEquals( "2@@@my.username", user.getPrincipalName() );
 
 		user.setUsername( "otherUserName" );
-		assertEquals( "2,otherusername", user.getPrincipalName() );
+		assertEquals( "2@@@otherusername", user.getPrincipalName() );
 
 		UserDirectory third = new InternalUserDirectory();
 		third.setId( 40L );
 		user.setUserDirectory( third );
-		assertEquals( "40,otherusername", user.getPrincipalName() );
+		assertEquals( "40@@@otherusername", user.getPrincipalName() );
 
 		user.setUserDirectory( defaultDir );
 		assertEquals( "otherusername", user.getPrincipalName() );
