@@ -60,7 +60,7 @@ It also sets the `UserDirectory` when none was specified.
 
 === Module settings
 
-All properties start with the *OAuth2Module.* prefix.
+All properties start with the *oauth2Module.* prefix.
 
 |===
 |Property |Type |Description |Default

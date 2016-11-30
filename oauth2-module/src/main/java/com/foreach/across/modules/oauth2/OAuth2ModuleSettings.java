@@ -17,7 +17,7 @@ package com.foreach.across.modules.oauth2;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("OAuth2Module")
+@ConfigurationProperties("oauth2Module")
 public class OAuth2ModuleSettings
 {
 	/**
@@ -41,12 +41,11 @@ public class OAuth2ModuleSettings
 		TOKEN
 	}
 
-
-	public static final String APPROVAL_FORM_ENDPOINT = "OAuth2Module.approval.formEndpoint";
-	public static final String APPROVAL_HANDLER = "OAuth2Module.approval.handler";
-	public static final String APPROVAL_STORE = "OAuth2Module.approval.store";
-	public static final String USE_JDBC_AUTHORIZATION_CODE_SERVICE = "OAuth2Module.useJdbcAuthorizationCodeServices";
-	public static final String USE_LOCKING_FOR_TOKEN_CREATION = "OAuth2Module.useLockingForTokenCreation";
+	public static final String APPROVAL_FORM_ENDPOINT = "oauth2Module.approval.formEndpoint";
+	public static final String APPROVAL_HANDLER = "oauth2Module.approval.handler";
+	public static final String APPROVAL_STORE = "oauth2Module.approval.store";
+	public static final String USE_JDBC_AUTHORIZATION_CODE_SERVICE = "oauth2Module.useJdbcAuthorizationCodeServices";
+	public static final String USE_LOCKING_FOR_TOKEN_CREATION = "oauth2Module.useLockingForTokenCreation";
 
 	/**
 	 * Specifies whether the authorization process should use a jdbcAuthorizationCodeService instead of the default
