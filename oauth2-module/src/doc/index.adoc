@@ -99,6 +99,7 @@ Incurs a performance hit but ensures compatibility in a scaled out scenario.
 === 2.0.0-SNAPSHOT
 Requires Across 2.0.0+
 
+* for consistency, the property prefix has been changed from *OAuth2Module.* to *oauth2Module.*
 * compatibility update with Spring 4.2.
 * added support for multiple user directories
 * added default `SecurityPrincipalLabelResolver` for `OAuth2Client`
