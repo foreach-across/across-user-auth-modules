@@ -50,7 +50,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		extends SettableIdBasedEntity<T>
 		implements IdBasedSecurityPrincipal, Auditable<String>
 {
-	private static final Pattern DIRECTORY_PREFIXED = Pattern.compile( "^-?\\d+," );
+	private static final Pattern DIRECTORY_PREFIXED = Pattern.compile( "^-?\\d+@@@" );
 
 	@Id
 	@GeneratedValue(generator = "seq_um_principal_id")
@@ -267,7 +267,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		String principalName = StringUtils.lowerCase( DIRECTORY_PREFIXED.matcher( name ).replaceFirst( "" ) );
 		if ( userDirectory != null
 				&& !Objects.equals( userDirectory.getId(), UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID ) ) {
-			principalName = userDirectory.getId() + "," + principalName;
+			principalName = userDirectory.getId() + "@@@" + principalName;
 		}
 		return principalName;
 	}

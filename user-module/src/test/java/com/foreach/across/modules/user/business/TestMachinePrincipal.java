@@ -103,20 +103,20 @@ public class TestMachinePrincipal
 		UserDirectory neg = new InternalUserDirectory();
 		neg.setId( -399L );
 		machinePrincipal.setUserDirectory( neg );
-		assertEquals( "-399,my.principalname", machinePrincipal.getPrincipalName() );
+		assertEquals( "-399@@@my.principalname", machinePrincipal.getPrincipalName() );
 
 		UserDirectory other = new InternalUserDirectory();
 		other.setId( 2L );
 		machinePrincipal.setUserDirectory( other );
-		assertEquals( "2,my.principalname", machinePrincipal.getPrincipalName() );
+		assertEquals( "2@@@my.principalname", machinePrincipal.getPrincipalName() );
 
 		machinePrincipal.setName( "otherPrincipalName" );
-		assertEquals( "2,otherprincipalname", machinePrincipal.getPrincipalName() );
+		assertEquals( "2@@@otherprincipalname", machinePrincipal.getPrincipalName() );
 
 		UserDirectory third = new InternalUserDirectory();
 		third.setId( 40L );
 		machinePrincipal.setUserDirectory( third );
-		assertEquals( "40,otherprincipalname", machinePrincipal.getPrincipalName() );
+		assertEquals( "40@@@otherprincipalname", machinePrincipal.getPrincipalName() );
 
 		machinePrincipal.setUserDirectory( defaultDir );
 		assertEquals( "otherprincipalname", machinePrincipal.getPrincipalName() );
