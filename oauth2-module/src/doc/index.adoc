@@ -1,9 +1,9 @@
 = OAuth2Module
 Arne Vandamme
-2.0.0-SNAPSHOT
+2.0.0.M1
 :toc: left
 :sectanchors:
-:module-version: 2.0.0-SNAPSHOT
+:module-version: 2.0.0.M1
 :module-name: OAuth2Module
 :module-artifact: oauth2-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/OAuth2Module
@@ -96,7 +96,7 @@ Incurs a performance hit but ensures compatibility in a scaled out scenario.
 
 == What's new in this version?
 :numbered!:
-=== 2.0.0-SNAPSHOT
+=== 2.0.0.M1
 Requires Across 2.0.0+
 
 * for consistency, the property prefix has been changed from *OAuth2Module.* to *oauth2Module.*
