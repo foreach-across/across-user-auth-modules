@@ -41,7 +41,6 @@ public class AutoSuggestController
 
 	@RequestMapping("/groups")
 	public List<AutosuggestItemViewHelper> suggestGroups( @RequestParam(value = "query") String query ) {
-
 		QGroup group = QGroup.group;
 
 		return StreamSupport
@@ -49,15 +48,6 @@ public class AutoSuggestController
 				         false )
 				.map( a -> new AutosuggestItemViewHelper( a.getId(), a.getName() ) )
 				.collect( Collectors.toList() );
-
-		/*QCustomer q = QCustomer.customer;
-		Predicate predicate = q.name.containsIgnoreCase( query );
-
-		Iterable<Customer> customers = customerService.getCustomers( predicate );
-
-		return StreamSupport.stream( customers.spliterator(), true )
-		                    .map( a -> new AutosuggestItemViewHelper( a.getId(), a.getName() ) )
-		                    .collect( Collectors.toList() );*/
 	}
 
 	public class AutosuggestItemViewHelper

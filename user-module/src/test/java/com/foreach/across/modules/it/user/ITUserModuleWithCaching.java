@@ -228,6 +228,10 @@ public class ITUserModuleWithCaching
 		assertTrue( securityPrincipalCache.isEmpty() );
 		assertEquals( 2, userCache.size() );
 
+		User actual = mock( User.class );
+		userCache.put( "email:someemail@localhost", actual );
+		assertSame( actual, userService.getUserByEmail( "someEmail@localhost" ) );
+
 		User created = userService.save( User );
 		assertNotNull( created );
 

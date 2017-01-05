@@ -90,13 +90,13 @@ public class UserServiceImpl implements UserService
 	@Override
 	public User getUserByEmail( String email, UserDirectory userDirectory ) {
 		QUser query = QUser.user;
-		return userRepository.findOne( query.email.eq( email ).and( query.userDirectory.eq( userDirectory ) )  );
+		return userRepository.findOne( query.email.eq( email ).and( query.userDirectory.eq( userDirectory ) ) );
 	}
 
 	@Override
 	public User getUserByUsername( String username, UserDirectory userDirectory ) {
 		QUser query = QUser.user;
-		return userRepository.findOne( query.username.eq( username ).and( query.userDirectory.eq( userDirectory ) )  );
+		return userRepository.findOne( query.username.eq( username ).and( query.userDirectory.eq( userDirectory ) ) );
 	}
 
 	@Cacheable(value = UserModuleCache.USERS, key = "('username:' + #username).toLowerCase()", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)

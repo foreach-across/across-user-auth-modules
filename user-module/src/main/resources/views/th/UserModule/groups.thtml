@@ -16,7 +16,8 @@
 
 <!--/* Renders autosuggest based group selector */-->
 <div th:fragment="groups-autosuggest-control(component)" class="js-typeahead">
-	<input id="entity.groups" type="text" class="form-control js-typeahead-input" data-typeahead-url="/admin/autosuggest/groups"
+	<input id="entity.groups" type="text" class="form-control js-typeahead-input"
+	       th:attr="data-typeahead-url=${@adminWeb.path('/autosuggest/groups')}"
 	       th:placeholder="#{UserModule.entities.user.properties.groups[placeholder]}" autocomplete="off"/>
 	<table class="table table-striped">
 		<tr class="js-typeahead-template hidden">
