@@ -21,9 +21,16 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.config.EntityConfigurer;
+import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.oauth2.OAuth2Module;
+import com.foreach.across.modules.oauth2.business.OAuth2Client;
+import com.foreach.across.modules.oauth2.business.OAuth2ClientScope;
+import com.foreach.across.modules.oauth2.business.OAuth2Scope;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
@@ -33,13 +40,20 @@ import javax.sql.DataSource;
  * @author Marc Vanbrabant
  * @since 2.0.0
  */
+@Order(Ordered.LOWEST_PRECEDENCE)
 @AcrossApplication(modules = { OAuth2Module.NAME, DebugWebModule.NAME, EntityModule.NAME, BootstrapUiModule.NAME,
                                AdminWebModule.NAME })
-public class OAuth2Application
+public class OAuth2Application implements EntityConfigurer
 {
 	@Bean
 	public DataSource acrossDataSource() {
 		return new EmbeddedDatabaseBuilder().setType( EmbeddedDatabaseType.H2 ).build();
+	}
+
+	@Override
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		entities.withType( OAuth2Client.class ).show();
+		entities.withType( OAuth2Scope.class ).show();
 	}
 
 	public static void main( String args[] ) {
