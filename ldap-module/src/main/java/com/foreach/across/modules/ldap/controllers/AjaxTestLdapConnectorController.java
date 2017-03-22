@@ -17,12 +17,7 @@
 package com.foreach.across.modules.ldap.controllers;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.entity.controllers.EntityViewRequest;
-import com.foreach.across.modules.entity.controllers.entity.EntityControllerSupport;
-import com.foreach.across.modules.entity.controllers.entity.EntityListController;
-import com.foreach.across.modules.entity.controllers.entity.EntityViewController;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.views.EntityFormView;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
@@ -31,9 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ldap.filter.PresentFilter;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,25 +35,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since 1.0.0
  */
 @AdminWebController
-@RequestMapping(value = { EntityListController.PATH + "/test", EntityViewController.PATH + "/test" })
-public class AjaxTestLdapConnectorController extends EntityControllerSupport
+@RequestMapping(value = { "/entities/ldapConnector/test", "/entities/ldapConnector/{connectorId}/test" })
+public class AjaxTestLdapConnectorController
 {
 	@Autowired
 	private LdapSearchService ldapSearchService;
 
-	@ModelAttribute(VIEW_REQUEST)
-	public Object buildViewRequest(
-			@PathVariable(VAR_ENTITY) EntityConfiguration entityConfiguration,
-			NativeWebRequest request,
-			ModelMap model ) {
-		return super.buildViewRequest( entityConfiguration, true, true, null, request, model );
+	@ModelAttribute("command")
+	public EntityViewCommand command( @PathVariable(value = "connectorId", required = false) LdapConnector ldapConnector ) {
+		EntityViewCommand command = new EntityViewCommand();
+		command.setEntity( ldapConnector != null ? ldapConnector.toDto() : new LdapConnector() );
+		return command;
 	}
 
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public
 	@ResponseBody
-	ResponseEntity<TestResponse> updateProcessedStatus( @ModelAttribute(VIEW_REQUEST) EntityViewRequest viewRequest ) throws Exception {
-		LdapConnector ldapConnector = (LdapConnector) viewRequest.getEntity();
+	public ResponseEntity<TestResponse> updateProcessedStatus( @ModelAttribute("command") EntityViewCommand command ) throws Exception {
+		LdapConnector ldapConnector = command.getEntity( LdapConnector.class );
 		LdapUserDirectory ldapUserDirectory = new LdapUserDirectory();
 		ldapUserDirectory.setLdapConnector( ldapConnector );
 		AtomicInteger numberOfUsers = new AtomicInteger();
@@ -93,11 +84,6 @@ public class AjaxTestLdapConnectorController extends EntityControllerSupport
 
 		return ResponseEntity.ok(
 				new TestResponse( "Found " + numberOfUsers + " users and " + numberOfGroups + " groups." ) );
-	}
-
-	@Override
-	protected String getDefaultViewName() {
-		return EntityFormView.CREATE_VIEW_NAME;
 	}
 
 	public static final class TestResponse

@@ -18,19 +18,19 @@ package com.foreach.across.modules.ldap.config;
 
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.controllers.EntityViewCommand;
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityFormViewFactory;
-import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.WebDataBinder;
 
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
@@ -50,22 +50,25 @@ public class LdapEntitiesConfiguration implements EntityConfigurer
 	}
 
 	@Component
-	public static class SynchronizationInfoFormViewAdapter extends WebViewProcessorAdapter<EntityFormView>
+	public static class SynchronizationInfoFormViewAdapter extends EntityViewProcessorAdapter
 	{
+
 		@Override
-		protected void customizeDataBinder( String viewName,
-		                                    WebViewCreationContext creationContext,
-		                                    EntityViewCommand command,
-		                                    WebDataBinder dataBinder ) {
-			creationContext.getWebResourceRegistry().addWithKey( WebResource.JAVASCRIPT_PAGE_END,
-			                                                     "testLdapConnector-js",
-			                                                     "/js/ldapmodule/testLdapConnector.js",
-			                                                     WebResource.VIEWS );
+		protected void registerWebResources( EntityViewRequest entityViewRequest,
+		                                     EntityView entityView,
+		                                     WebResourceRegistry webResourceRegistry ) {
+			webResourceRegistry.addWithKey( WebResource.JAVASCRIPT_PAGE_END,
+			                                "testLdapConnector-js",
+			                                "/js/ldapmodule/testLdapConnector.js",
+			                                WebResource.VIEWS );
 		}
 
 		@Override
-		protected void extendViewModel( EntityFormView view ) {
-			find( view.getViewElements(), EntityFormViewFactory.FORM_RIGHT, ContainerViewElement.class )
+		protected void postRender( EntityViewRequest entityViewRequest,
+		                           EntityView entityView,
+		                           ContainerViewElement container,
+		                           ViewElementBuilderContext builderContext ) {
+			find( container, SingleEntityFormViewProcessor.RIGHT_COLUMN, ContainerViewElement.class )
 					.ifPresent(
 							c -> c.addChild( new TemplateViewElement( "th/ldapmodule/includes/testLdapConnector" ) )
 					);

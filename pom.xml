@@ -54,7 +54,7 @@
 		<repository>
 			<id>foreach-nexus</id>
 			<name>Foreach repository</name>
-			<url>http://repository.foreach.be/nexus/content/groups/public</url>
+			<url>http://repository.foreach.be/nexus/repository/public</url>
 		</repository>
 	</repositories>
 
@@ -73,7 +73,7 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>debug-web-module</artifactId>
-				<version>1.0.1-SNAPSHOT</version>
+				<version>1.0.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>

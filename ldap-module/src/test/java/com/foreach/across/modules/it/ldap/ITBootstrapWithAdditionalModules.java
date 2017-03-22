@@ -16,11 +16,9 @@
 
 package com.foreach.across.modules.it.ldap;
 
-import com.foreach.across.core.AcrossModule;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.entity.controllers.ViewRequestValidator;
 import com.foreach.across.modules.ldap.LdapModule;
 import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import com.foreach.across.modules.user.UserModule;
@@ -98,14 +96,12 @@ public class ITBootstrapWithAdditionalModules
 		public static class EntityModuleProfile
 		{
 			@Bean
-			public AcrossModule entityModule() {
-				EntityModule entityModule = new EntityModule();
-				entityModule.expose( ViewRequestValidator.class );
-				return entityModule;
+			public EntityModule entityModule() {
+				return new EntityModule();
 			}
 
 			@Bean
-			public AcrossModule bootstrapUiModule() {
+			public BootstrapUiModule bootstrapUiModule() {
 				return new BootstrapUiModule();
 			}
 		}
@@ -115,7 +111,7 @@ public class ITBootstrapWithAdditionalModules
 		public static class AdminWebModuleProfile
 		{
 			@Bean
-			public AcrossModule adminWebModule() {
+			public AdminWebModule adminWebModule() {
 				return new AdminWebModule();
 			}
 		}
@@ -125,7 +121,7 @@ public class ITBootstrapWithAdditionalModules
 		public static class UserModuleProfile extends SpringSecurityWebConfigurerAdapter
 		{
 			@Bean
-			public AcrossModule userModule() {
+			public UserModule userModule() {
 				return new UserModule();
 			}
 		}
