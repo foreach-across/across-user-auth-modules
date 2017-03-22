@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.user.ui;
 
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
+import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.PermissionGroup;
 import com.foreach.across.modules.user.business.Role;
@@ -98,7 +98,7 @@ public class TestRolePermissionsFormElementBuilder extends AbstractViewElementTe
 
 		Role role = mock( Role.class );
 		when( role.hasPermission( three ) ).thenReturn( true );
-		ctx.setAttribute( EntityViewElementBuilderContext.ENTITY, role );
+		ctx.setAttribute( EntityViewModel.ENTITY, role );
 
 		ViewElement element = formElementBuilder.build( ctx );
 

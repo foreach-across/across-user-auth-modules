@@ -18,20 +18,26 @@ package com.foreach.across.modules.user.ui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
+import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * This class is currently not used.
+ *
  * @author Arne Vandamme
  */
-public class GroupSelectionListViewFactory extends EntityListViewFactory<WebViewCreationContext>
+@Deprecated
+public class GroupSelectionListViewFactory extends EntityViewProcessorAdapter
 {
 	private final BootstrapUiFactory bootstrapUiFactory;
 
@@ -41,11 +47,15 @@ public class GroupSelectionListViewFactory extends EntityListViewFactory<WebView
 	}
 
 	@Override
-	protected void configureSortableTableBuilder( SortableTableBuilder tableBuilder,
-	                                              EntityConfiguration entityConfiguration ) {
-		tableBuilder.hideResultNumber()
-		            .headerRowProcessor( new SelectableItemHeaderPostProcessor() )
-		            .valueRowProcessor( new SelectableItemValuePostProcessor() );
+	protected void render( EntityViewRequest entityViewRequest,
+	                       EntityView entityView,
+	                       ContainerViewElementBuilderSupport<?, ?> containerBuilder,
+	                       ViewElementBuilderMap builderMap,
+	                       ViewElementBuilderContext builderContext ) {
+		builderMap.get( SortableTableRenderingViewProcessor.TABLE_BUILDER, SortableTableBuilder.class )
+		          .hideResultNumber()
+		          .headerRowProcessor( new SelectableItemHeaderPostProcessor() )
+		          .valueRowProcessor( new SelectableItemValuePostProcessor() );
 	}
 
 	private class SelectableItemHeaderPostProcessor implements ViewElementPostProcessor<TableViewElement.Row>
@@ -71,13 +81,13 @@ public class GroupSelectionListViewFactory extends EntityListViewFactory<WebView
 			Group projectItem = EntityViewElementUtils.currentEntity( builderContext, Group.class );
 
 			TableViewElement.Cell cell = new TableViewElement.Cell();
-			cell.addChild( bootstrapUi.checkbox()
-			                          .unwrapped()
-			                          .controlName( "extensions[groupSelector].groups" )
-			                          .value( projectItem.getId() )
-			                          //.selected( projectItemSelectionDto
-			                          //                   .hasProjectItem( projectItem ) )
-			                          .build( builderContext ) );
+			cell.addChild( bootstrapUiFactory.checkbox()
+			                                 .unwrapped()
+			                                 .controlName( "extensions[groupSelector].groups" )
+			                                 .value( projectItem.getId() )
+			                                 //.selected( projectItemSelectionDto
+			                                 //                   .hasProjectItem( projectItem ) )
+			                                 .build( builderContext ) );
 			row.addFirstChild( cell );
 		}
 	}

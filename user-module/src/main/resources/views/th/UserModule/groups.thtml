@@ -27,7 +27,7 @@
 				<input type="hidden" disabled="disabled" name="entity.groups" value="{{value}}" />
 			</td>
 		</tr>
-		<tr class="js-typeahead-item" th:each="group : ${entity.groups}">
+		<tr class="js-typeahead-item" th:each="group : ${entityViewCommand.entity.groups}">
 			<td>[[${group.name}]]</td>
 			<td class="row-actions">
 				<a role="button" class="btn btn-link" title="Remove" href="#"><span aria-hidden="true" class="glyphicon glyphicon-remove"></span></a>

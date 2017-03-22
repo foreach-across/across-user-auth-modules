@@ -16,9 +16,12 @@
 
 package com.foreach.across.modules.user.ui;
 
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityFormViewFactory;
-import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.move;
 
@@ -28,10 +31,14 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class GroupsFormProcessorAdapter extends WebViewProcessorAdapter<EntityFormView>
+public class GroupsFormProcessorAdapter extends EntityViewProcessorAdapter
 {
 	@Override
-	protected void extendViewModel( EntityFormView view ) {
-		move( view.getViewElements(), "formGroup-groups", EntityFormViewFactory.FORM_RIGHT );
+	protected void postRender( EntityViewRequest entityViewRequest,
+	                           EntityView entityView,
+	                           ContainerViewElement container,
+	                           ViewElementBuilderContext builderContext ) {
+		move( container, "formGroup-groups", SingleEntityFormViewProcessor.RIGHT_COLUMN );
 	}
+
 }

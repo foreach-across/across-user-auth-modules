@@ -17,21 +17,25 @@
 package com.foreach.across.modules.user.ui;
 
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
-import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
-import com.foreach.across.modules.entity.controllers.EntityViewCommand;
-import com.foreach.across.modules.entity.views.EntityListView;
-import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import org.springframework.web.bind.WebDataBinder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class is currently not used.
+ *
  * @author Arne Vandamme
  */
-public class GroupSelectionProcessorAdapter extends WebViewProcessorAdapter<EntityListView>
+@Deprecated
+public class GroupSelectionProcessorAdapter extends EntityViewProcessorAdapter
 {
 	static class SelectedGroups
 	{
@@ -54,27 +58,26 @@ public class GroupSelectionProcessorAdapter extends WebViewProcessorAdapter<Enti
 			this.addToParent = addToParent;
 		}
 	}
+
 	@Override
-	protected void registerCommandExtensions( EntityViewCommand command ) {
-		command.addExtensions( "groupSelector", new SelectedGroups());
+	public void initializeCommandObject( EntityViewRequest entityViewRequest,
+	                                     EntityViewCommand command,
+	                                     WebDataBinder dataBinder ) {
+		command.addExtension( "groupSelector", new SelectedGroups() );
 	}
 
 	@Override
-	protected void modifyViewElements( ContainerViewElement elements ) {
+	protected void postRender( EntityViewRequest entityViewRequest,
+	                           EntityView entityView,
+	                           ContainerViewElement container,
+	                           ViewElementBuilderContext builderContext ) {
 		ButtonViewElement btn = new ButtonViewElement();
 		btn.setType( ButtonViewElement.Type.BUTTON_SUBMIT );
 		btn.setText( "Update groups" );
 		btn.setName( "entity.extensions[groupSelector].addToParent" );
 		btn.setAttribute( "value", "true" );
 
-		elements.addChild( btn );
+		container.addChild( btn );
 
-	}
-
-	@Override
-	protected void applyCustomPostProcessing( WebViewCreationContext creationContext, EntityListView view ) {
-		EntityViewCommand command = ((EntityViewCommand) view.getAttribute( EntityControllerAttributes.VIEW_COMMAND ));
-
-		System.out.println( "hallo" );
 	}
 }

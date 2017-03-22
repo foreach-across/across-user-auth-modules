@@ -16,11 +16,14 @@
 
 package com.foreach.across.modules.user.ui;
 
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityFormViewFactory;
-import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 
+import static com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor.LEFT_COLUMN;
+import static com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor.RIGHT_COLUMN;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.*;
 
 /**
@@ -29,17 +32,20 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class RoleFormProcessorAdapter extends WebViewProcessorAdapter<EntityFormView>
+public class RoleFormProcessorAdapter extends EntityViewProcessorAdapter
 {
 	@Override
-	protected void extendViewModel( EntityFormView view ) {
-		move( view.getViewElements(), "formGroup-permissions", EntityFormViewFactory.FORM_RIGHT );
+	protected void postRender( EntityViewRequest entityViewRequest,
+	                           EntityView entityView,
+	                           ContainerViewElement container,
+	                           ViewElementBuilderContext builderContext ) {
+		move( container, "formGroup-permissions", RIGHT_COLUMN );
 
 		// move auditable properties in left form
-		move( view.getViewElements(), "formGroup-created", EntityFormViewFactory.FORM_LEFT );
-		move( view.getViewElements(), "formGroup-lastModified", EntityFormViewFactory.FORM_LEFT );
+		move( container, "formGroup-created", LEFT_COLUMN );
+		move( container, "formGroup-lastModified", LEFT_COLUMN );
 
-		find( view.getViewElements(), EntityFormViewFactory.FORM_LEFT, ContainerViewElement.class )
+		find( container, LEFT_COLUMN, ContainerViewElement.class )
 				.ifPresent(
 						c -> sortRecursively( c,
 						                      "formGroup-name", "formGroup-authority", "formGroup-description"
