@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.oauth2.business;
 
-import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.Role;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -94,10 +93,10 @@ public class TestOAuth2Client
 		client.setRoles( Arrays.asList( new Role( "role one" ), new Role( "role two" ) ) );
 
 		OAuth2ClientScope clientScopeOne = new OAuth2ClientScope();
-		clientScopeOne.setPk( new OAuth2ClientScopeId() );
+		clientScopeOne.setId( new OAuth2ClientScopeId() );
 
 		OAuth2ClientScope clientScopeTwo = new OAuth2ClientScope();
-		clientScopeTwo.setPk( new OAuth2ClientScopeId() );
+		clientScopeTwo.setId( new OAuth2ClientScopeId() );
 
 		client.setOAuth2ClientScopes( Arrays.asList( clientScopeOne, clientScopeTwo ) );
 

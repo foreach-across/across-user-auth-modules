@@ -45,10 +45,10 @@ public class TestOAuth2Scope
 		scope.setName( "scope" );
 
 		OAuth2ClientScope clientScopeOne = new OAuth2ClientScope();
-		clientScopeOne.setPk( new OAuth2ClientScopeId() );
+		clientScopeOne.setId( new OAuth2ClientScopeId() );
 
 		OAuth2ClientScope clientScopeTwo = new OAuth2ClientScope();
-		clientScopeTwo.setPk( new OAuth2ClientScopeId() );
+		clientScopeTwo.setId( new OAuth2ClientScopeId() );
 
 		scope.setOAuth2ClientScopes( Arrays.asList( clientScopeOne, clientScopeTwo ) );
 

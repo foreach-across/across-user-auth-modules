@@ -21,6 +21,8 @@ import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
@@ -49,10 +51,12 @@ public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements C
 	)
 	private Long id;
 
+	@NotBlank
+	@Length(max = 255)
 	@Column(name = "name")
 	private String name;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.oAuth2Scope")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "id.oAuth2Scope")
 	private Set<OAuth2ClientScope> oAuth2ClientScopes = new HashSet<>();
 
 	@Override

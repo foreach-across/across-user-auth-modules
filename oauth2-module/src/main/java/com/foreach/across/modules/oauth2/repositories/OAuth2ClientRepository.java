@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.oauth2.repositories;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
@@ -23,6 +24,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+
+import java.util.List;
 
 public interface OAuth2ClientRepository
 		extends IdBasedEntityJpaRepository<OAuth2Client>, QueryDslPredicateExecutor<OAuth2Client>
@@ -47,6 +50,15 @@ public interface OAuth2ClientRepository
 	OAuth2Client findByClientId( String clientId );
 
 	@Caching(
+			put = {
+					@CachePut(value = OAuth2ModuleCache.CLIENTS, key = "#result.clientId", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+			}
+	)
+	OAuth2Client findOneByPrincipalName( String principalName );
+
+	@Caching(
 			evict = {
 					@CacheEvict(value = OAuth2ModuleCache.CLIENTS, key = "#p0.clientId"),
 					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
@@ -65,6 +77,15 @@ public interface OAuth2ClientRepository
 	)
 	@Override
 	<S extends OAuth2Client> S saveAndFlush( S client );
+
+	@Caching(
+			evict = {
+					@CacheEvict(value = OAuth2ModuleCache.CLIENTS, allEntries = true),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
+			}
+	)
+	@Override
+	<S extends OAuth2Client> List<S> save( Iterable<S> entities );
 
 	@Caching(
 			evict = {

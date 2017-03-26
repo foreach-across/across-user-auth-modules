@@ -20,6 +20,8 @@ import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -34,7 +36,7 @@ import java.util.*;
 public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implements ClientDetails
 {
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.oAuth2Client", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "id.oAuth2Client", cascade = CascadeType.ALL)
 	private Set<OAuth2ClientScope> oAuth2ClientScopes = new TreeSet<OAuth2ClientScope>();
 
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -67,14 +69,17 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 	@Column(name = "redirect_uri")
 	private Set<String> registeredRedirectUri = new HashSet<String>();
 
+	@NotBlank
+	@Length(max = 255)
 	@Column(name = "client_id")
 	private String clientId;
 
+	@Length(max = 255)
 	@Column(name = "client_secret")
 	private String clientSecret;
 
 	@Column(name = "is_secret_required")
-	private boolean isSecretRequired;
+	private boolean isSecretRequired = true;
 
 	@Column(name = "access_token_validity_seconds")
 	private Integer accessTokenValiditySeconds;

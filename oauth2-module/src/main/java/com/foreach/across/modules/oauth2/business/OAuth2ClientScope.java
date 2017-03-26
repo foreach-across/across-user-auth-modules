@@ -17,6 +17,7 @@ package com.foreach.across.modules.oauth2.business;
 
 import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,44 +27,45 @@ import java.util.Objects;
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT_SCOPE)
 @AssociationOverrides(
 		{
-				@AssociationOverride(name = "pk.oAuth2Client", joinColumns = @JoinColumn(name = "client_id")),
-				@AssociationOverride(name = "pk.oAuth2Scope", joinColumns = @JoinColumn(name = "scope_id"))
+				@AssociationOverride(name = "id.oAuth2Client", joinColumns = @JoinColumn(name = "client_id")),
+				@AssociationOverride(name = "id.oAuth2Scope", joinColumns = @JoinColumn(name = "scope_id"))
 		}
 )
-public class OAuth2ClientScope implements Comparable, Serializable
+public class OAuth2ClientScope implements Persistable<OAuth2ClientScopeId>, Comparable, Serializable
 {
 	private static final long serialVersionUID = -1673618360294752368L;
 
 	@EmbeddedId
-	private OAuth2ClientScopeId pk = new OAuth2ClientScopeId();
+	private OAuth2ClientScopeId id = new OAuth2ClientScopeId();
 
 	@Column(name = "auto_approve")
 	private boolean autoApprove;
 
-	public OAuth2ClientScopeId getPk() {
-		return pk;
+	@Override
+	public OAuth2ClientScopeId getId() {
+		return id;
 	}
 
-	public void setPk( OAuth2ClientScopeId pk ) {
-		this.pk = pk;
+	public void setId( OAuth2ClientScopeId id ) {
+		this.id = id;
 	}
 
 	@Transient
 	public OAuth2Client getOAuth2Client() {
-		return this.getPk().getOAuth2Client();
+		return this.getId().getOAuth2Client();
 	}
 
 	public void setOAuth2Client( OAuth2Client oAuth2Client ) {
-		this.getPk().setOAuth2Client( oAuth2Client );
+		this.getId().setOAuth2Client( oAuth2Client );
 	}
 
 	@Transient
 	public OAuth2Scope getOAuth2Scope() {
-		return getPk().getOAuth2Scope();
+		return getId().getOAuth2Scope();
 	}
 
 	public void setOAuth2Scope( OAuth2Scope oAuth2Scope ) {
-		getPk().setOAuth2Scope( oAuth2Scope );
+		getId().setOAuth2Scope( oAuth2Scope );
 	}
 
 	public boolean isAutoApprove() {
@@ -72,6 +74,11 @@ public class OAuth2ClientScope implements Comparable, Serializable
 
 	public void setAutoApprove( boolean autoApprove ) {
 		this.autoApprove = autoApprove;
+	}
+
+	@Override
+	public boolean isNew() {
+		return id == null || id.getOAuth2Scope() == null || id.getOAuth2Client() == null;
 	}
 
 	@Override
@@ -85,12 +92,12 @@ public class OAuth2ClientScope implements Comparable, Serializable
 
 		OAuth2ClientScope that = (OAuth2ClientScope) o;
 
-		return Objects.equals( getPk(), that.getPk() );
+		return Objects.equals( getId(), that.getId() );
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( getPk() );
+		return Objects.hash( getId() );
 	}
 
 	@Override

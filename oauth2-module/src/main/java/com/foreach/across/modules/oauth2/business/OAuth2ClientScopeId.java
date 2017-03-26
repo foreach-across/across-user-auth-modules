@@ -15,20 +15,29 @@
  */
 package com.foreach.across.modules.oauth2.business;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
 
+@JsonSerialize(using = OAuth2ClientScopeId.Serializer.class)
 @Embeddable
 public class OAuth2ClientScopeId implements Serializable
 {
 	private static final long serialVersionUID = -2165810738665473456L;
 
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	private OAuth2Client oAuth2Client;
 
+	@NotNull
 	@ManyToOne
 	private OAuth2Scope oAuth2Scope;
 
@@ -64,5 +73,15 @@ public class OAuth2ClientScopeId implements Serializable
 	@Override
 	public int hashCode() {
 		return Objects.hash( getOAuth2Client(), getOAuth2Scope() );
+	}
+
+	static class Serializer extends com.fasterxml.jackson.databind.JsonSerializer<OAuth2ClientScopeId>
+	{
+		@Override
+		public void serialize( OAuth2ClientScopeId value,
+		                       JsonGenerator gen,
+		                       SerializerProvider provider ) throws IOException {
+			gen.writeRawValue( value.getOAuth2Client().getId() + "-" + value.getOAuth2Scope().getId() );
+		}
 	}
 }
