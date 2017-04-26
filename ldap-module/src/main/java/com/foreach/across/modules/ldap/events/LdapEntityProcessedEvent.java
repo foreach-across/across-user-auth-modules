@@ -26,11 +26,13 @@ import org.springframework.ldap.core.DirContextAdapter;
 public class LdapEntityProcessedEvent<T> implements ParameterizedAcrossEvent
 {
 	private T entity;
+	private boolean update;
 	private DirContextAdapter adapter;
 
-	public LdapEntityProcessedEvent( T entity, DirContextAdapter adapter ) {
+	public LdapEntityProcessedEvent( T entity, boolean update, DirContextAdapter adapter ) {
 		this.entity = entity;
 		this.adapter = adapter;
+		this.update = update;
 	}
 
 	public T getEntity() {
@@ -39,6 +41,20 @@ public class LdapEntityProcessedEvent<T> implements ParameterizedAcrossEvent
 
 	public DirContextAdapter getAdapter() {
 		return adapter;
+	}
+
+	/**
+	 * @return true if this was an update of that entity (not the first synchronization)
+	 */
+	public boolean isUpdate() {
+		return update;
+	}
+
+	/**
+	 * @return true if this was the first time this entity has been synchronized
+	 */
+	public boolean isFirstSynchronization() {
+		return !isUpdate();
 	}
 
 	@Override
