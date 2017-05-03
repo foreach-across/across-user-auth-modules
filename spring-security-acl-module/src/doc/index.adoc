@@ -1,6 +1,21 @@
 = SpringSecurityAclModule
-:toc:
+Arne Vandamme
+2.0.0.RELEASE
+:toc: left
+:sectanchors:
+:module-version: 2.0.0.RELEASE
+:module-name: SpringSecurityAclModule
+:module-artifact: spring-security-acl-module
+:module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityAclModule
 
+[copyright,verbatim]
+--
+Copyright (C) 2014-2017 +
+[small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
+--
+
+
+:numbered:
 == General information
 
 === Artifact
@@ -9,8 +24,9 @@
 ----
 	<dependencies>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>spring-security-acl</artifactId>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>{module-artifact}</artifactId>
+			<version>{module-version}</version>
 		</dependency>
 	</dependencies>
 ----
