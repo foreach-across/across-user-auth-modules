@@ -1,0 +1,3 @@
+debugWebModule:
+  security:
+    password: foobar

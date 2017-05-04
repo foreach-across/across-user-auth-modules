@@ -15,9 +15,11 @@
  */
 package com.foreach.across.modules.oauth2.config;
 
+import com.foreach.across.modules.oauth2.business.OAuth2Client;
 import com.foreach.across.modules.oauth2.services.ClientDetailsServiceImpl;
 import com.foreach.across.modules.oauth2.services.OAuth2Service;
 import com.foreach.across.modules.oauth2.services.OAuth2ServiceImpl;
+import com.foreach.across.modules.user.services.support.ExpressionBasedSecurityPrincipalLabelResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -25,7 +27,6 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 @Configuration
 public class OAuth2ServicesConfiguration
 {
-
 	@Bean
 	public OAuth2Service oAuth2Service() {
 		return new OAuth2ServiceImpl();
@@ -34,5 +35,10 @@ public class OAuth2ServicesConfiguration
 	@Bean(name = "oAuth2ClientDetailsService")
 	public ClientDetailsService clientDetailsService() {
 		return new ClientDetailsServiceImpl();
+	}
+
+	@Bean
+	public ExpressionBasedSecurityPrincipalLabelResolver oAuth2ClientLabelResolver() {
+		return new ExpressionBasedSecurityPrincipalLabelResolver( OAuth2Client.class, "clientId" );
 	}
 }

@@ -16,7 +16,7 @@
 package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.oauth2.business.OAuth2Client;
-import com.foreach.across.modules.spring.security.authority.NamedGrantedAuthority;
+import com.foreach.across.modules.spring.security.AuthenticationUtils;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
@@ -140,10 +140,10 @@ public class TestOAuth2JdbcTokenStore
 				storedAuthentication.getOAuth2Request().getAuthorities();
 
 		assertEquals( 4, storedAuthorities.size() );
-		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "role three" ) ) );
-		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "role one" ) ) );
-		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "role two" ) ) );
-		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "authority two" ) ) );
+		assertTrue( AuthenticationUtils.hasAuthority( storedAuthorities, "ROLE_role three" ) );
+		assertTrue( AuthenticationUtils.hasAuthority( storedAuthorities, "ROLE_role one" ) );
+		assertTrue( AuthenticationUtils.hasAuthority( storedAuthorities, "ROLE_role two" ) );
+		assertTrue( AuthenticationUtils.hasAuthority( storedAuthorities, "authority two" ) );
 	}
 
 	@Test
@@ -215,15 +215,15 @@ public class TestOAuth2JdbcTokenStore
 
 		Collection<GrantedAuthority> storedAuthorities = storedAuthentication.getAuthorities();
 		assertEquals( 3, storedAuthorities.size() );
-		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "role three" ) ) );
-		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "permission 1" ) ) );
-		assertTrue( storedAuthorities.contains( new NamedGrantedAuthority( "permission 2" ) ) );
+		assertTrue( AuthenticationUtils.hasAuthority( storedAuthorities, "ROLE_role three" ) );
+		assertTrue( AuthenticationUtils.hasAuthority( storedAuthorities, "permission 1" ) );
+		assertTrue( AuthenticationUtils.hasAuthority( storedAuthorities, "permission 2" ) );
 
 		Collection<? extends GrantedAuthority> storedOauthRequestAuthorities =
 				storedAuthentication.getOAuth2Request().getAuthorities();
 		assertEquals( 2, storedOauthRequestAuthorities.size() );
-		assertTrue( storedOauthRequestAuthorities.contains( new NamedGrantedAuthority( "manager client" ) ) );
-		assertTrue( storedOauthRequestAuthorities.contains( new NamedGrantedAuthority( "adminClient" ) ) );
+		assertTrue( AuthenticationUtils.hasAuthority( storedOauthRequestAuthorities, "ROLE_manager client" ) );
+		assertTrue( AuthenticationUtils.hasAuthority( storedOauthRequestAuthorities, "ROLE_adminClient" ) );
 	}
 
 	@Test

@@ -21,6 +21,7 @@ import com.foreach.across.modules.oauth2.business.OAuth2Scope;
 import com.foreach.across.modules.oauth2.repositories.OAuth2ClientRepository;
 import com.foreach.across.modules.oauth2.repositories.OAuth2ScopeRepository;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,9 @@ public class OAuth2ServiceImpl implements OAuth2Service
 
 	@Autowired
 	private OAuth2ClientRepository oAuth2ClientRepository;
+
+	@Autowired
+	private DefaultUserDirectoryStrategy defaultUserDirectoryStrategy;
 
 	@Override
 	public Collection<OAuth2Client> getOAuth2Clients() {
@@ -58,6 +62,7 @@ public class OAuth2ServiceImpl implements OAuth2Service
 
 	@Override
 	public OAuth2Client saveClient( OAuth2Client oAuth2Client ) {
+		defaultUserDirectoryStrategy.apply( oAuth2Client );
 		return oAuth2ClientRepository.save( oAuth2Client );
 	}
 

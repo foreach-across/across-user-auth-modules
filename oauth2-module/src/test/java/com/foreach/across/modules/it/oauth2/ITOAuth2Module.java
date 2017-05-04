@@ -26,8 +26,10 @@ import com.foreach.across.modules.oauth2.business.OAuth2Scope;
 import com.foreach.across.modules.oauth2.services.OAuth2Service;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.test.AcrossTestWebContext;
 import org.junit.Test;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
@@ -44,6 +46,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.foreach.across.test.support.AcrossTestBuilders.web;
 import static org.junit.Assert.*;
 
 public class ITOAuth2Module
@@ -57,9 +60,9 @@ public class ITOAuth2Module
 			}
 		};
 
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configuration )) {
+		try (AcrossTestWebContext ctx = web().configurer( configuration ).build()) {
 			FrameworkEndpointHandlerMapping handlerMapping
-					= ctx.beanRegistry().getBeanOfType( FrameworkEndpointHandlerMapping.class );
+					= ctx.getBeanOfType( FrameworkEndpointHandlerMapping.class );
 
 			Set<String> endpoints = handlerMapping.getPaths();
 
@@ -77,11 +80,9 @@ public class ITOAuth2Module
 			}
 		};
 
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configuration )) {
-			OAuth2Service oauth2Service
-					= ctx.beanRegistry().getBeanOfType( OAuth2Service.class );
-			SecurityPrincipalService securityPrincipalService
-					= ctx.beanRegistry().getBeanOfType( SecurityPrincipalService.class );
+		try (AcrossTestWebContext ctx = web().configurer( configuration ).build()) {
+			OAuth2Service oauth2Service = ctx.getBeanOfType( OAuth2Service.class );
+			SecurityPrincipalService securityPrincipalService = ctx.getBeanOfType( SecurityPrincipalService.class );
 
 			OAuth2Client oAuth2Client = new OAuth2Client();
 			oAuth2Client.setClientId( "someclient" );
@@ -118,9 +119,9 @@ public class ITOAuth2Module
 			}
 		};
 
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configuration )) {
+		try (AcrossTestWebContext ctx = web().configurer( configuration ).build()) {
 			UserApprovalHandler approvalHandler
-					= ctx.beanRegistry().getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
+					= ctx.getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
 
 			assertNotNull( approvalHandler );
 			assertTrue( approvalHandler instanceof DefaultUserApprovalHandler );
@@ -143,9 +144,8 @@ public class ITOAuth2Module
 			}
 		};
 
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configuration )) {
-			OAuth2Service oauth2Service
-					= ctx.beanRegistry().getBeanOfType( OAuth2Service.class );
+		try (AcrossTestWebContext ctx = web().configurer( configuration ).build()) {
+			OAuth2Service oauth2Service = ctx.getBeanOfType( OAuth2Service.class );
 
 			Set<String> allGrantTypes = new HashSet<>();
 			allGrantTypes.add( "authorization_code" );
@@ -165,6 +165,12 @@ public class ITOAuth2Module
 			client.getResourceIds().addAll( resourceIds );
 			linkFullScope( client, oauth2Service );
 			oauth2Service.saveClient( client );
+
+			// client label
+			assertEquals(
+					"foo",
+					ctx.getBeanOfType( SecurityPrincipalLabelResolverStrategy.class ).resolvePrincipalLabel( "foo" )
+			);
 
 			OAuth2Client clientById = oauth2Service.getClientById( "foo" );
 			OAuth2Client dto = clientById.toDto();
@@ -215,9 +221,9 @@ public class ITOAuth2Module
 			}
 		};
 
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configuration )) {
+		try (AcrossTestWebContext ctx = web().configurer( configuration ).build()) {
 			UserApprovalHandler approvalHandler
-					= ctx.beanRegistry().getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
+					= ctx.getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
 
 			assertNotNull( approvalHandler );
 			assertTrue( approvalHandler instanceof TokenStoreUserApprovalHandler );
@@ -243,15 +249,15 @@ public class ITOAuth2Module
 			}
 		};
 
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configuration )) {
+		try (AcrossTestWebContext ctx = web().configurer( configuration ).build()) {
 			UserApprovalHandler approvalHandler
-					= ctx.beanRegistry().getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
+					= ctx.getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
 
 			assertNotNull( approvalHandler );
 			assertTrue( approvalHandler instanceof ApprovalStoreUserApprovalHandler );
 
 			ApprovalStore approvalStore
-					= ctx.beanRegistry().getBeanOfTypeFromModule( OAuth2Module.NAME, ApprovalStore.class );
+					= ctx.getBeanOfTypeFromModule( OAuth2Module.NAME, ApprovalStore.class );
 
 			assertNotNull( approvalStore );
 			assertTrue( approvalStore instanceof JdbcApprovalStore );
@@ -275,15 +281,15 @@ public class ITOAuth2Module
 			}
 		};
 
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configuration )) {
+		try (AcrossTestWebContext ctx = web().configurer( configuration ).build()) {
 			UserApprovalHandler approvalHandler
-					= ctx.beanRegistry().getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
+					= ctx.getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
 
 			assertNotNull( approvalHandler );
 			assertTrue( approvalHandler instanceof ApprovalStoreUserApprovalHandler );
 
 			ApprovalStore approvalStore
-					= ctx.beanRegistry().getBeanOfTypeFromModule( OAuth2Module.NAME, ApprovalStore.class );
+					= ctx.getBeanOfTypeFromModule( OAuth2Module.NAME, ApprovalStore.class );
 
 			assertNotNull( approvalStore );
 			assertTrue( approvalStore instanceof InMemoryApprovalStore );
@@ -307,15 +313,15 @@ public class ITOAuth2Module
 			}
 		};
 
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configuration )) {
+		try (AcrossTestWebContext ctx = web().configurer( configuration ).build()) {
 			UserApprovalHandler approvalHandler
-					= ctx.beanRegistry().getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
+					= ctx.getBeanOfTypeFromModule( OAuth2Module.NAME, UserApprovalHandler.class );
 
 			assertNotNull( approvalHandler );
 			assertTrue( approvalHandler instanceof ApprovalStoreUserApprovalHandler );
 
 			ApprovalStore approvalStore
-					= ctx.beanRegistry().getBeanOfTypeFromModule( OAuth2Module.NAME, ApprovalStore.class );
+					= ctx.getBeanOfTypeFromModule( OAuth2Module.NAME, ApprovalStore.class );
 
 			assertNotNull( approvalStore );
 			assertTrue( approvalStore instanceof TokenApprovalStore );
@@ -331,6 +337,7 @@ public class ITOAuth2Module
 	{
 		@Override
 		public void configure( AcrossContext context ) {
+			context.addModule( new AcrossWebModule() );
 			context.addModule( acrossHibernateJpaModule() );
 			context.addModule( userModule() );
 			context.addModule( oauth2Module() );

@@ -28,10 +28,7 @@ import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageConfiguringModule;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
 import com.foreach.across.modules.hibernate.provider.TableAliasProvider;
-import com.foreach.across.modules.oauth2.config.OAuth2EndpointsConfiguration;
-import com.foreach.across.modules.oauth2.config.OAuth2RepositoriesConfiguration;
-import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
-import com.foreach.across.modules.oauth2.config.OAuth2ServicesConfiguration;
+import com.foreach.across.modules.oauth2.config.*;
 import com.foreach.across.modules.oauth2.config.aop.EntityInterceptorConfiguration;
 import com.foreach.across.modules.oauth2.config.security.AuthorizationServerSecurityConfiguration;
 import com.foreach.across.modules.oauth2.config.security.CustomTokenEndpointsConfiguration;
@@ -47,12 +44,11 @@ import java.util.Set;
 
 @AcrossDepends(
 		required = { UserModule.NAME, SpringSecurityModule.NAME },
-		optional = "EhcacheModule"
+		optional = { "EhcacheModule", "EntityModule" }
 )
 public class OAuth2Module extends AcrossModule implements HibernatePackageConfiguringModule, HasSchemaConfiguration
 {
-
-	public static final String NAME = "Oauth2Module";
+	public static final String NAME = "OAuth2Module";
 
 	private final SchemaConfiguration schemaConfiguration = new OAuth2SchemaConfiguration();
 
@@ -90,6 +86,7 @@ public class OAuth2Module extends AcrossModule implements HibernatePackageConfig
 				new AnnotatedClassConfigurer(
 						OAuth2RepositoriesConfiguration.class,
 						OAuth2ServicesConfiguration.class,
+						OAuth2EntityConfiguration.class,
 						OAuth2EndpointsConfiguration.class,
 						AuthorizationServerSecurityConfiguration.class,
 						CustomTokenEndpointsConfiguration.class,

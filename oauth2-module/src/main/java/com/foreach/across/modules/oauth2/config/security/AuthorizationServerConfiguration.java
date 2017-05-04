@@ -95,7 +95,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		tokenServices.setSupportRefreshToken( true );
 		tokenServices.setClientDetailsService( clientDetailsService );
 
-		if ( oAuth2ModuleSettings.isUseLockingForTokenCreation() ) {
+		if ( oAuth2ModuleSettings.getUseLockingForTokenCreation() ) {
 			// delayed get of DistributedLockRepository, don't force across to create it if not to be used
 			tokenServices.setObjectLockRepository( beanFactory.getBean( DistributedLockRepository.class ) );
 		}
@@ -118,7 +118,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	public void configure( AuthorizationServerEndpointsConfigurer endpoints ) throws Exception {
 		Map<String, String> mapping = new HashMap<>();
 
-		if ( StringUtils.isNotBlank( oAuth2ModuleSettings.getCustomApprovalForm() ) ) {
+		if ( StringUtils.isNotBlank( oAuth2ModuleSettings.getApproval().getFormEndpoint() ) ) {
 			mapping.put( "/oauth/confirm_access", "/oauth/confirm_access_external" );
 		}
 
@@ -129,7 +129,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		         .userApprovalHandler( userApprovalHandler() )
 		         .getFrameworkEndpointHandlerMapping().setMappings( mapping );
 
-		if ( oAuth2ModuleSettings.isUseJdbcAuthorizationCodeService() ) {
+		if ( oAuth2ModuleSettings.getUseJdbcAuthorizationCodeServices() ) {
 			endpoints.authorizationCodeServices( customJdbcAuthorizationCodeServices() );
 		}
 	}
@@ -137,7 +137,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Bean
 	@Lazy
 	public UserApprovalHandler userApprovalHandler() {
-		switch ( oAuth2ModuleSettings.getApprovalHandler() ) {
+		switch ( oAuth2ModuleSettings.getApproval().getHandler() ) {
 			case TOKEN_STORE:
 				return tokenStoreApprovalHandler();
 			case APPROVAL_STORE:
@@ -166,7 +166,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Bean
 	@Lazy
 	public ApprovalStore approvalStore() {
-		switch ( oAuth2ModuleSettings.getApprovalStore() ) {
+		switch ( oAuth2ModuleSettings.getApproval().getStore() ) {
 			case JDBC:
 				return new JdbcApprovalStore( dataSource );
 			case TOKEN:
