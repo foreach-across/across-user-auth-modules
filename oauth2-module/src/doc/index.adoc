@@ -1,15 +1,15 @@
 = OAuth2Module
 Arne Vandamme
-2.0.0.RELEASE
+2.1.0-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 2.0.0.RELEASE
+:module-version: 2.1.0-SNAPSHOT
 :module-name: OAuth2Module
 :module-artifact: oauth2-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/OAuth2Module
 [copyright,verbatim]
 --
-Copyright (C) 2014-2015 +
+Copyright (C) 2014-2017 +
 [small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
 --
 
@@ -96,6 +96,9 @@ Incurs a performance hit but ensures compatibility in a scaled out scenario.
 
 == What's new in this version?
 :numbered!:
+=== 2.1.0-SNAPSHOT
+* enabled administration UI for managing clients
+
 === 2.0.0.RELEASE
 Requires Across 2.0.0+
 
