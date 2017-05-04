@@ -1,9 +1,9 @@
 = LdapModule
 Arne Vandamme
-1.0.0-SNAPSHOT
+1.0.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.0.0-SNAPSHOT
+:module-version: 1.0.0.RELEASE
 :module-name: LdapModule
 :module-artifact: ldap-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/LdapModule
@@ -13,7 +13,7 @@ Arne Vandamme
 
 [copyright,verbatim]
 --
-Copyright (C) 2014-2015 +
+Copyright (C) 2014-2017 +
 [small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
 --
 
@@ -88,7 +88,7 @@ All properties start with the ldapModule. prefix.
 
 == What's new in this version?
 :numbered!:
-=== 1.0.0-SNAPSHOT
+=== 1.0.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].
 
 :numbered:
