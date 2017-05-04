@@ -10,13 +10,13 @@
           <element id="archive" name="ldap-module-1.0.0-SNAPSHOT.jar">
             <element id="module-output" name="ldap-module" />
           </element>
-          <element id="file-copy" path="$MAVEN_REPOSITORY$/com/foreach/across/across-web/2.0.0-SNAPSHOT/across-web-2.0.0-20170319.183603-49.jar" output-file-name="across-web-2.0.0-SNAPSHOT.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/com/foreach/across/across-web/2.0.0-SNAPSHOT/across-web-2.0.0-20170428.153627-57.jar" output-file-name="across-web-2.0.0-SNAPSHOT.jar" />
           <element id="library" level="project" name="Maven: org.javassist:javassist:3.20.0-GA" />
           <element id="library" level="project" name="Maven: org.thymeleaf:thymeleaf-spring4:3.0.3.RELEASE" />
           <element id="library" level="project" name="Maven: org.thymeleaf:thymeleaf:3.0.3.RELEASE" />
           <element id="library" level="project" name="Maven: org.attoparser:attoparser:2.0.2.RELEASE" />
           <element id="library" level="project" name="Maven: org.unbescape:unbescape:1.1.4.RELEASE" />
-          <element id="file-copy" path="$MAVEN_REPOSITORY$/com/foreach/across/across-core/2.0.0-SNAPSHOT/across-core-2.0.0-20170319.183554-49.jar" output-file-name="across-core-2.0.0-SNAPSHOT.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/com/foreach/across/across-core/2.0.0-SNAPSHOT/across-core-2.0.0-20170428.153620-57.jar" output-file-name="across-core-2.0.0-SNAPSHOT.jar" />
           <element id="file-copy" path="$MAVEN_REPOSITORY$/com/foreach/libs/common-concurrent/1.1-SNAPSHOT/common-concurrent-1.1-20170206.155428-4.jar" output-file-name="common-concurrent-1.1-SNAPSHOT.jar" />
           <element id="library" level="project" name="Maven: org.springframework:spring-jdbc:4.3.5.RELEASE" />
           <element id="library" level="project" name="Maven: ch.qos.logback:logback-classic:1.1.8" />

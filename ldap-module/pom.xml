@@ -106,7 +106,6 @@
 			<artifactId>apacheds-all</artifactId>
 			<version>1.5.5</version>
 			<scope>test</scope>
-
 		</dependency>
 	</dependencies>
 
