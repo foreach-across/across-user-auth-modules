@@ -43,7 +43,7 @@ public abstract class AbstractChangePasswordController
 
 	@GetMapping("mail-sent")
 	public String mailSent ( ModelMap model ) {
-		return configuration.getMailSentForm();
+		return configuration.getMailSentTemplate();
 	}
 
 	@PostMapping
