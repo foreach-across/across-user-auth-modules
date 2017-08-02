@@ -16,12 +16,16 @@
 
 package com.foreach.across.modules.user.controllers;
 
+import com.foreach.across.modules.user.events.UserPasswordChangedEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * Configuration class for a change password flow implemented by an implementation of
+ * {@link AbstractChangePasswordController}.
+ *
  * @author Sander Van Loock
  */
 @Data
@@ -34,11 +38,41 @@ public class ChangePasswordControllerConfiguration
 	public static final String DEFAULT_MAIL_SENT_TEMPLATE = "th/UserModule/change-password/mailSent";
 
 	/**
+	 * Id for this change password flow configuration.  Only relevant in an application where multiple
+	 * configurations might exist.  Used as event name for the {@link UserPasswordChangedEvent}.
+	 */
+	private String profileId = "UserModule";
+	/**
 	 * The form template used for rendering the change password form
 	 */
 	@Builder.Default
 	private String changePasswordForm = DEFAULT_CHANGE_PASSWORD_TEMPLATE;
+
 	@Builder.Default
 	private String mailSentTemplate = DEFAULT_MAIL_SENT_TEMPLATE;
+
+	/**
+	 * If {@code false}, the required input field will be the username instead of the email address.
+	 * Only users having a valid email can modify their passwords.
+	 */
+	private boolean useEmailLookup = false;
+
+	/**
+	 * Should feedback be given to a user if no user with that email addres/username can be found?
+	 * If {@code false} a user will not be able to distinguish between a user not found or email sent.
+	 */
+	private boolean showUserNotFoundFeedback = true;
+
+	/**
+	 * Number of seconds that the change password link should be valid.
+	 */
+	private int changePasswordLinkValidityPeriodInSeconds = 86400;
+
+	/**
+	 * Base URL for the change password link that will be added in the email.
+	 * When set, the request mapping will be appended to the base URL.
+	 * If left to {@code null}, the request path will be used to attempt determining an URL.
+	 */
+	private String changePasswordLinkBaseUrl = null;
 
 }
