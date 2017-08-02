@@ -44,12 +44,14 @@ public class TestAbstractChangePasswordController
 
 	@Mock
 	private JavaMailSender javaMailSender;
+	private ModelMap model;
 
 	@Before
 	public void setUp() throws Exception {
 		controller = new ChangePasswordController();
 		controller.setJavaMailSender( javaMailSender );
 		controller.setUserService( userService );
+		model = new ModelMap();
 
 		controller.setConfiguration( ChangePasswordControllerConfiguration.builder()
 		                                                                  .build() );
@@ -63,8 +65,9 @@ public class TestAbstractChangePasswordController
 
 	@Test
 	public void defaultChangePasswordTemplateShouldBeReturned() throws Exception {
-		String actualTemplate = controller.changePassword( "test@sander.be", new ModelMap() );
+		String actualTemplate = controller.changePassword( "test@sander.be", model );
 
+		assertEquals( false, model.get( "useEmailLookup" ) );
 		assertEquals( ChangePasswordControllerConfiguration.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actualTemplate );
 	}
 
@@ -73,12 +76,13 @@ public class TestAbstractChangePasswordController
 		String expectedForm = "my/custom/form";
 		ChangePasswordControllerConfiguration customConfig =
 				ChangePasswordControllerConfiguration.builder()
-				                                     .changePasswordForm(
-						                                     expectedForm )
+				                                     .changePasswordForm( expectedForm )
+				                                     .useEmailLookup( true )
 				                                     .build();
 		controller.setConfiguration( customConfig );
-		String actual = controller.changePassword( "test@sander.be", new ModelMap() );
+		String actual = controller.changePassword( "test@sander.be", model );
 
+		assertEquals( true, model.get( "useEmailLookup" ) );
 		assertEquals( expectedForm, actual );
 	}
 

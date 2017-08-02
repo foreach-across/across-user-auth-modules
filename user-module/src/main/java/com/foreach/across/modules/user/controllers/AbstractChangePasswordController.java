@@ -57,13 +57,8 @@ public abstract class AbstractChangePasswordController
 
 	@GetMapping
 	public String changePassword( @ModelAttribute("email") String email, ModelMap model ) {
-		model.addAttribute( configuration );
+		model.addAttribute( "useEmailLookup", configuration.isUseEmailLookup() );
 		return configuration.getChangePasswordForm();
-	}
-
-	@GetMapping("mail-sent")
-	public String mailSent( ModelMap model ) {
-		return configuration.getMailSentTemplate();
 	}
 
 	@PostMapping
@@ -86,6 +81,12 @@ public abstract class AbstractChangePasswordController
 //		javaMailSender.send( mimeMessage );
 		return "";
 	}
+
+	@GetMapping("mail-sent")
+	public String mailSent( ModelMap model ) {
+		return configuration.getMailSentTemplate();
+	}
+
 
 	@GetMapping(path = "/change")
 	public String doChange( String code,
