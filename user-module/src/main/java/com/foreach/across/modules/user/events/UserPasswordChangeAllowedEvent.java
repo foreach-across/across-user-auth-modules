@@ -17,15 +17,37 @@
 package com.foreach.across.modules.user.events;
 
 import com.foreach.across.core.events.NamedAcrossEvent;
+import com.foreach.across.modules.user.business.User;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
+ * Event published by a {@link com.foreach.across.modules.user.controllers.AbstractChangePasswordController} to verify
+ * if a {@link com.foreach.across.modules.user.business.User} is allowed to change its password.
+ * <p/>
+ * The final value of {@link #isPasswordChangeAllowed()} after all event handlers have executed will be used to determine
+ * if password change should be allowed.
+ * <p/>
+ * By default changing the password of a {@link User} is allowed.
+ *
  * @author Arne Vandamme
  * @since 2.1.0
  */
+@Data
+@RequiredArgsConstructor
 public final class UserPasswordChangeAllowedEvent implements NamedAcrossEvent
 {
+	private final String profileId;
+	private final User user;
+
+	/**
+	 * Should password change be allowed or not.
+	 * By default changing the password is allowed unless an event handler vetoes.
+	 */
+	private boolean passwordChangeAllowed = true;
+
 	@Override
 	public String getEventName() {
-		return null;
+		return profileId;
 	}
 }

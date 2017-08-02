@@ -20,6 +20,9 @@ import com.foreach.across.core.events.NamedAcrossEvent;
 import lombok.RequiredArgsConstructor;
 
 /**
+ * Event published by {@link com.foreach.across.modules.user.controllers.AbstractChangePasswordController}
+ * whenever a user password has been changed.
+ *
  * @author Arne Vandamme
  * @since 2.1.0
  */
