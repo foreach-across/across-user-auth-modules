@@ -16,14 +16,16 @@
 
 package com.foreach.across.modules.user.controllers;
 
+import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.events.UserPasswordChangeAllowedEvent;
 import com.foreach.across.modules.user.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +41,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public abstract class AbstractChangePasswordController
 {
+	public static final String ERROR_FEEDBACK_MODEL_ATTRIBUTE = "errorFeedback";
 	/**
 	 * Encoding used for sending emails
 	 */
@@ -55,14 +58,31 @@ public abstract class AbstractChangePasswordController
 
 	}
 
-	@GetMapping
-	public String changePassword( @ModelAttribute("email") String email, ModelMap model ) {
-		model.addAttribute( "useEmailLookup", configuration.isUseEmailLookup() );
-		return configuration.getChangePasswordForm();
-	}
-
 	@PostMapping
-	public String changePassword( @ModelAttribute("email") String email, BindingResult bindingResult ) {
+	public String requestPasswordChange( @ModelAttribute("email") String usernameOrEmail, ModelMap model ) {
+		// eerst validatie van usernameOrEmail (not blank)
+		if ( StringUtils.isBlank( usernameOrEmail ) ) {
+			return renderChangePasswordFormWithFeedback( usernameOrEmail, "UserModule.web.changePassword.errorFeedback.invalidValue", model );
+		}
+
+		// user ophalen volgens config
+		//// indien user niet bestaat => check property showUserNotFoundFeedback
+		User user = retrieveUser( usernameOrEmail );
+		if ( user == null ) {
+			return renderChangePasswordFormWithFeedback( usernameOrEmail, "UserModule.web.changePassword.errorFeedback.userNotFound", model );
+		}
+
+		// check geldigheid gebruiker (geldig email, niet expired, ...)
+		//// indien ongeldig zelfde afhandeling als hierboven
+		UserPasswordChangeAllowedEvent userPasswordChangeAllowedEvent = validateUserCanChangePassword( user );
+		if ( !userPasswordChangeAllowedEvent.isPasswordChangeAllowed() ) {
+			return renderChangePasswordFormWithFeedback( usernameOrEmail, userPasswordChangeAllowedEvent.getErrorFeedbackMessageCode(), model );
+		}
+
+		// verstuur email
+
+		//toon confirmation page
+
 //		if ( StringUtils.isBlank( email ) ) {
 //			bindingResult.reject( "org.hibernate.validator.constraints.NotBlank.message" );
 //		}
@@ -82,11 +102,29 @@ public abstract class AbstractChangePasswordController
 		return "";
 	}
 
+	@GetMapping
+	public String renderChangePasswordForm( @ModelAttribute("email") String usernameOrEmail, ModelMap model ) {
+		model.addAttribute( "useEmailLookup", configuration.isUseEmailLookup() );
+		return configuration.getChangePasswordForm();
+	}
+
+	private String renderChangePasswordFormWithFeedback( @ModelAttribute("email") String usernameOrEmail, String errorFeedback, ModelMap model ) {
+		model.addAttribute( ERROR_FEEDBACK_MODEL_ATTRIBUTE, errorFeedback );
+		return renderChangePasswordForm( usernameOrEmail, model );
+	}
+
+	protected User retrieveUser( String usernameOrEmail ) {
+		return configuration.isUseEmailLookup() ? userService.getUserByEmail( usernameOrEmail ) : userService.getUserByUsername( usernameOrEmail );
+	}
+
+	protected UserPasswordChangeAllowedEvent validateUserCanChangePassword( User user ) {
+		return null;
+	}
+
 	@GetMapping("mail-sent")
 	public String mailSent( ModelMap model ) {
 		return configuration.getMailSentTemplate();
 	}
-
 
 	@GetMapping(path = "/change")
 	public String doChange( String code,

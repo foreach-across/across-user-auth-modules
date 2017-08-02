@@ -53,6 +53,11 @@ public final class UserPasswordChangeAllowedEvent implements NamedAcrossEvent
 	private final User user;
 
 	/**
+	 * The default error message that should be shown only if {@link #isPasswordChangeAllowed()} is {@code false}.
+	 */
+	private String errorFeedbackMessageCode = "UserModule.web.changePassword.errorFeedback.userNotAllowedToChangePassword";
+
+	/**
 	 * Initiator that published this event, can be {@code null}.
 	 */
 	private final Object initiator;
