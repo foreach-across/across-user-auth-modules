@@ -53,8 +53,7 @@ public class TestAbstractChangePasswordController
 		controller.setUserService( userService );
 		model = new ModelMap();
 
-		controller.setConfiguration( ChangePasswordControllerConfiguration.builder()
-		                                                                  .build() );
+		controller.setConfiguration( ChangePasswordControllerProperties.builder().build() );
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -68,17 +67,17 @@ public class TestAbstractChangePasswordController
 		String actualTemplate = controller.renderChangePasswordForm( "test@sander.be", model );
 
 		assertEquals( false, model.get( "useEmailLookup" ) );
-		assertEquals( ChangePasswordControllerConfiguration.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actualTemplate );
+		assertEquals( ChangePasswordControllerProperties.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actualTemplate );
 	}
 
 	@Test
 	public void customChangePasswordTemplateShouldBeReturned() throws Exception {
 		String expectedForm = "my/custom/form";
-		ChangePasswordControllerConfiguration customConfig =
-				ChangePasswordControllerConfiguration.builder()
-				                                     .changePasswordForm( expectedForm )
-				                                     .useEmailLookup( true )
-				                                     .build();
+		ChangePasswordControllerProperties customConfig =
+				ChangePasswordControllerProperties.builder()
+				                                  .changePasswordForm( expectedForm )
+				                                  .useEmailLookup( true )
+				                                  .build();
 		controller.setConfiguration( customConfig );
 		String actual = controller.renderChangePasswordForm( "test@sander.be", model );
 
@@ -92,7 +91,7 @@ public class TestAbstractChangePasswordController
 
 		assertEquals( "UserModule.web.changePassword.errorFeedback.invalidValue", model.get( ERROR_FEEDBACK_MODEL_ATTRIBUTE ) );
 		assertEquals( false, model.get( "useEmailLookup" ) );
-		assertEquals( ChangePasswordControllerConfiguration.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
+		assertEquals( ChangePasswordControllerProperties.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
 		verifyNoChangeHappend();
 	}
 
@@ -102,7 +101,7 @@ public class TestAbstractChangePasswordController
 
 		assertEquals( "UserModule.web.changePassword.errorFeedback.invalidValue", model.get( ERROR_FEEDBACK_MODEL_ATTRIBUTE ) );
 		assertEquals( false, model.get( "useEmailLookup" ) );
-		assertEquals( ChangePasswordControllerConfiguration.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
+		assertEquals( ChangePasswordControllerProperties.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
 		verifyNoChangeHappend();
 	}
 
@@ -126,16 +125,16 @@ public class TestAbstractChangePasswordController
 		String actual = controller.requestPasswordChange( "sander@localhost", model );
 		assertEquals( "UserModule.web.changePassword.errorFeedback.userNotFound", model.get( ERROR_FEEDBACK_MODEL_ATTRIBUTE ) );
 		assertEquals( false, model.get( "useEmailLookup" ) );
-		assertEquals( ChangePasswordControllerConfiguration.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
+		assertEquals( ChangePasswordControllerProperties.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
 		verify( userService, times( 1 ) ).getUserByUsername( "sander@localhost" );
 		verifyNoChangeHappend();
 	}
 
 	@Test
 	public void retrieveUserByEmail() throws Exception {
-		controller.setConfiguration( ChangePasswordControllerConfiguration.builder()
-		                                                                  .useEmailLookup( true )
-		                                                                  .build() );
+		controller.setConfiguration( ChangePasswordControllerProperties.builder()
+		                                                               .useEmailLookup( true )
+		                                                               .build() );
 		when( userService.getUserByEmail( "sander@localhost" ) ).thenReturn( new User() );
 		User user = controller.retrieveUser( "sander@localhost" );
 
@@ -163,11 +162,10 @@ public class TestAbstractChangePasswordController
 		String actual = controller.requestPasswordChange( "sander@localhost", model );
 		assertEquals( "UserModule.web.changePassword.errorFeedback.userNotAllowedToChangePassword", model.get( ERROR_FEEDBACK_MODEL_ATTRIBUTE ) );
 		assertEquals( false, model.get( "useEmailLookup" ) );
-		assertEquals( ChangePasswordControllerConfiguration.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
+		assertEquals( ChangePasswordControllerProperties.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
 		verify( userService, times( 1 ) ).getUserByUsername( "sander@localhost" );
 		verifyNoChangeHappend();
 	}
-
 
 	private void verifyNoChangeHappend() {
 		verifyNoMoreInteractions( userService, javaMailSender );
