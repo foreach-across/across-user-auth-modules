@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChangePasswordControllerConfiguration
+public class ChangePasswordControllerProperties
 {
 	public static final String DEFAULT_CHANGE_PASSWORD_TEMPLATE = "th/UserModule/change-password/renderChangePasswordForm";
 	public static final String DEFAULT_MAIL_SENT_TEMPLATE = "th/UserModule/change-password/mailSent";
@@ -43,7 +43,7 @@ public class ChangePasswordControllerConfiguration
 	 * configurations might exist.  Used as event name for the {@link UserPasswordChangedEvent}.
 	 */
 	@Builder.Default
-	private String profileId = DEFAULT_FLOW_ID;
+	private String flowId = DEFAULT_FLOW_ID;
 	/**
 	 * The form template used for rendering the change password form
 	 */
