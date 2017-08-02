@@ -16,23 +16,49 @@
 
 package com.foreach.across.modules.user.controllers;
 
+import com.foreach.across.modules.user.services.UserService;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 /**
  * @author Sander Van Loock
  */
+@RunWith(MockitoJUnitRunner.class)
 public class TestAbstractChangePasswordController
 {
-	private AbstractChangePasswordController controller = new ChangePasswordController(
-			ChangePasswordControllerConfiguration.builder()
-			                                     .build() );
+	private AbstractChangePasswordController controller;
+	@Mock
+	private UserService userService;
+
+	@Mock
+	private JavaMailSender javaMailSender;
 
 	@Before
 	public void setUp() throws Exception {
+		controller = new ChangePasswordController();
+		controller.setJavaMailSender( javaMailSender );
+		controller.setUserService( userService );
+
+		controller.setConfiguration( ChangePasswordControllerConfiguration.builder()
+		                                                                  .build() );
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void validateRequiredProperties() throws Exception {
+		controller.setConfiguration( null );
+		controller.validateRequiredProperties();
 	}
 
 	@Test
@@ -45,20 +71,58 @@ public class TestAbstractChangePasswordController
 	@Test
 	public void customChangePasswordTemplateShouldBeReturned() throws Exception {
 		String expectedForm = "my/custom/form";
-		controller = new ChangePasswordController( ChangePasswordControllerConfiguration.builder()
-		                                                                                .changePasswordForm(
-				                                                                                expectedForm )
-		                                                                                .build() );
+		ChangePasswordControllerConfiguration customConfig =
+				ChangePasswordControllerConfiguration.builder()
+				                                     .changePasswordForm(
+						                                     expectedForm )
+				                                     .build();
+		controller.setConfiguration( customConfig );
 		String actual = controller.changePassword( "test@sander.be", new ModelMap() );
 
 		assertEquals( expectedForm, actual );
 	}
 
+	@Test
+	public void nullEmailShouldNotTriggerChange() throws Exception {
+		BindingResult bindingResult = mock( BindingResult.class );
+		controller.changePassword( null, bindingResult );
+
+		ArgumentCaptor<String> fieldCaptor = ArgumentCaptor.forClass( String.class );
+		verify( bindingResult, times( 1 ) ).rejectValue( fieldCaptor.capture(), anyString() );
+		assertEquals( "email", fieldCaptor.getValue() );
+		verifyNoChangeHappend();
+	}
+
+	@Test
+	public void emptyEmailShouldNotTriggerChange() throws Exception {
+		BindingResult bindingResult = mock( BindingResult.class );
+		controller.changePassword( "", bindingResult );
+
+		ArgumentCaptor<String> fieldCaptor = ArgumentCaptor.forClass( String.class );
+		verify( bindingResult, times( 1 ) ).rejectValue( fieldCaptor.capture(), anyString() );
+		assertEquals( "email", fieldCaptor.getValue() );
+		verifyNoChangeHappend();
+	}
+
+	@Test
+	public void unknownUserShouldNotTriggerChange() throws Exception {
+		BindingResult bindingResult = mock( BindingResult.class );
+		String email = "email";
+		when( userService.getUserByUsername( email ) ).thenReturn( null );
+		controller.changePassword( email, bindingResult );
+
+		verify( userService, times( 1 ) ).getUserByUsername( "email" );
+
+		verifyNoChangeHappend();
+
+	}
+
+	private void verifyNoChangeHappend() {
+		verifyNoMoreInteractions( userService, javaMailSender );
+	}
+
 	private class ChangePasswordController extends AbstractChangePasswordController
 	{
 
-		public ChangePasswordController( ChangePasswordControllerConfiguration configuration ) {
-			super( configuration );
-		}
 	}
 }

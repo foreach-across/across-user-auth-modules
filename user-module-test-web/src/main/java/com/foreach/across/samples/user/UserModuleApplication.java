@@ -20,14 +20,17 @@ import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.user.UserModule;
-import com.foreach.across.samples.user.application.controllers.ChangePasswordController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Properties;
 
 /**
  * @author Arne Vandamme
@@ -45,8 +48,19 @@ public class UserModuleApplication
 	}
 
 	@Bean
-	public ChangePasswordController changePasswordController() {
-		return new ChangePasswordController();
+	public JavaMailSender mailSender() {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost( "localhost" );
+		mailSender.setPort( 25 );
+		mailSender.setProtocol( "smtp" );
+		Properties properties = new Properties();
+		properties.put( "mail.smtp.connectiontimeout", 3000 );
+		properties.put( "mail.smtp.timeout", 3000 );
+		properties.put( "mail.smtps.auth", true );
+		properties.put( "mail.smtp.ssl.enable", true );
+		properties.put( "mail.transport.protocol", "smtp" );
+		mailSender.setJavaMailProperties( properties );
+		return mailSender;
 	}
 
 	public static void main( String[] args ) {

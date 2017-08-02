@@ -16,14 +16,20 @@
 
 package com.foreach.across.modules.user.controllers;
 
+import com.foreach.across.modules.user.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
 /**
@@ -33,7 +39,21 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public abstract class AbstractChangePasswordController
 {
-	private final ChangePasswordControllerConfiguration configuration;
+	/**
+	 * Encoding used for sending emails
+	 */
+	public final String ENCODING = "UTF-8";
+
+	private UserService userService;
+	private JavaMailSender javaMailSender;
+
+	private ChangePasswordControllerConfiguration configuration;
+
+	@PostConstruct
+	public void validateRequiredProperties() {
+		//validate required properties properties of configuration
+
+	}
 
 	@GetMapping
 	public String changePassword( @ModelAttribute("email") String email, ModelMap model ) {
@@ -42,12 +62,28 @@ public abstract class AbstractChangePasswordController
 	}
 
 	@GetMapping("mail-sent")
-	public String mailSent ( ModelMap model ) {
+	public String mailSent( ModelMap model ) {
 		return configuration.getMailSentTemplate();
 	}
 
 	@PostMapping
-	public String changePassword( @ModelAttribute("email") String email ) {
+	public String changePassword( @ModelAttribute("email") String email, BindingResult bindingResult ) {
+//		if ( StringUtils.isBlank( email ) ) {
+//			bindingResult.reject( "org.hibernate.validator.constraints.NotBlank.message" );
+//		}
+//		User user = userService.getUserByEmail( email );
+
+//		MimeMessageHelper message =
+//				new MimeMessageHelper( mimeMessage, true, ENCODING ); // true = multipart
+//		message.setSubject( subject );
+//		message.setFrom( from );
+//		message.setTo( to );
+//		// Create the HTML body using Thymeleaf
+//		final String htmlContent = build( templateName, templateVariables );
+//		message.setText( htmlContent, true ); // true = isHtml
+//
+//		// Send mail
+//		javaMailSender.send( mimeMessage );
 		return "";
 	}
 
@@ -70,6 +106,25 @@ public abstract class AbstractChangePasswordController
 //			userService.save( userDto );
 //		}
 		return "";
+	}
+
+	@Autowired
+	public void setJavaMailSender( JavaMailSender javaMailSender ) {
+		this.javaMailSender = javaMailSender;
+	}
+
+	@Autowired
+	public void setUserService( UserService userService ) {
+		this.userService = userService;
+	}
+
+	public final ChangePasswordControllerConfiguration getConfiguration() {
+		return configuration;
+	}
+
+	public final void setConfiguration( ChangePasswordControllerConfiguration configuration ) {
+		Assert.notNull( configuration );
+		this.configuration = configuration;
 	}
 
 	private class PasswordResetDto
