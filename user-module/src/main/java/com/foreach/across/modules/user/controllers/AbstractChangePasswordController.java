@@ -50,7 +50,7 @@ public abstract class AbstractChangePasswordController
 	private UserService userService;
 	private JavaMailSender javaMailSender;
 
-	private ChangePasswordControllerConfiguration configuration;
+	private ChangePasswordControllerProperties configuration;
 
 	@PostConstruct
 	public void validateRequiredProperties() {
@@ -157,11 +157,11 @@ public abstract class AbstractChangePasswordController
 		this.userService = userService;
 	}
 
-	public final ChangePasswordControllerConfiguration getConfiguration() {
+	public final ChangePasswordControllerProperties getConfiguration() {
 		return configuration;
 	}
 
-	public final void setConfiguration( ChangePasswordControllerConfiguration configuration ) {
+	public final void setConfiguration( ChangePasswordControllerProperties configuration ) {
 		Assert.notNull( configuration );
 		this.configuration = configuration;
 	}
