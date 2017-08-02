@@ -17,7 +17,6 @@
 package com.foreach.across.samples.user.application.controllers;
 
 import com.foreach.across.modules.user.controllers.AbstractChangePasswordController;
-import com.foreach.across.modules.user.controllers.ChangePasswordControllerConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -28,7 +27,4 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/change-password")
 public class ChangePasswordController extends AbstractChangePasswordController
 {
-	public ChangePasswordController( ChangePasswordControllerConfiguration configuration ) {
-		super( configuration );
-	}
 }

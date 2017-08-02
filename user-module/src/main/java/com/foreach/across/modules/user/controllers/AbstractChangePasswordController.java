@@ -33,10 +33,10 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public abstract class AbstractChangePasswordController
 {
-	private final ChangePasswordControllerConfiguration configuration;
+	private ChangePasswordControllerConfiguration configuration = new ChangePasswordControllerConfiguration();
 
 	@GetMapping
-	public String changePassword( ModelMap model ) {
+	public String changePassword( @ModelAttribute("email") String email, ModelMap model ) {
 		model.addAttribute( configuration );
 		return configuration.getChangePasswordForm();
 	}
@@ -46,13 +46,13 @@ public abstract class AbstractChangePasswordController
 		return "";
 	}
 
-	@GetMapping
+	@GetMapping(path = "/change")
 	public String doChange( String code,
 	                        PasswordResetDto dto ) {
 		return "";
 	}
 
-	@PostMapping
+	@PostMapping(path = "/change")
 	public String doChange(
 			ModelMap model,
 			@RequestParam("code") String code,

@@ -20,6 +20,7 @@ import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.user.UserModule;
+import com.foreach.across.samples.user.application.controllers.ChangePasswordController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -41,6 +42,11 @@ public class UserModuleApplication
 	@Bean
 	public PasswordEncoder userPasswordEncoder() {
 		return NoOpPasswordEncoder.getInstance();
+	}
+
+	@Bean
+	public ChangePasswordController changePasswordController() {
+		return new ChangePasswordController();
 	}
 
 	public static void main( String[] args ) {
