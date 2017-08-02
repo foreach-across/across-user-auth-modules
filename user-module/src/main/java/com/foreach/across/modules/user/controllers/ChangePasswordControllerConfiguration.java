@@ -16,14 +16,26 @@
 
 package com.foreach.across.modules.user.controllers;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Sander Van Loock
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ChangePasswordControllerConfiguration
 {
-	private String changePasswordForm = "th/UserModule/change-password/changePassword";
-	private String mailSentForm = "th/UserModule/change-password/mailSent";
+	public static final String DEFAULT_CHANGE_PASSWORD_TEMPLATE = "th/UserModule/change-password/changePassword";
+
+	/**
+	 * The form template used for rendering the change password form
+	 */
+	@Builder.Default
+	private String changePasswordForm = DEFAULT_CHANGE_PASSWORD_TEMPLATE;
+
 }
