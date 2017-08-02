@@ -25,5 +25,5 @@ import lombok.Data;
 public class ChangePasswordControllerConfiguration
 {
 	private String changePasswordForm = "th/UserModule/change-password/changePassword";
-
+	private String mailSentForm = "th/UserModule/change-password/mailSent";
 }
