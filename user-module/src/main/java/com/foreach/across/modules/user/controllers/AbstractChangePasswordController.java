@@ -120,7 +120,7 @@ public abstract class AbstractChangePasswordController
 	}
 
 	protected UserPasswordChangeAllowedEvent validateUserCanChangePassword( User user ) {
-		UserPasswordChangeAllowedEvent result = new UserPasswordChangeAllowedEvent( configuration.getProfileId(), user, this );
+		UserPasswordChangeAllowedEvent result = new UserPasswordChangeAllowedEvent( configuration.getFlowId(), user, this );
 		if ( StringUtils.isBlank( user.getEmail() ) ) {
 			result.setPasswordChangeAllowed( false );
 		}

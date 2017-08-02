@@ -31,7 +31,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 
 import static com.foreach.across.modules.user.controllers.AbstractChangePasswordController.ERROR_FEEDBACK_MODEL_ATTRIBUTE;
-import static com.foreach.across.modules.user.controllers.ChangePasswordControllerConfiguration.DEFAULT_FLOW_ID;
+import static com.foreach.across.modules.user.controllers.ChangePasswordControllerProperties.DEFAULT_FLOW_ID;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
