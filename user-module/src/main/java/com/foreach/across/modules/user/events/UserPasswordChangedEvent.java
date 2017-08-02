@@ -17,6 +17,9 @@
 package com.foreach.across.modules.user.events;
 
 import com.foreach.across.core.events.NamedAcrossEvent;
+import com.foreach.across.modules.user.business.User;
+import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -26,13 +29,31 @@ import lombok.RequiredArgsConstructor;
  * @author Arne Vandamme
  * @since 2.1.0
  */
+@Data
 @RequiredArgsConstructor
 public final class UserPasswordChangedEvent implements NamedAcrossEvent
 {
-	private final String profileId;
+	/**
+	 * Id of the flow through which the password change is requested.
+	 * Also used as value for {@link #getEventName()}.
+	 * See also {@link #getInitiator()} for the object that published this event.
+	 */
+	@NonNull
+	private final String flowId;
+
+	/**
+	 * User for whom password change is requested.
+	 */
+	@NonNull
+	private final User user;
+
+	/**
+	 * Initiator that published this event, can be {@code null}.
+	 */
+	private final Object initiator;
 
 	@Override
 	public String getEventName() {
-		return profileId;
+		return flowId;
 	}
 }

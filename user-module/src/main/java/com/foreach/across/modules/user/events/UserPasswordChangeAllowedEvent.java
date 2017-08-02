@@ -19,10 +19,11 @@ package com.foreach.across.modules.user.events;
 import com.foreach.across.core.events.NamedAcrossEvent;
 import com.foreach.across.modules.user.business.User;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Event published by a {@link com.foreach.across.modules.user.controllers.AbstractChangePasswordController} to verify
+ * Event published primarily by a {@link com.foreach.across.modules.user.controllers.AbstractChangePasswordController} to verify
  * if a {@link com.foreach.across.modules.user.business.User} is allowed to change its password.
  * <p/>
  * The final value of {@link #isPasswordChangeAllowed()} after all event handlers have executed will be used to determine
@@ -37,8 +38,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class UserPasswordChangeAllowedEvent implements NamedAcrossEvent
 {
-	private final String profileId;
+	/**
+	 * Id of the flow through which the password change is requested.
+	 * Also used as value for {@link #getEventName()}.
+	 * See also {@link #getInitiator()} for the object that published this event.
+	 */
+	@NonNull
+	private final String flowId;
+
+	/**
+	 * User for whom password change is requested.
+	 */
+	@NonNull
 	private final User user;
+
+	/**
+	 * Initiator that published this event, can be {@code null}.
+	 */
+	private final Object initiator;
 
 	/**
 	 * Should password change be allowed or not.
@@ -48,6 +65,6 @@ public final class UserPasswordChangeAllowedEvent implements NamedAcrossEvent
 
 	@Override
 	public String getEventName() {
-		return profileId;
+		return flowId;
 	}
 }
