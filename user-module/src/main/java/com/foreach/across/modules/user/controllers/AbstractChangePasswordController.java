@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
@@ -53,6 +54,7 @@ public abstract class AbstractChangePasswordController
 	private AcrossEventPublisher acrossEventPublisher;
 
 	private ChangePasswordControllerProperties configuration;
+	private ChangePasswordMailSender changePasswordMailSender;
 
 	@PostConstruct
 	public void validateRequiredProperties() {
@@ -62,46 +64,23 @@ public abstract class AbstractChangePasswordController
 
 	@PostMapping
 	public String requestPasswordChange( @ModelAttribute("email") String usernameOrEmail, ModelMap model ) {
-		// eerst validatie van usernameOrEmail (not blank)
 		if ( StringUtils.isBlank( usernameOrEmail ) ) {
 			return renderChangePasswordFormWithFeedback( usernameOrEmail, "UserModule.web.changePassword.errorFeedback.invalidValue", model );
 		}
 
-		// user ophalen volgens config
-		//// indien user niet bestaat => check property showUserNotFoundFeedback
 		User user = retrieveUser( usernameOrEmail );
 		if ( user == null ) {
 			return renderChangePasswordFormWithFeedback( usernameOrEmail, "UserModule.web.changePassword.errorFeedback.userNotFound", model );
 		}
 
-		// check geldigheid gebruiker (geldig email, niet expired, ...)
-		//// indien ongeldig zelfde afhandeling als hierboven
 		UserPasswordChangeAllowedEvent userPasswordChangeAllowedEvent = validateUserCanChangePassword( user );
 		if ( !userPasswordChangeAllowedEvent.isPasswordChangeAllowed() ) {
 			return renderChangePasswordFormWithFeedback( usernameOrEmail, userPasswordChangeAllowedEvent.getErrorFeedbackMessageCode(), model );
 		}
 
-		// verstuur email
+		changePasswordMailSender.sendChangePasswordMail( configuration, user );
 
-		//toon confirmation page
-
-//		if ( StringUtils.isBlank( email ) ) {
-//			bindingResult.reject( "org.hibernate.validator.constraints.NotBlank.message" );
-//		}
-//		User user = userService.getUserByEmail( email );
-
-//		MimeMessageHelper message =
-//				new MimeMessageHelper( mimeMessage, true, ENCODING ); // true = multipart
-//		message.setSubject( subject );
-//		message.setFrom( from );
-//		message.setTo( to );
-//		// Create the HTML body using Thymeleaf
-//		final String htmlContent = build( templateName, templateVariables );
-//		message.setText( htmlContent, true ); // true = isHtml
-//
-//		// Send mail
-//		javaMailSender.send( mimeMessage );
-		return "";
+		return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest().build().getPath() + "/sent";
 	}
 
 	@GetMapping
@@ -122,6 +101,8 @@ public abstract class AbstractChangePasswordController
 	protected UserPasswordChangeAllowedEvent validateUserCanChangePassword( User user ) {
 		UserPasswordChangeAllowedEvent result = new UserPasswordChangeAllowedEvent( configuration.getFlowId(), user, this );
 		if ( StringUtils.isBlank( user.getEmail() ) ) {
+			LOG.warn( "Attempt to change password for user {} with no email, refusing password change.", user );
+			result.setErrorFeedbackMessageCode( "UserModule.web.changePassword.errorFeedback.userEmailIsMissing" );
 			result.setPasswordChangeAllowed( false );
 		}
 		else {
@@ -131,7 +112,7 @@ public abstract class AbstractChangePasswordController
 		return result;
 	}
 
-	@GetMapping("mail-sent")
+	@GetMapping("/sent")
 	public String mailSent( ModelMap model ) {
 		return configuration.getMailSentTemplate();
 	}
@@ -170,6 +151,11 @@ public abstract class AbstractChangePasswordController
 	@Autowired
 	public final void setAcrossEventPublisher( AcrossEventPublisher acrossEventPublisher ) {
 		this.acrossEventPublisher = acrossEventPublisher;
+	}
+
+	@Autowired
+	public final void setChangePasswordMailSender( ChangePasswordMailSender changePasswordMailSender ) {
+		this.changePasswordMailSender = changePasswordMailSender;
 	}
 
 	public final ChangePasswordControllerProperties getConfiguration() {

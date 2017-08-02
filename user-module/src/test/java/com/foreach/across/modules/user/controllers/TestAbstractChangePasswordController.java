@@ -27,8 +27,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import static com.foreach.across.modules.user.controllers.AbstractChangePasswordController.ERROR_FEEDBACK_MODEL_ATTRIBUTE;
 import static com.foreach.across.modules.user.controllers.ChangePasswordControllerProperties.DEFAULT_FLOW_ID;
@@ -50,16 +53,23 @@ public class TestAbstractChangePasswordController
 	@Mock
 	private AcrossEventPublisher acrossEventPublisher;
 
+	@Mock
+	private ChangePasswordMailSender changePasswordMailSender;
+
 	@InjectMocks
 	private AbstractChangePasswordController controller = spy( AbstractChangePasswordController.class );
 
 	private ModelMap model;
+
 
 	@Before
 	public void setUp() throws Exception {
 		model = new ModelMap();
 
 		controller.setConfiguration( ChangePasswordControllerProperties.builder().build() );
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setRequestURI( "/change-password" );
+		RequestContextHolder.setRequestAttributes( new ServletRequestAttributes( request ) );
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -98,7 +108,7 @@ public class TestAbstractChangePasswordController
 		assertEquals( "UserModule.web.changePassword.errorFeedback.invalidValue", model.get( ERROR_FEEDBACK_MODEL_ATTRIBUTE ) );
 		assertEquals( false, model.get( "useEmailLookup" ) );
 		assertEquals( ChangePasswordControllerProperties.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
-		verifyNoChangeHappend();
+		verifyNoChangeHappened();
 	}
 
 	@Test
@@ -108,7 +118,7 @@ public class TestAbstractChangePasswordController
 		assertEquals( "UserModule.web.changePassword.errorFeedback.invalidValue", model.get( ERROR_FEEDBACK_MODEL_ATTRIBUTE ) );
 		assertEquals( false, model.get( "useEmailLookup" ) );
 		assertEquals( ChangePasswordControllerProperties.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
-		verifyNoChangeHappend();
+		verifyNoChangeHappened();
 	}
 
 	@Test
@@ -120,7 +130,7 @@ public class TestAbstractChangePasswordController
 
 		verify( userService, times( 1 ) ).getUserByUsername( "email" );
 
-		verifyNoChangeHappend();
+		verifyNoChangeHappened();
 
 	}
 
@@ -133,7 +143,7 @@ public class TestAbstractChangePasswordController
 		assertEquals( false, model.get( "useEmailLookup" ) );
 		assertEquals( ChangePasswordControllerProperties.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
 		verify( userService, times( 1 ) ).getUserByUsername( "sander@localhost" );
-		verifyNoChangeHappend();
+		verifyNoChangeHappened();
 	}
 
 	@Test
@@ -170,7 +180,7 @@ public class TestAbstractChangePasswordController
 		assertEquals( false, model.get( "useEmailLookup" ) );
 		assertEquals( ChangePasswordControllerProperties.DEFAULT_CHANGE_PASSWORD_TEMPLATE, actual );
 		verify( userService, times( 1 ) ).getUserByUsername( "sander@localhost" );
-		verifyNoChangeHappend();
+		verifyNoChangeHappened();
 	}
 
 	@Test
@@ -196,8 +206,36 @@ public class TestAbstractChangePasswordController
 		user.setEmail( "sander@hotmale.com" );
 		UserPasswordChangeAllowedEvent actual = controller.validateUserCanChangePassword( user );
 
+		assertTrue( actual.isPasswordChangeAllowed() );
+		assertEquals( "UserModule.web.changePassword.errorFeedback.userNotAllowedToChangePassword", actual.getErrorFeedbackMessageCode() );
+		assertEquals( user, actual.getUser() );
+		assertSame( controller, actual.getInitiator() );
+		assertEquals( DEFAULT_FLOW_ID, actual.getFlowId() );
 		verify( acrossEventPublisher, times( 1 ) ).publish( actual );
-		assertEquals( true, actual.isPasswordChangeAllowed() );
+		verifyNoMoreInteractions( acrossEventPublisher );
+	}
+
+	@Test
+	public void changePasswordMailIsSent() throws Exception {
+		User user = new User();
+		when( controller.retrieveUser( "mail" ) ).thenReturn( user );
+		UserPasswordChangeAllowedEvent allowedEvent = new UserPasswordChangeAllowedEvent( DEFAULT_FLOW_ID, user, controller );
+		when( controller.validateUserCanChangePassword( user ) ).thenReturn( allowedEvent );
+		controller.requestPasswordChange( "mail", model );
+
+		verify( changePasswordMailSender, times( 1 ) ).sendChangePasswordMail( controller.getConfiguration(), user );
+
+	}
+
+	@Test
+	public void redirectToCorrectPath() throws Exception {
+		User user = new User();
+		when( controller.retrieveUser( "mail" ) ).thenReturn( user );
+		UserPasswordChangeAllowedEvent allowedEvent = new UserPasswordChangeAllowedEvent( DEFAULT_FLOW_ID, user, controller );
+		when( controller.validateUserCanChangePassword( user ) ).thenReturn( allowedEvent );
+		String actualPath = controller.requestPasswordChange( "mail", model );
+
+		assertEquals( "redirect:/change-password/sent", actualPath );
 	}
 
 	private void verifyCorrectChangeAllowedEvent( User user, UserPasswordChangeAllowedEvent actualEvent ) {
@@ -205,15 +243,11 @@ public class TestAbstractChangePasswordController
 		assertSame( controller, actualEvent.getInitiator() );
 		assertEquals( user, actualEvent.getUser() );
 		assertEquals( DEFAULT_FLOW_ID, actualEvent.getFlowId() );
+		assertEquals( "UserModule.web.changePassword.errorFeedback.userEmailIsMissing", actualEvent.getErrorFeedbackMessageCode() );
 		verifyNoMoreInteractions( acrossEventPublisher );
 	}
 
-	private void verifyNoChangeHappend() {
+	private void verifyNoChangeHappened() {
 		verifyNoMoreInteractions( userService, javaMailSender );
-	}
-
-	private class ChangePasswordController extends AbstractChangePasswordController
-	{
-
 	}
 }
