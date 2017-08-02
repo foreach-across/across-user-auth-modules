@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.user.controllers;
 
+import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.events.UserPasswordChangeAllowedEvent;
 import com.foreach.across.modules.user.services.UserService;
@@ -49,6 +50,7 @@ public abstract class AbstractChangePasswordController
 
 	private UserService userService;
 	private JavaMailSender javaMailSender;
+	private AcrossEventPublisher acrossEventPublisher;
 
 	private ChangePasswordControllerConfiguration configuration;
 
@@ -118,7 +120,15 @@ public abstract class AbstractChangePasswordController
 	}
 
 	protected UserPasswordChangeAllowedEvent validateUserCanChangePassword( User user ) {
-		return null;
+		UserPasswordChangeAllowedEvent result = new UserPasswordChangeAllowedEvent( configuration.getProfileId(), user, this );
+		if ( StringUtils.isBlank( user.getEmail() ) ) {
+			result.setPasswordChangeAllowed( false );
+		}
+		else {
+			acrossEventPublisher.publish( result );
+		}
+
+		return result;
 	}
 
 	@GetMapping("mail-sent")
@@ -148,13 +158,18 @@ public abstract class AbstractChangePasswordController
 	}
 
 	@Autowired
-	public void setJavaMailSender( JavaMailSender javaMailSender ) {
+	public final void setJavaMailSender( JavaMailSender javaMailSender ) {
 		this.javaMailSender = javaMailSender;
 	}
 
 	@Autowired
-	public void setUserService( UserService userService ) {
+	public final void setUserService( UserService userService ) {
 		this.userService = userService;
+	}
+
+	@Autowired
+	public final void setAcrossEventPublisher( AcrossEventPublisher acrossEventPublisher ) {
+		this.acrossEventPublisher = acrossEventPublisher;
 	}
 
 	public final ChangePasswordControllerConfiguration getConfiguration() {

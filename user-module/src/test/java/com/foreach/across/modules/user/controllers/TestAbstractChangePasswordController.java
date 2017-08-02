@@ -16,12 +16,14 @@
 
 package com.foreach.across.modules.user.controllers;
 
+import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.events.UserPasswordChangeAllowedEvent;
 import com.foreach.across.modules.user.services.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -29,7 +31,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 
 import static com.foreach.across.modules.user.controllers.AbstractChangePasswordController.ERROR_FEEDBACK_MODEL_ATTRIBUTE;
-import static org.junit.Assert.assertEquals;
+import static com.foreach.across.modules.user.controllers.ChangePasswordControllerConfiguration.DEFAULT_FLOW_ID;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -38,19 +41,22 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TestAbstractChangePasswordController
 {
-	private AbstractChangePasswordController controller;
 	@Mock
 	private UserService userService;
 
 	@Mock
 	private JavaMailSender javaMailSender;
+
+	@Mock
+	private AcrossEventPublisher acrossEventPublisher;
+
+	@InjectMocks
+	private AbstractChangePasswordController controller = spy( AbstractChangePasswordController.class );
+
 	private ModelMap model;
 
 	@Before
 	public void setUp() throws Exception {
-		controller = spy( AbstractChangePasswordController.class );
-		controller.setJavaMailSender( javaMailSender );
-		controller.setUserService( userService );
 		model = new ModelMap();
 
 		controller.setConfiguration( ChangePasswordControllerConfiguration.builder()
@@ -168,6 +174,40 @@ public class TestAbstractChangePasswordController
 		verifyNoChangeHappend();
 	}
 
+	@Test
+	public void noEmailShouldSetEvent() throws Exception {
+		User user = new User();
+		UserPasswordChangeAllowedEvent actualEvent = controller.validateUserCanChangePassword( user );
+
+		verifyCorrectChangeAllowedEvent( user, actualEvent );
+	}
+
+	@Test
+	public void emptyEmailShouldSetEvent() throws Exception {
+		User user = new User();
+		user.setEmail( "" );
+		UserPasswordChangeAllowedEvent actualEvent = controller.validateUserCanChangePassword( user );
+
+		verifyCorrectChangeAllowedEvent( user, actualEvent );
+	}
+
+	@Test
+	public void publishUserCanChangePasswordEvent() throws Exception {
+		User user = new User();
+		user.setEmail( "sander@hotmale.com" );
+		UserPasswordChangeAllowedEvent actual = controller.validateUserCanChangePassword( user );
+
+		verify( acrossEventPublisher, times( 1 ) ).publish( actual );
+		assertEquals( true, actual.isPasswordChangeAllowed() );
+	}
+
+	private void verifyCorrectChangeAllowedEvent( User user, UserPasswordChangeAllowedEvent actualEvent ) {
+		assertFalse( actualEvent.isPasswordChangeAllowed() );
+		assertSame( controller, actualEvent.getInitiator() );
+		assertEquals( user, actualEvent.getUser() );
+		assertEquals( DEFAULT_FLOW_ID, actualEvent.getFlowId() );
+		verifyNoMoreInteractions( acrossEventPublisher );
+	}
 
 	private void verifyNoChangeHappend() {
 		verifyNoMoreInteractions( userService, javaMailSender );

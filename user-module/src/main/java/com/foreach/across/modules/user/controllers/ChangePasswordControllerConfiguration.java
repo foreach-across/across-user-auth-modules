@@ -36,12 +36,14 @@ public class ChangePasswordControllerConfiguration
 {
 	public static final String DEFAULT_CHANGE_PASSWORD_TEMPLATE = "th/UserModule/change-password/renderChangePasswordForm";
 	public static final String DEFAULT_MAIL_SENT_TEMPLATE = "th/UserModule/change-password/mailSent";
+	public static final String DEFAULT_FLOW_ID = "UserModule";
 
 	/**
 	 * Id for this change password flow configuration.  Only relevant in an application where multiple
 	 * configurations might exist.  Used as event name for the {@link UserPasswordChangedEvent}.
 	 */
-	private String profileId = "UserModule";
+	@Builder.Default
+	private String profileId = DEFAULT_FLOW_ID;
 	/**
 	 * The form template used for rendering the change password form
 	 */
