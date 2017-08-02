@@ -33,7 +33,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public abstract class AbstractChangePasswordController
 {
-	private ChangePasswordControllerConfiguration configuration = new ChangePasswordControllerConfiguration();
+	private final ChangePasswordControllerConfiguration configuration;
 
 	@GetMapping
 	public String changePassword( @ModelAttribute("email") String email, ModelMap model ) {
@@ -42,7 +42,7 @@ public abstract class AbstractChangePasswordController
 	}
 
 	@PostMapping
-	public String changePassword( String email ) {
+	public String changePassword( @ModelAttribute("email") String email ) {
 		return "";
 	}
 
