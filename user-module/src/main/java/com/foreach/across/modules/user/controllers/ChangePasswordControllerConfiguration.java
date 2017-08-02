@@ -31,11 +31,14 @@ import lombok.NoArgsConstructor;
 public class ChangePasswordControllerConfiguration
 {
 	public static final String DEFAULT_CHANGE_PASSWORD_TEMPLATE = "th/UserModule/change-password/changePassword";
+	public static final String DEFAULT_MAIL_SENT_TEMPLATE = "th/UserModule/change-password/mailSent";
 
 	/**
 	 * The form template used for rendering the change password form
 	 */
 	@Builder.Default
 	private String changePasswordForm = DEFAULT_CHANGE_PASSWORD_TEMPLATE;
+	@Builder.Default
+	private String mailSentTemplate = DEFAULT_MAIL_SENT_TEMPLATE;
 
 }
