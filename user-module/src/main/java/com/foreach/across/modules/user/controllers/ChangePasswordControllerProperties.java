@@ -35,7 +35,7 @@ import lombok.NoArgsConstructor;
 public class ChangePasswordControllerProperties
 {
 	public static final String DEFAULT_CHANGE_PASSWORD_TEMPLATE = "th/UserModule/change-password/renderChangePasswordForm";
-	public static final String DEFAULT_MAIL_SENT_TEMPLATE = "th/UserModule/change-password/mailSent";
+	public static final String DEFAULT_MAIL_SENT_TEMPLATE = "th/UserModule/change-password/sent";
 	public static final String DEFAULT_FLOW_ID = "UserModule";
 
 	/**
