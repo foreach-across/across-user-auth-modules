@@ -19,14 +19,28 @@ package com.foreach.across.modules.user.controllers;
 import com.foreach.across.modules.user.business.User;
 import org.springframework.stereotype.Service;
 
-/**
- * @author Sander Van Loock
- */
 @Service
-public class ChangePasswordMailSender
+public class ChangePasswordSecurityUtilities
 {
-	public void sendChangePasswordMail( ChangePasswordControllerProperties configuration, User user ) {
 
+	/**
+	 * Checks if the link is valid. Should return false if the checksum does not contain an identifier for a user.
+	 *
+	 * @param checksum
+	 * @param configuration
+	 * @return
+	 */
+	public boolean isValidLink( String checksum, ChangePasswordControllerProperties configuration ) {
+		return true;
+	}
+
+	/**
+	 * Retrieves the user embedded in the checksum. Should never return null. If the user does not exist, {@link #isValidLink(String, ChangePasswordControllerProperties)} should return false.
+	 *
+	 * @return
+	 */
+	public User getUser( String checksum ) {
+		return null;
 	}
 }
 

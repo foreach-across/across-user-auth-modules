@@ -25,12 +25,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
@@ -55,6 +56,8 @@ public abstract class AbstractChangePasswordController
 
 	private ChangePasswordControllerProperties configuration;
 	private ChangePasswordMailSender changePasswordMailSender;
+	private ChangePasswordSecurityUtilities changePasswordSecurityUtilities;
+	private ChangePasswordNewPasswordValidator changePasswordNewPasswordValidator;
 
 	@PostConstruct
 	public void validateRequiredProperties() {
@@ -89,7 +92,7 @@ public abstract class AbstractChangePasswordController
 		return configuration.getChangePasswordForm();
 	}
 
-	private String renderChangePasswordFormWithFeedback( @ModelAttribute("email") String usernameOrEmail, String errorFeedback, ModelMap model ) {
+	protected String renderChangePasswordFormWithFeedback( @ModelAttribute("email") String usernameOrEmail, String errorFeedback, ModelMap model ) {
 		model.addAttribute( ERROR_FEEDBACK_MODEL_ATTRIBUTE, errorFeedback );
 		return renderChangePasswordForm( usernameOrEmail, model );
 	}
@@ -118,24 +121,49 @@ public abstract class AbstractChangePasswordController
 	}
 
 	@GetMapping(path = "/change")
-	public String doChange( String code,
-	                        PasswordResetDto dto ) {
-		return "";
+	public String renderNewPasswordForm( ModelMap model, @RequestParam("checksum") String checksum ) {
+		if ( !changePasswordSecurityUtilities.isValidLink( checksum, configuration ) ) {
+			LOG.warn( "Attempt to change password via an invalid link." );
+			//TODO should this redirect?
+			return renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
+		}
+
+		return configuration.getNewPasswordForm();
 	}
 
 	@PostMapping(path = "/change")
-	public String doChange(
+	public String requestNewPassword(
 			ModelMap model,
-			@RequestParam("code") String code,
-			@Valid @ModelAttribute("dto") PasswordResetDto request ) {
-//		User user = userService.getUserByEmail( email );
-//		if ( user != null ) {
-//			LOG.debug( "Changing password of user {}", user );
-//			User userDto = user.toDto();
-//			userDto.setPassword( request.getPassword() );
-//			userService.save( userDto );
-//		}
-		return "";
+			@RequestParam("checksum") String checksum,
+			@ModelAttribute("model") @Valid PasswordResetDto password ) {
+		if ( !changePasswordSecurityUtilities.isValidLink( checksum, configuration ) ) {
+			LOG.warn( "Attempt to change password via an invalid link." );
+			//TODO should this redirect?
+			return renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
+		}
+
+		User user = changePassword( checksum, password );
+		doUserLogin( user );
+
+		return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest().path( configuration.getRedirectDestinationAfterChangePassword() ).build()
+		                                                .getPath();
+	}
+
+	protected void doUserLogin( User user ) {
+		Authentication authentication = new UsernamePasswordAuthenticationToken( user, user.getPassword(), user.getAuthorities() );
+		SecurityContextHolder.getContext().setAuthentication( authentication );
+	}
+
+	private User changePassword( String checksum, PasswordResetDto password ) {
+		User user = changePasswordSecurityUtilities.getUser( checksum );
+		user.toDto().setPassword( password.password );
+		userService.save( user );
+		return user;
+	}
+
+	@InitBinder("model")
+	public void bindValidator( WebDataBinder binder ) {
+		binder.addValidators( changePasswordNewPasswordValidator );
 	}
 
 	@Autowired
@@ -158,6 +186,17 @@ public abstract class AbstractChangePasswordController
 		this.changePasswordMailSender = changePasswordMailSender;
 	}
 
+	@Autowired
+	public final void setChangePasswordSecurityUtilities( ChangePasswordSecurityUtilities changePasswordSecurityUtilities ) {
+		Assert.notNull( changePasswordSecurityUtilities );
+		this.changePasswordSecurityUtilities = changePasswordSecurityUtilities;
+	}
+
+	@Autowired
+	public void setChangePasswordNewPasswordValidator( ChangePasswordNewPasswordValidator changePasswordNewPasswordValidator ) {
+		this.changePasswordNewPasswordValidator = changePasswordNewPasswordValidator;
+	}
+
 	public final ChangePasswordControllerProperties getConfiguration() {
 		return configuration;
 	}
@@ -167,7 +206,5 @@ public abstract class AbstractChangePasswordController
 		this.configuration = configuration;
 	}
 
-	private class PasswordResetDto
-	{
-	}
 }
+

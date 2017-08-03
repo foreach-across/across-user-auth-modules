@@ -37,21 +37,34 @@ public class ChangePasswordControllerProperties
 	public static final String DEFAULT_CHANGE_PASSWORD_TEMPLATE = "th/UserModule/change-password/renderChangePasswordForm";
 	public static final String DEFAULT_MAIL_SENT_TEMPLATE = "th/UserModule/change-password/sent";
 	public static final String DEFAULT_FLOW_ID = "UserModule";
+	public static final String DEFAULT_NEW_PASSWORD_FORM = "th/UserModule/change-password/newPasswordForm";
+	public static final String DEFAULT_REDIRECT_AFTER_SUCCESSFUL_CHANGE_PASSWORD = "/";
 
 	/**
 	 * Id for this change password flow configuration.  Only relevant in an application where multiple
 	 * configurations might exist.  Used as event name for the {@link UserPasswordChangedEvent}.
 	 */
-	@Builder.Default
 	private String flowId = DEFAULT_FLOW_ID;
+
 	/**
 	 * The form template used for rendering the change password form
 	 */
-	@Builder.Default
 	private String changePasswordForm = DEFAULT_CHANGE_PASSWORD_TEMPLATE;
 
-	@Builder.Default
+	/**
+	 * The form template used for "mail has been sent"
+	 */
 	private String mailSentTemplate = DEFAULT_MAIL_SENT_TEMPLATE;
+
+	/*
+	 * The form template used for rendering the password/confirm password form
+	 */
+	private String newPasswordForm = DEFAULT_NEW_PASSWORD_FORM;
+
+	/**
+	 * Default URL that the application redirects to after a successful password change.
+	 */
+	private String redirectDestinationAfterChangePassword = DEFAULT_REDIRECT_AFTER_SUCCESSFUL_CHANGE_PASSWORD;
 
 	/**
 	 * If {@code false}, the required input field will be the username instead of the email address.
@@ -76,5 +89,4 @@ public class ChangePasswordControllerProperties
 	 * If left to {@code null}, the request path will be used to attempt determining an URL.
 	 */
 	private String changePasswordLinkBaseUrl = null;
-
 }

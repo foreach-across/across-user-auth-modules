@@ -16,17 +16,14 @@
 
 package com.foreach.across.modules.user.controllers;
 
-import com.foreach.across.modules.user.business.User;
-import org.springframework.stereotype.Service;
+import lombok.Data;
+import org.hibernate.validator.constraints.NotBlank;
 
-/**
- * @author Sander Van Loock
- */
-@Service
-public class ChangePasswordMailSender
+@Data
+public class PasswordResetDto
 {
-	public void sendChangePasswordMail( ChangePasswordControllerProperties configuration, User user ) {
-
-	}
+	@NotBlank
+	String password;
+	@NotBlank
+	String confirmedPassword;
 }
-
