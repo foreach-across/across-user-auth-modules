@@ -16,10 +16,12 @@
 
 package com.foreach.across.modules.user.controllers;
 
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
 @Data
+@Builder
 public class PasswordResetDto
 {
 	@NotBlank
