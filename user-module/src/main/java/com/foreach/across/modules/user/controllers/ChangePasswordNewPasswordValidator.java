@@ -41,7 +41,7 @@ public class ChangePasswordNewPasswordValidator implements Validator
 
 		if ( !errors.hasFieldErrors( "password" ) && !errors.hasFieldErrors( "confirmedPassword" ) && !StringUtils.equals( resetDto.getConfirmedPassword(),
 		                                                                                                                   resetDto.getPassword() ) ) {
-			errors.rejectValue( "confirmPassword", "UserModule.web.changePassword.errorFeedback.passwordsNotEqual" );
+			errors.rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.passwordsNotEqual" );
 		}
 	}
 }

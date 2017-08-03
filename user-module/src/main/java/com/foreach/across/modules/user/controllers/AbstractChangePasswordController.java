@@ -30,6 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -121,13 +122,12 @@ public abstract class AbstractChangePasswordController
 	}
 
 	@GetMapping(path = "/change")
-	public String renderNewPasswordForm( ModelMap model, @RequestParam("checksum") String checksum ) {
+	public String renderNewPasswordForm( ModelMap model, @RequestParam("checksum") String checksum, @ModelAttribute("model") PasswordResetDto password ) {
 		if ( !changePasswordSecurityUtilities.isValidLink( checksum, configuration ) ) {
 			LOG.warn( "Attempt to change password via an invalid link." );
 			//TODO should this redirect?
 			return renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
 		}
-
 		return configuration.getNewPasswordForm();
 	}
 
@@ -135,7 +135,11 @@ public abstract class AbstractChangePasswordController
 	public String requestNewPassword(
 			ModelMap model,
 			@RequestParam("checksum") String checksum,
-			@ModelAttribute("model") @Valid PasswordResetDto password ) {
+			@ModelAttribute("model") @Valid PasswordResetDto password,
+			BindingResult bindingResult ) {
+		if ( bindingResult.hasErrors() ) {
+			return renderNewPasswordForm( model, checksum, password );
+		}
 		if ( !changePasswordSecurityUtilities.isValidLink( checksum, configuration ) ) {
 			LOG.warn( "Attempt to change password via an invalid link." );
 			//TODO should this redirect?
