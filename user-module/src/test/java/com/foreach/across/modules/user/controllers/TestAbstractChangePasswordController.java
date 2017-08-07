@@ -58,7 +58,7 @@ public class TestAbstractChangePasswordController
 	private ChangePasswordMailSender changePasswordMailSender;
 
 	@Mock
-	private ChangePasswordSecurityUtilities changePasswordSecurityUtilities;
+	private ChangePasswordTokenBuilder changePasswordTokenBuilder;
 
 	@Mock
 	private BindingResult bindingResult;
@@ -252,7 +252,7 @@ public class TestAbstractChangePasswordController
 	@Test
 	public void confirmPasswordCorrectPath() throws Exception {
 
-		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
+		when( changePasswordTokenBuilder.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
 		String actualPath = controller.renderNewPasswordForm( model, "xyz", new PasswordResetDto() );
 
 		assertEquals( "th/UserModule/change-password/newPasswordForm", actualPath );
@@ -260,7 +260,7 @@ public class TestAbstractChangePasswordController
 
 	@Test
 	public void confirmPasswordInvalidPasswordRedirects() throws Exception {
-		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( false );
+		when( changePasswordTokenBuilder.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( false );
 		controller.renderNewPasswordForm( model, "xyz", new PasswordResetDto() );
 
 		verify( controller, times( 1 ) ).renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
@@ -268,8 +268,8 @@ public class TestAbstractChangePasswordController
 
 	@Test
 	public void requestNewPasswordCorrectPath() throws Exception {
-		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
-		when( changePasswordSecurityUtilities.getUser( "xyz" ) ).thenReturn( user );
+		when( changePasswordTokenBuilder.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
+		when( changePasswordTokenBuilder.getUser( "xyz" ) ).thenReturn( user );
 
 		PasswordResetDto validDto = PasswordResetDto.builder().password( "zyx" ).confirmedPassword( "zyx" ).build();
 		String actualPath = controller.requestNewPassword( model, "xyz", validDto, bindingResult );
@@ -282,7 +282,7 @@ public class TestAbstractChangePasswordController
 
 	@Test
 	public void requestNewPasswordInvalidPathRedirects() throws Exception {
-		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( false );
+		when( changePasswordTokenBuilder.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( false );
 		controller.requestNewPassword( model, "xyz", PasswordResetDto.builder().build(), bindingResult );
 		verify( controller, times( 1 ) ).renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
 

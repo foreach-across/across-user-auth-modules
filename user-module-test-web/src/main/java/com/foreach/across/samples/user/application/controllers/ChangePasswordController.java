@@ -29,5 +29,4 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @ConfigurationProperties(prefix = "test")
 public class ChangePasswordController extends AbstractChangePasswordController
 {
-
 }

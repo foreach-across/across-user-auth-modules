@@ -19,21 +19,19 @@ package com.foreach.across.modules.user.controllers;
 import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.events.UserPasswordChangeAllowedEvent;
+import com.foreach.across.modules.user.events.UserPasswordChangedEvent;
 import com.foreach.across.modules.user.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
@@ -52,16 +50,16 @@ public abstract class AbstractChangePasswordController
 
 	private ChangePasswordControllerProperties configuration;
 	private ChangePasswordMailSender changePasswordMailSender;
-	private ChangePasswordSecurityUtilities changePasswordSecurityUtilities;
+	private ChangePasswordTokenBuilder changePasswordTokenBuilder;
 
 	@PostConstruct
-	public void validateRequiredProperties() {
+	public final void validateRequiredProperties() {
 		//validate required properties properties of configuration
 
 	}
 
 	@PostMapping
-	public String requestPasswordChange( @ModelAttribute("email") String usernameOrEmail, ModelMap model ) {
+	public final String requestPasswordChange( @ModelAttribute("email") String usernameOrEmail, ModelMap model ) {
 		if ( StringUtils.isBlank( usernameOrEmail ) ) {
 			return renderChangePasswordFormWithFeedback( usernameOrEmail, "UserModule.web.changePassword.errorFeedback.invalidValue", model );
 		}
@@ -76,13 +74,15 @@ public abstract class AbstractChangePasswordController
 			return renderChangePasswordFormWithFeedback( usernameOrEmail, userPasswordChangeAllowedEvent.getErrorFeedbackMessageCode(), model );
 		}
 
+		// generate token, pass token to email sender
+
 		changePasswordMailSender.sendChangePasswordMail( configuration, user );
 
 		return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest().build().getPath() + "/sent";
 	}
 
 	@GetMapping
-	public String renderChangePasswordForm( @ModelAttribute("email") String usernameOrEmail, ModelMap model ) {
+	public final String renderChangePasswordForm( @ModelAttribute("email") String usernameOrEmail, ModelMap model ) {
 		model.addAttribute( "useEmailLookup", configuration.isUseEmailLookup() );
 		return configuration.getChangePasswordForm();
 	}
@@ -111,41 +111,49 @@ public abstract class AbstractChangePasswordController
 	}
 
 	@GetMapping("/sent")
-	public String mailSent( ModelMap model ) {
+	public final String mailSent( ModelMap model ) {
 		return configuration.getMailSentTemplate();
 	}
 
 	@GetMapping(path = "/change")
-	public String renderNewPasswordForm( ModelMap model,
-	                                     @RequestParam("checksum") String checksum,
-	                                     @ModelAttribute("passwordResetDto") PasswordResetDto password ) {
-		if ( !changePasswordSecurityUtilities.isValidLink( checksum, configuration ) ) {
+	public final String renderNewPasswordForm( ModelMap model,
+	                                           ChangePasswordToken token,
+	                                           @ModelAttribute("passwordResetDto") PasswordResetDto password ) {
+		ChangePasswordRequest request = changePasswordTokenBuilder.decodeChangePasswordToken( token )
+		                                                          .orElse( null );
+
+		if ( request == null || !request.isValid() ) {
 			LOG.warn( "Attempt to change password via an invalid link." );
-			//TODO should this redirect?
+			//TODO redirect to "enter username" but with error feedback
 			return renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
 		}
+
+		model.addAttribute( "changePasswordToken", token );
+
 		return configuration.getNewPasswordForm();
 	}
 
 	@PostMapping(path = "/change")
-	public String requestNewPassword(
+	public final String requestNewPassword(
 			ModelMap model,
-			@RequestParam("checksum") String checksum,
+			ChangePasswordToken token,
 			@ModelAttribute("passwordResetDto") PasswordResetDto passwordDto,
 			BindingResult bindingResult ) {
-		if ( !changePasswordSecurityUtilities.isValidLink( checksum, configuration ) ) {
+		ChangePasswordRequest request = changePasswordTokenBuilder.decodeChangePasswordToken( token )
+		                                                          .orElse( null );
+
+		if ( request == null || !request.isValid() ) {
 			LOG.warn( "Attempt to change password via an invalid link." );
-			//TODO should this redirect?
+			//TODO redirect to "enter username" but with error feedback
 			return renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
 		}
 
-		if ( isValidPassword( changePasswordSecurityUtilities.getUser( checksum ), passwordDto, bindingResult ).hasErrors() ) {
-			return renderNewPasswordForm( model, checksum, passwordDto );
+		if ( isValidPassword( request.getUser(), passwordDto, bindingResult ).hasErrors() ) {
+			return renderNewPasswordForm( model, token, passwordDto );
 		}
 
-		User user = changePassword( checksum, passwordDto );
-
-		doUserLogin( user );
+		User user = performUserPasswordChange( request.getUser(), passwordDto );
+		acrossEventPublisher.publish( new UserPasswordChangedEvent( configuration.getFlowId(), user, this ) );
 
 		return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest()
 		                                                .path( configuration.getRedirectDestinationAfterChangePassword() )
@@ -153,30 +161,41 @@ public abstract class AbstractChangePasswordController
 		                                                .getPath();
 	}
 
-	protected BindingResult isValidPassword( User user, PasswordResetDto passwordDto, BindingResult bindingResult ) {
+	private BindingResult isValidPassword( User user, PasswordResetDto passwordDto, BindingResult bindingResult ) {
 		if ( StringUtils.isBlank( passwordDto.getPassword() ) ) {
 			bindingResult.rejectValue( "password", "UserModule.web.changePassword.errorFeedback.blankPassword" );
 		}
+
+		validatePasswordRestrictions( user, passwordDto, bindingResult );
+
 		if ( StringUtils.isBlank( passwordDto.getConfirmedPassword() ) ) {
 			bindingResult.rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.blankPassword" );
 		}
+
 		if ( !bindingResult.hasFieldErrors( "password" ) && !bindingResult.hasFieldErrors( "confirmedPassword" )
 				&& !StringUtils.equals( passwordDto.getConfirmedPassword(), passwordDto.getPassword() ) ) {
 			bindingResult.rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.passwordsNotEqual" );
 		}
+
 		return bindingResult;
 	}
 
-	protected void doUserLogin( User user ) {
-		Authentication authentication = new UsernamePasswordAuthenticationToken( user, user.getPassword(), user.getAuthorities() );
-		SecurityContextHolder.getContext().setAuthentication( authentication );
+	/**
+	 * Adapter method to perform custom password restriction validation.
+	 *
+	 * @param user        that is attempting to change password
+	 * @param passwordDto containing the new password
+	 * @param errors      for the passwordDto
+	 */
+	protected void validatePasswordRestrictions( User user, PasswordResetDto passwordDto, Errors errors ) {
+
 	}
 
-	private User changePassword( String checksum, PasswordResetDto password ) {
-		User user = changePasswordSecurityUtilities.getUser( checksum );
-		user.toDto().setPassword( password.password );
-		userService.save( user );
-		return user;
+	private User performUserPasswordChange( User user, PasswordResetDto password ) {
+		User dto = user.toDto();
+		dto.setPassword( password.password );
+		userService.save( dto );
+		return dto;
 	}
 
 	@Autowired
@@ -195,9 +214,9 @@ public abstract class AbstractChangePasswordController
 	}
 
 	@Autowired
-	public final void setChangePasswordSecurityUtilities( ChangePasswordSecurityUtilities changePasswordSecurityUtilities ) {
-		Assert.notNull( changePasswordSecurityUtilities );
-		this.changePasswordSecurityUtilities = changePasswordSecurityUtilities;
+	public final void setChangePasswordTokenBuilder( ChangePasswordTokenBuilder changePasswordTokenBuilder ) {
+		Assert.notNull( changePasswordTokenBuilder );
+		this.changePasswordTokenBuilder = changePasswordTokenBuilder;
 	}
 
 	public final ChangePasswordControllerProperties getConfiguration() {
@@ -208,6 +227,5 @@ public abstract class AbstractChangePasswordController
 		Assert.notNull( configuration );
 		this.configuration = configuration;
 	}
-
 }
 

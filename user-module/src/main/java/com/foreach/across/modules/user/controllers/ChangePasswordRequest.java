@@ -17,30 +17,27 @@
 package com.foreach.across.modules.user.controllers;
 
 import com.foreach.across.modules.user.business.User;
-import org.springframework.stereotype.Service;
+import lombok.Data;
 
-@Service
-public class ChangePasswordSecurityUtilities
+import java.util.Date;
+
+/**
+ * Represents a change password request as decoded from a {@link ChangePasswordToken}.
+ * Note that the methods {@link #isValid()}, {@link #isValidToken()} and {@link #isExpired()} should be used
+ * to determine if changing the password is in fact allowed.
+ */
+@Data
+public final class ChangePasswordRequest
 {
+	private final User user;
+	private final Date expireTime;
+	private final boolean validToken;
+	private final boolean expired;
 
 	/**
-	 * Checks if the link is valid. Should return false if the checksum does not contain an identifier for a user.
-	 *
-	 * @param checksum
-	 * @param configuration
-	 * @return
+	 * @return true if token used to build this request was valid, and the request has not yet expired
 	 */
-	public boolean isValidLink( String checksum, ChangePasswordControllerProperties configuration ) {
-		return true;
-	}
-
-	/**
-	 * Retrieves the user embedded in the checksum. Should never return null. If the user does not exist, {@link #isValidLink(String, ChangePasswordControllerProperties)} should return false.
-	 *
-	 * @return
-	 */
-	public User getUser( String checksum ) {
-		return null;
+	public boolean isValid() {
+		return isValidToken() && !isExpired();
 	}
 }
-
