@@ -19,6 +19,7 @@ package com.foreach.across.modules.user.controllers;
 import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.events.UserPasswordChangeAllowedEvent;
+import com.foreach.across.modules.user.events.UserPasswordChangedEvent;
 import com.foreach.across.modules.user.services.UserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Optional;
 
 import static com.foreach.across.modules.user.controllers.AbstractChangePasswordController.ERROR_FEEDBACK_MODEL_ATTRIBUTE;
 import static com.foreach.across.modules.user.controllers.ChangePasswordControllerProperties.DEFAULT_FLOW_ID;
@@ -63,16 +66,22 @@ public class TestAbstractChangePasswordController
 	@Mock
 	private BindingResult bindingResult;
 
+	@Mock
+	private ChangePasswordRequest changePasswordRequest;
+
 	private User user = new User();
 
 	@InjectMocks
 	private AbstractChangePasswordController controller = spy( AbstractChangePasswordController.class );
 
 	private ModelMap model;
+	private ChangePasswordToken token;
 
 	@Before
 	public void setUp() throws Exception {
 		model = new ModelMap();
+		token = new ChangePasswordToken( "token", "xyz" );
+		user.setId( 123L );
 
 		controller.setConfiguration( new ChangePasswordControllerProperties() );
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -251,81 +260,92 @@ public class TestAbstractChangePasswordController
 
 	@Test
 	public void confirmPasswordCorrectPath() throws Exception {
-
-		when( changePasswordTokenBuilder.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
-		String actualPath = controller.renderNewPasswordForm( model, "xyz", new PasswordResetDto() );
+		when( changePasswordTokenBuilder.decodeChangePasswordToken( token ) ).thenReturn( Optional.of( changePasswordRequest ) );
+		when( changePasswordRequest.isValid() ).thenReturn( true );
+		when( changePasswordRequest.getUser() ).thenReturn( user );
+		String actualPath = controller.renderNewPasswordForm( model, token, new PasswordResetDto() );
 
 		assertEquals( "th/UserModule/change-password/newPasswordForm", actualPath );
 	}
 
 	@Test
 	public void confirmPasswordInvalidPasswordRedirects() throws Exception {
-		when( changePasswordTokenBuilder.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( false );
-		controller.renderNewPasswordForm( model, "xyz", new PasswordResetDto() );
+		when( changePasswordTokenBuilder.decodeChangePasswordToken( token ) ).thenReturn( Optional.empty() );
+		String actualPath = controller.renderNewPasswordForm( model, token, new PasswordResetDto() );
 
-		verify( controller, times( 1 ) ).renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
+		assertEquals( "redirect:/change-password/invalid-link", actualPath );
 	}
 
 	@Test
-	public void requestNewPasswordCorrectPath() throws Exception {
-		when( changePasswordTokenBuilder.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
-		when( changePasswordTokenBuilder.getUser( "xyz" ) ).thenReturn( user );
+	public void passwordInvalidationTriggersRedirect() throws Exception {
+		when( changePasswordTokenBuilder.decodeChangePasswordToken( token ) ).thenReturn( Optional.of( changePasswordRequest ) );
+		when( changePasswordRequest.isValid() ).thenReturn( true );
+		when( changePasswordRequest.getUser() ).thenReturn( user );
+		PasswordResetDto password = new PasswordResetDto();
+		password.setPassword( "xyz" );
+		password.setConfirmedPassword( "zyx" );
+		when( bindingResult.hasErrors() ).thenReturn( true );
+		String actualPath = controller.requestNewPassword( model, token, password, bindingResult );
 
-		PasswordResetDto validDto = PasswordResetDto.builder().password( "zyx" ).confirmedPassword( "zyx" ).build();
-		String actualPath = controller.requestNewPassword( model, "xyz", validDto, bindingResult );
-
-		assertEquals( "redirect:/change-password/", actualPath );
-
-		verify( userService, times( 1 ) ).save( user );
-		verify( controller, times( 1 ) ).doUserLogin( user );
-	}
-
-	@Test
-	public void requestNewPasswordInvalidPathRedirects() throws Exception {
-		when( changePasswordTokenBuilder.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( false );
-		controller.requestNewPassword( model, "xyz", PasswordResetDto.builder().build(), bindingResult );
-		verify( controller, times( 1 ) ).renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
-
-		verify( userService, times( 0 ) ).save( user );
-		verify( controller, times( 0 ) ).doUserLogin( user );
-	}
-
-	@Test
-	public void testValidationNoErrorsValidPasswords() {
-		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
-		when( changePasswordSecurityUtilities.getUser( "xyz" ) ).thenReturn( user );
-
-		PasswordResetDto resetDto = PasswordResetDto.builder().confirmedPassword( "xyz" ).password( "xyz" ).build();
-		controller.requestNewPassword( model, "xyz", resetDto, bindingResult );
-		verify( bindingResult, times( 1 ) ).hasFieldErrors( "password" );
-		verify( bindingResult, times( 1 ) ).hasFieldErrors( "confirmedPassword" );
-		verify( bindingResult, times( 0 ) ).rejectValue( anyString(), anyString() );
-	}
-
-	@Test
-	public void testValidationErrorsOnMismatch() {
-		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
-		when( changePasswordSecurityUtilities.getUser( "xyz" ) ).thenReturn( user );
-
-		PasswordResetDto resetDto = PasswordResetDto.builder().confirmedPassword( "xyz" ).password( "zyx" ).build();
-		controller.requestNewPassword( model, "xyz", resetDto, bindingResult );
-		verify( bindingResult, times( 1 ) ).hasFieldErrors( "password" );
-		verify( bindingResult, times( 1 ) ).hasFieldErrors( "confirmedPassword" );
+		assertEquals( "th/UserModule/change-password/newPasswordForm", actualPath );
 		verify( bindingResult, times( 1 ) ).rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.passwordsNotEqual" );
 	}
 
 	@Test
+	public void requestNewPasswordCorrectPath() throws Exception {
+		when( changePasswordTokenBuilder.decodeChangePasswordToken( token ) ).thenReturn( Optional.of( changePasswordRequest ) );
+		when( changePasswordRequest.isValid() ).thenReturn( true );
+		when( changePasswordRequest.getUser() ).thenReturn( user );
+
+		PasswordResetDto validDto = PasswordResetDto.builder().password( "zyx" ).confirmedPassword( "zyx" ).build();
+		String actualPath = controller.requestNewPassword( model, token, validDto, bindingResult );
+
+		assertEquals( "redirect:/change-password/", actualPath );
+		verify( userService, times( 1 ) ).save( user );
+		verify( acrossEventPublisher, times( 1 ) ).publish( new UserPasswordChangedEvent( DEFAULT_FLOW_ID, user, controller ) );
+	}
+
+	@Test
+	public void requestNewPasswordInvalidPathRedirects() throws Exception {
+		when( changePasswordTokenBuilder.decodeChangePasswordToken( token ) ).thenReturn( Optional.of( changePasswordRequest ) );
+		String actualPath = controller.requestNewPassword( model, token, PasswordResetDto.builder().build(), bindingResult );
+		assertEquals( "redirect:/change-password/invalid-link", actualPath );
+
+		verify( userService, times( 0 ) ).save( user );
+		verify( acrossEventPublisher, never() ).publish( new UserPasswordChangedEvent( DEFAULT_FLOW_ID, user, controller ) );
+	}
+
+	@Test
+	public void testValidationNoErrorsValidPasswords() {
+		PasswordResetDto resetDto = PasswordResetDto.builder().confirmedPassword( "xyz" ).password( "xyz" ).build();
+		controller.isValidPassword( user, resetDto, bindingResult );
+		verify( bindingResult, times( 1 ) ).hasFieldErrors( "password" );
+		verify( bindingResult, times( 1 ) ).hasFieldErrors( "confirmedPassword" );
+		verify( bindingResult, times( 0 ) ).rejectValue( anyString(), anyString() );
+		verify( controller, times( 1 ) ).validatePasswordRestrictions( user, resetDto, bindingResult );
+	}
+
+	@Test
+	public void testValidationErrorsOnMismatch() {
+		PasswordResetDto resetDto = PasswordResetDto.builder().confirmedPassword( "xyz" ).password( "zyx" ).build();
+		controller.isValidPassword( user, resetDto, bindingResult );
+		verify( bindingResult, times( 1 ) ).hasFieldErrors( "password" );
+		verify( bindingResult, times( 1 ) ).hasFieldErrors( "confirmedPassword" );
+		verify( bindingResult, times( 1 ) ).rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.passwordsNotEqual" );
+		verify( controller, times( 1 ) ).validatePasswordRestrictions( user, resetDto, bindingResult );
+	}
+
+	@Test
 	public void emptyPasswordShouldBeValidated() {
-		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
-		when( changePasswordSecurityUtilities.getUser( "xyz" ) ).thenReturn( user );
 		when( bindingResult.hasFieldErrors( "password" ) ).thenReturn( true );
 		when( bindingResult.hasFieldErrors( "confirmedPassword" ) ).thenReturn( true );
 
 		PasswordResetDto resetDto = PasswordResetDto.builder().confirmedPassword( "" ).password( null ).build();
-		controller.requestNewPassword( model, "xyz", resetDto, bindingResult );
+		controller.isValidPassword( user, resetDto, bindingResult );
 		verify( bindingResult, times( 1 ) ).rejectValue( "password", "UserModule.web.changePassword.errorFeedback.blankPassword" );
 		verify( bindingResult, times( 1 ) ).rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.blankPassword" );
 		verify( bindingResult, times( 0 ) ).rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.passwordsNotEqual" );
+		verify( controller, times( 1 ) ).validatePasswordRestrictions( user, resetDto, bindingResult );
 	}
 
 	private void verifyCorrectChangeAllowedEvent( User user, UserPasswordChangeAllowedEvent actualEvent ) {

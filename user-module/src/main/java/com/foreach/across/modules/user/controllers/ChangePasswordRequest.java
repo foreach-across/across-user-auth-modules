@@ -27,7 +27,7 @@ import java.util.Date;
  * to determine if changing the password is in fact allowed.
  */
 @Data
-public final class ChangePasswordRequest
+public class ChangePasswordRequest
 {
 	private final User user;
 	private final Date expireTime;

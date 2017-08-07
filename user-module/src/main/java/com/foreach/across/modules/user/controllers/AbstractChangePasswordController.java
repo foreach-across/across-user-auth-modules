@@ -81,6 +81,11 @@ public abstract class AbstractChangePasswordController
 		return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest().build().getPath() + "/sent";
 	}
 
+	@GetMapping("/invalid-link")
+	public final String renderChangePasswordFormWithInvalidLink( @ModelAttribute("email") String usernameOrEmail, ModelMap model ) {
+		return renderChangePasswordFormWithFeedback( usernameOrEmail, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
+	}
+
 	@GetMapping
 	public final String renderChangePasswordForm( @ModelAttribute("email") String usernameOrEmail, ModelMap model ) {
 		model.addAttribute( "useEmailLookup", configuration.isUseEmailLookup() );
@@ -124,8 +129,9 @@ public abstract class AbstractChangePasswordController
 
 		if ( request == null || !request.isValid() ) {
 			LOG.warn( "Attempt to change password via an invalid link." );
-			//TODO redirect to "enter username" but with error feedback
-			return renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
+			return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest()
+			                                                .build()
+			                                                .getPath() + "/invalid-link";
 		}
 
 		model.addAttribute( "changePasswordToken", token );
@@ -144,8 +150,9 @@ public abstract class AbstractChangePasswordController
 
 		if ( request == null || !request.isValid() ) {
 			LOG.warn( "Attempt to change password via an invalid link." );
-			//TODO redirect to "enter username" but with error feedback
-			return renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
+			return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest()
+			                                                .build()
+			                                                .getPath() + "/invalid-link";
 		}
 
 		if ( isValidPassword( request.getUser(), passwordDto, bindingResult ).hasErrors() ) {
@@ -161,7 +168,7 @@ public abstract class AbstractChangePasswordController
 		                                                .getPath();
 	}
 
-	private BindingResult isValidPassword( User user, PasswordResetDto passwordDto, BindingResult bindingResult ) {
+	BindingResult isValidPassword( User user, PasswordResetDto passwordDto, BindingResult bindingResult ) {
 		if ( StringUtils.isBlank( passwordDto.getPassword() ) ) {
 			bindingResult.rejectValue( "password", "UserModule.web.changePassword.errorFeedback.blankPassword" );
 		}
