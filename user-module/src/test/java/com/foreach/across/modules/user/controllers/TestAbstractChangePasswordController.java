@@ -37,6 +37,7 @@ import static com.foreach.across.modules.user.controllers.AbstractChangePassword
 import static com.foreach.across.modules.user.controllers.ChangePasswordControllerProperties.DEFAULT_FLOW_ID;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 /**
  * @author Sander Van Loock
@@ -287,6 +288,44 @@ public class TestAbstractChangePasswordController
 
 		verify( userService, times( 0 ) ).save( user );
 		verify( controller, times( 0 ) ).doUserLogin( user );
+	}
+
+	@Test
+	public void testValidationNoErrorsValidPasswords() {
+		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
+		when( changePasswordSecurityUtilities.getUser( "xyz" ) ).thenReturn( user );
+
+		PasswordResetDto resetDto = PasswordResetDto.builder().confirmedPassword( "xyz" ).password( "xyz" ).build();
+		controller.requestNewPassword( model, "xyz", resetDto, bindingResult );
+		verify( bindingResult, times( 1 ) ).hasFieldErrors( "password" );
+		verify( bindingResult, times( 1 ) ).hasFieldErrors( "confirmedPassword" );
+		verify( bindingResult, times( 0 ) ).rejectValue( anyString(), anyString() );
+	}
+
+	@Test
+	public void testValidationErrorsOnMismatch() {
+		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
+		when( changePasswordSecurityUtilities.getUser( "xyz" ) ).thenReturn( user );
+
+		PasswordResetDto resetDto = PasswordResetDto.builder().confirmedPassword( "xyz" ).password( "zyx" ).build();
+		controller.requestNewPassword( model, "xyz", resetDto, bindingResult );
+		verify( bindingResult, times( 1 ) ).hasFieldErrors( "password" );
+		verify( bindingResult, times( 1 ) ).hasFieldErrors( "confirmedPassword" );
+		verify( bindingResult, times( 1 ) ).rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.passwordsNotEqual" );
+	}
+
+	@Test
+	public void emptyPasswordShouldBeValidated() {
+		when( changePasswordSecurityUtilities.isValidLink( "xyz", controller.getConfiguration() ) ).thenReturn( true );
+		when( changePasswordSecurityUtilities.getUser( "xyz" ) ).thenReturn( user );
+		when( bindingResult.hasFieldErrors( "password" ) ).thenReturn( true );
+		when( bindingResult.hasFieldErrors( "confirmedPassword" ) ).thenReturn( true );
+
+		PasswordResetDto resetDto = PasswordResetDto.builder().confirmedPassword( "" ).password( null ).build();
+		controller.requestNewPassword( model, "xyz", resetDto, bindingResult );
+		verify( bindingResult, times( 1 ) ).rejectValue( "password", "UserModule.web.changePassword.errorFeedback.blankPassword" );
+		verify( bindingResult, times( 1 ) ).rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.blankPassword" );
+		verify( bindingResult, times( 0 ) ).rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.passwordsNotEqual" );
 	}
 
 	private void verifyCorrectChangeAllowedEvent( User user, UserPasswordChangeAllowedEvent actualEvent ) {

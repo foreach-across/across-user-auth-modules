@@ -24,19 +24,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
-import javax.validation.Valid;
 
 /**
  * @author Sander Van Loock
@@ -46,19 +46,13 @@ import javax.validation.Valid;
 public abstract class AbstractChangePasswordController
 {
 	public static final String ERROR_FEEDBACK_MODEL_ATTRIBUTE = "errorFeedback";
-	/**
-	 * Encoding used for sending emails
-	 */
-	public final String ENCODING = "UTF-8";
 
 	private UserService userService;
-	private JavaMailSender javaMailSender;
 	private AcrossEventPublisher acrossEventPublisher;
 
 	private ChangePasswordControllerProperties configuration;
 	private ChangePasswordMailSender changePasswordMailSender;
 	private ChangePasswordSecurityUtilities changePasswordSecurityUtilities;
-	private ChangePasswordNewPasswordValidator changePasswordNewPasswordValidator;
 
 	@PostConstruct
 	public void validateRequiredProperties() {
@@ -122,7 +116,9 @@ public abstract class AbstractChangePasswordController
 	}
 
 	@GetMapping(path = "/change")
-	public String renderNewPasswordForm( ModelMap model, @RequestParam("checksum") String checksum, @ModelAttribute("model") PasswordResetDto password ) {
+	public String renderNewPasswordForm( ModelMap model,
+	                                     @RequestParam("checksum") String checksum,
+	                                     @ModelAttribute("passwordResetDto") PasswordResetDto password ) {
 		if ( !changePasswordSecurityUtilities.isValidLink( checksum, configuration ) ) {
 			LOG.warn( "Attempt to change password via an invalid link." );
 			//TODO should this redirect?
@@ -135,22 +131,40 @@ public abstract class AbstractChangePasswordController
 	public String requestNewPassword(
 			ModelMap model,
 			@RequestParam("checksum") String checksum,
-			@ModelAttribute("model") @Valid PasswordResetDto password,
+			@ModelAttribute("passwordResetDto") PasswordResetDto passwordDto,
 			BindingResult bindingResult ) {
-		if ( bindingResult.hasErrors() ) {
-			return renderNewPasswordForm( model, checksum, password );
-		}
 		if ( !changePasswordSecurityUtilities.isValidLink( checksum, configuration ) ) {
 			LOG.warn( "Attempt to change password via an invalid link." );
 			//TODO should this redirect?
 			return renderChangePasswordFormWithFeedback( null, "UserModule.web.changePassword.errorFeedback.invalidLink", model );
 		}
 
-		User user = changePassword( checksum, password );
+		if ( isValidPassword( changePasswordSecurityUtilities.getUser( checksum ), passwordDto, bindingResult ).hasErrors() ) {
+			return renderNewPasswordForm( model, checksum, passwordDto );
+		}
+
+		User user = changePassword( checksum, passwordDto );
+
 		doUserLogin( user );
 
-		return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest().path( configuration.getRedirectDestinationAfterChangePassword() ).build()
+		return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest()
+		                                                .path( configuration.getRedirectDestinationAfterChangePassword() )
+		                                                .build()
 		                                                .getPath();
+	}
+
+	protected BindingResult isValidPassword( User user, PasswordResetDto passwordDto, BindingResult bindingResult ) {
+		if ( StringUtils.isBlank( passwordDto.getPassword() ) ) {
+			bindingResult.rejectValue( "password", "UserModule.web.changePassword.errorFeedback.blankPassword" );
+		}
+		if ( StringUtils.isBlank( passwordDto.getConfirmedPassword() ) ) {
+			bindingResult.rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.blankPassword" );
+		}
+		if ( !bindingResult.hasFieldErrors( "password" ) && !bindingResult.hasFieldErrors( "confirmedPassword" )
+				&& !StringUtils.equals( passwordDto.getConfirmedPassword(), passwordDto.getPassword() ) ) {
+			bindingResult.rejectValue( "confirmedPassword", "UserModule.web.changePassword.errorFeedback.passwordsNotEqual" );
+		}
+		return bindingResult;
 	}
 
 	protected void doUserLogin( User user ) {
@@ -163,16 +177,6 @@ public abstract class AbstractChangePasswordController
 		user.toDto().setPassword( password.password );
 		userService.save( user );
 		return user;
-	}
-
-	@InitBinder("model")
-	public void bindValidator( WebDataBinder binder ) {
-		binder.addValidators( changePasswordNewPasswordValidator );
-	}
-
-	@Autowired
-	public final void setJavaMailSender( JavaMailSender javaMailSender ) {
-		this.javaMailSender = javaMailSender;
 	}
 
 	@Autowired
@@ -194,11 +198,6 @@ public abstract class AbstractChangePasswordController
 	public final void setChangePasswordSecurityUtilities( ChangePasswordSecurityUtilities changePasswordSecurityUtilities ) {
 		Assert.notNull( changePasswordSecurityUtilities );
 		this.changePasswordSecurityUtilities = changePasswordSecurityUtilities;
-	}
-
-	@Autowired
-	public void setChangePasswordNewPasswordValidator( ChangePasswordNewPasswordValidator changePasswordNewPasswordValidator ) {
-		this.changePasswordNewPasswordValidator = changePasswordNewPasswordValidator;
 	}
 
 	public final ChangePasswordControllerProperties getConfiguration() {
