@@ -89,4 +89,10 @@ public class ChangePasswordControllerProperties
 	 * If left to {@code null}, the request path will be used to attempt determining an URL.
 	 */
 	private String changePasswordLinkBaseUrl = null;
+
+	/**
+	 * Private security token to be used for creating hashes.
+	 * Used by the {@link ChangePasswordTokenBuilder}.
+	 */
+	private String hashToken = "";
 }

@@ -18,15 +18,40 @@ package com.foreach.across.modules.user.controllers;
 
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.services.UserService;
-import lombok.RequiredArgsConstructor;
+import com.foreach.common.spring.code.MappedStringEncoder;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
+import org.springframework.util.DigestUtils;
 
+import java.util.Date;
 import java.util.Optional;
+import java.util.Random;
 
-@RequiredArgsConstructor
+@Slf4j
 public class ChangePasswordTokenBuilder
 {
 	private final ChangePasswordControllerProperties configuration;
 	private final UserService userService;
+
+	private final Random random = new Random( System.currentTimeMillis() );
+
+	@Setter
+	private MappedStringEncoder checksumEncoder = new MappedStringEncoder( 6, false );
+
+	@Setter
+	private MappedStringEncoder longEncoder;
+
+	public ChangePasswordTokenBuilder( ChangePasswordControllerProperties configuration, UserService userService ) {
+		this.configuration = configuration;
+		this.userService = userService;
+
+		checksumEncoder = new MappedStringEncoder( 6, false );
+		checksumEncoder.buildEncodingMatrix( "123456789".toCharArray(), 6, true );
+
+		longEncoder = MappedStringEncoder.forMaximumValue( Long.MAX_VALUE, true );
+	}
 
 	/**
 	 * Generate a token for a particular user, using the life time set in the configuration.
@@ -35,7 +60,31 @@ public class ChangePasswordTokenBuilder
 	 * @return token
 	 */
 	public ChangePasswordToken buildChangePasswordToken( User user ) {
-		return null;
+		long checksum = generateRandomChecksum();
+		long expireTime = ( new Date() ).getTime() + ( configuration.getChangePasswordLinkValidityPeriodInSeconds() * 1000 );
+
+		String token = longEncoder.encode( user.getId(), false ) + '-'
+				+ longEncoder.encode( expireTime, false ) + '-'
+				+ calculateSecurityHash( user, expireTime, checksum );
+
+		return new ChangePasswordToken( token.toLowerCase(), checksumEncoder.encode( checksum, true ) );
+	}
+
+	private String calculateSecurityHash( User user, long expireTime, long checksum ) {
+		return DigestUtils.md5DigestAsHex(
+				(
+						String.valueOf( user.getId() ) +
+								user.getUsername() +
+								user.getPassword() +
+								expireTime +
+								checksum +
+								configuration.getHashToken()
+				).getBytes()
+		);
+	}
+
+	private long generateRandomChecksum() {
+		return random.nextInt( Long.valueOf( checksumEncoder.getMaxValue() ).intValue() );
 	}
 
 	/**
@@ -50,7 +99,29 @@ public class ChangePasswordTokenBuilder
 	 * @return request if token could be decoded
 	 */
 	public Optional<ChangePasswordRequest> decodeChangePasswordToken( ChangePasswordToken token ) {
-		return null;
+		try {
+			Assert.isTrue( StringUtils.isNotEmpty( token.getToken() ), "Token must not be empty." );
+			Assert.isTrue( StringUtils.isNotEmpty( token.getChecksum() ), "Checksum must not be empty." );
+
+			long checksum = checksumEncoder.decode( token.getChecksum() );
+
+			String[] parts = token.getToken().split( "-" );
+			long userId = longEncoder.decode( parts[0].toUpperCase() );
+			long expireTime = longEncoder.decode( parts[1].toUpperCase() );
+
+			User user = userService.getUserById( userId );
+
+			boolean validToken = parts[2].equals( calculateSecurityHash( user, expireTime, checksum ) );
+			Date expireDate = new Date( expireTime );
+			boolean expired = expireDate.before( new Date() );
+
+			return Optional.of( new ChangePasswordRequest( user, expireDate, validToken, expired ) );
+		}
+		catch ( Exception e ) {
+			LOG.warn( "Attempt to decode an illegal ChangePasswordToken. ", e );
+		}
+
+		return Optional.empty();
 	}
 
 	/**
