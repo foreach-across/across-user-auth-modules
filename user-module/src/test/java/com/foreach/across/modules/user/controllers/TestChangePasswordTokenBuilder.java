@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.foreach.across.modules.user.controllers.ChangePasswordTokenBuilder.ZONE_ID_TO_USE;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -85,7 +86,8 @@ public class TestChangePasswordTokenBuilder
 		assertTrue( request.isValid() );
 
 		assertNotNull( request.getExpireTime() );
-		assertTrue( request.getExpireTime().getTime() >= ( current + ( configuration.getChangePasswordLinkValidityPeriodInSeconds() * 1000 ) ) );
+		assertTrue( request.getExpireTime().atZone( ZONE_ID_TO_USE ).toInstant().toEpochMilli() >= ( current + ( configuration
+				.getChangePasswordLinkValidityPeriodInSeconds() * 1000 ) ) );
 		assertSame( user, request.getUser() );
 	}
 

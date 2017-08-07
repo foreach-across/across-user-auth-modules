@@ -25,13 +25,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.DigestUtils;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.Random;
 
 @Slf4j
 public class ChangePasswordTokenBuilder
 {
+	public static final ZoneId ZONE_ID_TO_USE = ZoneId.of( "Europe/Paris" );
+
 	private final ChangePasswordControllerProperties configuration;
 	private final UserService userService;
 
@@ -61,7 +66,8 @@ public class ChangePasswordTokenBuilder
 	 */
 	public ChangePasswordToken buildChangePasswordToken( User user ) {
 		long checksum = generateRandomChecksum();
-		long expireTime = ( new Date() ).getTime() + ( configuration.getChangePasswordLinkValidityPeriodInSeconds() * 1000 );
+		long expireTime = ( LocalDateTime.now().atZone( ZONE_ID_TO_USE ).toInstant().toEpochMilli() +
+				( configuration.getChangePasswordLinkValidityPeriodInSeconds() * 1000 ) );
 
 		String token = longEncoder.encode( user.getId(), false ) + '-'
 				+ longEncoder.encode( expireTime, false ) + '-'
@@ -112,10 +118,10 @@ public class ChangePasswordTokenBuilder
 			User user = userService.getUserById( userId );
 
 			boolean validToken = parts[2].equals( calculateSecurityHash( user, expireTime, checksum ) );
-			Date expireDate = new Date( expireTime );
-			boolean expired = expireDate.before( new Date() );
+			ZonedDateTime expireLocalDate = ZonedDateTime.ofInstant( Instant.ofEpochMilli( expireTime ), ZONE_ID_TO_USE );
+			boolean expired = expireLocalDate.isBefore( LocalDateTime.now().atZone( ZONE_ID_TO_USE ) );
 
-			return Optional.of( new ChangePasswordRequest( user, expireDate, validToken, expired ) );
+			return Optional.of( new ChangePasswordRequest( user, expireLocalDate.toLocalDateTime(), validToken, expired ) );
 		}
 		catch ( Exception e ) {
 			LOG.warn( "Attempt to decode an illegal ChangePasswordToken. ", e );

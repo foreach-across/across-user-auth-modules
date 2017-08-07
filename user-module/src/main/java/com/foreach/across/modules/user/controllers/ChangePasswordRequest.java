@@ -19,7 +19,7 @@ package com.foreach.across.modules.user.controllers;
 import com.foreach.across.modules.user.business.User;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Represents a change password request as decoded from a {@link ChangePasswordToken}.
@@ -30,7 +30,7 @@ import java.util.Date;
 public class ChangePasswordRequest
 {
 	private final User user;
-	private final Date expireTime;
+	private final LocalDateTime expireTime;
 	private final boolean validToken;
 	private final boolean expired;
 
