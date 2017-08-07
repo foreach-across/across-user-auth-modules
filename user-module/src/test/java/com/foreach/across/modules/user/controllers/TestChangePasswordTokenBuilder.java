@@ -155,6 +155,20 @@ public class TestChangePasswordTokenBuilder
 		assertEquals( Optional.empty(), tokenBuilder.decodeChangePasswordToken( new ChangePasswordToken( "jkdsojdosij", "dsfdqsqsd" ) ) );
 	}
 
+	@Test
+	public void tokenNotValidAfterExpired() throws Exception {
+		configuration.setChangePasswordLinkValidityPeriodInSeconds( 1 );
+		tokenBuilder = new ChangePasswordTokenBuilder( configuration, userService );
+
+		ChangePasswordToken token = tokenBuilder.buildChangePasswordToken( user( 10L ) );
+		Thread.sleep( 2000 );
+		Optional<ChangePasswordRequest> actual = tokenBuilder.decodeChangePasswordToken( token );
+
+		assertTrue( actual.isPresent() );
+		assertTrue( actual.get().isExpired() );
+		assertFalse( actual.get().isValid() );
+	}
+
 	private User user( long userId ) {
 		User user = new User();
 		user.setId( userId );
