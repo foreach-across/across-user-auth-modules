@@ -97,6 +97,19 @@ public class TestAbstractChangePasswordController
 		controller.validateRequiredProperties();
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void validateRequiredSenderProperty() throws Exception {
+		controller.validateRequiredProperties();
+	}
+
+	@Test
+	public void validateRequiredSenderPropertyIsPresent() throws Exception {
+		ChangePasswordControllerProperties configuration = new ChangePasswordControllerProperties();
+		configuration.setChangePasswordMailSender( "noreply@test.be" );
+		controller.setConfiguration( configuration );
+		controller.validateRequiredProperties();
+	}
+
 	@Test
 	public void defaultChangePasswordTemplateShouldBeReturned() throws Exception {
 		String actualTemplate = controller.renderChangePasswordForm( "test@sander.be", model );
@@ -243,7 +256,7 @@ public class TestAbstractChangePasswordController
 		when( controller.validateUserCanChangePassword( user ) ).thenReturn( allowedEvent );
 		controller.requestPasswordChange( "mail", model );
 
-		verify( changePasswordMailSender, times( 1 ) ).sendChangePasswordMail( controller.getConfiguration(), user );
+		verify( changePasswordMailSender, times( 1 ) ).sendChangePasswordMail( user );
 
 	}
 

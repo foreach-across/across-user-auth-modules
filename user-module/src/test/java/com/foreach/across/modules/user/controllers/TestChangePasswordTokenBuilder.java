@@ -51,6 +51,7 @@ public class TestChangePasswordTokenBuilder
 	@Before
 	public void setUp() {
 		tokenBuilder = new ChangePasswordTokenBuilder( configuration, userService );
+		tokenBuilder.setConfiguration( configuration );
 	}
 
 	@Test

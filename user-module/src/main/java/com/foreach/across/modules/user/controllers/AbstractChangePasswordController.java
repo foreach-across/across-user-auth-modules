@@ -55,7 +55,13 @@ public abstract class AbstractChangePasswordController
 	@PostConstruct
 	public final void validateRequiredProperties() {
 		//validate required properties properties of configuration
-
+		if ( StringUtils.isAnyBlank( configuration.getChangePasswordMailSender() ) ) {
+			String errorMessage = String.format(
+					"Unable to bootstrap %s due to missing properties in %s.  Please verify all required properties are correctly filled in.", this,
+					configuration );
+			LOG.error( errorMessage );
+			throw new IllegalArgumentException( errorMessage );
+		}
 	}
 
 	@PostMapping
@@ -76,7 +82,7 @@ public abstract class AbstractChangePasswordController
 
 		// generate token, pass token to email sender
 
-		changePasswordMailSender.sendChangePasswordMail( configuration, user );
+		changePasswordMailSender.sendChangePasswordMail( user );
 
 		return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest().build().getPath() + "/sent";
 	}
@@ -163,7 +169,7 @@ public abstract class AbstractChangePasswordController
 		acrossEventPublisher.publish( new UserPasswordChangedEvent( configuration.getFlowId(), user, this ) );
 
 		return "redirect:" + ServletUriComponentsBuilder.fromCurrentRequest()
-		                                                .path( configuration.getRedirectDestinationAfterChangePassword() )
+		                                                .replacePath( configuration.getRedirectDestinationAfterChangePassword() )
 		                                                .build()
 		                                                .getPath();
 	}
@@ -233,6 +239,8 @@ public abstract class AbstractChangePasswordController
 	public final void setConfiguration( ChangePasswordControllerProperties configuration ) {
 		Assert.notNull( configuration );
 		this.configuration = configuration;
+		this.changePasswordTokenBuilder.setConfiguration( configuration );
+		this.changePasswordMailSender.setConfiguration( configuration );
 	}
 }
 

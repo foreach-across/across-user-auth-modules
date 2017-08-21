@@ -16,7 +16,9 @@
 
 package com.foreach.across.modules.user.controllers;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents a security token for a change password request.
@@ -30,8 +32,10 @@ import lombok.Data;
  * and the token itself is put as hidden form var (or kept in the session).
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public final class ChangePasswordToken
 {
-	private final String token;
-	private final String checksum;
+	private String token;
+	private String checksum;
 }

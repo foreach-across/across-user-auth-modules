@@ -22,6 +22,8 @@ import com.foreach.common.spring.code.MappedStringEncoder;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.DigestUtils;
 
@@ -33,14 +35,15 @@ import java.util.Optional;
 import java.util.Random;
 
 @Slf4j
+@Service
 public class ChangePasswordTokenBuilder
 {
 	public static final ZoneId ZONE_ID_TO_USE = ZoneId.of( "Europe/Paris" );
 
-	private final ChangePasswordControllerProperties configuration;
 	private final UserService userService;
 
 	private final Random random = new Random( System.currentTimeMillis() );
+	private ChangePasswordControllerProperties configuration;
 
 	@Setter
 	private MappedStringEncoder checksumEncoder = new MappedStringEncoder( 6, false );
@@ -49,7 +52,12 @@ public class ChangePasswordTokenBuilder
 	private MappedStringEncoder longEncoder;
 
 	public ChangePasswordTokenBuilder( ChangePasswordControllerProperties configuration, UserService userService ) {
-		this.configuration = configuration;
+		this( userService );
+		setConfiguration( configuration );
+	}
+
+	@Autowired
+	public ChangePasswordTokenBuilder( UserService userService ) {
 		this.userService = userService;
 
 		checksumEncoder = new MappedStringEncoder( 6, false );
@@ -152,5 +160,8 @@ public class ChangePasswordTokenBuilder
 		return null;
 	}
 
+	public void setConfiguration( ChangePasswordControllerProperties configuration ) {
+		this.configuration = configuration;
+	}
 }
 

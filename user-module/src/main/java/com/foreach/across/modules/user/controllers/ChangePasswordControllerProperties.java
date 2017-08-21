@@ -39,6 +39,8 @@ public class ChangePasswordControllerProperties
 	public static final String DEFAULT_FLOW_ID = "UserModule";
 	public static final String DEFAULT_NEW_PASSWORD_FORM = "th/UserModule/change-password/newPasswordForm";
 	public static final String DEFAULT_REDIRECT_AFTER_SUCCESSFUL_CHANGE_PASSWORD = "/";
+	public static final String DEFAULT_CHANGE_PASSXORD_MAIL_SUBJECT = "Request to change your password";
+	private static final String DEFAULT_CHANGE_PASSWORD_MAIL_TEMPLATE = "th/UserModule/change-password/changePasswordEmail";
 
 	/**
 	 * Id for this change password flow configuration.  Only relevant in an application where multiple
@@ -95,4 +97,18 @@ public class ChangePasswordControllerProperties
 	 * Used by the {@link ChangePasswordTokenBuilder}.
 	 */
 	private String hashToken = "";
+	/**
+	 * Thymeleaf template that contains the markup for the the email to change the password.
+	 */
+	private String changePasswordMailTemplate = DEFAULT_CHANGE_PASSWORD_MAIL_TEMPLATE;
+
+	/**
+	 * Subject used for the change password email.
+	 */
+	private String changePasswordMailSubject = DEFAULT_CHANGE_PASSXORD_MAIL_SUBJECT;
+
+	/**
+	 * The sender of the change password email.
+	 */
+	private String changePasswordMailSender;
 }
