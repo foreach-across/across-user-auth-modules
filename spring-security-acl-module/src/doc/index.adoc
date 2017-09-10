@@ -1,9 +1,9 @@
 = SpringSecurityAclModule
 Arne Vandamme
-2.0.1-SNAPSHOT
+2.0.1.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 2.0.1-SNAPSHOT
+:module-version: 2.0.1.RELEASE
 :module-name: SpringSecurityAclModule
 :module-artifact: spring-security-acl-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityAclModule
@@ -55,7 +55,7 @@ This module has no specific settings.
 
 == What's new in this version?
 :numbered!:
-=== 2.0.1-SNAPSHOT
+=== 2.0.1.RELEASE
 * added support for H2 database
 
 :numbered:
