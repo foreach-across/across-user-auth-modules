@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.ldap;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -23,6 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.0.0
  */
 @ConfigurationProperties("ldapModule")
+@Data
 @SuppressWarnings("unused")
 public class LdapModuleSettings
 {
@@ -32,20 +34,4 @@ public class LdapModuleSettings
 
 	private boolean disableSynchronizationTask;
 	private long synchronizationTaskIntervalInSeconds = 300;
-
-	public boolean isDisableSynchronizationTask() {
-		return disableSynchronizationTask;
-	}
-
-	public void setDisableSynchronizationTask( boolean disableSynchronizationTask ) {
-		this.disableSynchronizationTask = disableSynchronizationTask;
-	}
-
-	public long getSynchronizationTaskIntervalInSeconds() {
-		return synchronizationTaskIntervalInSeconds;
-	}
-
-	public void setSynchronizationTaskIntervalInSeconds( long synchronizationTaskIntervalInSeconds ) {
-		this.synchronizationTaskIntervalInSeconds = synchronizationTaskIntervalInSeconds;
-	}
 }

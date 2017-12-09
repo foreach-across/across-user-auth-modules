@@ -19,6 +19,8 @@ package com.foreach.across.modules.ldap.business;
 import com.foreach.across.modules.hibernate.business.SettableIdAuditableEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.ldap.repositories.HibernateLdapConnectorType;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.NotBlank;
@@ -39,6 +41,8 @@ import javax.validation.constraints.Size;
 @NotThreadSafe
 @Entity
 @Table(name = "ldap_connector")
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 {
 
@@ -110,118 +114,4 @@ public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 	@Column(name = "authenticate_as")
 	@Size(max = 255)
 	private String synchronizationPrincipalName;
-
-	@Override
-	public void setId( Long id ) {
-		this.id = id;
-	}
-
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName( String name ) {
-		this.name = name;
-	}
-
-	public String getHostName() {
-		return hostName;
-	}
-
-	public void setHostName( String hostName ) {
-		this.hostName = hostName;
-	}
-
-	public Integer getPort() {
-		return port;
-	}
-
-	public void setPort( Integer port ) {
-		this.port = port;
-	}
-
-	public Integer getReadTimeout() {
-		return readTimeout;
-	}
-
-	public void setReadTimeout( Integer readTimeout ) {
-		this.readTimeout = readTimeout;
-	}
-
-	public Integer getSearchTimeout() {
-		return searchTimeout;
-	}
-
-	public void setSearchTimeout( Integer searchTimeout ) {
-		this.searchTimeout = searchTimeout;
-	}
-
-	public Integer getConnectionTimeout() {
-		return connectionTimeout;
-	}
-
-	public void setConnectionTimeout( Integer connectionTimeout ) {
-		this.connectionTimeout = connectionTimeout;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername( String username ) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword( String password ) {
-		this.password = password;
-	}
-
-	public String getBaseDn() {
-		return baseDn;
-	}
-
-	public void setBaseDn( String baseDn ) {
-		this.baseDn = baseDn;
-	}
-
-	public String getAdditionalUserDn() {
-		return additionalUserDn;
-	}
-
-	public void setAdditionalUserDn( String additionalUserDn ) {
-		this.additionalUserDn = additionalUserDn;
-	}
-
-	public String getAdditionalGroupDn() {
-		return additionalGroupDn;
-	}
-
-	public void setAdditionalGroupDn( String additionalGroupDn ) {
-		this.additionalGroupDn = additionalGroupDn;
-	}
-
-	public LdapConnectorType getLdapConnectorType() {
-		return ldapConnectorType;
-	}
-
-	public void setLdapConnectorType( LdapConnectorType ldapConnectorType ) {
-		this.ldapConnectorType = ldapConnectorType;
-	}
-
-	public String getSynchronizationPrincipalName() {
-		return synchronizationPrincipalName;
-	}
-
-	public void setSynchronizationPrincipalName( String synchronizationPrincipalName ) {
-		this.synchronizationPrincipalName = synchronizationPrincipalName;
-	}
 }

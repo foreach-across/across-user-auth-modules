@@ -17,6 +17,8 @@
 package com.foreach.across.modules.ldap.business;
 
 import com.foreach.across.modules.user.business.UserDirectory;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.DiscriminatorValue;
@@ -34,18 +36,12 @@ import javax.validation.constraints.NotNull;
 @NotThreadSafe
 @Entity
 @DiscriminatorValue("ldap")
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class LdapUserDirectory extends UserDirectory
 {
 	@OneToOne(optional = false)
 	@NotNull
 	@JoinColumn(name = "settings_id")
 	private LdapConnector ldapConnector;
-
-	public LdapConnector getLdapConnector() {
-		return ldapConnector;
-	}
-
-	public void setLdapConnector( LdapConnector ldapConnector ) {
-		this.ldapConnector = ldapConnector;
-	}
 }

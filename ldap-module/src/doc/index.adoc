@@ -1,9 +1,9 @@
 = LdapModule
 Arne Vandamme
-1.0.0.RELEASE
+1.0.1-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 1.0.0.RELEASE
+:module-version: 1.0.1-SNAPSHOT
 :module-name: LdapModule
 :module-artifact: ldap-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/LdapModule
@@ -88,6 +88,12 @@ All properties start with the ldapModule. prefix.
 
 == What's new in this version?
 :numbered!:
+
+=== 1.0.1-SNAPSHOT
+* Be more lenient when a user or group cannot be deleted
+* Replace old apt-maven-plugin with maven-compiler-plugin for better integration with Intellij
+* Added lombok annotations internally
+
 === 1.0.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].
 

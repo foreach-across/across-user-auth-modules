@@ -20,17 +20,16 @@ import com.foreach.across.modules.ldap.repositories.LdapUserDirectoryRepository;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
 import com.foreach.common.concurrent.locks.distributed.DistributedLock;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
+@Slf4j
 public class LdapSynchronizationTask implements Runnable
 {
-	private static final Logger LOG = LoggerFactory.getLogger( LdapSynchronizationTask.class );
 	public static final String LOCK_NAME = "LdapSynchronizationTask";
 
 	private final LdapSynchronizationService ldapSynchronizationService;

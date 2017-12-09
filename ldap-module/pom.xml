@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>ldap-module-project</artifactId>
-		<version>1.0.0.RELEASE</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>ldap-module</artifactId>
@@ -113,8 +113,30 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>com.mysema.maven</groupId>
-				<artifactId>apt-maven-plugin</artifactId>
+				<!-- This makes sure that Intellij also configures the querydsl JPA AnnotationProcessor -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.7.0</version>
+				<configuration>
+					<annotationProcessors>
+						<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
+						</annotationProcessor>
+						<annotationProcessor>com.querydsl.apt.jpa.JPAAnnotationProcessor</annotationProcessor>
+					</annotationProcessors>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.querydsl</groupId>
+						<artifactId>querydsl-apt</artifactId>
+						<version>${querydsl.version}</version>
+						<classifier>jpa</classifier>
+					</dependency>
+					<dependency>
+						<groupId>org.hibernate.javax.persistence</groupId>
+						<artifactId>hibernate-jpa-2.1-api</artifactId>
+						<version>1.0.0.Final</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.asciidoctor</groupId>

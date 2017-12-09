@@ -1,13 +1,13 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="ldap-module-test-web:war exploded">
-    <output-path>$PROJECT_DIR$/ldap-module-test-web/target/ldap-module-test-web-1.0.0.RELEASE</output-path>
+    <output-path>$PROJECT_DIR$/ldap-module-test-web/target/ldap-module-test-web-1.0.1-SNAPSHOT</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="ldap-module-test-web" />
         </element>
         <element id="directory" name="lib">
-          <element id="archive" name="ldap-module-1.0.0.RELEASE.jar">
+          <element id="archive" name="ldap-module-1.0.1-SNAPSHOT.jar">
             <element id="module-output" name="ldap-module" />
           </element>
           <element id="library" level="project" name="Maven: com.foreach.across:across-web:2.0.0.RELEASE" />
@@ -101,7 +101,7 @@
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/ldap-module-test-web/target/ldap-module-test-web-1.0.0.RELEASE/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/ldap-module-test-web/target/ldap-module-test-web-1.0.1-SNAPSHOT/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="ldap-module-test-web/web/Web" />
     </root>

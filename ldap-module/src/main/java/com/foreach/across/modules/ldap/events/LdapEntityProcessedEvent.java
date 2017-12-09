@@ -17,38 +17,21 @@
 package com.foreach.across.modules.ldap.events;
 
 import com.foreach.across.core.events.ParameterizedAcrossEvent;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.core.ResolvableType;
 import org.springframework.ldap.core.DirContextAdapter;
 
 /**
  * @author Marc Vanbrabant
  */
+@Getter
+@AllArgsConstructor
 public class LdapEntityProcessedEvent<T> implements ParameterizedAcrossEvent
 {
 	private T entity;
 	private boolean update;
 	private DirContextAdapter adapter;
-
-	public LdapEntityProcessedEvent( T entity, boolean update, DirContextAdapter adapter ) {
-		this.entity = entity;
-		this.adapter = adapter;
-		this.update = update;
-	}
-
-	public T getEntity() {
-		return entity;
-	}
-
-	public DirContextAdapter getAdapter() {
-		return adapter;
-	}
-
-	/**
-	 * @return true if this was an update of that entity (not the first synchronization)
-	 */
-	public boolean isUpdate() {
-		return update;
-	}
 
 	/**
 	 * @return true if this was the first time this entity has been synchronized

@@ -25,12 +25,11 @@ import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockManager;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
 import com.foreach.common.test.MockedLoader;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
@@ -53,10 +52,9 @@ import static org.mockito.Mockito.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @ContextConfiguration(loader = MockedLoader.class, classes = TestLdapConnectorSynchronizationTaskLocking.Config.class)
+@Slf4j
 public class TestLdapConnectorSynchronizationTaskLocking
 {
-	private static final Logger LOG = LoggerFactory.getLogger( TestLdapConnectorSynchronizationTaskLocking.class );
-
 	@Autowired
 	private AcrossContextBeanRegistry acrossContextBeanRegistry;
 

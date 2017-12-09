@@ -29,11 +29,10 @@ import com.foreach.across.modules.spring.security.infrastructure.services.Securi
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.DirContextAdapter;
 
@@ -43,10 +42,9 @@ import java.util.*;
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
+@Slf4j
 public class LdapSynchronizationServiceImpl implements LdapSynchronizationService
 {
-	private static final Logger LOG = LoggerFactory.getLogger( LdapSynchronizationService.class );
-
 	@Autowired
 	private UserService userService;
 
@@ -121,7 +119,13 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 		               .forEach( u -> {
 			               u.getGroups().clear();
 			               userService.save( u );
-			               userService.delete( u.getId() );
+			               try {
+				               userService.delete( u.getId() );
+			               }
+			               catch ( Exception e ) {
+				               LOG.error( "Could not delete user '{}', maybe you have entities referencing this user?",
+				                          e );
+			               }
 		               } );
 	}
 
@@ -132,7 +136,12 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 				u.getGroups().remove( g );
 				userService.save( u );
 			} );
-			groupService.delete( g.getId() );
+			try {
+				groupService.delete( g.getId() );
+			}
+			catch ( Exception e ) {
+				LOG.error( "Could not delete group '{}', maybe you have entities referencing this group?", e );
+			}
 		} );
 	}
 
