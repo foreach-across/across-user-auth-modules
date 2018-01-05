@@ -63,6 +63,8 @@ public interface AclSecurityService
 
 	MutableAcl updateAcl( MutableAcl acl );
 
+	AclOperations createAclOperations( MutableAcl acl );
+
 	void changeAclOwner( MutableAcl acl, SecurityPrincipal principal );
 
 	void changeAclParent( IdBasedEntity entity, IdBasedEntity parent );

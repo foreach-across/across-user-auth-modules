@@ -25,7 +25,7 @@ import org.springframework.security.acls.domain.AbstractPermission;
  */
 public class AclPermission extends AbstractPermission
 {
-	public static final AclPermission READ = new AclPermission( 1 << 0, 'R' ); // 1
+	public static final AclPermission READ = new AclPermission( 1, 'R' ); // 1
 	public static final AclPermission WRITE = new AclPermission( 1 << 1, 'W' ); // 2
 	public static final AclPermission CREATE = new AclPermission( 1 << 2, 'C' ); // 4
 	public static final AclPermission DELETE = new AclPermission( 1 << 3, 'D' ); // 8

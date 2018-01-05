@@ -24,12 +24,14 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
+import com.foreach.across.modules.spring.security.acl.ui.EntityAclPermissionsViewConfiguration;
 import com.foreach.across.modules.spring.security.acl.validators.AclSecurityEntityValidator;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AuthorityMatchingAllowableActions;
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +41,7 @@ import java.util.Map;
  */
 @Configuration
 @AcrossDepends(required = "EntityModule")
+@Import(EntityAclPermissionsViewConfiguration.class)
 public class EntityUiModuleConfiguration implements EntityConfigurer
 {
 	@Bean

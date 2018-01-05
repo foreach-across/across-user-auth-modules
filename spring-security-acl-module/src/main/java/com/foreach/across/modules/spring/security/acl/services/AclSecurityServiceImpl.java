@@ -22,9 +22,7 @@ import com.foreach.across.modules.spring.security.infrastructure.business.Securi
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalHierarchy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
-import org.springframework.security.acls.domain.GrantedAuthoritySid;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.model.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,6 +39,9 @@ import java.util.*;
 @Service
 public class AclSecurityServiceImpl implements QueryableAclSecurityService
 {
+	// todo: share an extensible permission factory
+	private final PermissionFactory permissionFactory = new DefaultPermissionFactory();
+
 	@Autowired
 	private SecurityPrincipalAclService aclService;
 
@@ -236,6 +237,11 @@ public class AclSecurityServiceImpl implements QueryableAclSecurityService
 	@Override
 	public MutableAcl updateAcl( MutableAcl acl ) {
 		return aclService.updateAcl( acl );
+	}
+
+	@Override
+	public AclOperations createAclOperations( MutableAcl acl ) {
+		return new AclOperations( acl, permissionFactory );
 	}
 
 	@Transactional
