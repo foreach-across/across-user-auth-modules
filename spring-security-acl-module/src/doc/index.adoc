@@ -1,9 +1,9 @@
 = SpringSecurityAclModule
 Arne Vandamme
-2.0.1.RELEASE
+3.0.0-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 2.0.1.RELEASE
+:module-version: 3.0.0-SNAPSHOT
 :module-name: SpringSecurityAclModule
 :module-artifact: spring-security-acl-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityAclModule
