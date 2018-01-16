@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.spring.security.acl.support;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.hibernate.aop.EntityInterceptorAdapter;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
@@ -33,7 +33,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  *
  * @author Arne Vandamme
  */
-@AcrossDepends(optional = { "AcrossHibernateModule", "AcrossHibernateJpaModule" })
+@ConditionalOnAcrossModule(anyOf = { "AcrossHibernateModule", "AcrossHibernateJpaModule" })
 public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity> extends EntityInterceptorAdapter<T>
 {
 	@Autowired

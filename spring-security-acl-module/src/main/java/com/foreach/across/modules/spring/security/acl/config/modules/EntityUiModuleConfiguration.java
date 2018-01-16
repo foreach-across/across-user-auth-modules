@@ -16,7 +16,8 @@
 
 package com.foreach.across.modules.spring.security.acl.config.modules;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -40,7 +41,7 @@ import java.util.Map;
  * @author Arne Vandamme
  */
 @Configuration
-@AcrossDepends(required = "EntityModule")
+@ConditionalOnAcrossModule(EntityModule.NAME)
 @Import(EntityAclPermissionsViewConfiguration.class)
 public class EntityUiModuleConfiguration implements EntityConfigurer
 {

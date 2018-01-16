@@ -23,10 +23,6 @@ import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.web.AcrossWebModule;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 /**
  * @author Arne Vandamme
@@ -41,8 +37,6 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 				SpringSecurityAclModule.NAME
 		}
 )
-@Import({ DataSourceAutoConfiguration.class, H2ConsoleAutoConfiguration.class })
-@EnableSpringDataWebSupport
 public class AdminUiApplication
 {
 	public static void main( String[] args ) {

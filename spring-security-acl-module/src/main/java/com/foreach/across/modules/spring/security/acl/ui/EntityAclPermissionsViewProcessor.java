@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.spring.security.acl.ui;
 
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -35,6 +34,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import lombok.*;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.Sid;
@@ -62,7 +62,7 @@ public class EntityAclPermissionsViewProcessor extends EntityViewProcessorAdapte
 	private final ObjectProvider<EntityRegistry> entityRegistry;
 	private final AclSecurityService aclSecurityService;
 
-	@Event
+	@EventListener
 	public void registerTab( EntityAdminMenuEvent entityAdminMenu ) {
 		final EntityConfiguration entityConfiguration = entityRegistry.getObject().getEntityConfiguration(
 				entityAdminMenu.getEntityType() );

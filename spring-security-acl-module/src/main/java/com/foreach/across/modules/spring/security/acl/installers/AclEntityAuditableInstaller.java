@@ -15,9 +15,10 @@
  */
 package com.foreach.across.modules.spring.security.acl.installers;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.modules.hibernate.installers.AuditableSchemaInstaller;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,7 +26,7 @@ import java.util.Collections;
 /**
  * @author Andy Somers
  */
-@AcrossDepends(required = "AcrossHibernateJpaModule")
+@ConditionalOnAcrossModule(AcrossHibernateJpaModule.NAME)
 @Installer(description = "Adds the auditable columns to the acl_entity table", version = 1)
 public class AclEntityAuditableInstaller extends AuditableSchemaInstaller
 {

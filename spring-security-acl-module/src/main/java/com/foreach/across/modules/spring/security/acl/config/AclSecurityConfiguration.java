@@ -103,8 +103,7 @@ public class AclSecurityConfiguration
 
 	@Bean
 	public LookupStrategy lookupStrategy() {
-		return new BasicLookupStrategy( dataSource, aclCache(), aclAuthorizationStrategy(),
-		                                permissionGrantingStrategy() );
+		return new BasicLookupStrategy( dataSource, aclCache(), aclAuthorizationStrategy(), permissionGrantingStrategy() );
 	}
 
 	@Bean

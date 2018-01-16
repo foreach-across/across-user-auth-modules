@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.spring.security.acl.ui;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -29,7 +29,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@AcrossDepends(required = EntityModule.NAME)
+@ConditionalOnAcrossModule(EntityModule.NAME)
 @ConditionalOnClass(EntityConfigurer.class)
 @ComponentScan
 @RequiredArgsConstructor
