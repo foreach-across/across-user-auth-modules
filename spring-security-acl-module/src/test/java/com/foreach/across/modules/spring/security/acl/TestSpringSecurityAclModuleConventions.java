@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.test.modules.spring.security.acl;
+package com.foreach.across.modules.spring.security.acl;
 
 import com.foreach.across.core.AcrossModule;
-import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
 /**

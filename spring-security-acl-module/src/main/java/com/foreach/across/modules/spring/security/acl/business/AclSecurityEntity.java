@@ -17,12 +17,15 @@ package com.foreach.across.modules.spring.security.acl.business;
 
 import com.foreach.across.modules.hibernate.business.SettableIdAuditableEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.Objects;
 
 /**
  * Represents a generic named entity that can be used for ACL control.
@@ -35,6 +38,9 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "acl_entity")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class AclSecurityEntity extends SettableIdAuditableEntity<AclSecurityEntity>
 {
 	@Id

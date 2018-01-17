@@ -16,12 +16,13 @@
 
 package com.foreach.across.modules.spring.security.acl.config;
 
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.database.DatabaseInfo;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCache;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.services.*;
 import com.foreach.across.modules.spring.security.acl.strategy.SecurityPrincipalSidRetrievalStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -44,29 +45,35 @@ import javax.sql.DataSource;
  * @author Arne Vandamme
  */
 @Configuration
+@RequiredArgsConstructor
 public class AclSecurityConfiguration
 {
 	public static final String CACHE_NAME = SpringSecurityAclModuleCache.ACL;
 
-	@Autowired
-	private DataSource dataSource;
+	private final DataSource dataSource;
+	private final CacheManager cacheManager;
 
-	@Autowired
-	private CacheManager cacheManager;
+	/**
+	 * Create and expose the custom {@code PermissionFactory} that should be used.
+	 */
+	@Bean
+	@Exposed
+	public AclPermissionFactory aclPermissionFactory() {
+		return new DefaultAclPermissionFactory();
+	}
 
 	@Bean
 	public AclPermissionEvaluator aclPermissionEvaluator() {
 		AclPermissionEvaluator evaluator = new AclPermissionEvaluator( aclService() );
 		evaluator.setSidRetrievalStrategy( new SecurityPrincipalSidRetrievalStrategy() );
+		evaluator.setPermissionFactory( aclPermissionFactory() );
 
 		return evaluator;
 	}
 
 	@Bean
 	public SecurityPrincipalAclService aclService() {
-		SecurityPrincipalJdbcAclService aclService = new SecurityPrincipalJdbcAclService(
-				dataSource, lookupStrategy(), aclCache()
-		);
+		SecurityPrincipalJdbcAclService aclService = new SecurityPrincipalJdbcAclService( dataSource, lookupStrategy(), aclCache() );
 
 		DatabaseInfo databaseInfo = DatabaseInfo.retrieve( dataSource );
 
@@ -88,13 +95,12 @@ public class AclSecurityConfiguration
 
 	@Bean
 	public AclSecurityService aclSecurityService() {
-		return new AclSecurityServiceImpl();
+		return new AclSecurityServiceImpl( aclService(), aclPermissionEvaluator(), aclPermissionFactory() );
 	}
 
 	@Bean
 	public AclCache aclCache() {
-		return new SpringCacheBasedAclCache( cacheInstance(), permissionGrantingStrategy(),
-		                                     aclAuthorizationStrategy() );
+		return new SpringCacheBasedAclCache( cacheInstance(), permissionGrantingStrategy(), aclAuthorizationStrategy() );
 	}
 
 	private Cache cacheInstance() {
@@ -103,7 +109,9 @@ public class AclSecurityConfiguration
 
 	@Bean
 	public LookupStrategy lookupStrategy() {
-		return new BasicLookupStrategy( dataSource, aclCache(), aclAuthorizationStrategy(), permissionGrantingStrategy() );
+		BasicLookupStrategy lookupStrategy = new BasicLookupStrategy( dataSource, aclCache(), aclAuthorizationStrategy(), permissionGrantingStrategy() );
+		lookupStrategy.setPermissionFactory( aclPermissionFactory() );
+		return lookupStrategy;
 	}
 
 	@Bean

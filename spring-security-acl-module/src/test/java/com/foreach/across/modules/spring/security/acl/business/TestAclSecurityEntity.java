@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.foreach.across.test.modules.spring.security.acl;
+package com.foreach.across.modules.spring.security.acl.business;
 
-import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

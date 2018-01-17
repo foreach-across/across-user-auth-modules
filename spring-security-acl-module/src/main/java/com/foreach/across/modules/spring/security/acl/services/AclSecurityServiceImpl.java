@@ -20,9 +20,12 @@ import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.SecurityPrincipalSid;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalHierarchy;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.PermissionEvaluator;
-import org.springframework.security.acls.domain.*;
+import org.springframework.security.acls.domain.GrantedAuthoritySid;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.domain.PermissionFactory;
+import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,16 +40,12 @@ import java.util.*;
  * @author Arne Vandamme
  */
 @Service
+@RequiredArgsConstructor
 public class AclSecurityServiceImpl implements QueryableAclSecurityService
 {
-	// todo: share an extensible permission factory
-	private final PermissionFactory permissionFactory = new DefaultPermissionFactory();
-
-	@Autowired
-	private SecurityPrincipalAclService aclService;
-
-	@Autowired
-	private PermissionEvaluator aclPermissionEvaluator;
+	private final SecurityPrincipalAclService aclService;
+	private final PermissionEvaluator aclPermissionEvaluator;
+	private final PermissionFactory permissionFactory;
 
 	private IdBasedEntity defaultParent;
 

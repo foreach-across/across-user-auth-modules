@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.test.modules.spring.security.acl.validators;
+package com.foreach.across.modules.spring.security.acl.validators;
 
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
-import com.foreach.across.modules.spring.security.acl.validators.AclSecurityEntityValidator;
 import org.junit.Test;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.test.modules.spring.security.acl;
+package test;
 
 import com.foreach.across.modules.spring.security.acl.services.DefaultAclAuthorizationStrategy;
 import org.junit.After;

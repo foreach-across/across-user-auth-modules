@@ -55,7 +55,7 @@ public class TestAclOperations
 	@Before
 	public void before() {
 		acl = new AclImpl( new ObjectIdentityImpl( "object", 1 ), 1, mock( AclAuthorizationStrategy.class ), mock( AuditLogger.class ) );
-		operations = new AclOperations( acl, new DefaultPermissionFactory() );
+		operations = new AclOperations( acl, new DefaultAclPermissionFactory() );
 	}
 
 	@Test
@@ -74,8 +74,8 @@ public class TestAclOperations
 	@Test
 	public void allowPermissionsByName() {
 		operations.allow( john, "READ", "WRITE" );
-		operations.allow( joe, "ADMINISTRATION" );
-		operations.allow( john, "DELETE", "WRITE" );
+		operations.allow( joe, "administration" );
+		operations.allow( john, "delete", "write" );
 		assertAcl(
 				granted( john, READ ),
 				granted( john, WRITE ),
