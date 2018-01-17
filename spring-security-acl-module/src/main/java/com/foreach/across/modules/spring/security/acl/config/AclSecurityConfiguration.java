@@ -28,10 +28,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.acls.AclPermissionEvaluator;
-import org.springframework.security.acls.domain.AclAuthorizationStrategy;
-import org.springframework.security.acls.domain.ConsoleAuditLogger;
-import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
-import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
+import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.LookupStrategy;
 import org.springframework.security.acls.model.AclCache;
@@ -116,7 +113,7 @@ public class AclSecurityConfiguration
 
 	@Bean
 	public AclAuthorizationStrategy aclAuthorizationStrategy() {
-		DefaultAclAuthorizationStrategy strategy = new DefaultAclAuthorizationStrategy(
+		AclAuthorizationStrategyImpl strategy = new AclAuthorizationStrategyImpl(
 				new SimpleGrantedAuthority( AclAuthorities.TAKE_OWNERSHIP ),
 				new SimpleGrantedAuthority( AclAuthorities.AUDIT_ACL ),
 				new SimpleGrantedAuthority( AclAuthorities.MODIFY_ACL )
