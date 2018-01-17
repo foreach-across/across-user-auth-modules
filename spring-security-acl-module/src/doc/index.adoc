@@ -55,6 +55,14 @@ This module has no specific settings.
 
 == What's new in this version?
 :numbered!:
+=== 3.0.0-SNAPSHOT
+* SpringSecurityAclModule now uses a single `AclPermissionFactory` for the actual permission management
+** custom permissions can be registered on this factory and made available for use in security expressions
+* the first 10 permission positions (bit flags) are now reserved for Across internal use
+** the 5 default permissions take up half of these positions
+** applications or non-shared modules should create custom permissions on the positions > 10
+* `AclPermission` has some helper methods for easily creating custom permissions: `create()` and `combine()`, with validation regarding the reserved bit range
+
 === 2.0.1.RELEASE
 * added support for H2 database
 
@@ -101,7 +109,34 @@ excludes changing ownership.
 
 |===
 
+== Known ACL permissions
+The following lists the known/used ACL permissions from shared modules.
 
+An ACL permission:
+
+* takes a single bit position (total range is numbered from 0 to 31)
+* optionally has a single character code that is used when displaying a permission pattern (eg. `\...\...\...\...\...\...\...\...\....D.WR`)
+* has a unique name that can be used in expression based security (eg. `hasPermission(#object,'my-permission')`)
+
+[discrete]
+=== Reserved bit range
+The first 10 bit positions are reserved for use by Across standard modules.
+To avoid conflicts with this range, use `AclPermission.create()` for defining your custom permissions.
+
+|===
+|Bit position |Permission name |Code |Module
+
+|0 |read | R |SpringSecurityAclModule
+|1 |write |W |SpringSecurityAclModule
+|2 |create |C |SpringSecurityAclModule
+|3 |delete |D |SpringSecurityAclModule
+|4 |administration |A |SpringSecurityAclModule
+
+|===
+
+[discrete]
+=== Open bit range
+The open bit range (> position 10) is meant for custom applications or modules.
 
 
 
