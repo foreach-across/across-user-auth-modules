@@ -16,35 +16,37 @@
 
 package com.foreach.across.modules.spring.security.acl.ui;
 
-import com.foreach.across.modules.adminweb.menu.EntityAdminMenuEvent;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.services.AclOperations;
+import com.foreach.across.modules.spring.security.acl.services.AclPermissionFactory;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import lombok.*;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.event.EventListener;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -52,46 +54,72 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
 import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;
 
 /**
+ * View processor for an ACL permissions form.
+ *
  * @author Arne Vandamme
  * @since 3.0.0
  */
+@ConditionalOnAcrossModule(EntityModule.NAME)
+@ConditionalOnClass(EntityViewProcessor.class)
 @Component
 @RequiredArgsConstructor
-public class EntityAclPermissionsViewProcessor extends EntityViewProcessorAdapter
+public class AclPermissionsFormViewProcessor extends EntityViewProcessorAdapter
 {
+	/**
+	 * Name of the ACL permissions view. Any {@code EntityConfiguration} with this view present will
+	 * automatically get a menu item added to that view.
+	 */
+	public static final String VIEW_NAME = "aclPermissions";
+
+	private static final String EXTENSION = "aclPermissionController";
+
 	private final ObjectProvider<EntityRegistry> entityRegistry;
 	private final AclSecurityService aclSecurityService;
+	//private final EntityViewElementBuilderService elementBuilderService;
 
-	@EventListener
-	public void registerTab( EntityAdminMenuEvent entityAdminMenu ) {
-		final EntityConfiguration entityConfiguration = entityRegistry.getObject().getEntityConfiguration(
-				entityAdminMenu.getEntityType() );
-		if ( entityAdminMenu.isForUpdate() && entityConfiguration.hasView( "aclPermissions" ) ) {
-
-			EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
-
-			entityAdminMenu.builder().item( "/aclPermissions", "Permissions",
-			                                UriComponentsBuilder.fromUriString(
-					                                linkBuilder.update( entityAdminMenu.getEntity() ) )
-			                                                    .queryParam( "view", "aclPermissions" )
-			                                                    .toUriString() );
-		}
-	}
+	private final AclPermissionFactory permissionFactory;
+	private final AclPermissionsFormRegistry permissionsFormRegistry;
 
 	@Override
 	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
-		IdBasedEntity entity = entityViewRequest.getEntityViewContext().getEntity( IdBasedEntity.class );
-		MutableAcl acl = aclSecurityService.getAcl( entity );
+		// retrieve the form for the entity
+		EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
+		Optional<AclPermissionsForm> formHolder = permissionsFormRegistry.getForEntityConfiguration( entityConfiguration );
+
+		// retrieve the acl and create the acl operations
+
+		// create the controller and register it as an extension
+
+		// TODO: custom object identity
+		// TODO: default parent on creation (what to do?)
+		// TODO: avoid auto-creation, make it an extra step
+
+		//new AclPermissionsFormController( aclOperations, permissionsForm )
+
+		/*
+		Persistable entity = entityViewRequest.getEntityViewContext().getEntity( Persistable.class );
+		ObjectIdentity identity = AclUtils.objectIdentity( entity );
+		MutableAcl acl = aclSecurityService.getAcl( identity );
 
 		if ( acl == null ) {
-			acl = aclSecurityService.createAclWithParent( entity, null );
+			acl = aclSecurityService.createAclWithParent( identity, null );
 		}
 
-		command.addExtension( "aclPermissions", new AclPermissionEntries( acl ) );
+		command.addExtension( "aclPermissions", new AclPermissionEntries( acl ) );*/
+	}
+
+	protected ObjectIdentity createObjectIdentity( EntityConfiguration entityConfiguration, Object entity ) {
+		return null;
 	}
 
 	@Override
 	protected void doPost( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command, BindingResult bindingResult ) {
+
+		// fetch the controller
+		// MutableAcl acl = controller.updateAclWithModel();
+		// save the acl
+		// set feedback message and ensure not redirected
+
 		AclPermissionEntries entries = command.getExtension( "aclPermissions" );
 		MutableAcl acl = entries.getAcl();
 
@@ -121,6 +149,11 @@ public class EntityAclPermissionsViewProcessor extends EntityViewProcessorAdapte
 	                       ContainerViewElementBuilderSupport<?, ?> containerBuilder,
 	                       ViewElementBuilderMap builderMap,
 	                       ViewElementBuilderContext builderContext ) {
+
+		// retrieve the controller
+		// create the view element builder
+		// add the view element builder to the form
+
 		AclPermissionEntries entries = entityViewRequest.getCommand().getExtension( "aclPermissions" );
 
 		AclPermission[] permissions =
