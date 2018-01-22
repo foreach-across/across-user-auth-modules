@@ -20,38 +20,30 @@ import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.spring.security.acl.business.AclPermission;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.services.AclOperations;
 import com.foreach.across.modules.spring.security.acl.services.AclPermissionFactory;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.acl.support.AclUtils;
+import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
-import lombok.*;
-import org.springframework.beans.factory.ObjectProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
-
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
-import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;
+import java.util.function.Function;
 
 /**
  * View processor for an ACL permissions form.
@@ -63,6 +55,7 @@ import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;
 @ConditionalOnClass(EntityViewProcessor.class)
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("WeakerAccess")
 public class AclPermissionsFormViewProcessor extends EntityViewProcessorAdapter
 {
 	/**
@@ -71,74 +64,67 @@ public class AclPermissionsFormViewProcessor extends EntityViewProcessorAdapter
 	 */
 	public static final String VIEW_NAME = "aclPermissions";
 
-	private static final String EXTENSION = "aclPermissionController";
+	/**
+	 * Name of the extension holding the {@code AclPermissionsFormController}.
+	 */
+	public static final String CONTROLLER_EXTENSION = "aclPermissions";
 
-	private final ObjectProvider<EntityRegistry> entityRegistry;
 	private final AclSecurityService aclSecurityService;
-	//private final EntityViewElementBuilderService elementBuilderService;
-
 	private final AclPermissionFactory permissionFactory;
 	private final AclPermissionsFormRegistry permissionsFormRegistry;
+	private final EntityAclPermissionsFormSectionAdapter entitySectionAdapter;
 
 	@Override
 	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
-		// retrieve the form for the entity
 		EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
-		Optional<AclPermissionsForm> formHolder = permissionsFormRegistry.getForEntityConfiguration( entityConfiguration );
+		AclPermissionsForm permissionsForm = permissionsFormRegistry
+				.getForEntityConfiguration( entityConfiguration )
+				.orElseThrow( () -> new IllegalStateException( "No ACL permissions form registered for " + entityConfiguration.getName() ) );
 
-		// retrieve the acl and create the acl operations
+		AclPermissionsForm adaptedForm = adaptAclPermissionsForm( permissionsForm );
 
-		// create the controller and register it as an extension
+		MutableAcl acl = retrieveAcl( adaptedForm, entityConfiguration, entityViewRequest.getEntityViewContext().getEntity() );
+		AclOperations aclOperations = aclSecurityService.createAclOperations( acl );
 
-		// TODO: custom object identity
-		// TODO: default parent on creation (what to do?)
-		// TODO: avoid auto-creation, make it an extra step
-
-		//new AclPermissionsFormController( aclOperations, permissionsForm )
-
-		/*
-		Persistable entity = entityViewRequest.getEntityViewContext().getEntity( Persistable.class );
-		ObjectIdentity identity = AclUtils.objectIdentity( entity );
-		MutableAcl acl = aclSecurityService.getAcl( identity );
-
-		if ( acl == null ) {
-			acl = aclSecurityService.createAclWithParent( identity, null );
-		}
-
-		command.addExtension( "aclPermissions", new AclPermissionEntries( acl ) );*/
+		command.addExtension( CONTROLLER_EXTENSION, new AclPermissionsFormController( aclOperations, adaptedForm ) );
 	}
 
+	protected MutableAcl retrieveAcl( AclPermissionsForm permissionsForm, EntityConfiguration entityConfiguration, Object entity ) {
+		ObjectIdentity objectIdentity = createObjectIdentity( entityConfiguration, entity );
+		MutableAcl acl = aclSecurityService.getAcl( objectIdentity );
+
+		if ( acl == null ) {
+			acl = aclSecurityService.createAclWithParent( objectIdentity, null );
+		}
+
+		return acl;
+	}
+
+	@SuppressWarnings("unchecked")
 	protected ObjectIdentity createObjectIdentity( EntityConfiguration entityConfiguration, Object entity ) {
-		return null;
+		Function<Object, ObjectIdentity> identityResolver
+				= (Function<Object, ObjectIdentity>) entityConfiguration.getAttribute( ObjectIdentity.class.getName(), Function.class );
+
+		return identityResolver != null ? identityResolver.apply( entity ) : AclUtils.objectIdentity( entity );
+	}
+
+	@Override
+	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addWithKey(
+				WebResource.JAVASCRIPT_PAGE_END, SpringSecurityAclModule.NAME, "/static/SpringSecurityAclModule/js/spring-security-acl-module.js",
+				WebResource.VIEWS
+		);
 	}
 
 	@Override
 	protected void doPost( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command, BindingResult bindingResult ) {
+		AclPermissionsFormController controller = command.getExtension( CONTROLLER_EXTENSION );
 
-		// fetch the controller
-		// MutableAcl acl = controller.updateAclWithModel();
-		// save the acl
-		// set feedback message and ensure not redirected
-
-		AclPermissionEntries entries = command.getExtension( "aclPermissions" );
-		MutableAcl acl = entries.getAcl();
-
-		// sid, permissions, granted, denied
-		AclOperations operations = aclSecurityService.createAclOperations( acl );
-
-		entries.getEntries()
-		       .values()
-		       .forEach( entry -> {
-			       Sid sid = new PrincipalSid( entry.getId() );
-			       operations.apply(
-					       sid,
-					       new AclPermission[] { AclPermission.CREATE, AclPermission.READ, AclPermission.WRITE, AclPermission.DELETE,
-					                             AclPermission.ADMINISTRATION },
-					       entry.getPermissions()
-			       );
-		       } );
-
+		MutableAcl acl = controller.updateAclWithModel();
 		aclSecurityService.updateAcl( acl );
+
+		// set feedback message and ensure not redirected
+		//GlobalPageFeedbackViewProcessor.addFeedbackMessage(  )
 
 		entityView.setRedirectUrl( null );
 	}
@@ -149,82 +135,42 @@ public class AclPermissionsFormViewProcessor extends EntityViewProcessorAdapter
 	                       ContainerViewElementBuilderSupport<?, ?> containerBuilder,
 	                       ViewElementBuilderMap builderMap,
 	                       ViewElementBuilderContext builderContext ) {
-
 		// retrieve the controller
+		AclPermissionsFormController controller = entityViewRequest.getCommand().getExtension( CONTROLLER_EXTENSION );
+
 		// create the view element builder
-		// add the view element builder to the form
+		AclPermissionsFormViewElementBuilder elementBuilder
+				= new AclPermissionsFormViewElementBuilder( controller.getPermissionsForm(), controller.getAclOperations(), permissionFactory );
+		elementBuilder.setControlPrefix( "extensions[" + CONTROLLER_EXTENSION + "].model" );
 
-		AclPermissionEntries entries = entityViewRequest.getCommand().getExtension( "aclPermissions" );
-
-		AclPermission[] permissions =
-				new AclPermission[] { AclPermission.CREATE, AclPermission.READ, AclPermission.WRITE, AclPermission.DELETE, AclPermission.ADMINISTRATION };
-
-		val table = table();
-
-		val headerRow = tableRow().add( tableHeaderCell() );
-		Stream.of( permissions )
-		      .forEach( p -> headerRow.add( table.heading().add( text( p.getPattern() ) ) ) );
-		table.header().add( headerRow );
-
-		String prefix = "extensions[aclPermissions].entries";
-
-		AtomicInteger counter = new AtomicInteger();
-		AclOperations operations = aclSecurityService.createAclOperations( entries.getAcl() );
-
-		Stream.of( "anonymous", "registered user" )
-		      .forEach(
-				      principal -> {
-					      int index = counter.incrementAndGet();
-					      Sid sid = new PrincipalSid( principal );
-					      val row = table.row()
-					                     .add( table.cell().add( text( principal ) ) )
-					                     .add( hidden().controlName( prefix + "['" + index + "'].type" ).value( "principal" ) )
-					                     .add( hidden().controlName( prefix + "['" + index + "'].id" ).value( principal ) );
-
-					      Stream.of( permissions )
-					            .forEach( aclPermission -> row
-							            .add( table.cell().add(
-									            checkbox().controlName( prefix + "['" + index + "'].permissions" )
-									                      .unwrapped()
-									                      .value( aclPermission.getMask() )
-									                      .selected( operations.getAce( sid, aclPermission ).isPresent() )
-							            ) ) );
-
-					      table.body().add( row );
-				      }
-		      );
-
+		// add the view element builder to the form - delete default row with 2 columns (?)
 		builderMap.get( "entityForm", FormViewElementBuilder.class )
-		          .addFirst( table );
+		          .css( "acl-permissions-form" )
+		          .addFirst( elementBuilder );
 	}
 
-	@RequiredArgsConstructor
-	static class AclPermissionEntries
-	{
-		@Getter
-		private final Map<Integer, AclPermissionEntry> entries = new HashMap<>();
+	/**
+	 * Adapts the configured permissions form by creating a new instance with default methods where
+	 * the configured version has missing values and defaults are possible.
+	 * <p/>
+	 * This also validates the correctness of the configured form.
+	 *
+	 * @param permissionsForm original configured form
+	 * @return adapted version - should not have any missing properties
+	 */
+	protected AclPermissionsForm adaptAclPermissionsForm( AclPermissionsForm permissionsForm ) {
+		AclPermissionsForm.AclPermissionsFormBuilder adaptedForm = permissionsForm.toBuilder();
 
-		@Getter
-		private final MutableAcl acl;
+		adaptedForm.clearSections();
+		permissionsForm.getSections()
+		               .stream()
+		               .map( this::adaptAclPermissionsFormSection )
+		               .forEach( adaptedForm::section );
 
-		AclPermissionEntry createEntry() {
-			AclPermissionEntry entry = new AclPermissionEntry();
-			entries.put( entries.size() + 1, entry );
-			return entry;
-		}
-
-		int size() {
-			return entries.size();
-		}
+		return adaptedForm.build();
 	}
 
-	@Getter
-	@Setter
-	@NoArgsConstructor
-	public static class AclPermissionEntry
-	{
-		private String type;
-		private String id;
-		private int[] permissions;
+	protected AclPermissionsFormSection adaptAclPermissionsFormSection( AclPermissionsFormSection section ) {
+		return entitySectionAdapter.adapt( section );
 	}
 }

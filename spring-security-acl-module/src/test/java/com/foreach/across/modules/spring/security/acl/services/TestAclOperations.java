@@ -215,6 +215,18 @@ public class TestAclOperations
 	}
 
 	@Test
+	public void applyIgnoresAnyUndefinedPermissions() {
+		operations.allow( john, READ, WRITE );
+		operations.deny( joe, ADMINISTRATION );
+		operations.apply( john, new Permission[] { READ, CREATE }, new int[] { ADMINISTRATION.getMask(), -DELETE.getMask() } );
+
+		assertAcl(
+				granted( john, WRITE ),
+				denied( joe, ADMINISTRATION )
+		);
+	}
+
+	@Test
 	@SuppressWarnings("all")
 	public void getAce() {
 		operations.allow( john, READ );

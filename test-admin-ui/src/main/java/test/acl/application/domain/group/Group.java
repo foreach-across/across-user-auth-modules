@@ -16,6 +16,7 @@
 
 package test.acl.application.domain.group;
 
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -41,7 +42,7 @@ import java.util.Collection;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 @Builder
-public class Group implements Persistable<Long>, SecurityPrincipal, Serializable
+public class Group implements Persistable<Long>, SecurityPrincipal, IdBasedEntity, Serializable
 {
 	@Id
 	@GeneratedValue

@@ -19,6 +19,10 @@ package test.acl.application.installers;
 import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
+import com.foreach.across.modules.spring.security.acl.business.AclPermission;
+import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.infrastructure.services.CloseableAuthentication;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import test.acl.application.domain.customer.Customer;
@@ -40,6 +44,9 @@ public class TestDataInstaller
 	private final GroupRepository groupRepository;
 	private final CustomerRepository customerRepository;
 
+	private final AclSecurityService aclSecurityService;
+	private final SecurityPrincipalService securityPrincipalService;
+
 	@Order(1)
 	@InstallerMethod
 	public void createUsers() {
@@ -53,6 +60,7 @@ public class TestDataInstaller
 	public void createGroups() {
 		groupRepository.save( Group.builder().name( "Doe Family" ).build() );
 		groupRepository.save( Group.builder().name( "Movie Stars" ).build() );
+		groupRepository.save( Group.builder().name( "Managers" ).build() );
 	}
 
 	@Order(3)
@@ -60,5 +68,27 @@ public class TestDataInstaller
 	public void createCustomers() {
 		customerRepository.save( Customer.builder().name( "Foreach" ).build() );
 		customerRepository.save( Customer.builder().name( "Google" ).build() );
+	}
+
+	@Order(4)
+	@InstallerMethod
+	public void buildSampleAcls() {
+		try (CloseableAuthentication ignore = securityPrincipalService.authenticate( User.builder().name( "system" ).build() )) {
+			aclSecurityService.allow(
+					userRepository.findOneByName( "John Doe" ),
+					groupRepository.findOneByName( "Doe Family" ),
+					AclPermission.READ, AclPermission.WRITE
+			);
+			aclSecurityService.allow(
+					groupRepository.findOneByName( "Movie Stars" ),
+					groupRepository.findOneByName( "Doe Family" ),
+					AclPermission.ADMINISTRATION
+			);
+			aclSecurityService.allow(
+					groupRepository.findOneByName( "Managers" ),
+					groupRepository.findOneByName( "Doe Family" ),
+					AclPermission.WRITE, AclPermission.DELETE
+			);
+		}
 	}
 }

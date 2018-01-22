@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 		classes = AdminUiApplication.class,
 		properties = {
 				"acrossHibernate.generate-ddl=true",
+				"spring.datasource.url=jdbc:h2:mem:test-admin-ui"
 		}
 )
 public class TestAdminUiApplication

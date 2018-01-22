@@ -16,9 +16,9 @@
 
 package com.foreach.across.modules.spring.security.acl.ui;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
+
+import java.util.List;
 
 /**
  * Represents an ACL permissions form to be rendered for an entity.
@@ -31,6 +31,8 @@ import lombok.NonNull;
  */
 @Getter
 @Builder(toBuilder = true)
+@EqualsAndHashCode
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AclPermissionsForm
 {
 	/**
@@ -43,6 +45,38 @@ public class AclPermissionsForm
 	 */
 	@NonNull
 	private String menuPath;
+
+	/**
+	 * Sections in this form.
+	 */
+	@Singular
+	@NonNull
+	private List<AclPermissionsFormSection> sections;
+
+	/**
+	 * Get the section with the name.
+	 * Will return {@code null} if not found.
+	 *
+	 * @param name of the section
+	 * @return section or null
+	 */
+	public AclPermissionsFormSection getSectionWithName( @NonNull String name ) {
+		return sections.stream().filter( section -> name.equals( section.getName() ) ).findFirst().orElse( null );
+	}
+
+	/**
+	 * @return a builder for an {@link AclPermissionsFormSection}
+	 */
+	public static AclPermissionsFormSection.AclPermissionsFormSectionBuilder section() {
+		return AclPermissionsFormSection.builder();
+	}
+
+	/**
+	 * @return a builder for creating a custom new item selector control, to be attached to a {@link AclPermissionsFormSection}
+	 */
+	public static AclPermissionsFormItemSelectorControl selectorControl() {
+		return new AclPermissionsFormItemSelectorControl();
+	}
 
 	@SuppressWarnings("all")
 	public static class AclPermissionsFormBuilder

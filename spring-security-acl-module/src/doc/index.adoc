@@ -62,6 +62,9 @@ This module has no specific settings.
 ** the 5 default permissions take up half of these positions
 ** applications or non-shared modules should create custom permissions on the positions > 10
 * `AclPermission` has some helper methods for easily creating custom permissions: `create()` and `combine()`, with validation regarding the reserved bit range
+* AclPermissionForm
+** registry for registration
+** ObjectIdentity.class.getName() attribute for custom identity resolver
 
 === 2.0.1.RELEASE
 * added support for H2 database

@@ -18,7 +18,11 @@ package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.modules.spring.security.acl.services.AclOperations;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.Sid;
 
@@ -41,9 +45,14 @@ public final class AclPermissionsFormController
 	@Getter
 	private final AclPermissionsForm permissionsForm;
 
+	@Getter
+	private final Map<String, ModelEntry> model = new HashMap<>();
+
 	/**
 	 * Metadata cache for {@link Sid} instances. The metadata stored in the cache is usually
 	 * the full principal (eg. entity). Using the cache avoids the same information having to be fetched more than once.
+	 * <p/>
+	 * The controller only fills up the cache.
 	 */
 	@Getter
 	private final Map<Sid, Object> sidCache = new HashMap<>();
@@ -56,6 +65,49 @@ public final class AclPermissionsFormController
 	 * @return acl after the changes have been applied
 	 */
 	public MutableAcl updateAclWithModel() {
+		model.values()
+		     .stream()
+		     .filter( ModelEntry::isValid )
+		     .forEach( entry -> {
+			     AclPermissionsFormSection section = permissionsForm.getSectionWithName( entry.getSection() );
+			     if ( section != null ) {
+				     Sid sid = resolveSid( section, entry );
+				     if ( sid != null ) {
+					     aclOperations.apply(
+							     sid,
+							     section.getPermissionsSupplier().get(),
+							     ArrayUtils.toPrimitive( entry.getPermissions() )
+					     );
+				     }
+			     }
+		     } );
+
 		return aclOperations.getAcl();
+	}
+
+	private Sid resolveSid( AclPermissionsFormSection section, ModelEntry entry ) {
+		Object sidTarget = section.getObjectForTransportIdResolver().apply( entry.getId() );
+		if ( sidTarget != null ) {
+			Sid sid = section.getSidForObjectResolver().apply( sidTarget );
+			sidCache.put( sid, sidTarget );
+			return section.getSidMatcher().test( sid, sidTarget ) ? sid : null;
+		}
+
+		return null;
+	}
+
+	@Getter
+	@Setter
+	@NoArgsConstructor
+	@SuppressWarnings("WeakerAccess")
+	public static class ModelEntry
+	{
+		private String section;
+		private String id;
+		private Integer[] permissions;
+
+		boolean isValid() {
+			return !StringUtils.isEmpty( section ) && !StringUtils.isEmpty( id );
+		}
 	}
 }

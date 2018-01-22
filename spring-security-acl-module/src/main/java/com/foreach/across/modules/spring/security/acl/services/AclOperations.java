@@ -225,6 +225,7 @@ public class AclOperations
 	 * a negative mask number will result in an explicit deny.
 	 * If any of the original permissions is missing from the masks
 	 * collection (either with allow or deny value), it will be revoked.
+	 * If a mask is missing from the original permissions, it will be ignored.
 	 *
 	 * @param sid         to modify the ACL for
 	 * @param permissions that were checked
@@ -240,6 +241,7 @@ public class AclOperations
 	 * a negative mask number will result in an explicit deny.
 	 * If any of the original permissions is missing from the masks
 	 * collection (either with allow or deny value), it will be revoked.
+	 * * If a mask is missing from the original permissions, it will be ignored.
 	 *
 	 * @param sid         to modify the ACL for
 	 * @param permissions that were checked
@@ -251,11 +253,15 @@ public class AclOperations
 		List<Permission> revoked = new ArrayList<>( permissions.size() );
 
 		for ( int mask : masks ) {
-			if ( mask < 0 ) {
-				denied.add( permissionFactory.buildFromMask( Math.abs( mask ) ) );
-			}
-			else {
-				allowed.add( permissionFactory.buildFromMask( mask ) );
+			Permission perm = permissionFactory.buildFromMask( Math.abs( mask ) );
+			// only allow permission changes if they were in the original set
+			if ( permissions.contains( perm ) ) {
+				if ( mask < 0 ) {
+					denied.add( perm );
+				}
+				else {
+					allowed.add( perm );
+				}
 			}
 		}
 
