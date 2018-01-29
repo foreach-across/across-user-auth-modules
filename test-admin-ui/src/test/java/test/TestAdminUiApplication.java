@@ -28,7 +28,7 @@ import test.acl.application.domain.customer.Customer;
 import test.acl.application.domain.group.Group;
 import test.acl.application.domain.user.User;
 
-import static com.foreach.across.modules.spring.security.acl.ui.AclPermissionsFormViewProcessor.VIEW_NAME;
+import static com.foreach.across.modules.spring.security.acl.ui.AclPermissionsForm.VIEW_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

@@ -41,6 +41,8 @@ import test.acl.application.domain.group.GroupRepository;
 import test.acl.application.domain.user.User;
 import test.acl.application.domain.user.UserRepository;
 
+import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
+
 /**
  * Sample configuration building ACL form profiles and registering to corresponding entities.
  *
@@ -57,7 +59,8 @@ class AclFormConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Customer.class )
-		        .attribute( AclPermissionsFormRegistry.ATTR_ACL_PROFILE, "with-anonymous" );
+		        .attribute( AclPermissionsFormRegistry.ATTR_ACL_PROFILE, "with-anonymous" )
+		        .view( AclPermissionsForm.VIEW_NAME, basicSettings().adminMenu( "/advanced-options/aclPermissions" ) );
 
 		entities.withType( Group.class )
 		        .attribute( AclPermissionsFormRegistry.ATTR_ACL_PROFILE, "group-user" );
@@ -142,7 +145,6 @@ class AclFormConfiguration implements EntityConfigurer
 										)
 										.build()
 						)
-						.menuPath( "/advanced-options/aclPermissions" )
 						.build()
 		);
 

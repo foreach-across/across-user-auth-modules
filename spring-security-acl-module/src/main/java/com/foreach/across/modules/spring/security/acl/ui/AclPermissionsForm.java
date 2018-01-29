@@ -36,15 +36,20 @@ import java.util.List;
 public class AclPermissionsForm
 {
 	/**
+	 * Default menu path for the menu item created if an permissions form view is present.
+	 */
+	public static final String MENU_PATH = "/aclPermissions";
+
+	/**
+	 * Name of the ACL permissions view. Any {@code EntityConfiguration} with this view present will
+	 * automatically get a menu item added to that view.
+	 */
+	public static final String VIEW_NAME = "aclPermissions";
+
+	/**
 	 * Name of this form, used as a key in the message codes.
 	 */
 	private String name;
-
-	/**
-	 * Path of the menu item that should be created for this form.
-	 */
-	@NonNull
-	private String menuPath;
 
 	/**
 	 * Sections in this form.
@@ -76,11 +81,5 @@ public class AclPermissionsForm
 	 */
 	public static AclPermissionsFormItemSelectorControl selectorControl() {
 		return new AclPermissionsFormItemSelectorControl();
-	}
-
-	@SuppressWarnings("all")
-	public static class AclPermissionsFormBuilder
-	{
-		private String menuPath = "/aclPermissions";
 	}
 }

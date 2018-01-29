@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.processors.ExtensionViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -50,20 +50,15 @@ import java.util.function.Function;
  *
  * @author Arne Vandamme
  * @since 3.0.0
+ * @see AclPermissionsFormRegistry
  */
 @ConditionalOnAcrossModule(EntityModule.NAME)
 @ConditionalOnClass(EntityViewProcessor.class)
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings("WeakerAccess")
-public class AclPermissionsFormViewProcessor extends EntityViewProcessorAdapter
+public class AclPermissionsFormViewProcessor extends ExtensionViewProcessorAdapter<AclPermissionsFormController>
 {
-	/**
-	 * Name of the ACL permissions view. Any {@code EntityConfiguration} with this view present will
-	 * automatically get a menu item added to that view.
-	 */
-	public static final String VIEW_NAME = "aclPermissions";
-
 	/**
 	 * Name of the extension holding the {@code AclPermissionsFormController}.
 	 */
@@ -75,7 +70,14 @@ public class AclPermissionsFormViewProcessor extends EntityViewProcessorAdapter
 	private final EntityAclPermissionsFormSectionAdapter entitySectionAdapter;
 
 	@Override
-	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
+	protected String extensionName() {
+		return CONTROLLER_EXTENSION;
+	}
+
+	@Override
+	protected AclPermissionsFormController createExtension( EntityViewRequest entityViewRequest,
+	                                                        EntityViewCommand entityViewCommand,
+	                                                        WebDataBinder webDataBinder ) {
 		EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
 		AclPermissionsForm permissionsForm = permissionsFormRegistry
 				.getForEntityConfiguration( entityConfiguration )
@@ -83,13 +85,17 @@ public class AclPermissionsFormViewProcessor extends EntityViewProcessorAdapter
 
 		AclPermissionsForm adaptedForm = adaptAclPermissionsForm( permissionsForm );
 
-		MutableAcl acl = retrieveAcl( adaptedForm, entityConfiguration, entityViewRequest.getEntityViewContext().getEntity() );
+		MutableAcl acl = retrieveAcl( adaptedForm, entityConfiguration,
+		                              entityViewRequest.getEntityViewContext().getEntity() );
 		AclOperations aclOperations = aclSecurityService.createAclOperations( acl );
 
-		command.addExtension( CONTROLLER_EXTENSION, new AclPermissionsFormController( aclOperations, adaptedForm ) );
+		return new AclPermissionsFormController( aclOperations, adaptedForm );
 	}
 
-	protected MutableAcl retrieveAcl( AclPermissionsForm permissionsForm, EntityConfiguration entityConfiguration, Object entity ) {
+	@SuppressWarnings("unused")
+	protected MutableAcl retrieveAcl( AclPermissionsForm permissionsForm,
+	                                  EntityConfiguration entityConfiguration,
+	                                  Object entity ) {
 		ObjectIdentity objectIdentity = createObjectIdentity( entityConfiguration, entity );
 		MutableAcl acl = aclSecurityService.getAcl( objectIdentity );
 
@@ -103,23 +109,25 @@ public class AclPermissionsFormViewProcessor extends EntityViewProcessorAdapter
 	@SuppressWarnings("unchecked")
 	protected ObjectIdentity createObjectIdentity( EntityConfiguration entityConfiguration, Object entity ) {
 		Function<Object, ObjectIdentity> identityResolver
-				= (Function<Object, ObjectIdentity>) entityConfiguration.getAttribute( ObjectIdentity.class.getName(), Function.class );
+				= (Function<Object, ObjectIdentity>) entityConfiguration.getAttribute( ObjectIdentity.class.getName(),
+				                                                                       Function.class );
 
 		return identityResolver != null ? identityResolver.apply( entity ) : AclUtils.objectIdentity( entity );
 	}
 
 	@Override
-	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
+	protected void registerWebResources( EntityViewRequest entityViewRequest,
+	                                     EntityView entityView,
+	                                     WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.addWithKey(
-				WebResource.JAVASCRIPT_PAGE_END, SpringSecurityAclModule.NAME, "/static/SpringSecurityAclModule/js/spring-security-acl-module.js",
+				WebResource.JAVASCRIPT_PAGE_END, SpringSecurityAclModule.NAME,
+				"/static/SpringSecurityAclModule/js/spring-security-acl-module.js",
 				WebResource.VIEWS
 		);
 	}
 
 	@Override
-	protected void doPost( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command, BindingResult bindingResult ) {
-		AclPermissionsFormController controller = command.getExtension( CONTROLLER_EXTENSION );
-
+	protected void doPost( AclPermissionsFormController controller, BindingResult bindingResult, EntityView entityView, EntityViewRequest entityViewRequest ) {
 		MutableAcl acl = controller.updateAclWithModel();
 		aclSecurityService.updateAcl( acl );
 
@@ -130,17 +138,16 @@ public class AclPermissionsFormViewProcessor extends EntityViewProcessorAdapter
 	}
 
 	@Override
-	protected void render( EntityViewRequest entityViewRequest,
+	protected void render( AclPermissionsFormController controller,
+	                       EntityViewRequest entityViewRequest,
 	                       EntityView entityView,
 	                       ContainerViewElementBuilderSupport<?, ?> containerBuilder,
 	                       ViewElementBuilderMap builderMap,
 	                       ViewElementBuilderContext builderContext ) {
-		// retrieve the controller
-		AclPermissionsFormController controller = entityViewRequest.getCommand().getExtension( CONTROLLER_EXTENSION );
-
 		// create the view element builder
 		AclPermissionsFormViewElementBuilder elementBuilder
-				= new AclPermissionsFormViewElementBuilder( controller.getPermissionsForm(), controller.getAclOperations(), permissionFactory );
+				= new AclPermissionsFormViewElementBuilder( controller.getPermissionsForm(),
+				                                            controller.getAclOperations(), permissionFactory );
 		elementBuilder.setControlPrefix( "extensions[" + CONTROLLER_EXTENSION + "].model" );
 
 		// add the view element builder to the form - delete default row with 2 columns (?)
