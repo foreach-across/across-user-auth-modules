@@ -13,39 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+.acl-permissions-form-section {
+  margin-bottom: 35px;
 
-@import 'modules/_entity-query-filter-form';
-
-.sortable {
-  cursor: pointer;
-
-  :hover {
-    color: orange;
+  > table tbody {
+    border-bottom: solid 2px #ddd;
   }
 
-  span.caret {
-    display: none;
+  > table {
+    margin-bottom: 15px;
   }
-  &.dropup, &.dropdown {
-    span.caret {
+
+  .acl-permissions-form-selector {
+    .form-group {
       display: inline-block;
+      margin: 0 10px 0 0;
+      vertical-align: middle;
+
+      .control-label {
+        display: inline-block;
+        float: left;
+        line-height: 35px;
+        margin: 0 15px 0 0;
+        vertical-align: middle;
+      }
+
+      .form-control,
+      .form-control-static {
+        display: inline-block;
+        float: left;
+        margin: 0;
+        vertical-align: middle;
+        width: 340px;
+      }
     }
   }
+
+  .btn.acl-permissions-form-selector-button {
+    background-color: transparent;
+    border: 0;
+    display: inline-block;
+    padding: 6px 10px;
+  }
 }
 
-.table > thead > tr.odd {
-  background-color: #ffffff;
-}
 
-.pager-form {
-  color: black;
-}
-
-table > tbody > tr > td.row-actions {
-  text-align: right;
-  padding-left: 20px;
-  padding-right: 20px;
-  white-space: nowrap;
-}
 
 

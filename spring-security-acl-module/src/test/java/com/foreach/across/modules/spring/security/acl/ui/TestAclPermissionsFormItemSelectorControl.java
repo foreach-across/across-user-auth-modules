@@ -44,9 +44,10 @@ public class TestAclPermissionsFormItemSelectorControl extends AbstractViewEleme
 				                  .control( BootstrapUiBuilders.textbox() )
 				                  .attribute( "test", "value" )
 				                  .build( builderContext ),
-				"<div test='value'>" +
+				"<div class='acl-permissions-form-selector' test='value'>" +
 						"<input type='text' class='form-control' />" +
-						"<button type=\"button\" class=\"btn btn-default\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-plus-sign\"></span></button>" +
+						"<button type=\"button\" class=\"acl-permissions-form-selector-button btn btn-default\">" +
+						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-plus-sign\"></span></button>" +
 						"</div>"
 		);
 	}

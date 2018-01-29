@@ -119,7 +119,9 @@ class AclFormConfiguration implements EntityConfigurer
 										.transportIdForObjectResolver( user -> ( (User) user ).getName() )
 										.objectForTransportIdResolver( userRepository::findOneByName )
 										.objectLabelViewElementProvider( ( object, builderContext ) -> TextViewElement.text( ( (User) object ).getName() ) )
-										.itemSelectorBuilder( AclPermissionsForm.selectorControl().control( BootstrapUiBuilders.textbox() ) )
+										.itemSelectorBuilder( AclPermissionsForm.selectorControl().control(
+												BootstrapUiBuilders.formGroup().control( BootstrapUiBuilders.textbox() ) )
+										)
 										.build()
 						)
 						.build()
