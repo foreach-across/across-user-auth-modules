@@ -26,7 +26,6 @@ import com.foreach.across.modules.entity.views.processors.ExtensionViewProcessor
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.services.AclOperations;
 import com.foreach.across.modules.spring.security.acl.services.AclPermissionFactory;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
@@ -49,8 +48,8 @@ import java.util.function.Function;
  * View processor for an ACL permissions form.
  *
  * @author Arne Vandamme
- * @since 3.0.0
  * @see AclPermissionsFormRegistry
+ * @since 3.0.0
  */
 @ConditionalOnAcrossModule(EntityModule.NAME)
 @ConditionalOnClass(EntityViewProcessor.class)
@@ -120,8 +119,13 @@ public class AclPermissionsFormViewProcessor extends ExtensionViewProcessorAdapt
 	                                     EntityView entityView,
 	                                     WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.addWithKey(
-				WebResource.JAVASCRIPT_PAGE_END, SpringSecurityAclModule.NAME,
-				"/static/SpringSecurityAclModule/js/spring-security-acl-module.js",
+				WebResource.JAVASCRIPT_PAGE_END, AclPermissionsFormViewProcessor.class.getName(),
+				"/static/SpringSecurityAclModule/js/acl-permissions-form-controller.js",
+				WebResource.VIEWS
+		);
+		webResourceRegistry.addWithKey(
+				WebResource.CSS, AclPermissionsFormViewProcessor.class.getName(),
+				"/static/SpringSecurityAclModule/css/acl-permissions-form-controller.css",
 				WebResource.VIEWS
 		);
 	}

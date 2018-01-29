@@ -6,6 +6,12 @@
       <item index="1" class="java.lang.String" itemvalue="org.springframework.stereotype.Component" />
     </list>
   </component>
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <type id="Spring" />
+  </component>
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="ES6" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>

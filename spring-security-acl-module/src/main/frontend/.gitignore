@@ -1,0 +1,12 @@
+node
+node_modules/
+js/
+.idea/
+*.iml
+css/**/*.css
+svg/
+styleguide-tmp/
+frontend-resources
+frontend-resources.zip
+.gradle
+.DS_Store

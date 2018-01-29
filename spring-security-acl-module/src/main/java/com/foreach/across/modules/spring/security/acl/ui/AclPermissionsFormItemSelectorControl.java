@@ -70,16 +70,21 @@ public final class AclPermissionsFormItemSelectorControl extends AbstractNodeVie
 		Assert.notNull( control, "An AclPermissionsFormItemSelectorControl requires a control property" );
 
 		NodeViewElement row = new NodeViewElement( "div" );
+		row.addCssClass( "acl-permissions-form-selector" );
 
 		ViewElement actualControl = control.build( builderContext );
 		Assert.notNull( actualControl, "An AclPermissionsFormItemSelectorControl requires a valid control" );
 
 		FormControlElement formControl = BootstrapElementUtils.getFormControl( actualControl );
 
-		row.addChild( actualControl );
+		if ( formControl != null ) {
+			row.addChild( actualControl );
+		}
 
 		ButtonViewElement button = new ButtonViewElement();
+		button.addCssClass( "acl-permissions-form-selector-button" );
 		button.setIcon( new GlyphIcon( GlyphIcon.PLUS_SIGN ) );
+
 		row.addChild( button );
 
 		return apply( row, builderContext );
