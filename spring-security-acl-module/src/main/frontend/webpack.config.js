@@ -25,13 +25,13 @@ export default {
   "cache": true,
   "context": path.join( __dirname, config.js.src ),
   "entry": {
-    "acl-permissions-form-controller": "./acl-permissions-form-controller.js",
+    "acl-permissions-form-controller.js": "./acl-permissions-form-controller.js",
   },
   "output": {
     "path": path.join( __dirname, config.js.dest ),
     "publicPath": "http://localhost:3000/js/",
-    "filename": "[name].js"
-    //"chunkFilename": "[name].chunk.[chunkhash].js"
+    "filename": "[name]",
+    "chunkFilename": "[name].chunk.[chunkhash].js"
   },
   "resolve": {
     "modules": [
