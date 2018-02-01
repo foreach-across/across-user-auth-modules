@@ -17,12 +17,17 @@
 package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.core.annotations.PostRefresh;
+import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
+import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.ExtensionViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -33,6 +38,7 @@ import com.foreach.across.modules.spring.security.acl.support.AclUtils;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -41,6 +47,7 @@ import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.function.Function;
 
@@ -68,6 +75,13 @@ public class AclPermissionsFormViewProcessor extends ExtensionViewProcessorAdapt
 	private final AclPermissionsFormRegistry permissionsFormRegistry;
 	private final EntityAclPermissionsFormSectionAdapter entitySectionAdapter;
 
+	private EntityViewPageHelper entityViewPageHelper;
+
+	@PostRefresh
+	public void setEntityViewPageHelper( EntityViewPageHelper entityViewPageHelper ) {
+		this.entityViewPageHelper = entityViewPageHelper;
+	}
+
 	@Override
 	protected String extensionName() {
 		return CONTROLLER_EXTENSION;
@@ -88,7 +102,7 @@ public class AclPermissionsFormViewProcessor extends ExtensionViewProcessorAdapt
 		                              entityViewRequest.getEntityViewContext().getEntity() );
 		AclOperations aclOperations = aclSecurityService.createAclOperations( acl );
 
-		return new AclPermissionsFormController( aclOperations, adaptedForm );
+		return new AclPermissionsFormController( aclOperations, new AclPermissionsFormData( adaptedForm ) );
 	}
 
 	@SuppressWarnings("unused")
@@ -135,10 +149,14 @@ public class AclPermissionsFormViewProcessor extends ExtensionViewProcessorAdapt
 		MutableAcl acl = controller.updateAclWithModel();
 		aclSecurityService.updateAcl( acl );
 
-		// set feedback message and ensure not redirected
-		//GlobalPageFeedbackViewProcessor.addFeedbackMessage(  )
+		entityViewPageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.SUCCESS, "feedback.permissionsUpdated" );
 
-		entityView.setRedirectUrl( null );
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		entityView.setRedirectUrl(
+				UriComponentsBuilder.fromUriString( entityViewContext.getLinkBuilder().update( entityViewContext.getEntity() ) )
+				                    .queryParam( "view", entityViewRequest.getViewName() )
+				                    .toUriString()
+		);
 	}
 
 	@Override
@@ -150,14 +168,26 @@ public class AclPermissionsFormViewProcessor extends ExtensionViewProcessorAdapt
 	                       ViewElementBuilderContext builderContext ) {
 		// create the view element builder
 		AclPermissionsFormViewElementBuilder elementBuilder
-				= new AclPermissionsFormViewElementBuilder( controller.getPermissionsForm(),
-				                                            controller.getAclOperations(), permissionFactory );
-		elementBuilder.setControlPrefix( "extensions[" + CONTROLLER_EXTENSION + "].model" );
+				= new AclPermissionsFormViewElementBuilder( controller.getFormData(), controller.getAclOperations(), permissionFactory );
+		elementBuilder.setControlPrefix( controlPrefix() + ".model" );
 
 		// add the view element builder to the form - delete default row with 2 columns (?)
 		builderMap.get( "entityForm", FormViewElementBuilder.class )
 		          .css( "acl-permissions-form" )
 		          .addFirst( elementBuilder );
+	}
+
+	@Override
+	protected void postRender( AclPermissionsFormController extension,
+	                           EntityViewRequest entityViewRequest,
+	                           EntityView entityView,
+	                           ContainerViewElement container,
+	                           ViewElementBuilderContext builderContext ) {
+		container.find( "btn-cancel", ButtonViewElement.class )
+		         .ifPresent( button -> {
+			         EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+			         button.setUrl( entityViewContext.getLinkBuilder().update( entityViewContext.getEntity() ) );
+		         } );
 	}
 
 	/**

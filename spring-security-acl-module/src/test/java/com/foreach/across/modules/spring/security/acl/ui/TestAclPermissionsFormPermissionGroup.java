@@ -20,34 +20,17 @@ import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-/**
- * @author Arne Vandamme
- * @since 3.0.0
- */
-public class TestAclPermissionsFormSection
+public class TestAclPermissionsFormPermissionGroup
 {
 	@Test
-	public void defaultValues() {
-		assertThatExceptionOfType( IllegalArgumentException.class )
-				.isThrownBy( () -> AclPermissionsFormSection.builder().build() )
-				.withMessage( "name is null" );
-	}
-
-	@Test
 	public void permissions() {
-		AclPermissionsFormSection section = AclPermissionsFormSection
+		AclPermissionsFormPermissionGroup group = AclPermissionsFormPermissionGroup
 				.builder()
-				.name( "my-section" )
 				.permissions( AclPermission.READ, AclPermission.WRITE )
 				.build();
 
-		assertThat( section.getPermissionGroupsSupplier() ).isNotNull();
-		assertThat( section.getPermissionGroupsSupplier().get() )
-				.hasSize( 1 )
-				.satisfies(
-						group -> assertThat( group[0].getPermissionsSupplier().get() ).containsExactly( AclPermission.READ, AclPermission.WRITE )
-				);
+		assertThat( group.getPermissionsSupplier() ).isNotNull();
+		assertThat( group.getPermissionsSupplier().get() ).containsExactly( AclPermission.READ, AclPermission.WRITE );
 	}
 }

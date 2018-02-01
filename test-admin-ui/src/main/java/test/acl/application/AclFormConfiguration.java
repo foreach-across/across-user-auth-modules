@@ -42,6 +42,7 @@ import test.acl.application.domain.user.User;
 import test.acl.application.domain.user.UserRepository;
 
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
+import static com.foreach.across.modules.spring.security.acl.ui.AclPermissionsForm.permissionGroup;
 
 /**
  * Sample configuration building ACL form profiles and registering to corresponding entities.
@@ -87,12 +88,18 @@ class AclFormConfiguration implements EntityConfigurer
 				"group-user",
 				AclPermissionsForm
 						.builder()
+						.name( "group-user" )
 						.section(
 								AclPermissionsFormSection
 										.builder()
 										.name( "group" )
 										.entityType( Group.class )
-										.permissionsSupplier( () -> new Permission[] { AclPermission.READ, AclPermission.WRITE, AclPermission.DELETE } )
+										.permissionGroups(
+												permissionGroup( "" )
+														.permissionsSupplier( () -> new Permission[] { AclPermission.READ, AclPermission.WRITE,
+														                                               AclPermission.DELETE } )
+														.build()
+										)
 										/*
 										.sidMatcher( ( sid, entity ) -> entity instanceof Group )
 										.sidForObjectResolver( group -> new PrincipalSid( ( (Group) group ).getPrincipalName() ) )
@@ -109,8 +116,17 @@ class AclFormConfiguration implements EntityConfigurer
 								AclPermissionsFormSection
 										.builder()
 										.name( "user" )
-										.permissions( AclPermission.CREATE, AclPermission.READ, AclPermission.WRITE, AclPermission.DELETE,
-										              AclPermission.ADMINISTRATION )
+										.permissionGroups(
+												permissionGroup( "create" )
+														.permissions( AclPermission.CREATE )
+														.build(),
+												permissionGroup( "read-write" )
+														.permissions( AclPermission.READ, AclPermission.WRITE )
+														.build(),
+												permissionGroup( "" )
+														.permissions( AclPermission.DELETE, AclPermission.ADMINISTRATION )
+														.build()
+										)
 										.sidMatcher( ( sid, entity ) -> entity instanceof User )
 										.sidForObjectResolver( user -> new PrincipalSid( ( (User) user ).getPrincipalName() ) )
 										.objectForSidResolver(
@@ -136,7 +152,7 @@ class AclFormConfiguration implements EntityConfigurer
 								AclPermissionsFormSection
 										.builder()
 										.name( "global" )
-										.permissionsSupplier( () -> new Permission[] { AclPermission.READ, AclPermission.WRITE } )
+										.permissions( AclPermission.READ, AclPermission.WRITE )
 										.sidMatcher( ( sid, entity ) -> sid instanceof GrantedAuthoritySid )
 										.sidForObjectResolver( object -> (Sid) object )
 										.objectForSidResolver( sid -> sid )

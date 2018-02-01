@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unchecked")
 public class TestEntityAclPermissionsFormSectionAdapter
 {
-	private AclPermissionsFormSection empty = AclPermissionsForm.section().name( "user" ).entityType( String.class ).build();
+	private AclPermissionsFormSection empty = AclPermissionsForm.section( "user" ).entityType( String.class ).permissions().build();
 
 	@Mock
 	private EntityConfiguration entityConfiguration;

@@ -31,14 +31,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Represents a single section of an ACL permissionsSupplier form for an entity.
- * Requires a unique name and a permissions supplier.
+ * Represents a single section of an ACL permissions form for an entity.
+ * Requires a unique name and a {@link AclPermissionsFormPermissionGroup} supplier.
  * <p/>
  * Allows for full customization of every element of a section, but most can be
  * left empty and will get default values when executed by the {@link AclPermissionsFormViewProcessor}.
  *
  * @author Arne Vandamme
  * @see AclPermissionsForm
+ * @see AclPermissionsFormPermissionGroup
  * @since 3.0.0
  */
 @Getter
@@ -62,11 +63,10 @@ public class AclPermissionsFormSection
 	private final Class<?> entityType;
 
 	/**
-	 * Supplier that will return the set of {@link Permission} that should be selectable on this section.
-	 * Note that all permissionsSupplier must be registered with the {@link com.foreach.across.modules.spring.security.acl.services.AclPermissionFactory}
-	 * to be able to select them.
+	 * Supplier that will return the set of {@link AclPermissionsFormPermissionGroup} that should be selectable on this section.
 	 */
-	private final Supplier<Permission[]> permissionsSupplier;
+	@NonNull
+	private final Supplier<AclPermissionsFormPermissionGroup[]> permissionGroupsSupplier;
 
 	/**
 	 * Function that resolves an {@link Sid} to the actual object.
@@ -130,10 +130,18 @@ public class AclPermissionsFormSection
 	@SuppressWarnings("unused")
 	public static class AclPermissionsFormSectionBuilder
 	{
-		private Supplier<Permission[]> permissionsSupplier = () -> new Permission[0];
-
+		/**
+		 * Creates a single unnamed permission group with the following permissions.
+		 *
+		 * @param permissions to set in the group
+		 * @return current builder
+		 */
 		public AclPermissionsFormSectionBuilder permissions( Permission... permissions ) {
-			return permissionsSupplier( () -> permissions );
+			return permissionGroups( AclPermissionsFormPermissionGroup.builder().permissions( permissions ).build() );
+		}
+
+		public AclPermissionsFormSectionBuilder permissionGroups( AclPermissionsFormPermissionGroup... permissionGroups ) {
+			return permissionGroupsSupplier( () -> permissionGroups );
 		}
 	}
 }

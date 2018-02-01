@@ -43,23 +43,14 @@ public final class AclPermissionsFormController
 	private final AclOperations aclOperations;
 
 	@Getter
-	private final AclPermissionsForm permissionsForm;
+	private final AclPermissionsFormData formData;
 
 	@Getter
 	private final Map<String, ModelEntry> model = new HashMap<>();
 
 	/**
-	 * Metadata cache for {@link Sid} instances. The metadata stored in the cache is usually
-	 * the full principal (eg. entity). Using the cache avoids the same information having to be fetched more than once.
-	 * <p/>
-	 * The controller only fills up the cache.
-	 */
-	@Getter
-	private final Map<Sid, Object> sidCache = new HashMap<>();
-
-	/**
 	 * Apply the model set on this controller to the {@link #aclOperations}.
-	 * This will take into account the configured {@link #permissionsForm} and will only allow permission
+	 * This will take into account the configured {@link #formData} and will only allow permission
 	 * changes that were present on the form section that applies for a particular sid.
 	 *
 	 * @return acl after the changes have been applied
@@ -69,13 +60,13 @@ public final class AclPermissionsFormController
 		     .stream()
 		     .filter( ModelEntry::isValid )
 		     .forEach( entry -> {
-			     AclPermissionsFormSection section = permissionsForm.getSectionWithName( entry.getSection() );
+			     AclPermissionsFormSection section = formData.getSectionWithName( entry.getSection() );
 			     if ( section != null ) {
 				     Sid sid = resolveSid( section, entry );
 				     if ( sid != null ) {
 					     aclOperations.apply(
 							     sid,
-							     section.getPermissionsSupplier().get(),
+							     formData.getPermissionsForSection( section ),
 							     ArrayUtils.toPrimitive( entry.getPermissions() )
 					     );
 				     }
@@ -89,7 +80,7 @@ public final class AclPermissionsFormController
 		Object sidTarget = section.getObjectForTransportIdResolver().apply( entry.getId() );
 		if ( sidTarget != null ) {
 			Sid sid = section.getSidForObjectResolver().apply( sidTarget );
-			sidCache.put( sid, sidTarget );
+			formData.getSidCache().put( sid, sidTarget );
 			return section.getSidMatcher().test( sid, sidTarget ) ? sid : null;
 		}
 

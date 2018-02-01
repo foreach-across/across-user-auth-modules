@@ -16,12 +16,74 @@
 .acl-permissions-form-section {
   margin-bottom: 35px;
 
-  > table tbody {
-    border-bottom: solid 2px #ddd;
-  }
-
   > table {
     margin-bottom: 15px;
+
+    tbody {
+      border-bottom: solid 2px #ddd;
+    }
+  }
+
+  .acl-permissions-form-group-header-row .tooltip-link,
+  .acl-permissions-form-permission-header-row .tooltip-link {
+    margin-left: 4px;
+  }
+
+  .acl-permissions-form-group-header-row th {
+    border-bottom: solid 1px #ddd;
+    text-align: center;
+
+    &:first-child:empty {
+      border-bottom: 0;
+    }
+
+    &.acl-permissions-form-first-of-group {
+      border-left: 0;
+    }
+  }
+
+  .acl-permissions-form-remove-item {
+    text-align: center;
+    width: 50px;
+    a {
+      display: none;
+    }
+  }
+
+  .acl-permissions-form-permission-header-row {
+    th:first-child {
+      min-width: 150px;
+    }
+  }
+
+  .acl-permissions-form-item-row {
+    td:first-child {
+      min-width: 150px;
+    }
+
+    &:hover {
+      .acl-permissions-form-remove-item a {
+        display: inline-block;
+      }
+    }
+  }
+
+  .acl-permissions-form-permission-header-row th {
+    border-top: 0;
+    text-align: center;
+  }
+
+  .acl-permissions-form-first-of-group {
+    border-left: dotted 1px #ddd;
+  }
+
+  .acl-permissions-form-permission-toggle {
+    text-align: center;
+  }
+
+  .table-striped tr.acl-permissions-form-no-entries-row {
+    background-color: #f4f4f4;
+    color: #666;
   }
 
   .acl-permissions-form-selector {

@@ -36,6 +36,12 @@ import java.util.List;
 public class AclPermissionsForm
 {
 	/**
+	 * Name of the {@link com.foreach.across.modules.entity.registry.EntityConfiguration} attribute that contains the name
+	 * of the form profile to use for the ACL permissions form.
+	 */
+	public static final String ATTR_PROFILE_NAME = AclPermissionsFormRegistry.ATTR_ACL_PROFILE;
+
+	/**
 	 * Default menu path for the menu item created if an permissions form view is present.
 	 */
 	public static final String MENU_PATH = "/aclPermissions";
@@ -49,7 +55,8 @@ public class AclPermissionsForm
 	/**
 	 * Name of this form, used as a key in the message codes.
 	 */
-	private String name;
+	@Builder.Default
+	private String name = "default";
 
 	/**
 	 * Sections in this form.
@@ -70,10 +77,18 @@ public class AclPermissionsForm
 	}
 
 	/**
+	 * @param sectionName name of the section
 	 * @return a builder for an {@link AclPermissionsFormSection}
 	 */
-	public static AclPermissionsFormSection.AclPermissionsFormSectionBuilder section() {
-		return AclPermissionsFormSection.builder();
+	public static AclPermissionsFormSection.AclPermissionsFormSectionBuilder section( String sectionName ) {
+		return AclPermissionsFormSection.builder().name( sectionName );
+	}
+
+	/**
+	 * @return a builder for a {@link AclPermissionsFormPermissionGroup}
+	 */
+	public static AclPermissionsFormPermissionGroup.AclPermissionsFormPermissionGroupBuilder permissionGroup( String groupName ) {
+		return AclPermissionsFormPermissionGroup.builder().name( groupName );
 	}
 
 	/**

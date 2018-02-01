@@ -74,6 +74,8 @@ class AclPermissionsFormController {
     this.selectorRow = this.section.find( '.acl-permissions-form-selector' );
     this.selectorButton = this.selectorRow.find( '.acl-permissions-form-selector-button' );
 
+    this.section.find( '.acl-permissions-form-remove-item a' ).on( 'click', e => this.removeItem( e ) );
+
     if ( !this.selectorButton ) {
       console.warn( "Expected button with class acl-permissions-form-selector-button was not found." );
     }
@@ -129,10 +131,10 @@ class AclPermissionsFormController {
     if ( selector ) {
       let value = selector.value;
       if ( value && value.id && value.id !== '' ) {
-
         let table = this.section.find( 'table' );
-        if ( table.find( 'input[name$=".id"][value="' + value.id + '"]' ).length === 0 ) {
-          let templateRow = $( 'tr.hidden', table ).clone();
+        let existing = table.find( 'input[name$=".id"][value="' + value.id + '"]' );
+        if ( existing.length === 0 ) {
+          let templateRow = $( 'tr.acl-permissions-form-template-row', table ).clone();
           templateRow.removeClass( 'hidden' );
 
           let index = Date.now();
@@ -146,13 +148,42 @@ class AclPermissionsFormController {
           templateRow.find( 'input[name$=".id"]' ).val( value.id );
           $( 'td:first', templateRow ).text( value.label );
 
-          templateRow.insertBefore( $( 'tr.hidden', table ) );
+          templateRow.insertBefore( $( 'tr.acl-permissions-form-no-entries-row', table ) );
+          templateRow.find( '.acl-permissions-form-remove-item' ).on( 'click', e => this.removeItem( e ) );
+        }
+        else {
+          let row = existing.closest( 'tr' );
+          if ( row.hasClass( 'hidden' ) ) {
+            row.insertBefore( $( 'tr.acl-permissions-form-no-entries-row', table ) );
+            row.removeClass( 'hidden' );
+          }
         }
 
         selector.reset();
         this.setButtonState( false );
+
+        this.toggleNoEntriesRow();
       }
     }
+  }
+
+  removeItem( e ) {
+    e.preventDefault();
+
+    let row = $( e.currentTarget ).closest( 'tr' );
+
+    row.addClass( 'hidden' );
+    row.find( 'input[type=checkbox]' ).prop( 'checked', false );
+    row.insertAfter( row.closest( 'table' ).find( 'tr.hidden:last' ) );
+
+    this.toggleNoEntriesRow();
+  }
+
+  toggleNoEntriesRow() {
+    this.section.find()
+    this.section
+      .find( 'tr.acl-permissions-form-no-entries-row' )
+      .toggleClass( 'hidden', this.section.find( 'tr.acl-permissions-form-item-row:not(.hidden)' ).length > 0 );
   }
 }
 

@@ -31,6 +31,7 @@
 	<properties>
 		<frontend.dir>src/main/frontend</frontend.dir>
 		<frontend.node.version>v7.10.0</frontend.node.version>
+		<frontend.yarn.version>v0.19.1</frontend.yarn.version>
 	</properties>
 
 	<dependencies>
@@ -171,7 +172,7 @@
 				</executions>
 				<configuration>
 					<nodeVersion>${frontend.node.version}</nodeVersion>
-					<yarnVersion>v0.19.1</yarnVersion>
+					<yarnVersion>${frontend.yarn.version}</yarnVersion>
 					<workingDirectory>${frontend.dir}</workingDirectory>
 				</configuration>
 			</plugin>

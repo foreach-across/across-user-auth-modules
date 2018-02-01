@@ -47,8 +47,7 @@ public class TestAclPermissionsFormController
 		AclPermissionsForm form = AclPermissionsForm
 				.builder()
 				.section(
-						AclPermissionsForm.section()
-						                  .name( "users" )
+						AclPermissionsForm.section( "users" )
 						                  .permissions( AclPermission.READ, AclPermission.WRITE, AclPermission.ADMINISTRATION )
 						                  .objectForTransportIdResolver( transportId -> "user-" + transportId )
 						                  .sidForObjectResolver( entity -> new PrincipalSid( entity.toString() ) )
@@ -56,8 +55,7 @@ public class TestAclPermissionsFormController
 						                  .build()
 				)
 				.section(
-						AclPermissionsForm.section()
-						                  .name( "groups" )
+						AclPermissionsForm.section( "groups" )
 						                  .permissions( AclPermission.READ, AclPermission.WRITE )
 						                  .objectForTransportIdResolver( transportId -> "group-" + transportId )
 						                  .sidForObjectResolver( entity -> new PrincipalSid( entity.toString() ) )
@@ -66,7 +64,7 @@ public class TestAclPermissionsFormController
 				)
 				.build();
 
-		val controller = new AclPermissionsFormController( operations, form );
+		val controller = new AclPermissionsFormController( operations, new AclPermissionsFormData( form ) );
 		controller.getModel().put( "1", entry( "users", "admin", AclPermission.ADMINISTRATION, AclPermission.WRITE ) );
 		controller.getModel().put( "2", entry( "groups", "admin", AclPermission.READ, AclPermission.DELETE ) );
 		controller.getModel().put( "3", entry( "unknown-section", "admin", AclPermission.READ, AclPermission.DELETE ) );

@@ -102,7 +102,7 @@ public class TestAclPermissionsFormViewProcessor
 
 		AclPermissionsFormController controller = viewCommand.getExtension( AclPermissionsFormViewProcessor.CONTROLLER_EXTENSION );
 		assertThat( controller ).isNotNull();
-		assertThat( controller.getPermissionsForm() ).isEqualTo( form );
+		assertThat( controller.getFormData().getPermissionsForm() ).isEqualTo( form );
 		assertThat( controller.getAclOperations() ).isEqualTo( aclOperations );
 	}
 
@@ -129,7 +129,7 @@ public class TestAclPermissionsFormViewProcessor
 
 		AclPermissionsFormController controller = viewCommand.getExtension( AclPermissionsFormViewProcessor.CONTROLLER_EXTENSION );
 		assertThat( controller ).isNotNull();
-		assertThat( controller.getPermissionsForm() ).isEqualTo( form );
+		assertThat( controller.getFormData().getPermissionsForm() ).isEqualTo( form );
 		assertThat( controller.getAclOperations() ).isEqualTo( aclOperations );
 	}
 }
