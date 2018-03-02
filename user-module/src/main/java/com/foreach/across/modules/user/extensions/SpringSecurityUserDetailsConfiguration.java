@@ -16,25 +16,27 @@
 
 package com.foreach.across.modules.user.extensions;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
+import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.security.UserDirectoryAuthenticationProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Configuration to load inside the SpringSecurityModule ApplicationContext.
  */
-@AcrossDepends(required = "SpringSecurityModule")
-@Configuration
-public class SpringSecurityUserDetailsConfiguration
+@ModuleConfiguration(SpringSecurityModule.NAME)
+@EnableGlobalAuthentication
+@RequiredArgsConstructor
+class SpringSecurityUserDetailsConfiguration
 {
-	@Autowired
-	private AcrossContextBeanRegistry contextBeanRegistry;
+	private final AcrossContextBeanRegistry contextBeanRegistry;
 
 	@Autowired
 	@SuppressWarnings("SignatureDeclareThrowsException")
