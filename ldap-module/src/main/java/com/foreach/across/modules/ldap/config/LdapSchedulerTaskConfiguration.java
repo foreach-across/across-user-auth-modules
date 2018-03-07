@@ -20,7 +20,7 @@ import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.events.AcrossContextBootstrappedEvent;
 import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,12 +37,11 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @Configuration
 @EnableScheduling
 @ConditionalOnBean(LdapSynchronizationTask.class)
+@RequiredArgsConstructor
 public class LdapSchedulerTaskConfiguration implements SchedulingConfigurer
 {
-	@Autowired
-	private LdapSynchronizationTask ldapSynchronizationTask;
-	@Autowired
-	private LdapModuleSettings ldapModuleSettings;
+	private final LdapSynchronizationTask ldapSynchronizationTask;
+	private final LdapModuleSettings ldapModuleSettings;
 	private ScheduledTaskRegistrar taskRegistrar;
 
 	@Override

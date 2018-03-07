@@ -31,7 +31,10 @@ public class LdapModuleSettings
 	public static final String DISABLE_SYNCHRONIZATION_TASK = "ldapModule.disableSynchronizationTask";
 	public static final String SYNCHRONIZATION_TASK_INTERVAL_IN_SECONDS =
 			"ldapModule.synchronizationTaskIntervalInSeconds";
+	public static final String DELETE_USERS_AND_GROUPS_WHEN_DELETED_FROM_LDAPSOURCE =
+			"ldapModule.deleteUsersAndGroupsWhenDeletedFromLdapSource";
 
 	private boolean disableSynchronizationTask;
 	private long synchronizationTaskIntervalInSeconds = 300;
+	private boolean deleteUsersAndGroupsWhenDeletedFromLdapSource = false;
 }

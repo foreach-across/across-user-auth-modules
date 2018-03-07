@@ -18,15 +18,17 @@ package com.foreach.across.modules.ldap.config;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.controllers.AjaxTestLdapConnectorController;
 import com.foreach.across.modules.ldap.repositories.LdapConnectorRepository;
 import com.foreach.across.modules.ldap.repositories.LdapUserDirectoryRepository;
 import com.foreach.across.modules.ldap.services.*;
+import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
-import com.foreach.across.modules.user.services.GroupPropertiesRegistry;
-import com.foreach.across.modules.user.services.UserDirectoryServiceProvider;
-import com.foreach.across.modules.user.services.UserPropertiesRegistry;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.user.services.*;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +50,9 @@ public class LdapCoreConfiguration
 	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
 	@ConditionalOnProperty(value = "disableSynchronizationTask", prefix = "ldapModule", havingValue = "false", matchIfMissing = true)
 	public LdapSynchronizationTask ldapSynchronizationTask( LdapUserDirectoryRepository ldapUserDirectoryRepository,
-	                                                        DistributedLockRepository lockRepository ) throws UnknownHostException {
-		return new LdapSynchronizationTask( ldapSynchronizationService(), ldapUserDirectoryRepository,
+	                                                        DistributedLockRepository lockRepository,
+	                                                        LdapSynchronizationService ldapSynchronizationService ) throws UnknownHostException {
+		return new LdapSynchronizationTask( ldapSynchronizationService, ldapUserDirectoryRepository,
 		                                    lockRepository, InetAddress.getLocalHost().getHostName() );
 	}
 
@@ -71,8 +74,18 @@ public class LdapCoreConfiguration
 
 	@Bean
 	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
-	public LdapSynchronizationService ldapSynchronizationService() {
-		return new LdapSynchronizationServiceImpl();
+	public LdapSynchronizationService ldapSynchronizationService( UserService userService,
+	                                                              GroupService groupService,
+	                                                              LdapConnectorSettingsService ldapConnectorSettingsService,
+	                                                              SecurityPrincipalService securityPrincipalService,
+	                                                              AcrossEventPublisher acrossEventPublisher,
+	                                                              LdapPropertiesService ldapPropertiesService,
+	                                                              LdapModuleSettings ldapModuleSettings
+
+	) {
+		return new LdapSynchronizationServiceImpl( userService, groupService, ldapConnectorSettingsService,
+		                                           ldapSearchService(), securityPrincipalService, acrossEventPublisher,
+		                                           ldapPropertiesService, ldapModuleSettings );
 	}
 
 	@Bean

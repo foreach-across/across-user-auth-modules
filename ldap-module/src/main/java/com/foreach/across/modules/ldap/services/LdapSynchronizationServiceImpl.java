@@ -17,9 +17,11 @@
 package com.foreach.across.modules.ldap.services;
 
 import com.foreach.across.core.events.AcrossEventPublisher;
+import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
+import com.foreach.across.modules.ldap.events.LdapEntityDeletedEvent;
 import com.foreach.across.modules.ldap.events.LdapEntityProcessedEvent;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
@@ -29,11 +31,11 @@ import com.foreach.across.modules.spring.security.infrastructure.services.Securi
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.DirContextAdapter;
 
 import java.util.*;
@@ -43,29 +45,17 @@ import java.util.*;
  * @since 1.0.0
  */
 @Slf4j
+@RequiredArgsConstructor
 public class LdapSynchronizationServiceImpl implements LdapSynchronizationService
 {
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private GroupService groupService;
-
-	@Autowired
-	private LdapConnectorSettingsService ldapConnectorSettingsService;
-
-	@Autowired
-	private LdapSearchService ldapSearchService;
-
-	@Autowired
-	private SecurityPrincipalService securityPrincipalService;
-
-	@Autowired
-	private AcrossEventPublisher eventPublisher;
-
-	@Autowired
-	private LdapPropertiesService ldapPropertiesService;
-
+	private final UserService userService;
+	private final GroupService groupService;
+	private final LdapConnectorSettingsService ldapConnectorSettingsService;
+	private final LdapSearchService ldapSearchService;
+	private final SecurityPrincipalService securityPrincipalService;
+	private final AcrossEventPublisher eventPublisher;
+	private final LdapPropertiesService ldapPropertiesService;
+	private final LdapModuleSettings ldapModuleSettings;
 	private Set<LdapUserDirectory> busy = new HashSet<>();
 
 	public boolean synchronizeData( LdapUserDirectory ldapUserDirectory ) {
@@ -89,7 +79,6 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 				removeDeletedUsers( ldapUserDirectory, users );
 				totalUsersSynchronized += users.size();
 				totalGroupsSynchronized += groups.size();
-
 			}
 			catch ( Exception ie ) {
 				LOG.error( "Failed to synchronize directory {}", ldapUserDirectory.getName(), ie );
@@ -115,34 +104,41 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 	}
 
 	private void removeDeletedUsers( LdapUserDirectory ldapUserDirectory, Set<User> users ) {
-		CollectionUtils.subtract( userService.findAll( QUser.user.userDirectory.eq( ldapUserDirectory ) ), users )
-		               .forEach( u -> {
-			               u.getGroups().clear();
-			               userService.save( u );
-			               try {
-				               userService.delete( u.getId() );
-			               }
-			               catch ( Exception e ) {
-				               LOG.error( "Could not delete user '{}', maybe you have entities referencing this user?",
-				                          e );
-			               }
-		               } );
+		if ( ldapModuleSettings.isDeleteUsersAndGroupsWhenDeletedFromLdapSource() ) {
+			CollectionUtils.subtract( userService.findAll( QUser.user.userDirectory.eq( ldapUserDirectory ) ), users )
+			               .forEach( user -> {
+				               user.getGroups().clear();
+				               userService.save( user );
+				               try {
+					               eventPublisher.publish( new LdapEntityDeletedEvent<>( user ) );
+					               userService.delete( user.getId() );
+				               }
+				               catch ( Exception e ) {
+					               LOG.error(
+							               "Could not delete user '{}', maybe you have entities referencing this user?",
+							               e );
+				               }
+			               } );
+		}
 	}
 
 	private void removeDeletedGroups( LdapUserDirectory ldapUserDirectory, Map<String, Group> groups ) {
-		CollectionUtils.subtract( groupService.findAll( QGroup.group.userDirectory.eq( ldapUserDirectory ) ),
-		                          groups.values() ).forEach( g -> {
-			userService.findAll( QUser.user.groups.contains( g ) ).forEach( u -> {
-				u.getGroups().remove( g );
-				userService.save( u );
+		if ( ldapModuleSettings.isDeleteUsersAndGroupsWhenDeletedFromLdapSource() ) {
+			CollectionUtils.subtract( groupService.findAll( QGroup.group.userDirectory.eq( ldapUserDirectory ) ),
+			                          groups.values() ).forEach( group -> {
+				userService.findAll( QUser.user.groups.contains( group ) ).forEach( user -> {
+					user.getGroups().remove( group );
+					userService.save( user );
+				} );
+				try {
+					eventPublisher.publish( new LdapEntityDeletedEvent<>( group ) );
+					groupService.delete( group.getId() );
+				}
+				catch ( Exception e ) {
+					LOG.error( "Could not delete group '{}', maybe you have entities referencing this group?", e );
+				}
 			} );
-			try {
-				groupService.delete( g.getId() );
-			}
-			catch ( Exception e ) {
-				LOG.error( "Could not delete group '{}', maybe you have entities referencing this group?", e );
-			}
-		} );
+		}
 	}
 
 	private CloseableAuthentication authenticateAsConnector( LdapConnector connector ) {
@@ -156,7 +152,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 		return null;
 	}
 
-	private Set<User> performUserSynchronization( LdapUserDirectory userDirectory ) {
+	Set<User> performUserSynchronization( LdapUserDirectory userDirectory ) {
 		LdapConnector connector = userDirectory.getLdapConnector();
 		Set<User> itemsInLdap = new HashSet<>();
 		if ( connector != null ) {
@@ -242,13 +238,13 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						if ( memberOf != null ) {
 							for ( String member : memberOf ) {
 								groups.entrySet().stream().filter(
-										i -> i.getKey().equalsIgnoreCase( member ) ).findFirst().ifPresent(
+										i -> StringUtils.equalsIgnoreCase( i.getKey(), member ) ).findFirst().ifPresent(
 										g -> groupsForUser.add( g.getValue() ) );
 							}
 						}
 
 						if ( StringUtils.isNotBlank( name ) ) {
-							users.stream().filter( i -> i.getUsername().equalsIgnoreCase( name ) )
+							users.stream().filter( i -> StringUtils.equalsIgnoreCase( i.getUsername(), name ) )
 							     .findFirst().ifPresent( user -> {
 								                             user.setGroups( groupsForUser );
 								                             userService.save( user );
