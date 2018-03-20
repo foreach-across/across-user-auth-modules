@@ -145,7 +145,7 @@ public class Role extends SettableIdAuditableEntity<Role>
 
 	public void addPermission( Permission... permissions ) {
 		for ( Permission permission : permissions ) {
-			Assert.notNull( permission );
+			Assert.notNull( permission, "Permission cannot be null" );
 			getPermissions().add( permission );
 		}
 	}

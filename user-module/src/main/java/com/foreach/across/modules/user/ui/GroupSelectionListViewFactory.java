@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.user.ui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
@@ -29,7 +29,6 @@ import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class is currently not used.
@@ -39,13 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Deprecated
 public class GroupSelectionListViewFactory extends EntityViewProcessorAdapter
 {
-	private final BootstrapUiFactory bootstrapUiFactory;
-
-	@Autowired
-	public GroupSelectionListViewFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUiFactory = bootstrapUiFactory;
-	}
-
 	@Override
 	protected void render( EntityViewRequest entityViewRequest,
 	                       EntityView entityView,
@@ -65,10 +57,10 @@ public class GroupSelectionListViewFactory extends EntityViewProcessorAdapter
 			TableViewElement.Cell cell = new TableViewElement.Cell();
 			cell.setHeading( true );
 			cell.addChild(
-					bootstrapUiFactory.checkbox()
-					                  .unwrapped()
-					                  .htmlId( "select-all-items" )
-					                  .build( builderContext )
+					BootstrapUiBuilders.checkbox()
+					                   .unwrapped()
+					                   .htmlId( "select-all-items" )
+					                   .build( builderContext )
 			);
 			row.addFirstChild( cell );
 		}
@@ -81,13 +73,13 @@ public class GroupSelectionListViewFactory extends EntityViewProcessorAdapter
 			Group projectItem = EntityViewElementUtils.currentEntity( builderContext, Group.class );
 
 			TableViewElement.Cell cell = new TableViewElement.Cell();
-			cell.addChild( bootstrapUiFactory.checkbox()
-			                                 .unwrapped()
-			                                 .controlName( "extensions[groupSelector].groups" )
-			                                 .value( projectItem.getId() )
-			                                 //.selected( projectItemSelectionDto
-			                                 //                   .hasProjectItem( projectItem ) )
-			                                 .build( builderContext ) );
+			cell.addChild( BootstrapUiBuilders.checkbox()
+			                                  .unwrapped()
+			                                  .controlName( "extensions[groupSelector].groups" )
+			                                  .value( projectItem.getId() )
+			                                  //.selected( projectItemSelectionDto
+			                                  //                   .hasProjectItem( projectItem ) )
+			                                  .build( builderContext ) );
 			row.addFirstChild( cell );
 		}
 	}

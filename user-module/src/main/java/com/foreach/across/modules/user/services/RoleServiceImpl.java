@@ -30,10 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleServiceImpl implements RoleService
@@ -53,7 +53,7 @@ public class RoleServiceImpl implements RoleService
 
 	@Override
 	public Role defineRole( String authority, String name, String description, Collection<String> permissionNames ) {
-		Assert.isTrue( StringUtils.isNotEmpty( name ) );
+		Assert.isTrue( StringUtils.isNotEmpty( name ), "name cannot be empty" );
 		Role role = new Role( authority, name );
 		role.setDescription( description );
 
@@ -79,10 +79,8 @@ public class RoleServiceImpl implements RoleService
 			if ( existing.getPermissions().size() != role.getPermissions().size() ) {
 				Collection<Permission> difference = CollectionUtils.disjunction( existing.getPermissions(),
 				                                                                 role.getPermissions() );
-				Collection<String> permissionNames = CollectionUtils.collect( difference,
-				                                                              Permission::getName,
-				                                                              new ArrayList<>()
-				);
+				Collection<String> permissionNames = difference.stream().map( Permission::getName ).collect(
+						Collectors.toList() );
 				LOG.error(
 						"Cannot redefine role '{}' because it would loose the permissions: '{}', you should .addPermission() instead",
 						role,

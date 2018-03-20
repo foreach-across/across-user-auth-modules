@@ -18,10 +18,10 @@ package com.foreach.across.modules.user.services.support;
 
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolver;
+import lombok.NonNull;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.util.Assert;
 
 import java.util.Optional;
 
@@ -39,10 +39,8 @@ public class ExpressionBasedSecurityPrincipalLabelResolver implements SecurityPr
 	private final Class<? extends SecurityPrincipal> requiredPrincipalType;
 	private Expression labelExpression;
 
-	public ExpressionBasedSecurityPrincipalLabelResolver( Class<? extends SecurityPrincipal> requiredPrincipalType,
+	public ExpressionBasedSecurityPrincipalLabelResolver( @NonNull Class<? extends SecurityPrincipal> requiredPrincipalType,
 	                                                      String labelExpression ) {
-		Assert.notNull( requiredPrincipalType );
-
 		this.requiredPrincipalType = requiredPrincipalType;
 		setLabelExpression( labelExpression );
 
@@ -53,8 +51,7 @@ public class ExpressionBasedSecurityPrincipalLabelResolver implements SecurityPr
 	 *
 	 * @param labelExpression SpEL expression
 	 */
-	public void setLabelExpression( String labelExpression ) {
-		Assert.notNull( labelExpression );
+	public void setLabelExpression( @NonNull String labelExpression ) {
 		this.labelExpression = PARSER.parseExpression( labelExpression );
 	}
 
