@@ -51,6 +51,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>bootstrap-ui-module</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>across-hibernate-module</artifactId>
 			<optional>true</optional>
 		</dependency>
