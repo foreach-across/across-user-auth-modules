@@ -1,9 +1,9 @@
 = SpringSecurityAclModule
 Arne Vandamme
-3.0.0-SNAPSHOT
+3.0.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 3.0.0-SNAPSHOT
+:module-version: 3.0.0.RELEASE
 :module-name: SpringSecurityAclModule
 :module-artifact: spring-security-acl-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityAclModule
@@ -55,7 +55,7 @@ This module has no specific settings.
 
 == What's new in this version?
 :numbered!:
-=== 3.0.0-SNAPSHOT
+=== 3.0.0.RELEASE
 * SpringSecurityAclModule now uses a single `AclPermissionFactory` for the actual permission management
 ** custom permissions can be registered on this factory and made available for use in security expressions
 * the first 10 permission positions (bit flags) are now reserved for Across internal use
