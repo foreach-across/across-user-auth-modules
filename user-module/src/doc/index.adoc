@@ -1,9 +1,9 @@
 = UserModule
 Arne Vandamme
-3.0.0-SNAPSHOT
+3.0.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 3.0.0-SNAPSHOT
+:module-version: 3.0.0.RELEASE
 :module-name: UserModule
 :module-artifact: user-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/UserModule
@@ -89,7 +89,7 @@ Defaults to 'label' which means the `getLabel()` will be used.
 
 == What's new in this version?
 :numbered!:
-=== 3.0.0-SNAPSHOT
+=== 3.0.0.RELEASE
 
 * fix issues with Spring Security configuration in Across 3.0.0
 
