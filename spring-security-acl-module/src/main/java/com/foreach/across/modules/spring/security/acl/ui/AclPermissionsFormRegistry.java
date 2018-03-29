@@ -17,6 +17,7 @@
 package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ import java.util.Optional;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@ConditionalOnAcrossModule(EntityModule.NAME)
+@ConditionalOnAcrossModule({ EntityModule.NAME, AdminWebModule.NAME })
 @Service
 public class AclPermissionsFormRegistry extends HashMap<String, AclPermissionsForm>
 {

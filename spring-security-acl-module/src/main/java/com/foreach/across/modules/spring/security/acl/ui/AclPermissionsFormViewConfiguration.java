@@ -17,6 +17,7 @@
 package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.FaIcon;
 import com.foreach.across.modules.entity.EntityModule;
@@ -47,7 +48,7 @@ import static com.foreach.across.modules.entity.views.EntityViewFactoryAttribute
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@ConditionalOnAcrossModule(EntityModule.NAME)
+@ConditionalOnAcrossModule({ EntityModule.NAME, AdminWebModule.NAME })
 @ConditionalOnClass(EntityConfigurer.class)
 @RequiredArgsConstructor
 @Order

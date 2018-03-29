@@ -18,6 +18,7 @@ package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.annotations.PostRefresh;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
@@ -58,7 +59,7 @@ import java.util.function.Function;
  * @see AclPermissionsFormRegistry
  * @since 3.0.0
  */
-@ConditionalOnAcrossModule(EntityModule.NAME)
+@ConditionalOnAcrossModule({ EntityModule.NAME, AdminWebModule.NAME })
 @ConditionalOnClass(EntityViewProcessor.class)
 @Component
 @RequiredArgsConstructor
