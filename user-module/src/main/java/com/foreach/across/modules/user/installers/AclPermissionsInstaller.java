@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.user.installers;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * @author Arne Vandamme
  */
-@AcrossDepends(required = SpringSecurityAclModule.NAME)
+@ConditionalOnAcrossModule(SpringSecurityAclModule.NAME)
 @Installer(
 		description = "Installs the ACL permissions if ACL module is enabled",
 		version = 3,

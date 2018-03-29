@@ -17,9 +17,9 @@
 package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.UserDirectory;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.Collection;
 
@@ -48,8 +48,7 @@ public class UserDirectoryServiceProviderManager
 	 * @param userDirectory instance
 	 * @return provider or {@code null} if none available
 	 */
-	public UserDirectoryServiceProvider getServiceProvider( UserDirectory userDirectory ) {
-		Assert.notNull( userDirectory );
+	public UserDirectoryServiceProvider getServiceProvider( @NonNull UserDirectory userDirectory ) {
 		return getServiceProvider( userDirectory.getClass() );
 	}
 

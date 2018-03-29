@@ -18,8 +18,6 @@ package com.foreach.across.modules.user;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
-import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.database.HasSchemaConfiguration;
 import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.core.installers.AcrossSequencesInstaller;
@@ -31,7 +29,6 @@ import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
-import com.foreach.across.modules.user.extensions.SpringSecurityUserDetailsConfiguration;
 import com.foreach.across.modules.user.installers.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -79,11 +76,5 @@ public class UserModule extends AcrossModule implements HibernatePackageConfigur
 	@Override
 	public SchemaConfiguration getSchemaConfiguration() {
 		return schemaConfiguration;
-	}
-
-	@Override
-	public void prepareForBootstrap( ModuleBootstrapConfig currentModule, AcrossBootstrapConfig contextConfig ) {
-		contextConfig.extendModule( "SpringSecurityModule",
-		                            SpringSecurityUserDetailsConfiguration.class );
 	}
 }

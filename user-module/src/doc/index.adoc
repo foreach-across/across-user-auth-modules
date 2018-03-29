@@ -1,9 +1,9 @@
 = UserModule
 Arne Vandamme
-2.0.0.RELEASE
+3.0.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 2.0.0.RELEASE
+:module-version: 3.0.0.RELEASE
 :module-name: UserModule
 :module-artifact: user-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/UserModule
@@ -89,6 +89,10 @@ Defaults to 'label' which means the `getLabel()` will be used.
 
 == What's new in this version?
 :numbered!:
+=== 3.0.0.RELEASE
+
+* fix issues with Spring Security configuration in Across 3.0.0
+
 === 2.0.0.RELEASE
 
 * Compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.

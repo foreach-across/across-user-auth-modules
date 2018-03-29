@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.user.config.modules;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.registry.IncrementalRefreshableRegistry;
 import com.foreach.across.core.registry.RefreshableRegistry;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
@@ -51,7 +51,7 @@ import java.util.Map;
  * Registers the UserDetailsService implementation for the User module.
  * Configures the security rules for the entities.
  */
-@AcrossDepends(required = "SpringSecurityModule")
+@ConditionalOnAcrossModule("SpringSecurityModule")
 @Configuration
 public class UserSpringSecurityConfiguration implements EntityConfigurer
 {

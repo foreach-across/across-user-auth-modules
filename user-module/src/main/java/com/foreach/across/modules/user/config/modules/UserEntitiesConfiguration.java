@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.user.config.modules;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.domain.Sort;
 
-@AcrossDepends(required = "EntityModule")
+@ConditionalOnAcrossModule("EntityModule")
 @Configuration
 public class UserEntitiesConfiguration implements EntityConfigurer
 {

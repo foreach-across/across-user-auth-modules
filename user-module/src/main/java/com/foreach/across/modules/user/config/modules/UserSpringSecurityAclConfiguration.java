@@ -16,12 +16,12 @@
 
 package com.foreach.across.modules.user.config.modules;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.user.services.GroupAclInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@AcrossDepends(required = "SpringSecurityAclModule")
+@ConditionalOnAcrossModule("SpringSecurityAclModule")
 @Configuration
 public class UserSpringSecurityAclConfiguration
 {
