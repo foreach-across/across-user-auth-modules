@@ -3,3 +3,4 @@ target
 .idea/excludeFromValidation
 .idea/libraries
 *.iml
+local-data

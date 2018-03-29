@@ -1,0 +1,21 @@
+# editorconfig.org
+
+# PHP projects follow industry standard PSR-2 (4 spaces)
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Javascript
+[*.js]
+indent_size = 2
+
+# CSS and SCSS
+[{*.css,*.scss}]
+indent_size = 2

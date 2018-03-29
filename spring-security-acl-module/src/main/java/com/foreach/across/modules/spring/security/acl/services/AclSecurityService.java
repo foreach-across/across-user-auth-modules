@@ -19,6 +19,7 @@ import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -31,9 +32,15 @@ public interface AclSecurityService
 {
 	MutableAcl getAcl( IdBasedEntity entity );
 
+	MutableAcl getAcl( ObjectIdentity objectIdentity );
+
 	MutableAcl createAcl( IdBasedEntity entity );
 
+	MutableAcl createAcl( ObjectIdentity objectIdentity );
+
 	MutableAcl createAclWithParent( IdBasedEntity entity, IdBasedEntity parent );
+
+	MutableAcl createAclWithParent( ObjectIdentity objectIdentity, ObjectIdentity parentObjectIdentity );
 
 	void allow( SecurityPrincipal principal, IdBasedEntity entity, AclPermission... aclPermissions );
 
@@ -63,11 +70,17 @@ public interface AclSecurityService
 
 	MutableAcl updateAcl( MutableAcl acl );
 
+	AclOperations createAclOperations( MutableAcl acl );
+
 	void changeAclOwner( MutableAcl acl, SecurityPrincipal principal );
 
 	void changeAclParent( IdBasedEntity entity, IdBasedEntity parent );
 
+	void changeAclParent( ObjectIdentity entity, ObjectIdentity parent );
+
 	void changeAclParent( MutableAcl acl, IdBasedEntity parent );
+
+	void changeAclParent( MutableAcl acl, ObjectIdentity parent );
 
 	boolean hasPermission( Authentication authentication, IdBasedEntity entity, AclPermission permission );
 

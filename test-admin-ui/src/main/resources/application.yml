@@ -1,0 +1,26 @@
+across:
+  development:
+    active: true
+
+acrossHibernate:
+  properties:
+    hibernate.format_sql: false
+    hibernate.use_sql_comments: false
+  generate-ddl: true
+  show-sql: false
+
+adminWebModule:
+  login:
+    rememberMe:
+      key: test-admin-ui
+  root-path: /
+  title: ACL Admin UI
+
+spring:
+  datasource:
+    url: "jdbc:h2:./local-data/db/test-admin-ui"
+    username: sa
+
+acrossModule:
+  SpringSecurityAclModule:
+    resources: ../spring-security-acl-module/src/main/resources

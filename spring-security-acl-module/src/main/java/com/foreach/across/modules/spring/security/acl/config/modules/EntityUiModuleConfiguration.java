@@ -16,7 +16,9 @@
 
 package com.foreach.across.modules.spring.security.acl.config.modules;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -24,11 +26,13 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
+import com.foreach.across.modules.spring.security.acl.ui.AclPermissionsForm;
 import com.foreach.across.modules.spring.security.acl.validators.AclSecurityEntityValidator;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AuthorityMatchingAllowableActions;
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
@@ -38,7 +42,8 @@ import java.util.Map;
  * @author Arne Vandamme
  */
 @Configuration
-@AcrossDepends(required = "EntityModule")
+@ConditionalOnAcrossModule({ EntityModule.NAME, AdminWebModule.NAME })
+@ComponentScan(basePackageClasses = AclPermissionsForm.class)
 public class EntityUiModuleConfiguration implements EntityConfigurer
 {
 	@Bean

@@ -15,10 +15,9 @@
  */
 package com.foreach.across.modules.spring.security.acl.config.modules;
 
-import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.context.support.AcrossModuleMessageSource;
-import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
+import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.aop.AclSecurityEntityAclInterceptor;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
@@ -36,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Arne Vandamme
  */
 @Configuration
-@AcrossDepends(required = "AcrossHibernateJpaModule")
+@ConditionalOnAcrossModule("AcrossHibernateJpaModule")
 @EnableAcrossJpaRepositories(basePackageClasses = SpringSecurityAclModule.class)
 public class AcrossHibernateJpaModuleConfiguration
 {
