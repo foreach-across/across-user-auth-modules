@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
   <artifact type="war" name="oauth2-module-test-website:war">
     <output-path>$PROJECT_DIR$/oauth2-module-test-website/target</output-path>
-    <root id="archive" name="oauth2-module-test-website-2.0.0.RELEASE.war">
+    <root id="archive" name="oauth2-module-test-website-2.0.1-SNAPSHOT.war">
       <element id="artifact" artifact-name="oauth2-module-test-website:war exploded" />
     </root>
   </artifact>

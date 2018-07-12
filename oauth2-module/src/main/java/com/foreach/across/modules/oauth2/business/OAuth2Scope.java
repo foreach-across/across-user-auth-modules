@@ -25,9 +25,6 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 @NotThreadSafe
 @Entity
@@ -44,16 +41,13 @@ public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements C
 			strategy = AcrossSequenceGenerator.STRATEGY,
 			parameters = {
 					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_oauth_scope_id"),
-					@org.hibernate.annotations.Parameter(name = "allocationSize", value = "10")
+					@org.hibernate.annotations.Parameter(name = "allocationSize", value = "1")
 			}
 	)
 	private Long id;
 
 	@Column(name = "name")
 	private String name;
-
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.oAuth2Scope")
-	private Set<OAuth2ClientScope> oAuth2ClientScopes = new HashSet<>();
 
 	@Override
 	public Long getId() {
@@ -71,17 +65,6 @@ public class OAuth2Scope extends SettableIdBasedEntity<OAuth2Scope> implements C
 
 	public void setName( String name ) {
 		this.name = name;
-	}
-
-	public Set<OAuth2ClientScope> getOAuth2ClientScopes() {
-		return this.oAuth2ClientScopes;
-	}
-
-	public void setOAuth2ClientScopes( Collection<OAuth2ClientScope> oAuth2ClientScopes ) {
-		getOAuth2ClientScopes().clear();
-		if ( oAuth2ClientScopes != null ) {
-			getOAuth2ClientScopes().addAll( oAuth2ClientScopes );
-		}
 	}
 
 	@Override

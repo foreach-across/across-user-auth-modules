@@ -116,6 +116,33 @@ public class TestOAuth2Client
 		assertNotSame( client.getOAuth2ClientScopes(), dto.getOAuth2ClientScopes() );
 	}
 
+	@Test
+	public void addAndRemoveScope() {
+		OAuth2Client client = new OAuth2Client();
+		OAuth2Scope scope = new OAuth2Scope();
+		scope.setName( "scope" );
+
+		client.addScope( scope, true );
+
+		assertEquals( 1, client.getOAuth2ClientScopes().size() );
+		OAuth2ClientScope clientScope = client.getOAuth2ClientScopes().iterator().next();
+		assertNotNull( clientScope );
+		assertSame( client, clientScope.getOAuth2Client() );
+		assertSame( scope, clientScope.getOAuth2Scope() );
+		assertTrue( clientScope.isAutoApprove() );
+
+		client.addScope( scope, false );
+		assertEquals( 1, client.getOAuth2ClientScopes().size() );
+		clientScope = client.getOAuth2ClientScopes().iterator().next();
+		assertNotNull( clientScope );
+		assertSame( client, clientScope.getOAuth2Client() );
+		assertSame( scope, clientScope.getOAuth2Scope() );
+		assertFalse( clientScope.isAutoApprove() );
+
+		client.removeScope( scope );
+		assertTrue( client.getOAuth2ClientScopes().isEmpty() );
+	}
+
 	@Ignore
 	@Test
 	public void principalNameIsAlwaysLowerCased() throws Exception {

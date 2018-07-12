@@ -31,7 +31,10 @@ import com.foreach.across.modules.spring.security.infrastructure.services.Securi
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.test.AcrossTestWebContext;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -41,16 +44,16 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 import org.springframework.security.oauth2.provider.approval.*;
 import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.IntStream;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.web;
 import static org.junit.Assert.*;
 
 public class ITOAuth2Module
 {
+	private static final Logger LOG = LoggerFactory.getLogger( "org.hibernate.SQL" );
+
 	@Test
 	public void verifyEndpointsDetected() {
 		BaseConfiguration configuration = new BaseConfiguration()
@@ -68,6 +71,59 @@ public class ITOAuth2Module
 
 			assertTrue( endpoints.contains( "/oauth/invalidate" ) );
 			assertTrue( endpoints.contains( "/oauth/user_token" ) );
+		}
+	}
+
+	@Test
+	public void clientWithScopesQueryFetching() {
+		BaseConfiguration configuration = new BaseConfiguration()
+		{
+			@Override
+			protected void configureModule( OAuth2Module module ) {
+			}
+		};
+
+		try (AcrossTestWebContext ctx = web().configurer( configuration ).build()) {
+			OAuth2Service oauth2Service = ctx.getBeanOfType( OAuth2Service.class );
+
+			OAuth2Scope full = new OAuth2Scope();
+			full.setName( "full" );
+
+			oauth2Service.saveScope( full );
+
+			IntStream.range( 0, 36 )
+			         .forEach( i -> {
+				         OAuth2Client client = new OAuth2Client();
+				         client.setClientId( "generated-" + i );
+				         client.setClientSecret( "one" );
+				         client.setRegisteredRedirectUri( Arrays.asList( "url-1", "url-2" ) );
+				         client.setResourceIds( Arrays.asList( "users", "products" ) );
+				         client.setAuthorizedGrantTypes( Arrays.asList( "password", "authorization" ) );
+				         client.addScope( full, false );
+				         oauth2Service.saveClient( client );
+			         } );
+
+			LOG.info( "" );
+			LOG.info( "Before fetching client" );
+			LOG.info( "" );
+
+			StopWatch sw = new StopWatch();
+			sw.start();
+
+			OAuth2Client fetched = oauth2Service.getClientById( "generated-0" );
+			assertNotNull( fetched );
+
+			LOG.info( "" );
+			LOG.info( "After fetching client" );
+			LOG.info( "" );
+
+			assertTrue( oauth2Service.getOAuth2Clients().size() >= 36 );
+
+			sw.stop();
+
+			LOG.info( "" );
+			LOG.info( "Fetching single client and all clients took {} ms", sw.getTime() );
+			LOG.info( "" );
 		}
 	}
 
@@ -350,7 +406,11 @@ public class ITOAuth2Module
 		}
 
 		private AcrossHibernateJpaModule acrossHibernateJpaModule() {
-			return new AcrossHibernateJpaModule();
+			AcrossHibernateJpaModule jpaModule = new AcrossHibernateJpaModule();
+			jpaModule.setHibernateProperty( "show_sql", "true" );
+			jpaModule.setHibernateProperty( "format_sql", "true" );
+			jpaModule.setHibernateProperty( "use_sql_comments", "true" );
+			return jpaModule;
 		}
 
 		private UserModule userModule() {

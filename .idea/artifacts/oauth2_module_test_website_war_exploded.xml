@@ -1,13 +1,13 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="oauth2-module-test-website:war exploded">
-    <output-path>$PROJECT_DIR$/oauth2-module-test-website/target/oauth2-module-test-website-2.0.0.RELEASE</output-path>
+    <output-path>$PROJECT_DIR$/oauth2-module-test-website/target/oauth2-module-test-website-2.0.1-SNAPSHOT</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="oauth2-module-test-website" />
         </element>
         <element id="directory" name="lib">
-          <element id="archive" name="oauth2-module-2.0.0.RELEASE.jar">
+          <element id="archive" name="oauth2-module-2.0.1-SNAPSHOT.jar">
             <element id="module-output" name="oauth2-module" />
           </element>
           <element id="library" level="project" name="Maven: com.foreach.across:across-web:2.0.0.RELEASE" />
@@ -113,7 +113,7 @@
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/oauth2-module-test-website/target/oauth2-module-test-website-2.0.0.RELEASE/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/oauth2-module-test-website/target/oauth2-module-test-website-2.0.1-SNAPSHOT/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="oauth2-module-test-website/web/Web" />
     </root>

@@ -199,6 +199,30 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 		return new LinkedHashMap<>();
 	}
 
+	/**
+	 * Add an OAuth2 scope that is allowed for this client.
+	 *
+	 * @param scope       to add
+	 * @param autoApprove should the scope be auto-approved
+	 */
+	public void addScope( OAuth2Scope scope, boolean autoApprove ) {
+		removeScope( scope );
+		OAuth2ClientScope clientScope = new OAuth2ClientScope();
+		clientScope.setOAuth2Client( this );
+		clientScope.setOAuth2Scope( scope );
+		clientScope.setAutoApprove( autoApprove );
+		getOAuth2ClientScopes().add( clientScope );
+	}
+
+	/**
+	 * Remove an allowed scope from this client.
+	 *
+	 * @param scope to remove
+	 */
+	public void removeScope( OAuth2Scope scope ) {
+		getOAuth2ClientScopes().removeIf( clientScope -> Objects.equals( scope, clientScope.getOAuth2Scope() ) );
+	}
+
 	public Set<OAuth2ClientScope> getOAuth2ClientScopes() {
 		return oAuth2ClientScopes;
 	}
