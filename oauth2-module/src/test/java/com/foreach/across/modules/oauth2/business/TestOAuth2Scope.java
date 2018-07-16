@@ -17,27 +17,13 @@ package com.foreach.across.modules.oauth2.business;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Arne Vandamme
  */
 public class TestOAuth2Scope
 {
-	@Test
-	public void nullValuesAreSameAsEmpty() {
-		OAuth2Scope scope = new OAuth2Scope();
-		scope.setOAuth2ClientScopes( Collections.singleton( new OAuth2ClientScope() ) );
-
-		assertFalse( scope.getOAuth2ClientScopes().isEmpty() );
-
-		scope.setOAuth2ClientScopes( null );
-		assertTrue( scope.getOAuth2ClientScopes().isEmpty() );
-	}
-
 	@Test
 	public void oauth2ScopeDto() {
 		OAuth2Scope scope = new OAuth2Scope();
@@ -50,12 +36,8 @@ public class TestOAuth2Scope
 		OAuth2ClientScope clientScopeTwo = new OAuth2ClientScope();
 		clientScopeTwo.setId( new OAuth2ClientScopeId() );
 
-		scope.setOAuth2ClientScopes( Arrays.asList( clientScopeOne, clientScopeTwo ) );
-
 		OAuth2Scope dto = scope.toDto();
 		assertEquals( scope, dto );
 		assertEquals( scope.getName(), dto.getName() );
-		assertEquals( scope.getOAuth2ClientScopes(), dto.getOAuth2ClientScopes() );
-		assertNotSame( scope.getOAuth2ClientScopes(), dto.getOAuth2ClientScopes() );
 	}
 }
