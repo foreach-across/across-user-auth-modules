@@ -61,8 +61,7 @@ public class OAuth2StatelessJdbcTokenStore extends JdbcTokenStore
 		}
 
 		if ( object instanceof AuthenticationSerializerObject ) {
-			AuthenticationSerializerObject oAuth2AuthenticationSerializerObject =
-					(AuthenticationSerializerObject) object;
+			AuthenticationSerializerObject oAuth2AuthenticationSerializerObject = (AuthenticationSerializerObject) object;
 			for ( OAuth2AuthenticationSerializer serializer : serializers ) {
 				if ( serializer.canDeserialize( oAuth2AuthenticationSerializerObject ) ) {
 					return serializer.deserialize( oAuth2AuthenticationSerializerObject );

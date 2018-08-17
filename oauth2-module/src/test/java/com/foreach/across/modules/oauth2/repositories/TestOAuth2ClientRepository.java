@@ -19,6 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -54,7 +56,7 @@ public class TestOAuth2ClientRepository
 
 	@Test
 	public void clientNotFound() {
-		OAuth2Client bla = oAuth2Service.getClientById( "-4" );
+		OAuth2Client bla = oAuth2Service.getClientById( "-4" ).orElse( null );
 		assertNull( bla );
 	}
 
@@ -70,7 +72,7 @@ public class TestOAuth2ClientRepository
 		assertNotNull( oAuth2Client.getClientId() );
 		assertTrue( oAuth2Client.getId() > 0 );
 
-		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() ).orElse( null );
 
 		assertEquals( oAuth2Client.getClientId(), existing.getClientId() );
 		assertEquals( oAuth2Client.getClientSecret(), existing.getClientSecret() );
@@ -88,7 +90,7 @@ public class TestOAuth2ClientRepository
 
 		oAuth2Service.saveClient( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() ).orElse( null );
 
 		assertEquals( oAuth2Client.getRoles(), existing.getRoles() );
 	}
@@ -106,7 +108,7 @@ public class TestOAuth2ClientRepository
 
 		oAuth2Service.saveClient( oAuth2Client );
 
-		OAuth2Scope scope = oAuth2Service.getScopeById( oAuth2Scope.getId() );
+		OAuth2Scope scope = oAuth2Service.getScopeById( oAuth2Scope.getId() ).orElse( null );
 		OAuth2ClientScope oAuth2ClientScope = new OAuth2ClientScope();
 		oAuth2ClientScope.setOAuth2Scope( scope );
 		oAuth2ClientScope.setOAuth2Client( oAuth2Client );
@@ -114,7 +116,7 @@ public class TestOAuth2ClientRepository
 
 		oAuth2Service.saveClient( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() ).orElse( null );
 
 		Set<String> existingScope = existing.getScope();
 		assertTrue( existingScope.contains( "testScope" ) );
@@ -132,7 +134,7 @@ public class TestOAuth2ClientRepository
 
 		oAuth2Service.saveClient( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() ).orElse( null );
 
 		assertEquals( resourceIds, existing.getResourceIds() );
 	}
@@ -149,7 +151,7 @@ public class TestOAuth2ClientRepository
 
 		oAuth2Service.saveClient( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() ).orElse( null );
 
 		assertEquals( authorizedGrantTypes, existing.getAuthorizedGrantTypes() );
 	}
@@ -166,14 +168,14 @@ public class TestOAuth2ClientRepository
 
 		oAuth2Service.saveClient( oAuth2Client );
 
-		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() );
+		OAuth2Client existing = oAuth2Service.getClientById( oAuth2Client.getClientId() ).orElse( null );
 
 		assertEquals( registeredRedirectUri, existing.getRegisteredRedirectUri() );
 	}
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config implements AcrossContextConfigurer
+	static class Config extends ResourceServerConfigurerAdapter implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {
@@ -190,6 +192,11 @@ public class TestOAuth2ClientRepository
 
 		private UserModule userModule() {
 			return new UserModule();
+		}
+
+		@Override
+		public void configure( HttpSecurity http ) throws Exception {
+			http.authorizeRequests().antMatchers( "/api/**" ).authenticated();
 		}
 	}
 }

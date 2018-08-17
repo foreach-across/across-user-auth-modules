@@ -16,14 +16,13 @@
 package com.foreach.across.modules.oauth2.controllers;
 
 import com.foreach.across.modules.oauth2.dto.OAuth2TokenDto;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cache.support.NoOpCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
@@ -33,8 +32,6 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -44,15 +41,14 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = { TestInvalidateTokenEndpoint.Config.class })
+@RunWith(MockitoJUnitRunner.class)
 public class TestInvalidateTokenEndpoint
 {
-	@Autowired
+	@Mock
 	private TokenStore tokenStore;
 
-	@Autowired
-	private InvalidateTokenEndpoint invalidateTokenEndpoint;
+	@InjectMocks
+	private InvalidateTokenEndpoint invalidateTokenEndpoint = new InvalidateTokenEndpoint( new NoOpCacheManager() );
 
 	private OAuth2Request oAuth2Request;
 	private OAuth2Authentication authentication;
@@ -116,20 +112,5 @@ public class TestInvalidateTokenEndpoint
 		assertEquals( tokenValue, body.getValue() );
 		verify( tokenStore, never() ).removeAccessToken( (OAuth2AccessToken) anyObject() );
 		verify( tokenStore ).removeRefreshToken( token );
-	}
-
-	@Test
-	public void clientCannotInvalidateTokenFromDifferentClient() {
-
-	}
-
-	@Configuration
-	protected static class Config
-	{
-
-		@Bean
-		public InvalidateTokenEndpoint oAuth2TokenController() {
-			return new InvalidateTokenEndpoint( new NoOpCacheManager() );
-		}
 	}
 }

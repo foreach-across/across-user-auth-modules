@@ -110,7 +110,7 @@ public class ITOAuth2Module
 			StopWatch sw = new StopWatch();
 			sw.start();
 
-			OAuth2Client fetched = oauth2Service.getClientById( "generated-0" );
+			OAuth2Client fetched = oauth2Service.getClientById( "generated-0" ).orElse( null );
 			assertNotNull( fetched );
 
 			LOG.info( "" );
@@ -147,12 +147,12 @@ public class ITOAuth2Module
 
 			oauth2Service.saveClient( oAuth2Client );
 
-			OAuth2Client existing = oauth2Service.getClientById( "someclient" );
+			OAuth2Client existing = oauth2Service.getClientById( "someclient" ).orElse( null );
 			assertNotNull( existing );
 
 			assertEquals( oAuth2Client, existing );
 
-			OAuth2Client fetched = oauth2Service.getClientById( "someclient" );
+			OAuth2Client fetched = oauth2Service.getClientById( "someclient" ).orElse( null );
 			assertNotNull( fetched );
 			assertEquals( oAuth2Client, fetched );
 			assertNotSame( existing, fetched );
@@ -228,7 +228,7 @@ public class ITOAuth2Module
 					ctx.getBeanOfType( SecurityPrincipalLabelResolverStrategy.class ).resolvePrincipalLabel( "foo" )
 			);
 
-			OAuth2Client clientById = oauth2Service.getClientById( "foo" );
+			OAuth2Client clientById = oauth2Service.getClientById( "foo" ).orElse( null );
 			OAuth2Client dto = clientById.toDto();
 			dto.setRefreshTokenValiditySeconds( 55 );
 			try {

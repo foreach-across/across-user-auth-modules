@@ -27,6 +27,8 @@ import org.junit.Test;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.Optional;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -67,7 +69,7 @@ public class TestOAuth2ClientValidator
 		OAuth2Client client = new OAuth2Client();
 		client.setClientId( "PRINCIPAL NAME" );
 
-		when( repository.findOneByPrincipalName( "principal name" ) ).thenReturn( null );
+		when( repository.findByPrincipalName( "principal name" ) ).thenReturn( Optional.empty() );
 
 		validator.validate( client, errors );
 
@@ -81,7 +83,7 @@ public class TestOAuth2ClientValidator
 		OAuth2Client client = new OAuth2Client();
 		client.setClientId( "PRINCIPAL NAME" );
 
-		when( repository.findOneByPrincipalName( "principal name" ) ).thenReturn( client );
+		when( repository.findByPrincipalName( "principal name" ) ).thenReturn( Optional.of( client ) );
 
 		validator.validate( client, errors );
 
@@ -99,7 +101,7 @@ public class TestOAuth2ClientValidator
 		existing.setId( 2L );
 		existing.setClientId( "principal name" );
 
-		when( repository.findOneByPrincipalName( "principal name" ) ).thenReturn( existing );
+		when( repository.findByPrincipalName( "principal name" ) ).thenReturn( Optional.of( existing ) );
 
 		validator.validate( client, errors );
 

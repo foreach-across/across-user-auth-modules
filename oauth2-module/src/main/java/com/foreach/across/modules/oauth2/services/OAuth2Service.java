@@ -19,6 +19,7 @@ import com.foreach.across.modules.oauth2.business.OAuth2Client;
 import com.foreach.across.modules.oauth2.business.OAuth2Scope;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface OAuth2Service
 {
@@ -28,9 +29,9 @@ public interface OAuth2Service
 
 	OAuth2Scope saveScope( OAuth2Scope oAuth2Scope );
 
-	OAuth2Scope getScopeById( long id );
+	Optional<OAuth2Scope> getScopeById( long id );
 
 	OAuth2Client saveClient( OAuth2Client oAuth2Client );
 
-	OAuth2Client getClientById( String clientId );
+	Optional<OAuth2Client> getClientById( String clientId );
 }

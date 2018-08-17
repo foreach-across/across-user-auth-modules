@@ -50,6 +50,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 import static org.junit.Assert.*;
@@ -89,15 +90,15 @@ public class ITOAuth2ModuleWithCaching
 
 		assertTrue( principalMap.isEmpty() );
 
-		OAuth2Client unexisting = oauth2Service.getClientById( "blablabla" );
+		OAuth2Client unexisting = oauth2Service.getClientById( "blablabla" ).orElse( null );
 		assertNull( unexisting );
 		assertTrue( principalMap.isEmpty() );
 		assertEquals( 1, clientMap.size() );
 		assertTrue( clientMap.containsKey( "blablabla" ) );
 
-		assertNull( oauth2Service.getClientById( "blablabla" ) );
+		assertEquals( Optional.empty(), oauth2Service.getClientById( "blablabla" ) );
 
-		OAuth2Client existing = oauth2Service.getClientById( "fredClient" );
+		OAuth2Client existing = oauth2Service.getClientById( "fredClient" ).orElse( null );
 		assertNotNull( existing );
 		assertEquals( oAuth2Client, existing );
 
@@ -105,7 +106,7 @@ public class ITOAuth2ModuleWithCaching
 		assertSame( existing, principalMap.get( oAuth2Client.getPrincipalName() ) );
 		assertSame( existing, clientMap.get( "fredClient" ) );
 
-		OAuth2Client fetchedAgain = oauth2Service.getClientById( "fredClient" );
+		OAuth2Client fetchedAgain = oauth2Service.getClientById( "fredClient" ).orElse( null );
 		assertSame( existing, fetchedAgain );
 
 		assertSame( existing, securityPrincipalService.getPrincipalByName( fetchedAgain.getPrincipalName() ) );

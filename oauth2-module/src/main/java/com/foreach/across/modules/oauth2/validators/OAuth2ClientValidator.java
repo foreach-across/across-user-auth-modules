@@ -54,7 +54,7 @@ public class OAuth2ClientValidator extends EntityValidatorSupport<OAuth2Client>
 	@Override
 	protected void postValidation( OAuth2Client entity, Errors errors ) {
 		if ( !errors.hasFieldErrors( "clientId" ) ) {
-			OAuth2Client other = clientRepository.findOneByPrincipalName( entity.getPrincipalName() );
+			OAuth2Client other = clientRepository.findByPrincipalName( entity.getPrincipalName() ).orElse( null );
 			if ( other != null && !other.equals( entity ) ) {
 				errors.rejectValue( "clientId", "alreadyExists" );
 			}

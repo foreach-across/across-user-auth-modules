@@ -23,12 +23,13 @@ import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OAuth2ClientRepository
-		extends IdBasedEntityJpaRepository<OAuth2Client>, QueryDslPredicateExecutor<OAuth2Client>
+		extends IdBasedEntityJpaRepository<OAuth2Client>, QuerydslPredicateExecutor<OAuth2Client>
 {
 	@Caching(
 			put = {
@@ -38,7 +39,7 @@ public interface OAuth2ClientRepository
 			}
 	)
 	@Override
-	OAuth2Client findOne( Long id );
+	Optional<OAuth2Client> findById( Long id );
 
 	@Caching(
 			put = {
@@ -47,7 +48,7 @@ public interface OAuth2ClientRepository
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
-	OAuth2Client findByClientId( String clientId );
+	Optional<OAuth2Client> findByClientId( String clientId );
 
 	@Caching(
 			put = {
@@ -56,7 +57,7 @@ public interface OAuth2ClientRepository
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
-	OAuth2Client findOneByPrincipalName( String principalName );
+	Optional<OAuth2Client> findByPrincipalName( String principalName );
 
 	@Caching(
 			evict = {
@@ -85,7 +86,7 @@ public interface OAuth2ClientRepository
 			}
 	)
 	@Override
-	<S extends OAuth2Client> List<S> save( Iterable<S> entities );
+	<S extends OAuth2Client> List<S> saveAll( Iterable<S> entities );
 
 	@Caching(
 			evict = {
@@ -104,7 +105,7 @@ public interface OAuth2ClientRepository
 			}
 	)
 	@Override
-	void delete( Long id );
+	void deleteById( Long id );
 
 	@Caching(
 			evict = {
@@ -131,7 +132,7 @@ public interface OAuth2ClientRepository
 			}
 	)
 	@Override
-	void delete( Iterable<? extends OAuth2Client> entities );
+	void deleteAll( Iterable<? extends OAuth2Client> entities );
 
 	@Caching(
 			evict = {

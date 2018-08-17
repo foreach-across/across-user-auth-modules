@@ -17,7 +17,7 @@ package com.foreach.across.modules.oauth2;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("oauth2Module")
+@ConfigurationProperties("oauth2-module")
 public class OAuth2ModuleSettings
 {
 	/**
