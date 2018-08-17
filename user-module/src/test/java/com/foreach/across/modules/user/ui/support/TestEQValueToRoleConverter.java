@@ -25,6 +25,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -47,7 +49,7 @@ public class TestEQValueToRoleConverter
 	@Test
 	public void numericIsLookupById() {
 		EQValue id = new EQValue( "123" );
-		when( roleRepository.findOne( 123L ) ).thenReturn( mock( Role.class ) );
+		when( roleRepository.findById( 123L ) ).thenReturn( Optional.of( mock( Role.class ) ) );
 
 		assertNotNull( converter.convert( id ) );
 		verify( roleRepository, never() ).findByAuthorityIgnoringCase( any( String.class ) );
@@ -56,9 +58,9 @@ public class TestEQValueToRoleConverter
 	@Test
 	public void lookupByAuthority() {
 		EQValue id = new EQValue( "admin" );
-		when( roleRepository.findByAuthorityIgnoringCase( "ROLE_admin" ) ).thenReturn( mock( Role.class ) );
+		when( roleRepository.findByAuthorityIgnoringCase( "ROLE_admin" ) ).thenReturn( Optional.of( mock( Role.class ) ) );
 
 		assertNotNull( converter.convert( id ) );
-		verify( roleRepository, never() ).findOne( any( Long.class ) );
+		verify( roleRepository, never() ).findById( any( Long.class ) );
 	}
 }

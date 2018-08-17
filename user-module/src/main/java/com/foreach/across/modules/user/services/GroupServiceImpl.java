@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * @author Arne Vandamme
@@ -59,19 +60,19 @@ public class GroupServiceImpl implements GroupService
 
 	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
-	public Group getGroupById( long id ) {
-		return groupRepository.findOne( id );
+	public Optional<Group> getGroupById( long id ) {
+		return groupRepository.findById( id );
 	}
 
 	@Cacheable(value = UserModuleCache.GROUPS, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
-	public Group getGroupByName( String name ) {
+	public Optional<Group> getGroupByName( String name ) {
 		return getGroupByName( name, defaultUserDirectoryStrategy.getDefaultUserDirectory() );
 	}
 
 	@Cacheable(value = UserModuleCache.GROUPS, key = "#p0 + ':' + #p1.id", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
-	public Group getGroupByName( String name, UserDirectory directory ) {
+	public Optional<Group> getGroupByName( String name, UserDirectory directory ) {
 		return groupRepository.findByNameAndUserDirectory( name, directory );
 	}
 
@@ -84,9 +85,11 @@ public class GroupServiceImpl implements GroupService
 	@Override
 	@Transactional(HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	public void delete( long groupId ) {
-		Group group = groupRepository.findOne( groupId );
-		deleteProperties( groupId );
-		groupRepository.delete( group );
+		groupRepository.findById( groupId )
+		               .ifPresent( group -> {
+			               deleteProperties( groupId );
+			               groupRepository.delete( group );
+		               } );
 	}
 
 	@Override
@@ -118,7 +121,7 @@ public class GroupServiceImpl implements GroupService
 			return Collections.emptyList();
 		}
 
-		return groupRepository.findAll( groupIds );
+		return groupRepository.findAllById( groupIds );
 	}
 
 	@Override
@@ -157,7 +160,7 @@ public class GroupServiceImpl implements GroupService
 	}
 
 	@Override
-	public Group findOne( Predicate predicate ) {
+	public Optional<Group> findOne( Predicate predicate ) {
 		return groupRepository.findOne( predicate );
 	}
 }

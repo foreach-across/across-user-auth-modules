@@ -56,7 +56,7 @@ public class MachinePrincipalValidator extends GroupedPrincipalValidatorSupport<
 			QMachinePrincipal q = QMachinePrincipal.machinePrincipal;
 			MachinePrincipal other = machinePrincipalRepository.findOne(
 					q.name.equalsIgnoreCase( entity.getName() ).and( q.userDirectory.eq( entity.getUserDirectory() ) )
-			);
+			).orElse( null );
 
 			if ( other != null && !other.equals( entity ) ) {
 				errors.rejectValue( "name", "alreadyExists" );

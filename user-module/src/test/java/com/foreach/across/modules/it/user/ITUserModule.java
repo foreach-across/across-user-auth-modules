@@ -24,6 +24,7 @@ import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
+import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.*;
@@ -46,6 +47,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -78,7 +80,7 @@ public class ITUserModule
 	@Test
 	public void verifyBootstrapped() {
 		assertNotNull( userService );
-		User admin = userService.getUserByUsername( "admin" );
+		User admin = userService.getUserByUsername( "admin" ).orElse( null );
 		assertNotNull( admin );
 		assertEquals( "admin", admin.getUsername() );
 		assertEquals( EnumSet.noneOf( UserRestriction.class ), admin.getRestrictions() );
@@ -90,7 +92,7 @@ public class ITUserModule
 		assertEquals( true, admin.isAccountNonLocked() );
 		assertEquals( true, admin.isCredentialsNonExpired() );
 
-		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" );
+		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" ).orElse( null );
 		assertNotNull( machine );
 
 		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
@@ -152,7 +154,7 @@ public class ITUserModule
 
 		assertTrue( user.getId() > 0 );
 
-		User existing = userService.getUserById( user.getId() );
+		User existing = userService.getUserById( user.getId() ).orElse( null );
 		assertEquals( user.getUsername(), existing.getUsername() );
 		assertEquals( user.getFirstName(), existing.getFirstName() );
 		assertEquals( user.getLastName(), existing.getLastName() );
@@ -162,7 +164,7 @@ public class ITUserModule
 
 	@Test
 	public void usersCanHaveNegativeIds() {
-		User existing = userService.getUserById( -100 );
+		User existing = userService.getUserById( -100 ).orElse( null );
 		assertNull( existing );
 
 		User user = new User();
@@ -176,7 +178,7 @@ public class ITUserModule
 
 		userService.save( user );
 
-		existing = userService.getUserById( -100 );
+		existing = userService.getUserById( -100 ).orElse( null );
 		assertNotNull( existing );
 
 		assertEquals( "test-user:-100", existing.getUsername() );
@@ -204,7 +206,7 @@ public class ITUserModule
 
 		assertTrue( failed );
 
-		User admin = userService.getUserByUsername( "admin" );
+		User admin = userService.getUserByUsername( "admin" ).orElse( null );
 		UserProperties adminProperties = userService.getProperties( admin );
 		adminProperties.put( "admin", "test" );
 
@@ -327,7 +329,7 @@ public class ITUserModule
 
 		Long id = saved.getId();
 		assertEquals( 1, saved.getRestrictions().size() );
-		User user = userService.getUserById( id );
+		User user = userService.getUserById( id ).orElse( null );
 		assertNotSame( userWithRestriction, user );
 		assertEquals( 1, user.getRestrictions().size() );
 	}
@@ -349,10 +351,10 @@ public class ITUserModule
 		Group groupInOtherDir = groupService.save( group );
 		assertNotEquals( groupInDefaultDir, groupInOtherDir );
 
-		assertEquals( groupInDefaultDir, groupService.getGroupByName( "dir group" ) );
-		assertEquals( groupInDefaultDir,
+		assertEquals( Optional.of( groupInDefaultDir ), groupService.getGroupByName( "dir group" ) );
+		assertEquals( Optional.of( groupInDefaultDir ),
 		              groupService.getGroupByName( "dir group", groupInDefaultDir.getUserDirectory() ) );
-		assertEquals( groupInOtherDir, groupService.getGroupByName( "dir group", otherDir ) );
+		assertEquals( Optional.of( groupInOtherDir ), groupService.getGroupByName( "dir group", otherDir ) );
 	}
 
 	@Test
@@ -372,12 +374,12 @@ public class ITUserModule
 		MachinePrincipal machineInOtherDir = machinePrincipalService.save( machine );
 		assertNotEquals( machineInDefaultDir, machineInOtherDir );
 
-		assertEquals( machineInDefaultDir, machinePrincipalService.getMachinePrincipalByName( "dir group" ) );
+		assertEquals( Optional.of( machineInDefaultDir ), machinePrincipalService.getMachinePrincipalByName( "dir group" ) );
 		assertEquals(
-				machineInDefaultDir,
+				Optional.of( machineInDefaultDir ),
 				machinePrincipalService.getMachinePrincipalByName( "dir group", machineInDefaultDir.getUserDirectory() )
 		);
-		assertEquals( machineInOtherDir, machinePrincipalService.getMachinePrincipalByName( "dir group", otherDir ) );
+		assertEquals( Optional.of( machineInOtherDir ), machinePrincipalService.getMachinePrincipalByName( "dir group", otherDir ) );
 
 		assertEquals(
 				"dir group",
@@ -387,7 +389,7 @@ public class ITUserModule
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config implements AcrossContextConfigurer
+	static class Config extends SpringSecurityWebConfigurerAdapter implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {

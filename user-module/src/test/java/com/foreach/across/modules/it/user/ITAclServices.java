@@ -145,7 +145,7 @@ public class ITAclServices
 	}
 
 	private Group createGroup( String... roles ) {
-		Group group = groupService.getGroupById( -999 );
+		Group group = groupService.getGroupById( -999 ).orElse( null );
 
 		if ( group == null ) {
 			Group dto = new Group();
@@ -196,10 +196,10 @@ public class ITAclServices
 		assertTrue( adminRole.hasPermission( AclAuthorities.MODIFY_ACL ) );
 		assertTrue( adminRole.hasPermission( AclAuthorities.TAKE_OWNERSHIP ) );
 
-		AclSecurityEntity system = aclSecurityEntityService.getSecurityEntityByName( "system" );
+		AclSecurityEntity system = aclSecurityEntityService.getSecurityEntityByName( "system" ).orElse( null );
 		assertNotNull( system );
 
-		AclSecurityEntity groups = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+		AclSecurityEntity groups = aclSecurityEntityService.getSecurityEntityByName( "groups" ).orElse( null );
 		assertNotNull( groups );
 		assertEquals( system, groups.getParent() );
 
@@ -380,15 +380,15 @@ public class ITAclServices
 		MutableAcl ownAcl = acl.getAcl( savedGroup );
 		assertNotNull( ownAcl );
 		Long parentAclId = (Long) ownAcl.getParentAcl().getObjectIdentity().getIdentifier();
-		AclSecurityEntity parentEntity = aclSecurityEntityService.getSecurityEntityById( parentAclId );
+		AclSecurityEntity parentEntity = aclSecurityEntityService.getSecurityEntityById( parentAclId ).orElse( null );
 		assertNotNull( parentEntity );
 		assertEquals( parentEntity.getName(), "groups" );
 
 		groupService.delete( savedGroup.getId() );
-		assertNull( groupService.getGroupById( savedGroup.getId() ) );
+		assertEquals( Optional.empty(), groupService.getGroupById( savedGroup.getId() ) );
 		assertNull( acl.getAcl( savedGroup ) );
 
-		AclSecurityEntity groupsSecurityEntity = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+		AclSecurityEntity groupsSecurityEntity = aclSecurityEntityService.getSecurityEntityByName( "groups" ).orElse( null );
 		assertNotNull( groupsSecurityEntity );
 		assertNotNull( groupsSecurityEntity.getCreatedDate() );
 		assertNotNull( groupsSecurityEntity.getCreatedBy() );
@@ -407,9 +407,9 @@ public class ITAclServices
 		assertNull( acl.getAcl( savedGroup2 ) );
 
 		groupService.delete( savedGroup2.getId() );
-		assertNull( groupService.getGroupById( savedGroup2.getId() ) );
+		assertEquals( Optional.empty(), ( groupService.getGroupById( savedGroup2.getId() ) ) );
 		assertNull( acl.getAcl( savedGroup2 ) );
-		assertNotNull( aclSecurityEntityService.getSecurityEntityByName( "groups" ) );
+		assertTrue( aclSecurityEntityService.getSecurityEntityByName( "groups" ).isPresent() );
 
 		//Back to the original situation
 		settings.setEnableDefaultAcls( true );
@@ -417,7 +417,7 @@ public class ITAclServices
 
 	@Test
 	public void usersShouldHaveAuditInfo() {
-		securityPrincipalService.authenticate( machinePrincipalService.getMachinePrincipalByName( "system" ) );
+		securityPrincipalService.authenticate( machinePrincipalService.getMachinePrincipalByName( "system" ).orElse( null ) );
 
 		User createdUser = createRandomUser( new ArrayList<Group>(), new ArrayList<String>() );
 		assertNotNull( createdUser.getCreatedDate() );

@@ -44,7 +44,8 @@ public class RoleValidator extends EntityValidatorSupport<Role>
 	@Override
 	protected void postValidation( Role entity, Errors errors ) {
 		if ( !errors.hasFieldErrors( "name" ) ) {
-			Role other = roleRepository.findOne( QRole.role.name.equalsIgnoreCase( entity.getName() ) );
+			Role other = roleRepository.findOne( QRole.role.name.equalsIgnoreCase( entity.getName() ) )
+			                           .orElse( null );
 
 			if ( other != null && !other.equals( entity ) ) {
 				errors.rejectValue( "name", "alreadyExists" );
@@ -52,7 +53,8 @@ public class RoleValidator extends EntityValidatorSupport<Role>
 		}
 
 		if ( !errors.hasFieldErrors( "authority" ) ) {
-			Role other = roleRepository.findOne( QRole.role.authority.equalsIgnoreCase( entity.getAuthority() ) );
+			Role other = roleRepository.findOne( QRole.role.authority.equalsIgnoreCase( entity.getAuthority() ) )
+			                           .orElse( null );
 
 			// because equals has been overridden ensure id based check
 			if ( other != null && !other.equals( entity ) ) {

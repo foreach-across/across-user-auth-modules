@@ -257,7 +257,7 @@ public abstract class AbstractUserInDirectoryAuthenticationProvider implements A
 	 */
 	protected User retrieveUser( String username ) throws AuthenticationException {
 		try {
-			User user = userService.getUserByUsername( username, userDirectory );
+			User user = userService.getUserByUsername( username, userDirectory ).orElse( null );
 
 			if ( user == null && throwExceptionIfUserNotFound ) {
 				throw new BadCredentialsException( messages.getMessage(

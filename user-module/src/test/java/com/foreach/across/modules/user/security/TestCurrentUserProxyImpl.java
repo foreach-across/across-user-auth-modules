@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -211,8 +211,6 @@ public class TestCurrentUserProxyImpl
 		SecurityContextImpl ctx = new SecurityContextImpl();
 		ctx.setAuthentication( auth );
 		SecurityContextHolder.setContext( ctx );
-
-		when( auth.getPrincipal() ).thenReturn( user );
 
 		Collection<? extends GrantedAuthority> authorities = Collections.singleton( new SimpleGrantedAuthority( "some auth" ) );
 		when( auth.getAuthorities() ).thenAnswer( invocation -> authorities );

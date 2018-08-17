@@ -68,7 +68,7 @@ public class AclPermissionsInstaller
 
 	@InstallerMethod
 	public void install() {
-		MachinePrincipal system = machinePrincipalService.getMachinePrincipalByName( "system" );
+		MachinePrincipal system = machinePrincipalService.getMachinePrincipalByName( "system" ).orElse( null );
 
 		try (CloseableAuthentication ignored = securityPrincipalService.authenticate( system )) {
 			createPermissionsAndAddToAdminRole();
@@ -77,7 +77,7 @@ public class AclPermissionsInstaller
 	}
 
 	public void createEntitiesAndAcls() {
-		AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" );
+		AclSecurityEntity systemAcl = aclSecurityEntityService.getSecurityEntityByName( "system" ).orElse( null );
 
 		if ( systemAcl == null ) {
 			AclSecurityEntity dto = new AclSecurityEntity();
@@ -130,12 +130,12 @@ public class AclPermissionsInstaller
 	}
 
 	public void createGroupsAclSecurityEntity() {
-		AclSecurityEntity existing = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+		AclSecurityEntity existing = aclSecurityEntityService.getSecurityEntityByName( "groups" ).orElse( null );
 
 		if ( existing == null ) {
 			AclSecurityEntity dto = new AclSecurityEntity();
 			dto.setName( "groups" );
-			dto.setParent( aclSecurityEntityService.getSecurityEntityByName( "system" ) );
+			dto.setParent( aclSecurityEntityService.getSecurityEntityByName( "system" ).orElse( null ) );
 
 			existing = aclSecurityEntityService.save( dto );
 

@@ -22,21 +22,22 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * @author Arne Vandamme
  */
-public interface MachinePrincipalService extends QueryDslPredicateExecutor<MachinePrincipal>
+public interface MachinePrincipalService extends QuerydslPredicateExecutor<MachinePrincipal>
 {
 	/**
 	 * @return all registered machine principals
 	 */
 	Collection<MachinePrincipal> getMachinePrincipals();
 
-	MachinePrincipal getMachinePrincipalById( long id );
+	Optional<MachinePrincipal> getMachinePrincipalById( long id );
 
 	/**
 	 * Get the machine with a given name in the default directory.
@@ -44,7 +45,7 @@ public interface MachinePrincipalService extends QueryDslPredicateExecutor<Machi
 	 * @param name of the machine
 	 * @return instance or {@code null} if not found
 	 */
-	MachinePrincipal getMachinePrincipalByName( String name );
+	Optional<MachinePrincipal> getMachinePrincipalByName( String name );
 
 	/**
 	 * Get the group with a given name in the specified directory.
@@ -53,12 +54,12 @@ public interface MachinePrincipalService extends QueryDslPredicateExecutor<Machi
 	 * @param userDirectory the machine should belong to
 	 * @return instance or {@code null} if not found
 	 */
-	MachinePrincipal getMachinePrincipalByName( String name, UserDirectory userDirectory );
+	Optional<MachinePrincipal> getMachinePrincipalByName( String name, UserDirectory userDirectory );
 
 	MachinePrincipal save( MachinePrincipal machinePrincipalDto );
 
 	@Override
-	MachinePrincipal findOne( Predicate predicate );
+	Optional<MachinePrincipal> findOne( Predicate predicate );
 
 	@Override
 	Collection<MachinePrincipal> findAll( Predicate predicate );

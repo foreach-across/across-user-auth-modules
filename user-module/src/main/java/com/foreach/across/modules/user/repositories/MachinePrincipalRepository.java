@@ -22,13 +22,15 @@ import com.foreach.across.modules.user.business.MachinePrincipal;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+
+import java.util.Optional;
 
 /**
  * @author Arne Vandamme
  */
 public interface MachinePrincipalRepository
-		extends IdBasedEntityJpaRepository<MachinePrincipal>, QueryDslPredicateExecutor<MachinePrincipal>
+		extends IdBasedEntityJpaRepository<MachinePrincipal>, QuerydslPredicateExecutor<MachinePrincipal>
 {
 	@Caching(
 			put = {
@@ -37,12 +39,12 @@ public interface MachinePrincipalRepository
 			}
 	)
 	@Override
-	MachinePrincipal findOne( Long id );
+	Optional<MachinePrincipal> findById( Long id );
 
 	@Caching(
 			evict = {
-					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id"),
-					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName")
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.id", condition = "#result != null"),
+					@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#p0.principalName", condition = "#result != null")
 			}
 	)
 	@Override
@@ -68,7 +70,7 @@ public interface MachinePrincipalRepository
 
 	@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 	@Override
-	void delete( Long id );
+	void deleteById( Long id );
 
 	@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 	@Override
@@ -80,7 +82,7 @@ public interface MachinePrincipalRepository
 
 	@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 	@Override
-	void delete( Iterable<? extends MachinePrincipal> entities );
+	void deleteAll( Iterable<? extends MachinePrincipal> entities );
 
 	@CacheEvict(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, allEntries = true)
 	@Override

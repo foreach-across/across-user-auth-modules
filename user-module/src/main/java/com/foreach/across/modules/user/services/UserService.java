@@ -24,23 +24,24 @@ import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.Collection;
+import java.util.Optional;
 
-public interface UserService extends QueryDslPredicateExecutor<User>
+public interface UserService extends QuerydslPredicateExecutor<User>
 {
 	Collection<User> getUsers();
 
-	User getUserById( long id );
+	Optional<User> getUserById( long id );
 
-	User getUserByEmail( String email );
+	Optional<User> getUserByEmail( String email );
 
-	User getUserByEmail( String email, UserDirectory userDirectory );
+	Optional<User> getUserByEmail( String email, UserDirectory userDirectory );
 
-	User getUserByUsername( String username );
+	Optional<User> getUserByUsername( String username );
 
-	User getUserByUsername( String username, UserDirectory userDirectory );
+	Optional<User> getUserByUsername( String username, UserDirectory userDirectory );
 
 	User save( User user );
 
@@ -57,7 +58,7 @@ public interface UserService extends QueryDslPredicateExecutor<User>
 	Collection<User> getUsersWithPropertyValue( String propertyName, Object propertyValue );
 
 	@Override
-	User findOne( Predicate predicate );
+	Optional<User> findOne( Predicate predicate );
 
 	@Override
 	Collection<User> findAll( Predicate predicate );

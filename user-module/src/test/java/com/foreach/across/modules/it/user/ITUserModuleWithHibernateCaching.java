@@ -23,6 +23,7 @@ import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.MachinePrincipal;
@@ -64,7 +65,7 @@ public class ITUserModuleWithHibernateCaching
 	@Test
 	public void verifyBootstrapped() {
 		assertNotNull( userService );
-		User admin = userService.getUserByUsername( "admin" );
+		User admin = userService.getUserByUsername( "admin" ).orElse( null );
 		assertNotNull( admin );
 		assertEquals( "admin", admin.getUsername() );
 		assertEquals( EnumSet.noneOf( UserRestriction.class ), admin.getRestrictions() );
@@ -76,7 +77,7 @@ public class ITUserModuleWithHibernateCaching
 		assertEquals( true, admin.isAccountNonLocked() );
 		assertEquals( true, admin.isCredentialsNonExpired() );
 
-		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" );
+		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" ).orElse( null );
 		assertNotNull( machine );
 
 		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
@@ -100,7 +101,7 @@ public class ITUserModuleWithHibernateCaching
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config implements AcrossContextConfigurer
+	static class Config extends SpringSecurityWebConfigurerAdapter implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {

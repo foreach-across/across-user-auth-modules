@@ -23,18 +23,19 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * @author Arne Vandamme
  */
-public interface GroupService extends QueryDslPredicateExecutor<Group>
+public interface GroupService extends QuerydslPredicateExecutor<Group>
 {
 	Collection<Group> getGroups();
 
-	Group getGroupById( long id );
+	Optional<Group> getGroupById( long id );
 
 	/**
 	 * Get the group with a given name in the default directory.
@@ -42,7 +43,7 @@ public interface GroupService extends QueryDslPredicateExecutor<Group>
 	 * @param name of the group
 	 * @return instance or {@code null} if not found
 	 */
-	Group getGroupByName( String name );
+	Optional<Group> getGroupByName( String name );
 
 	/**
 	 * Get the group with a given name in the specified directory.
@@ -51,7 +52,7 @@ public interface GroupService extends QueryDslPredicateExecutor<Group>
 	 * @param userDirectory the group should belong to
 	 * @return instance or {@code null} if not found
 	 */
-	Group getGroupByName( String name, UserDirectory userDirectory );
+	Optional<Group> getGroupByName( String name, UserDirectory userDirectory );
 
 	Group save( Group groupDto );
 
@@ -76,7 +77,7 @@ public interface GroupService extends QueryDslPredicateExecutor<Group>
 	Collection<Group> getGroupsWithPropertyValue( String propertyName, Object propertyValue );
 
 	@Override
-	Group findOne( Predicate predicate );
+	Optional<Group> findOne( Predicate predicate );
 
 	@Override
 	Collection<Group> findAll( Predicate predicate );

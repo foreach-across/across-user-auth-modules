@@ -55,7 +55,7 @@ public class UserValidator implements Validator
 			defaultUserDirectoryStrategy.apply( userDto );
 
 			if ( settings.isRequireEmailUnique() ) {
-				User userByEmail = userService.getUserByEmail( userDto.getEmail() );
+				User userByEmail = userService.getUserByEmail( userDto.getEmail() ).orElse( null );
 				if ( userByEmail != null && !userByEmail.getId().equals( userDto.getId() ) ) {
 					errors.reject( null, "email already exists" );
 				}

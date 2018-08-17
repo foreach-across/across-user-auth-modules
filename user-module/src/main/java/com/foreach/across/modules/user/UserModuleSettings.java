@@ -19,7 +19,7 @@ package com.foreach.across.modules.user;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@ConfigurationProperties("userModule")
+@ConfigurationProperties("user-module")
 @SuppressWarnings("unused")
 public class UserModuleSettings
 {

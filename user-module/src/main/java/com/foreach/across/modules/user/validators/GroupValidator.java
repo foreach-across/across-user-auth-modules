@@ -55,7 +55,7 @@ public class GroupValidator extends EntityValidatorSupport<Group>
 			Group other = groupService.findOne(
 					query.name.equalsIgnoreCase( entity.getName() )
 					          .and( query.userDirectory.eq( entity.getUserDirectory() ) )
-			);
+			).orElse( null );
 
 			if ( other != null && !other.equals( entity ) ) {
 				errors.rejectValue( "name", "alreadyExists" );

@@ -21,6 +21,7 @@ import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
@@ -51,7 +52,7 @@ public class ITUserModuleRenamedTables
 	@Test
 	public void verifyBootstrapped() {
 		assertNotNull( userService );
-		User admin = userService.getUserByUsername( "admin" );
+		User admin = userService.getUserByUsername( "admin" ).orElse( null );
 		assertNotNull( admin );
 		assertEquals( "admin", admin.getUsername() );
 		assertEquals( EnumSet.noneOf( UserRestriction.class ), admin.getRestrictions() );
@@ -66,7 +67,7 @@ public class ITUserModuleRenamedTables
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config implements AcrossContextConfigurer
+	static class Config extends SpringSecurityWebConfigurerAdapter implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {

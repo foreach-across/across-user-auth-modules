@@ -24,12 +24,14 @@ import com.foreach.across.modules.user.business.UserDirectory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+
+import java.util.Optional;
 
 /**
  * @author Arne Vandamme
  */
-public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, QueryDslPredicateExecutor<Group>
+public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, QuerydslPredicateExecutor<Group>
 {
 	String GROUP_KEY = "#result.userDirectory.id + ':' + #result.name";
 
@@ -40,7 +42,7 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
-	Group findByNameAndUserDirectory( String name, UserDirectory userDirectory );
+	Optional<Group> findByNameAndUserDirectory( String name, UserDirectory userDirectory );
 
 	@Caching(
 			put = {
@@ -50,7 +52,7 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 			}
 	)
 	@Override
-	Group findOne( Long id );
+	Optional<Group> findById( Long id );
 
 	@Caching(
 			evict = {
@@ -89,7 +91,7 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 			}
 	)
 	@Override
-	void delete( Long id );
+	void deleteById( Long id );
 
 	@Caching(
 			evict = {
@@ -116,7 +118,7 @@ public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, Quer
 			}
 	)
 	@Override
-	void delete( Iterable<? extends Group> entities );
+	void deleteAll( Iterable<? extends Group> entities );
 
 	@Caching(
 			evict = {

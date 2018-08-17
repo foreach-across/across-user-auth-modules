@@ -73,7 +73,7 @@ public class RoleServiceImpl implements RoleService
 
 	@Override
 	public Role defineRole( Role role ) {
-		Role existing = roleRepository.findByAuthorityIgnoringCase( role.getAuthority() );
+		Role existing = roleRepository.findByAuthorityIgnoringCase( role.getAuthority() ).orElse( null );
 
 		if ( existing != null ) {
 			if ( existing.getPermissions().size() != role.getPermissions().size() ) {
@@ -101,7 +101,7 @@ public class RoleServiceImpl implements RoleService
 
 	@Override
 	public Role getRole( String authority ) {
-		return roleRepository.findByAuthorityIgnoringCase( Role.authorityString( authority ) );
+		return roleRepository.findByAuthorityIgnoringCase( Role.authorityString( authority ) ).orElse( null );
 	}
 
 	@Transactional(HibernateJpaConfiguration.TRANSACTION_MANAGER)

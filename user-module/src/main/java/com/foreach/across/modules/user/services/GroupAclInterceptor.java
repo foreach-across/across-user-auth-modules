@@ -40,7 +40,7 @@ public class GroupAclInterceptor extends IdBasedEntityAclInterceptor<Group>
 	@Override
 	public void afterCreate( Group entity ) {
 		if ( settings.isEnableDefaultAcls() ) {
-			AclSecurityEntity groupParentEntity = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+			AclSecurityEntity groupParentEntity = aclSecurityEntityService.getSecurityEntityByName( "groups" ).orElse( null );
 			aclSecurityService().createAclWithParent( entity, groupParentEntity );
 		}
 	}

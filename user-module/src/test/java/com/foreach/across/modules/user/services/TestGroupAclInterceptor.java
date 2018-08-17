@@ -20,7 +20,6 @@ import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntity
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.Group;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,10 +30,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = TestGroupAclInterceptor.Config.class)
+@ContextConfiguration(classes = TestGroupAclInterceptor.Config.class)
 @DirtiesContext
 public class TestGroupAclInterceptor
 {
@@ -66,7 +67,7 @@ public class TestGroupAclInterceptor
 		groups.setName( "groups" );
 
 		when( userModuleSettings.isEnableDefaultAcls() ).thenReturn( true );
-		when( aclSecurityEntityService.getSecurityEntityByName( "groups" ) ).thenReturn( groups );
+		when( aclSecurityEntityService.getSecurityEntityByName( "groups" ) ).thenReturn( Optional.of( groups ) );
 
 		groupAclInterceptor.afterCreate( group );
 
@@ -117,6 +118,21 @@ public class TestGroupAclInterceptor
 	@Configuration
 	static class Config
 	{
+		@Bean
+		public AclSecurityService aclSecurityService() {
+			return mock( AclSecurityService.class );
+		}
+
+		@Bean
+		public AclSecurityEntityService aclSecurityEntityService() {
+			return mock( AclSecurityEntityService.class );
+		}
+
+		@Bean
+		public UserModuleSettings userModuleSettings() {
+			return mock( UserModuleSettings.class );
+		}
+
 		@Bean
 		public GroupAclInterceptor groupAclInterceptor() {
 			return new GroupAclInterceptor();

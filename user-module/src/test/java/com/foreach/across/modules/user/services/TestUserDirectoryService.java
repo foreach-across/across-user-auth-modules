@@ -19,7 +19,6 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.UserDirectoryRepository;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
  * @since 2.0.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = TestUserDirectoryService.Config.class)
+@ContextConfiguration(classes = TestUserDirectoryService.Config.class)
 public class TestUserDirectoryService
 {
 	@Autowired
@@ -81,6 +81,11 @@ public class TestUserDirectoryService
 	@Configuration
 	protected static class Config
 	{
+		@Bean
+		public UserDirectoryRepository userDirectoryRepository() {
+			return mock( UserDirectoryRepository.class );
+		}
+
 		@Bean
 		public UserDirectoryService userDirectoryService() {
 			return new UserDirectoryServiceImpl();
