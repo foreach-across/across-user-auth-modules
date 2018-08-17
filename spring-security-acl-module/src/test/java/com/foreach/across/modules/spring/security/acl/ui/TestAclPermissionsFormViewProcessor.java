@@ -75,7 +75,6 @@ public class TestAclPermissionsFormViewProcessor
 		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 		EntityViewContext viewContext = mock( EntityViewContext.class );
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
-		when( viewContext.getEntity() ).thenReturn( ENTITY );
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 
 		when( formRegistry.getForEntityConfiguration( entityConfiguration ) ).thenReturn( Optional.empty() );

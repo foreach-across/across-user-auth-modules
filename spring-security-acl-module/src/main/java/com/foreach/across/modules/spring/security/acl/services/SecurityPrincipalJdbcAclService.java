@@ -81,14 +81,14 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 
 	@Transactional(readOnly = true)
 	@Override
-	protected Long createOrRetrieveClassPrimaryKey( String type, boolean allowCreate ) {
+	protected Long createOrRetrieveClassPrimaryKey( String type, boolean allowCreate, Class idType ) {
 		Long classId;
 		Long cachedClassId = cache.get( type, Long.class );
 		if ( cachedClassId != null ) {
 			return cachedClassId;
 		}
 		else {
-			classId = super.createOrRetrieveClassPrimaryKey( type, allowCreate );
+			classId = super.createOrRetrieveClassPrimaryKey( type, allowCreate, idType );
 			cache.put( type, classId );
 		}
 		return classId;

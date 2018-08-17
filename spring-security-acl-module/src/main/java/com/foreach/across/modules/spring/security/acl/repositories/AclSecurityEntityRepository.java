@@ -22,6 +22,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 
+import java.util.Optional;
+
 /**
  * @author Arne Vandamme
  */
@@ -29,20 +31,20 @@ public interface AclSecurityEntityRepository extends IdBasedEntityJpaRepository<
 {
 	@Caching(
 			put = {
-					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name", condition = "#result != null")
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id"),
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name")
 			}
 	)
 	@Override
-	AclSecurityEntity findOne( Long id );
+	Optional<AclSecurityEntity> findById( Long id );
 
 	@Caching(
 			put = {
-					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name", condition = "#result != null")
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id"),
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name")
 			}
 	)
-	AclSecurityEntity findByName( String name );
+	Optional<AclSecurityEntity> findByName( String name );
 
 	@Caching(
 			evict = {
@@ -73,7 +75,7 @@ public interface AclSecurityEntityRepository extends IdBasedEntityJpaRepository<
 
 	@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, allEntries = true)
 	@Override
-	void delete( Long id );
+	void deleteById( Long id );
 
 	@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, allEntries = true)
 	@Override
@@ -85,7 +87,7 @@ public interface AclSecurityEntityRepository extends IdBasedEntityJpaRepository<
 
 	@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, allEntries = true)
 	@Override
-	void delete( Iterable<? extends AclSecurityEntity> entities );
+	void deleteAll( Iterable<? extends AclSecurityEntity> entities );
 
 	@CacheEvict(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, allEntries = true)
 	@Override

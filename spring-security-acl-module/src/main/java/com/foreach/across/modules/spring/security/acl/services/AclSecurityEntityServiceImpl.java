@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * @author Arne Vandamme
  * @see com.foreach.across.modules.spring.security.acl.aop.AclSecurityEntityAclInterceptor
@@ -40,8 +42,8 @@ public class AclSecurityEntityServiceImpl implements AclSecurityEntityService
 			unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY
 	)
 	@Override
-	public AclSecurityEntity getSecurityEntityById( long id ) {
-		return aclSecurityEntityRepository.findOne( id );
+	public Optional<AclSecurityEntity> getSecurityEntityById( long id ) {
+		return aclSecurityEntityRepository.findById( id );
 	}
 
 	@Cacheable(
@@ -50,7 +52,7 @@ public class AclSecurityEntityServiceImpl implements AclSecurityEntityService
 			unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY
 	)
 	@Override
-	public AclSecurityEntity getSecurityEntityByName( String name ) {
+	public Optional<AclSecurityEntity> getSecurityEntityByName( String name ) {
 		return aclSecurityEntityRepository.findByName( name );
 	}
 

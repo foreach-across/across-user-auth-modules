@@ -17,14 +17,16 @@ package com.foreach.across.modules.spring.security.acl.services;
 
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 
+import java.util.Optional;
+
 /**
  * @author Arne Vandamme
  */
 public interface AclSecurityEntityService
 {
-	AclSecurityEntity getSecurityEntityById( long id );
+	Optional<AclSecurityEntity> getSecurityEntityById( long id );
 
-	AclSecurityEntity getSecurityEntityByName( String name );
+	Optional<AclSecurityEntity> getSecurityEntityByName( String name );
 
 	AclSecurityEntity save( AclSecurityEntity securityEntityDto );
 }

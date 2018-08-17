@@ -21,6 +21,8 @@ import org.junit.Test;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.*;
 
 /**
@@ -36,13 +38,13 @@ public class TestAclSecurityEntityValidator
 		Errors errors = mock( Errors.class );
 
 		AclSecurityEntity one = create( "one", null );
-		when( aclSecurityEntityService.getSecurityEntityByName( "one" ) ).thenReturn( one );
+		when( aclSecurityEntityService.getSecurityEntityByName( "one" ) ).thenReturn( Optional.of( one ) );
 		AclSecurityEntity two = create( "two", one );
-		when( aclSecurityEntityService.getSecurityEntityByName( "two" ) ).thenReturn( two );
+		when( aclSecurityEntityService.getSecurityEntityByName( "two" ) ).thenReturn( Optional.of( two ) );
 		AclSecurityEntity three = create( "three", two );
-		when( aclSecurityEntityService.getSecurityEntityByName( "three" ) ).thenReturn( three );
+		when( aclSecurityEntityService.getSecurityEntityByName( "three" ) ).thenReturn( Optional.of( three ) );
 		AclSecurityEntity four = create( "four", three );
-		when( aclSecurityEntityService.getSecurityEntityByName( "four" ) ).thenReturn( four );
+		when( aclSecurityEntityService.getSecurityEntityByName( "four" ) ).thenReturn( Optional.of( four ) );
 
 		one.setParent( four );
 
