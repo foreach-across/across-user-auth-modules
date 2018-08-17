@@ -31,6 +31,7 @@ import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.*;
 import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.dialect.Oracle10gDialect;
 import org.hibernate.dialect.SQLServer2008Dialect;
@@ -397,7 +398,9 @@ public class ITUserModule
 		public void configure( AcrossContext context ) {
 			AcrossHibernateJpaModule module = new AcrossHibernateJpaModule();
 
-			switch ( System.getProperty( "acrossTest.datasource" )) {
+			String testDataSource = StringUtils.defaultString( System.getProperty( "acrossTest.datasource" ) );
+
+			switch ( testDataSource ) {
 				case "mssql":
 					module.setHibernateProperty( AvailableSettings.DIALECT, SQLServer2008Dialect.class.getName() );
 					break;
