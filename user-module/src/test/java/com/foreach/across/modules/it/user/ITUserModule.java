@@ -32,6 +32,7 @@ import com.foreach.across.modules.user.services.*;
 import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.dialect.Oracle10gDialect;
 import org.hibernate.dialect.SQLServer2008Dialect;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -220,7 +222,7 @@ public class ITUserModule
 	public void queryDslUserFinding() {
 		QUser user = QUser.user;
 
-		Page<User> found = userService.findAll( user.email.eq( "some@email.com" ), new QPageRequest( 0, 10 ) );
+		Page<User> found = userService.findAll( user.email.eq( "some@email.com" ), PageRequest.of( 0, 10 ) );
 		assertEquals( 0, found.getTotalElements() );
 		assertEquals( 0, found.getTotalPages() );
 
@@ -394,10 +396,16 @@ public class ITUserModule
 		@Override
 		public void configure( AcrossContext context ) {
 			AcrossHibernateJpaModule module = new AcrossHibernateJpaModule();
-			if ( "mssql".equals( System.getProperty( "acrossTest.datasource" ) ) ) {
-				// TODO:
-				module.setHibernateProperty( AvailableSettings.DIALECT, SQLServer2008Dialect.class.getName() );
+
+			switch ( System.getProperty( "acrossTest.datasource" )) {
+				case "mssql":
+					module.setHibernateProperty( AvailableSettings.DIALECT, SQLServer2008Dialect.class.getName() );
+					break;
+				case "oracle":
+					module.setHibernateProperty( AvailableSettings.DIALECT, Oracle10gDialect.class.getName() );
+					break;
 			}
+
 			context.addModule( module );
 			context.addModule( userModule() );
 			context.addModule( propertiesModule() );
