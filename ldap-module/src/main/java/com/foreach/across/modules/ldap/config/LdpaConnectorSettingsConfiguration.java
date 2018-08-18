@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.ldap.config;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.infrastructure.aop.LdapConnectorEntityInterceptor;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsRegistry;
@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@AcrossDepends(required = "PropertiesModule")
+@ConditionalOnAcrossModule("PropertiesModule")
 public class LdpaConnectorSettingsConfiguration extends AbstractEntityPropertiesConfiguration
 {
 	@Override

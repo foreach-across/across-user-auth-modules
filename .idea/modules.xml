@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ldap-module/ldap-module.iml" filepath="$PROJECT_DIR$/ldap-module/ldap-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ldap-module/ldap-module.iml" filepath="$PROJECT_DIR$/ldap-module/ldap-module.iml" />
       <module fileurl="file://$PROJECT_DIR$/ldap-module-project.iml" filepath="$PROJECT_DIR$/ldap-module-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ldap-module-project.iml" filepath="$PROJECT_DIR$/ldap-module-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ldap-module-test-web/ldap-module-test-web.iml" filepath="$PROJECT_DIR$/ldap-module-test-web/ldap-module-test-web.iml" />
       <module fileurl="file://$PROJECT_DIR$/ldap-module-test-web/ldap-module-test-web.iml" filepath="$PROJECT_DIR$/ldap-module-test-web/ldap-module-test-web.iml" />
     </modules>
   </component>

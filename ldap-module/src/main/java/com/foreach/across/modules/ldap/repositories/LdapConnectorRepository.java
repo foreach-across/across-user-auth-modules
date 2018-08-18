@@ -19,14 +19,16 @@ package com.foreach.across.modules.ldap.repositories;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 import com.foreach.across.modules.ldap.business.LdapConnector;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+
+import java.util.Optional;
 
 /**
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
 @Exposed
-public interface LdapConnectorRepository extends IdBasedEntityJpaRepository<LdapConnector>, QueryDslPredicateExecutor<LdapConnector>
+public interface LdapConnectorRepository extends IdBasedEntityJpaRepository<LdapConnector>, QuerydslPredicateExecutor<LdapConnector>
 {
-	LdapConnector findByName( String name );
+	Optional<LdapConnector> findByName( String name );
 }

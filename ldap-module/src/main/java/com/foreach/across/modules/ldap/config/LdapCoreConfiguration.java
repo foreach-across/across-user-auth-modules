@@ -17,7 +17,7 @@
 package com.foreach.across.modules.ldap.config;
 
 import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.ldap.LdapModuleSettings;
@@ -47,8 +47,8 @@ import java.net.UnknownHostException;
 public class LdapCoreConfiguration
 {
 	@Bean
-	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
-	@ConditionalOnProperty(value = "disableSynchronizationTask", prefix = "ldapModule", havingValue = "false", matchIfMissing = true)
+	@ConditionalOnAcrossModule({ "UserModule", "PropertiesModule" })
+	@ConditionalOnProperty(value = "disable-synchronization-task", prefix = "ldap-module", havingValue = "false", matchIfMissing = true)
 	public LdapSynchronizationTask ldapSynchronizationTask( LdapUserDirectoryRepository ldapUserDirectoryRepository,
 	                                                        DistributedLockRepository lockRepository,
 	                                                        LdapSynchronizationService ldapSynchronizationService ) throws UnknownHostException {
@@ -57,7 +57,7 @@ public class LdapCoreConfiguration
 	}
 
 	@Bean
-	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
+	@ConditionalOnAcrossModule({ "UserModule", "PropertiesModule" })
 	public LdapPropertiesService ldapPropertiesService( AcrossModule currentModule,
 	                                                    UserPropertiesRegistry userPropertiesRegistry,
 	                                                    GroupPropertiesRegistry groupPropertiesRegistry ) {
@@ -73,7 +73,7 @@ public class LdapCoreConfiguration
 	}
 
 	@Bean
-	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
+	@ConditionalOnAcrossModule({ "UserModule", "PropertiesModule" })
 	public LdapSynchronizationService ldapSynchronizationService( UserService userService,
 	                                                              GroupService groupService,
 	                                                              LdapConnectorSettingsService ldapConnectorSettingsService,
@@ -89,7 +89,7 @@ public class LdapCoreConfiguration
 	}
 
 	@Bean
-	@AcrossDepends(required = { "UserModule", "PropertiesModule" })
+	@ConditionalOnAcrossModule({ "UserModule", "PropertiesModule" })
 	public UserDirectoryServiceProvider ldapUserDirectoryServiceProvider() {
 		return new LdapUserDirectoryServiceProvider();
 	}
@@ -100,7 +100,7 @@ public class LdapCoreConfiguration
 	}
 
 	@Bean
-	@AcrossDepends(required = { "EntityModule" })
+	@ConditionalOnAcrossModule("EntityModule")
 	public AjaxTestLdapConnectorController ajaxTestLdapConnectorController() {
 		return new AjaxTestLdapConnectorController();
 	}

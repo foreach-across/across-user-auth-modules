@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
-@ConfigurationProperties("ldapModule")
+@ConfigurationProperties("ldap-module")
 @Data
 @SuppressWarnings("unused")
 public class LdapModuleSettings

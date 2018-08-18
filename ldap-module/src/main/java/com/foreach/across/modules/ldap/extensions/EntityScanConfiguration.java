@@ -29,7 +29,6 @@ import com.foreach.across.modules.ldap.business.LdapConnector;
 @ModuleConfiguration(AcrossHibernateJpaModule.NAME)
 public class EntityScanConfiguration implements HibernatePackageConfigurer
 {
-
 	@Override
 	public void configureHibernatePackage( HibernatePackageRegistry hibernatePackage ) {
 		hibernatePackage.addPackageToScan( LdapConnector.class );
