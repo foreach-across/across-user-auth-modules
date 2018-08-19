@@ -24,7 +24,6 @@ import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.events.LdapEntityDeletedEvent;
 import com.foreach.across.modules.ldap.events.LdapEntityProcessedEvent;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalAuthenticationToken;
 import com.foreach.across.modules.spring.security.infrastructure.services.CloseableAuthentication;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
@@ -143,11 +142,9 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 	private CloseableAuthentication authenticateAsConnector( LdapConnector connector ) {
 		if ( connector.getSynchronizationPrincipalName() != null ) {
-			SecurityPrincipal principal = securityPrincipalService.getPrincipalByName(
-					connector.getSynchronizationPrincipalName() );
-			if ( principal != null ) {
-				return new CloseableAuthentication( new SecurityPrincipalAuthenticationToken( principal ) );
-			}
+			return securityPrincipalService.getPrincipalByName( connector.getSynchronizationPrincipalName() )
+			                               .map( principal -> new CloseableAuthentication( new SecurityPrincipalAuthenticationToken( principal ) ) )
+			                               .orElse( null );
 		}
 		return null;
 	}

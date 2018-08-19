@@ -189,7 +189,6 @@ public class TestLdapConnectorSynchronization
 		}
 
 		@Bean
-
 		public AcrossEventPublisher acrossEventPublisher() {
 			return mock( AcrossEventPublisher.class );
 		}
