@@ -31,8 +31,8 @@ public interface AclSecurityEntityRepository extends IdBasedEntityJpaRepository<
 {
 	@Caching(
 			put = {
-					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id"),
-					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name")
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name", condition = "#result != null")
 			}
 	)
 	@Override
@@ -40,8 +40,8 @@ public interface AclSecurityEntityRepository extends IdBasedEntityJpaRepository<
 
 	@Caching(
 			put = {
-					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id"),
-					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name")
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.id", condition = "#result != null"),
+					@CachePut(value = SpringSecurityAclModuleCache.ACL_SECURITY_ENTITY, key = "#result.name", condition = "#result != null")
 			}
 	)
 	Optional<AclSecurityEntity> findByName( String name );
