@@ -39,6 +39,7 @@ import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -140,7 +141,7 @@ public class TestEntityAclPermissionsFormSectionAdapter
 		val objectForSidResolver = adapted.getObjectForSidResolver();
 
 		SecurityPrincipal principal = mock( SecurityPrincipal.class );
-		when( securityPrincipalService.getPrincipalByName( "some principal" ) ).thenReturn( principal );
+		when( securityPrincipalService.getPrincipalByName( "some principal" ) ).thenReturn( Optional.of( principal ) );
 
 		assertThat( objectForSidResolver ).isNotNull();
 		assertThat( objectForSidResolver.apply( new GrantedAuthoritySid( "some principal" ) ) ).isNull();

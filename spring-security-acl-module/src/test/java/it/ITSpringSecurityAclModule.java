@@ -38,6 +38,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Optional;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -79,7 +81,7 @@ public class ITSpringSecurityAclModule
 		when( auth.getPrincipal() ).thenReturn( "principalName" );
 
 		SecurityPrincipal principal = mock( SecurityPrincipal.class );
-		when( principalRetrievalStrategy.getPrincipalByName( "principalName" ) ).thenReturn( principal );
+		when( principalRetrievalStrategy.getPrincipalByName( "principalName" ) ).thenReturn( Optional.of( principal ) );
 
 		SecurityContextHolder.getContext().setAuthentication( auth );
 

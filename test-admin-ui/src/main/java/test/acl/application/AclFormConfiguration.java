@@ -41,6 +41,8 @@ import test.acl.application.domain.group.GroupRepository;
 import test.acl.application.domain.user.User;
 import test.acl.application.domain.user.UserRepository;
 
+import java.util.Optional;
+
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.spring.security.acl.ui.AclPermissionsForm.permissionGroup;
 
@@ -74,10 +76,10 @@ class AclFormConfiguration implements EntityConfigurer
 	SecurityPrincipalRetrievalStrategy securityPrincipalRetrievalStrategy() {
 		return principalName -> {
 			if ( principalName.startsWith( "group:" ) ) {
-				return groupRepository.findOneByName( principalName.replaceFirst( "group:", "" ) );
+				return Optional.ofNullable( groupRepository.findOneByName( principalName.replaceFirst( "group:", "" ) ) );
 			}
 			else {
-				return userRepository.findOneByName( principalName );
+				return Optional.ofNullable( userRepository.findOneByName( principalName ) );
 			}
 		};
 	}

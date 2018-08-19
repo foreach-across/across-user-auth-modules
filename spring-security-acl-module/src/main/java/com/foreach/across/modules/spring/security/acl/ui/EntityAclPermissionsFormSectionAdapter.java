@@ -118,7 +118,7 @@ class EntityAclPermissionsFormSectionAdapter
 
 			return sid -> {
 				if ( sid instanceof PrincipalSid ) {
-					return securityPrincipalService.getPrincipalByName( ( (PrincipalSid) sid ).getPrincipal() );
+					return securityPrincipalService.getPrincipalByName( ( (PrincipalSid) sid ).getPrincipal() ).orElse( null );
 				}
 				return null;
 			};
