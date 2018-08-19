@@ -89,11 +89,9 @@ public class UserValidator implements Validator
 					principalName = userDto.getEmail();
 				}
 
-				SecurityPrincipal principal = securityPrincipalService.getPrincipalByName( principalName );
-
-				if ( principal != null && !isSamePrincipal( principal, userDto ) ) {
-					errors.rejectValue( "username", null, "username is not available" );
-				}
+				securityPrincipalService.getPrincipalByName( principalName )
+				                        .filter( principal -> !isSamePrincipal( principal, userDto ) )
+				                        .ifPresent( p -> errors.rejectValue( "username", "alreadyExists", "username is not available" ) );
 			}
 
 			if ( !errors.hasFieldErrors( "groups" ) ) {

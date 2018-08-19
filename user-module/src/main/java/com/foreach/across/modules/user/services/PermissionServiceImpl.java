@@ -67,7 +67,7 @@ public class PermissionServiceImpl implements PermissionService
 	@Transactional(HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	@Override
 	public Permission definePermission( Permission permissionDto ) {
-		Permission existing = permissionRepository.findByNameIgnoringCase( permissionDto.getName() );
+		Permission existing = permissionRepository.findByNameIgnoringCase( permissionDto.getName() ).orElse( null );
 
 		if ( existing != null ) {
 			existing.setName( permissionDto.getName() );
@@ -92,7 +92,7 @@ public class PermissionServiceImpl implements PermissionService
 
 	@Override
 	public PermissionGroup getPermissionGroup( String name ) {
-		return permissionGroupRepository.findByNameIgnoringCase( name );
+		return permissionGroupRepository.findByNameIgnoringCase( name ).orElse( null );
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class PermissionServiceImpl implements PermissionService
 
 	@Override
 	public Permission getPermission( String name ) {
-		return permissionRepository.findByNameIgnoringCase( name );
+		return permissionRepository.findByNameIgnoringCase( name ).orElse( null );
 	}
 
 	@Override

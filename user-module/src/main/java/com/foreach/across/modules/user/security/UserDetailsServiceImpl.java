@@ -53,9 +53,10 @@ public class UserDetailsServiceImpl implements UserDetailsService
 	public UserDetails loadUserByUsername( String username ) throws UsernameNotFoundException {
 		for ( UserDirectory userDirectory : userDirectoryService.getActiveUserDirectories() ) {
 			String principalName = buildPrincipalName( username, userDirectory );
-			SecurityPrincipal principal = securityPrincipalService.getPrincipalByName( principalName );
 
-			if ( principal != null && principal instanceof UserDetails ) {
+			SecurityPrincipal principal = securityPrincipalService.getPrincipalByName( principalName ).orElse( null );
+
+			if ( principal instanceof UserDetails ) {
 				return (UserDetails) principal;
 			}
 		}

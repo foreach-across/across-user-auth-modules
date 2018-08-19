@@ -70,7 +70,7 @@ public class TestMachinePrincipalService extends AbstractQueryDslPredicateExecut
 		MachinePrincipal expected = new MachinePrincipal();
 		expected.setName( "expected" );
 
-		when( securityPrincipalService.getPrincipalByName( "123@@@expected" ) ).thenReturn( expected );
+		when( securityPrincipalService.getPrincipalByName( "123@@@expected" ) ).thenReturn( Optional.of( expected ) );
 
 		assertEquals( Optional.of( expected ), machinePrincipalService.getMachinePrincipalByName( "EXPECTED" ) );
 	}

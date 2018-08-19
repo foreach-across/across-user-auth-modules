@@ -117,7 +117,7 @@ public class ITAclServices
 
 	@Before
 	public void createUsers() {
-		securityPrincipalService.authenticate( securityPrincipalService.getPrincipalByName( "system" ) );
+		securityPrincipalService.authenticate( securityPrincipalService.getPrincipalByName( "system" ).orElse( null ) );
 
 		permissionService.definePermission( "manage files", "Manage all files and folders", "unit-test" );
 		roleService.defineRole( "ROLE_FILE_MANAGER", "File manager", Arrays.asList( "manage files" ) );

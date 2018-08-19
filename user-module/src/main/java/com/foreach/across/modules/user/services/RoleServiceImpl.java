@@ -60,7 +60,7 @@ public class RoleServiceImpl implements RoleService
 		Set<Permission> permissions = new HashSet<>();
 
 		for ( String permissionName : permissionNames ) {
-			Permission permission = permissionRepository.findByNameIgnoringCase( permissionName );
+			Permission permission = permissionRepository.findByNameIgnoringCase( permissionName ).orElse( null );
 			Assert.notNull( permission, "Invalid permission: " + permissionName );
 
 			permissions.add( permission );
@@ -110,7 +110,7 @@ public class RoleServiceImpl implements RoleService
 		Set<Permission> actualPermissions = new HashSet<>();
 
 		for ( Permission permission : role.getPermissions() ) {
-			Permission existing = permissionRepository.findByNameIgnoringCase( permission.getName() );
+			Permission existing = permissionRepository.findByNameIgnoringCase( permission.getName() ).orElse( null );
 
 			if ( existing == null ) {
 				throw new IllegalArgumentException( "No permission defined with name: " + permission.getName() );

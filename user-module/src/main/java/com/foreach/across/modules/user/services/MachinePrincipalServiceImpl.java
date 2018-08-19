@@ -70,7 +70,7 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 	@Override
 	public Optional<MachinePrincipal> getMachinePrincipalByName( String name, UserDirectory userDirectory ) {
 		String principalName = BasicSecurityPrincipal.uniquePrincipalName( name, userDirectory );
-		return Optional.ofNullable( securityPrincipalService.getPrincipalByName( principalName ) );
+		return securityPrincipalService.getPrincipalByName( principalName );
 	}
 
 	@Override

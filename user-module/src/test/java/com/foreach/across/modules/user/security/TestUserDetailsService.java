@@ -30,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.verify;
@@ -66,7 +67,7 @@ public class TestUserDetailsService
 		when( userDirectoryService.getActiveUserDirectories() ).thenReturn( Arrays.asList( otherDir, defaultDir ) );
 
 		User expectedUserDetails = new User();
-		when( securityPrincipalService.getPrincipalByName( "myname" ) ).thenReturn( expectedUserDetails );
+		when( securityPrincipalService.getPrincipalByName( "myname" ) ).thenReturn( Optional.of( expectedUserDetails ) );
 
 		UserDetails details = userDetailsService.loadUserByUsername( "myname" );
 		assertSame( expectedUserDetails, details );

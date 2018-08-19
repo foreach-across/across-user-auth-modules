@@ -24,6 +24,8 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 /**
  * @author Arne Vandamme
  */
@@ -38,5 +40,5 @@ public interface SecurityPrincipalRepository
 	)
 	@Query("select p from BasicSecurityPrincipal p where p.principalName = ?1")
 	@Override
-	SecurityPrincipal getPrincipalByName( String principalName );
+	Optional<SecurityPrincipal> getPrincipalByName( String principalName );
 }
