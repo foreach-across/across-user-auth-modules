@@ -34,9 +34,6 @@ public class LdapModuleSettings
 	@Deprecated
 	public static final String SYNCHRONIZATION_TASK_INTERVAL_IN_SECONDS =
 			"ldapModule.synchronizationTaskIntervalInSeconds";
-	@Deprecated
-	public static final String SYNCHRONIZATION_TASK_INITIAL_DELAY_IN_SECONDS =
-			"ldapModule.synchronizationTaskInitialDelayInSeconds";
 	public static final String SYNCHRONIZATION_TASK_INTERVAL =
 			"ldapModule.synchronizationTaskInterval";
 	public static final String SYNCHRONIZATION_TASK_INITIAL_DELAY =
@@ -45,7 +42,6 @@ public class LdapModuleSettings
 			"ldapModule.deleteUsersAndGroupsWhenDeletedFromLdapSource";
 
 	private boolean disableSynchronizationTask;
-
 	private Duration synchronizationTaskInterval = Duration.ofSeconds( 300 );
 	private Duration synchronizationTaskInitialDelay = Duration.ofSeconds( 90 );
 	private boolean deleteUsersAndGroupsWhenDeletedFromLdapSource = false;
@@ -64,21 +60,5 @@ public class LdapModuleSettings
 	 */
 	public void setSynchronizationTaskIntervalInSeconds( long synchronizationTaskIntervalInSeconds ) {
 		this.synchronizationTaskInterval = Duration.ofSeconds( synchronizationTaskIntervalInSeconds );
-	}
-
-	@Deprecated
-	/*
-	  Deprecated in favour of {@link #setSynchronizationTaskInitialDelay}
-	 */
-	public long getSynchronizationTaskInitialDelayInSeconds() {
-		return synchronizationTaskInitialDelay.getSeconds();
-	}
-
-	@Deprecated
-	/*
-	  Deprecated in favour of {@link #getSynchronizationTaskInitialDelay}
-	 */
-	public void setSynchronizationTaskInitialDelayInSeconds( long synchronizationTaskInitialDelayInSeconds ) {
-		this.synchronizationTaskInitialDelay = Duration.ofSeconds( synchronizationTaskInitialDelayInSeconds );
 	}
 }
