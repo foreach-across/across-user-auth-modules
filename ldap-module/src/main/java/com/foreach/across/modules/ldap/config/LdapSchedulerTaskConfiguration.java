@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.ldap.config;
 
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.events.AcrossContextBootstrappedEvent;
 import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
@@ -24,10 +23,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.IntervalTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 /**
@@ -50,10 +51,12 @@ public class LdapSchedulerTaskConfiguration implements SchedulingConfigurer
 		this.taskRegistrar = taskRegistrar;
 	}
 
-	@Event
-	public void registerTasks( AcrossContextBootstrappedEvent contextBootstrappedEvent ) {
-		taskRegistrar.addFixedRateTask( ldapSynchronizationTask,
-		                                ldapModuleSettings.getSynchronizationTaskIntervalInSeconds() * 1000 );
+	@EventListener
+	public void registerTasks( AcrossContextBootstrappedEvent ignore ) {
+		taskRegistrar.addFixedDelayTask( new IntervalTask( ldapSynchronizationTask,
+		                                                   ldapModuleSettings.getSynchronizationTaskInterval().toMillis(),
+		                                                   ldapModuleSettings.getSynchronizationTaskInitialDelay().toMillis()
+		) );
 		taskRegistrar.afterPropertiesSet();
 	}
 

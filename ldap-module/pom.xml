@@ -122,6 +122,7 @@
 						<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
 						</annotationProcessor>
 						<annotationProcessor>com.querydsl.apt.jpa.JPAAnnotationProcessor</annotationProcessor>
+						<annotationProcessor>org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor</annotationProcessor>
 					</annotationProcessors>
 				</configuration>
 				<dependencies>

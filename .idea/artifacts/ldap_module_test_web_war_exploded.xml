@@ -10,7 +10,7 @@
           <element id="archive" name="ldap-module-2.0.0-SNAPSHOT.jar">
             <element id="module-output" name="ldap-module" />
           </element>
-          <element id="library" level="project" name="Maven: com.foreach.across:across-web:4.0.0-SNAPSHOT" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/com/foreach/across/across-web/4.0.0-SNAPSHOT/across-web-4.0.0-20180822.045501-9.jar" output-file-name="across-web-4.0.0-SNAPSHOT.jar" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-web:2.0.4.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter:2.0.4.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-logging:2.0.4.RELEASE" />
@@ -27,7 +27,7 @@
           <element id="library" level="project" name="Maven: org.attoparser:attoparser:2.0.4.RELEASE" />
           <element id="library" level="project" name="Maven: org.unbescape:unbescape:1.1.5.RELEASE" />
           <element id="library" level="project" name="Maven: org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.1.RELEASE" />
-          <element id="library" level="project" name="Maven: com.foreach.across:across-core:4.0.0-SNAPSHOT" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/com/foreach/across/across-core/4.0.0-SNAPSHOT/across-core-4.0.0-20180822.045452-9.jar" output-file-name="across-core-4.0.0-SNAPSHOT.jar" />
           <element id="library" level="project" name="Maven: com.foreach.libs:common-concurrent:1.1" />
           <element id="library" level="project" name="Maven: org.springframework:spring-jdbc:5.0.8.RELEASE" />
           <element id="library" level="project" name="Maven: ch.qos.logback:logback-classic:1.2.3" />

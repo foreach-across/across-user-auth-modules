@@ -14,6 +14,7 @@
         <outputRelativeToContentRoot value="true" />
         <processor name="com.querydsl.apt.jpa.JPAAnnotationProcessor" />
         <processor name="lombok.launch.AnnotationProcessorHider$AnnotationProcessor" />
+        <processor name="org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor" />
         <module name="ldap-module" />
       </profile>
     </annotationProcessing>

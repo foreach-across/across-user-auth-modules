@@ -16,8 +16,6 @@
 
 package com.foreach.across.modules.ldap.services;
 
-import com.foreach.across.core.events.AcrossEvent;
-import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
@@ -33,13 +31,16 @@ import com.foreach.across.modules.user.services.UserDirectoryService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.common.spring.properties.PropertyTypeRegistry;
 import com.querydsl.core.types.Predicate;
+import lombok.Getter;
 import org.apache.directory.shared.ldap.entry.Entry;
 import org.apache.directory.shared.ldap.name.LdapDN;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -49,11 +50,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -81,9 +83,6 @@ public class TestLdapConnectorSynchronization
 	private ConversionService conversionService;
 
 	@Autowired
-	private LdapSearchService ldapSearchService;
-
-	@Autowired
 	private UserService userService;
 
 	@Autowired
@@ -93,7 +92,7 @@ public class TestLdapConnectorSynchronization
 	private LdapModuleSettings ldapModuleSettings;
 
 	@Autowired
-	private AcrossEventPublisher acrossEventPublisher;
+	private Config.EventListener applicationListener;
 
 	@Before
 	public void resetMocks() {
@@ -151,12 +150,10 @@ public class TestLdapConnectorSynchronization
 				ldapUserDirectory );
 		ldapSynchronizationService.synchronizeData( ldapUserDirectory );
 
-		ArgumentCaptor<AcrossEvent> argumentCaptor = ArgumentCaptor.forClass( AcrossEvent.class );
-		verify( acrossEventPublisher, times( 6 ) ).publish( argumentCaptor.capture() );
-		LdapEntityDeletedEvent event = (LdapEntityDeletedEvent) argumentCaptor.getAllValues().stream().filter(
-				e -> e instanceof LdapEntityDeletedEvent ).findFirst().get();
-		assertNotNull( event );
-		assertEquals( userDeletedFromLdapSource, event.getEntity() );
+		List<LdapEntityDeletedEvent<User>> events = applicationListener.getLdapEntityDeletedEvent();
+		assertNotNull( events );
+		assertEquals( 1, events.size() );
+		assertEquals( userDeletedFromLdapSource, events.get( 0 ).getEntity() );
 		verify( userService ).delete( 3333L );
 	}
 
@@ -174,11 +171,11 @@ public class TestLdapConnectorSynchronization
 	protected static class Config
 	{
 		@Bean
-		public LdapSynchronizationService ldapSynchronizationService() {
+		public LdapSynchronizationService ldapSynchronizationService( ApplicationEventPublisher eventPublisher ) {
 			return spy( new LdapSynchronizationServiceImpl( userService(), mock( GroupService.class ),
 			                                                ldapConnectorSettingsService(), ldapSearchService(),
 			                                                mock( SecurityPrincipalService.class ),
-			                                                acrossEventPublisher(),
+			                                                eventPublisher,
 			                                                mock( LdapPropertiesService.class ),
 			                                                ldapModuleSettings() ) );
 		}
@@ -186,11 +183,6 @@ public class TestLdapConnectorSynchronization
 		@Bean
 		public UserService userService() {
 			return mock( UserService.class );
-		}
-
-		@Bean
-		public AcrossEventPublisher acrossEventPublisher() {
-			return mock( AcrossEventPublisher.class );
 		}
 
 		@Bean
@@ -211,6 +203,11 @@ public class TestLdapConnectorSynchronization
 		@Bean
 		public LdapModuleSettings ldapModuleSettings() {
 			return mock( LdapModuleSettings.class );
+		}
+
+		@Bean
+		public EventListener applicationListener() {
+			return new EventListener();
 		}
 
 		@Bean
@@ -240,6 +237,17 @@ public class TestLdapConnectorSynchronization
 		@Bean
 		public ConversionService conversionService() {
 			return new DefaultConversionService();
+		}
+
+		@Getter
+		public static final class EventListener implements ApplicationListener<PayloadApplicationEvent<LdapEntityDeletedEvent<User>>>
+		{
+			private List<LdapEntityDeletedEvent<User>> ldapEntityDeletedEvent = new ArrayList<>();
+
+			@Override
+			public void onApplicationEvent( PayloadApplicationEvent<LdapEntityDeletedEvent<User>> event ) {
+				ldapEntityDeletedEvent.add( event.getPayload() );
+			}
 		}
 	}
 }

@@ -28,7 +28,7 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
@@ -38,10 +38,10 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * @author Marc Vanbrabant
  */
 @Configuration
+@RequiredArgsConstructor
 public class LdapEntitiesConfiguration implements EntityConfigurer
 {
-	@Autowired
-	private SynchronizationInfoFormViewAdapter viewAdapter;
+	private final SynchronizationInfoFormViewAdapter viewAdapter;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {

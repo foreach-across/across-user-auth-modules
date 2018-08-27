@@ -18,7 +18,6 @@ package com.foreach.across.modules.ldap.config;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
-import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.controllers.AjaxTestLdapConnectorController;
@@ -31,6 +30,7 @@ import com.foreach.across.modules.spring.security.infrastructure.services.Securi
 import com.foreach.across.modules.user.services.*;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
@@ -78,13 +78,13 @@ public class LdapCoreConfiguration
 	                                                              GroupService groupService,
 	                                                              LdapConnectorSettingsService ldapConnectorSettingsService,
 	                                                              SecurityPrincipalService securityPrincipalService,
-	                                                              AcrossEventPublisher acrossEventPublisher,
+	                                                              ApplicationEventPublisher eventPublisher,
 	                                                              LdapPropertiesService ldapPropertiesService,
 	                                                              LdapModuleSettings ldapModuleSettings
 
 	) {
 		return new LdapSynchronizationServiceImpl( userService, groupService, ldapConnectorSettingsService,
-		                                           ldapSearchService(), securityPrincipalService, acrossEventPublisher,
+		                                           ldapSearchService(), securityPrincipalService, eventPublisher,
 		                                           ldapPropertiesService, ldapModuleSettings );
 	}
 
