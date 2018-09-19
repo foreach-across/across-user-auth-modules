@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>oauth2-module-project</artifactId>
-		<version>3.0.0-SNAPSHOT</version>
+		<version>3.0.0.M1</version>
 	</parent>
 
 	<artifactId>oauth2-module-test-website</artifactId>
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>oauth2-module</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>3.0.0.M1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
