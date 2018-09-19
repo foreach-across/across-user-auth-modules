@@ -157,7 +157,7 @@ public class ITOAuth2Module
 			assertEquals( oAuth2Client, fetched );
 			assertNotSame( existing, fetched );
 
-			fetched = securityPrincipalService.getPrincipalByName( oAuth2Client.getPrincipalName() );
+			fetched = securityPrincipalService.<OAuth2Client>getPrincipalByName( oAuth2Client.getPrincipalName() ).orElse( null );
 			assertNotNull( fetched );
 			assertEquals( oAuth2Client, fetched );
 			assertNotSame( existing, fetched );
