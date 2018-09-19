@@ -109,7 +109,7 @@ public class ITOAuth2ModuleWithCaching
 		OAuth2Client fetchedAgain = oauth2Service.getClientById( "fredClient" ).orElse( null );
 		assertSame( existing, fetchedAgain );
 
-		assertSame( existing, securityPrincipalService.getPrincipalByName( fetchedAgain.getPrincipalName() ) );
+		assertSame( existing, securityPrincipalService.<OAuth2Client>getPrincipalByName( fetchedAgain.getPrincipalName() ).orElse( null ) );
 	}
 
 	@Configuration
