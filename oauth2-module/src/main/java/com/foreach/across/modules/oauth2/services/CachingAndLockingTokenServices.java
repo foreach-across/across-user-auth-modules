@@ -27,7 +27,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -35,7 +34,6 @@ import java.util.Objects;
  * Custom extension of {@link DefaultTokenServices} that uses a cache for access token based authentication lookups
  * and applies locking to token creation if a {@link com.foreach.common.concurrent.locks.ObjectLockRepository} is set.
  */
-@Transactional
 public class CachingAndLockingTokenServices extends DefaultTokenServices
 {
 	private final Cache cache;
