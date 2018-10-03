@@ -47,6 +47,16 @@ public class TestExpressionBasedSecurityPrincipalResolver
 		user.setEmail( "jdoe@gmail.com" );
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void nullNotAllowed() {
+		new ExpressionBasedSecurityPrincipalLabelResolver( null, "label" );
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void nullNotAllowedForLabelExpression() {
+		resolver.setLabelExpression( null );
+	}
+
 	@Test
 	public void emptyReturnedIfPrincipalNotOfType() {
 		assertEquals( Optional.empty(), resolver.resolvePrincipalLabel( null ) );
