@@ -124,10 +124,10 @@ public class ITAclServices
 
 		group = createGroup();
 
-		userOne = createRandomUser( Collections.<Group>emptyList(), Collections.<String>emptyList() );
-		userTwo = createRandomUser( Collections.<Group>emptyList(), Collections.singleton( "ROLE_ADMIN" ) );
-		userThree = createRandomUser( Collections.<Group>emptyList(), Collections.singleton( "ROLE_FILE_MANAGER" ) );
-		userFour = createRandomUser( Collections.singleton( group ), Collections.<String>emptyList() );
+		userOne = createRandomUser( Collections.emptyList(), Collections.emptyList() );
+		userTwo = createRandomUser( Collections.emptyList(), Collections.singleton( "ROLE_ADMIN" ) );
+		userThree = createRandomUser( Collections.emptyList(), Collections.singleton( "ROLE_FILE_MANAGER" ) );
+		userFour = createRandomUser( Collections.singleton( group ), Collections.emptyList() );
 	}
 
 	@After
