@@ -19,6 +19,7 @@ package com.foreach.across.samples.user;
 import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.user.UserModule;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration;
@@ -33,7 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @since 2.0.0
  */
 @AcrossApplication(modules = {
-		UserModule.NAME, AdminWebModule.NAME, EntityModule.NAME
+		UserModule.NAME, AdminWebModule.NAME, EntityModule.NAME, PropertiesModule.NAME
 })
 @Import({ DataSourceAutoConfiguration.class, H2ConsoleAutoConfiguration.class })
 public class UserModuleApplication

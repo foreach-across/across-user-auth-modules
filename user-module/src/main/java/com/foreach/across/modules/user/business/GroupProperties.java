@@ -6,9 +6,18 @@ import com.foreach.common.spring.properties.PropertyTypeRegistry;
 
 public class GroupProperties extends EntityProperties<Long>
 {
-	private final long groupId;
+	private final Long groupId;
 
+	@Deprecated
 	public GroupProperties( long groupId,
+	                        PropertyTypeRegistry<String> propertyTypeRegistry,
+	                        PropertiesSource source ) {
+		super( propertyTypeRegistry, source );
+
+		this.groupId = groupId;
+	}
+
+	public GroupProperties( Long groupId,
 	                        PropertyTypeRegistry<String> propertyTypeRegistry,
 	                        PropertiesSource source ) {
 		super( propertyTypeRegistry, source );

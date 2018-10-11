@@ -18,9 +18,12 @@ package com.foreach.across.modules.user.services;
 import com.foreach.across.modules.properties.services.EntityPropertiesService;
 import com.foreach.across.modules.user.business.UserProperties;
 
+import java.util.function.Supplier;
+
 /**
  * @author Arne Vandamme
  */
 public interface UserPropertiesService extends EntityPropertiesService<UserProperties, Long>
 {
+	void saveProperties( UserProperties entityProperties, Supplier<Long> userId );
 }

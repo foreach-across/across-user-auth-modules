@@ -23,21 +23,32 @@ import com.foreach.across.modules.user.business.UserProperties;
 import com.foreach.common.spring.properties.PropertyTypeRegistry;
 import org.springframework.stereotype.Service;
 
+import java.util.function.Supplier;
+
 /**
  * @author Arne Vandamme
  */
 @Service
 public class UserPropertiesServiceImpl extends AbstractEntityPropertiesService<UserProperties, Long> implements UserPropertiesService
 {
+	private EntityPropertiesRepository<Long> entityPropertiesRepository;
+
 	public UserPropertiesServiceImpl( EntityPropertiesRegistry entityPropertiesRegistry,
 	                                  EntityPropertiesRepository<Long> entityPropertiesRepository ) {
 		super( entityPropertiesRegistry, entityPropertiesRepository );
+		this.entityPropertiesRepository = entityPropertiesRepository;
 	}
 
 	@Override
 	protected UserProperties createEntityProperties( Long entityId,
 	                                                 PropertyTypeRegistry<String> propertyTypeRegistry,
 	                                                 StringPropertiesSource source ) {
-		return new UserProperties( entityId, propertyTypeRegistry, source );
+		return new UserProperties( (Long) entityId, propertyTypeRegistry, source );
+	}
+
+	@Override
+	public void saveProperties( UserProperties entityProperties, Supplier<Long> userId ) {
+		entityPropertiesRepository.saveProperties( userId.get(),
+		                                           entityProperties.getSource() );
 	}
 }

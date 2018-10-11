@@ -24,9 +24,18 @@ import com.foreach.common.spring.properties.PropertyTypeRegistry;
  */
 public class UserProperties extends EntityProperties<Long>
 {
-	private final long userId;
+	private final Long userId;
 
+	@Deprecated
 	public UserProperties( long userId,
+	                       PropertyTypeRegistry<String> propertyTypeRegistry,
+	                       PropertiesSource source ) {
+		super( propertyTypeRegistry, source );
+
+		this.userId = userId;
+	}
+
+	public UserProperties( Long userId,
 	                       PropertyTypeRegistry<String> propertyTypeRegistry,
 	                       PropertiesSource source ) {
 		super( propertyTypeRegistry, source );
