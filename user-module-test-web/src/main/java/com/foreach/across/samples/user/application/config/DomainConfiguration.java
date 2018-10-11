@@ -17,6 +17,7 @@
 package com.foreach.across.samples.user.application.config;
 
 import com.foreach.across.core.AcrossModule;
+import com.foreach.across.core.convert.StringToDateTimeConverter;
 import com.foreach.across.modules.entity.bind.EntityPropertyBindingType;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -32,6 +33,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.support.GenericConversionService;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author Marc Vanbrabant
@@ -46,11 +51,20 @@ public class DomainConfiguration implements EntityConfigurer
 
 	@Autowired
 	public void registerCustomProperties( UserPropertiesRegistry userPropertiesRegistry,
+	                                      StringToDateTimeConverter converter,
 	                                      AcrossModule currentModule ) {
 		userPropertiesRegistry.register( currentModule, "thumbnail",
 		                                 TypeDescriptor.valueOf( String.class ) );
-		userPropertiesRegistry.register( currentModule, "picture",
-		                                 TypeDescriptor.valueOf( String.class ) );
+
+		// Specify how we serialize our property
+		GenericConversionService birthdayConversionService = new GenericConversionService();
+		birthdayConversionService.addConverter( LocalDate.class, String.class,
+		                                        source -> String.valueOf( source.format(
+				                                        DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) ) ) );
+		birthdayConversionService.addConverter( converter );
+
+		userPropertiesRegistry.register( currentModule, "birthdate",
+		                                 TypeDescriptor.valueOf( LocalDate.class ), null, birthdayConversionService );
 	}
 
 	@Override
@@ -67,13 +81,12 @@ public class DomainConfiguration implements EntityConfigurer
 				                      .writable( true )
 				                      .hidden( false )
 				                      .controller( c -> c.withTarget(
-						                      UserProperties.class, String.class )
-				                                         .valueFetcher( userProperties -> userProperties.getValue( p )
-				                                         )
+						                      UserProperties.class, Object.class )
+				                                         .valueFetcher( userProperties -> userProperties.getValue( p ) )
 				                                         .applyValueConsumer(
-						                                         ( userProperties, thumbnail ) ->
+						                                         ( userProperties, property ) ->
 								                                         userProperties.set( p,
-								                                                             thumbnail.getNewValue() )
+								                                                             property.getNewValue() )
 				                                         )
 				                      ) );
 		entityPropertyRegistryBuilder.apply( nestedRegistry );
@@ -82,7 +95,7 @@ public class DomainConfiguration implements EntityConfigurer
 		        .createOrUpdateFormView( fv -> {
 			        fv.showProperties( ".",
 			                           "userProperties.thumbnail",
-			                           "userProperties.picture" );
+			                           "userProperties.birthdate" );
 
 		        } )
 		        .properties( props -> {
