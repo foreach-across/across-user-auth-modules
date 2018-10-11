@@ -45,8 +45,8 @@ public class DomainConfiguration implements EntityConfigurer
 	private final UserPropertiesRegistry userPropertiesRegistry;
 
 	@Autowired
-	public void registerManagedByProperty( UserPropertiesRegistry userPropertiesRegistry,
-	                                       AcrossModule currentModule ) {
+	public void registerCustomProperties( UserPropertiesRegistry userPropertiesRegistry,
+	                                      AcrossModule currentModule ) {
 		userPropertiesRegistry.register( currentModule, "thumbnail",
 		                                 TypeDescriptor.valueOf( String.class ) );
 		userPropertiesRegistry.register( currentModule, "picture",
