@@ -235,7 +235,12 @@ public class OAuth2Client extends BasicSecurityPrincipal<OAuth2Client> implement
 	public void setOAuth2ClientScopes( Collection<OAuth2ClientScope> oAuth2ClientScopes ) {
 		getOAuth2ClientScopes().clear();
 		if ( oAuth2ClientScopes != null ) {
-			getOAuth2ClientScopes().addAll( oAuth2ClientScopes );
+			for ( OAuth2ClientScope scope : oAuth2ClientScopes ) {
+				if ( !Objects.equals( scope.getOAuth2Client(), this ) ) {
+					scope.setOAuth2Client( this );
+				}
+				getOAuth2ClientScopes().add( scope );
+			}
 		}
 	}
 }

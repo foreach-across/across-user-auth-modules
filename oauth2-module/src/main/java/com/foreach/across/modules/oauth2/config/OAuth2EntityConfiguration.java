@@ -16,17 +16,21 @@
 
 package com.foreach.across.modules.oauth2.config;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionOrMapElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.options.FixedOptionIterableBuilder;
+import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -34,6 +38,7 @@ import com.foreach.across.modules.oauth2.business.OAuth2Client;
 import com.foreach.across.modules.oauth2.business.OAuth2ClientScope;
 import com.foreach.across.modules.oauth2.business.OAuth2ClientScopeId;
 import com.foreach.across.modules.oauth2.business.OAuth2Scope;
+import com.foreach.across.modules.oauth2.repositories.OAuth2ClientScopeRepository;
 import com.foreach.across.modules.oauth2.validators.OAuth2ClientValidator;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -47,6 +52,7 @@ import org.springframework.core.convert.support.ConfigurableConversionService;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.move;
 
@@ -54,10 +60,16 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * @author Marc Vanbrabant
  */
 @Configuration
-@AcrossDepends(required = EntityModule.NAME)
+@ConditionalOnAcrossModule(allOf = { EntityModule.NAME, BootstrapUiModule.NAME })
 @ComponentScan(basePackageClasses = OAuth2ClientValidator.class)
 public class OAuth2EntityConfiguration implements EntityConfigurer
 {
+	private final OAuth2ClientScopeRepository clientScopeRepository;
+
+	public OAuth2EntityConfiguration( OAuth2ClientScopeRepository clientScopeRepository ) {
+		this.clientScopeRepository = clientScopeRepository;
+	}
+
 	@Autowired
 	public void registerClientScopeIdConverters( ConfigurableConversionService mvcConversionService ) {
 		mvcConversionService.addConverter( OAuth2ClientScopeId.class, String.class, source ->
@@ -78,7 +90,42 @@ public class OAuth2EntityConfiguration implements EntityConfigurer
 		configuration.withType( OAuth2ClientScope.class ).hide();
 
 		configuration.withType( OAuth2Client.class )
-		             .properties( props -> props.property( "oAuth2ClientScopes" ).hidden( true ) )
+		             .properties( props -> props
+				             .property( "OAuth2ClientScopes" )
+				             .viewElementType( ViewElementMode.CONTROL, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE )
+				             .hidden( false )
+				             .controller(
+						             controller -> controller.withBindingContext( Set.class )
+						                                     .saveConsumer( ( bindingContext, propertyValue ) -> {
+							                                     OAuth2Client original = bindingContext.getEntity();
+							                                     OAuth2Client target = bindingContext.getTarget();
+
+							                                     if ( original != null && !original.isNew() ) {
+								                                     original.getOAuth2ClientScopes()
+								                                             .stream()
+								                                             .filter( s -> !target.getOAuth2ClientScopes().contains( s ) )
+								                                             .forEach( clientScopeRepository::delete );
+							                                     }
+						                                     } )
+				             )
+				             .and()
+				             .property( "OAuth2ClientScopes[]" )
+				             .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
+				             .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector
+						             .of( "OAuth2ClientScopes[].OAuth2Scope", "OAuth2ClientScopes[].autoApprove" ) )
+				             .and()
+				             .property( "authorizedGrantTypes" )
+				             .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.MULTI_CHECKBOX )
+				             .attribute( OptionIterableBuilder.class, FixedOptionIterableBuilder.of(
+						             new OptionFormElementBuilder().label( "password" ).value( "password" ).rawValue( "password" ),
+						             new OptionFormElementBuilder().label( "client_credentials" ).value( "client_credentials" )
+						                                           .rawValue( "client_credentials" ),
+						             new OptionFormElementBuilder().label( "authorization_code" ).value( "authorization_code" )
+						                                           .rawValue( "authorization_code" ),
+						             new OptionFormElementBuilder().label( "refresh_token" ).value( "refresh_token" ).rawValue( "refresh_token" ),
+						             new OptionFormElementBuilder().label( "implicit" ).value( "implicit" ).rawValue( "implicit" )
+				             ) )
+		             )
 		             .listView(
 				             lvb -> lvb.showProperties( "clientId", "secretRequired", "resourceIds", "lastModified" )
 				                       .defaultSort( "clientId" )
@@ -96,17 +143,11 @@ public class OAuth2EntityConfiguration implements EntityConfigurer
 						             )
 						             .showProperties( "clientId", "secretRequired", "clientSecret", "token-validity",
 						                              "roles", "created", "lastModified",
-						                              "authorizedGrantTypes", "resourceIds", "registeredRedirectUri" )
+						                              "authorizedGrantTypes", "resourceIds", "registeredRedirectUri",
+						                              "OAuth2ClientScopes" )
 						             .viewProcessor( new OAuth2ClientFormAdapter() )
 		             )
-		             .createFormView( fvb -> fvb.showProperties( ".", "~created", "~lastModified" ) )
-		             .association(
-				             ab -> ab.name( "oAuth2ClientScope.id.oAuth2Client" )
-				                     .associationType( EntityAssociation.Type.EMBEDDED )
-				                     .listView( lvb -> lvb.showProperties( "id.OAuth2Scope.name", "autoApprove" ).defaultSort( "id.OAuth2Scope.name" ) )
-				                     .createOrUpdateFormView( fvb -> fvb.showProperties( "id.OAuth2Scope", "autoApprove" ) )
-				                     .show()
-		             );
+		             .createFormView( fvb -> fvb.showProperties( ".", "~created", "~lastModified" ) );
 
 		configuration.withType( OAuth2Scope.class )
 		             .properties( props -> props.property( "oAuth2ClientScopes" ).hidden( true ) );
@@ -124,6 +165,7 @@ public class OAuth2EntityConfiguration implements EntityConfigurer
 			move( container, "formGroup-authorizedGrantTypes", SingleEntityFormViewProcessor.RIGHT_COLUMN );
 			move( container, "formGroup-resourceIds", SingleEntityFormViewProcessor.RIGHT_COLUMN );
 			move( container, "formGroup-registeredRedirectUri", SingleEntityFormViewProcessor.RIGHT_COLUMN );
+			move( container, "formGroup-OAuth2ClientScopes", SingleEntityFormViewProcessor.RIGHT_COLUMN );
 		}
 
 		private void addDependency( ContainerViewElement elements, String from, String to ) {
