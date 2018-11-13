@@ -50,7 +50,7 @@ public class GroupSelectionListViewFactory extends EntityViewProcessorAdapter
 		          .valueRowProcessor( new SelectableItemValuePostProcessor() );
 	}
 
-	private class SelectableItemHeaderPostProcessor implements ViewElementPostProcessor<TableViewElement.Row>
+	private static class SelectableItemHeaderPostProcessor implements ViewElementPostProcessor<TableViewElement.Row>
 	{
 		@Override
 		public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row row ) {
@@ -66,7 +66,7 @@ public class GroupSelectionListViewFactory extends EntityViewProcessorAdapter
 		}
 	}
 
-	private class SelectableItemValuePostProcessor implements ViewElementPostProcessor<TableViewElement.Row>
+	private static class SelectableItemValuePostProcessor implements ViewElementPostProcessor<TableViewElement.Row>
 	{
 		@Override
 		public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row row ) {

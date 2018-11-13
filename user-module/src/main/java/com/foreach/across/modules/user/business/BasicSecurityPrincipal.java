@@ -20,6 +20,7 @@ import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -144,7 +145,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 
 	@Override
 	public void setCreatedDate( Date createdDate ) {
-		this.createdDate = createdDate;
+		this.createdDate = ObjectUtils.clone( createdDate );
 	}
 
 	@Override
@@ -164,7 +165,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 
 	@Override
 	public void setLastModifiedDate( Date lastModifiedDate ) {
-		this.lastModifiedDate = lastModifiedDate;
+		this.lastModifiedDate = ObjectUtils.clone( lastModifiedDate );
 	}
 
 	public Set<Role> getRoles() {

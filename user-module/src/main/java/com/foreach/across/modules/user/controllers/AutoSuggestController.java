@@ -19,6 +19,9 @@ package com.foreach.across.modules.user.controllers;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.user.business.QGroup;
 import com.foreach.across.modules.user.repositories.GroupRepository;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,40 +43,23 @@ public class AutoSuggestController
 	private GroupRepository groupRepository;
 
 	@RequestMapping("/groups")
+	@SuppressWarnings("unused")
 	public List<AutosuggestItemViewHelper> suggestGroups( @RequestParam(value = "query") String query ) {
 		QGroup group = QGroup.group;
 
 		return StreamSupport
 				.stream( groupRepository.findAll( group.name.containsIgnoreCase( query ) ).spliterator(),
 				         false )
-				.map( a -> new AutosuggestItemViewHelper( a.getId(), a.getName() ) )
+				.map( item -> new AutosuggestItemViewHelper( item.getId(), item.getName() ) )
 				.collect( Collectors.toList() );
 	}
 
-	public class AutosuggestItemViewHelper
+	@Getter
+	@Setter
+	@RequiredArgsConstructor
+	public static class AutosuggestItemViewHelper
 	{
-		private Long id;
-		private String description;
-
-		public AutosuggestItemViewHelper( Long id, String description ) {
-			this.id = id;
-			this.description = description;
-		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public void setId( Long id ) {
-			this.id = id;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public void setDescription( String description ) {
-			this.description = description;
-		}
+		private final Long id;
+		private final String description;
 	}
 }
