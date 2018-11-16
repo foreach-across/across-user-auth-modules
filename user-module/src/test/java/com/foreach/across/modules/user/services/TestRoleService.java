@@ -31,6 +31,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -57,7 +58,7 @@ public class TestRoleService
 	public void cannotRedefineRole() {
 		Role admin = new Role( "ROLE_ADMIN" );
 		admin.setPermissions( Arrays.asList( new Permission( "access users" ), new Permission( "access groups" ) ) );
-		when( roleRepository.findByAuthorityIgnoringCase( "ROLE_ADMIN" ) ).thenReturn( admin );
+		when( roleRepository.findByAuthorityIgnoringCase( "ROLE_ADMIN" ) ).thenReturn( Optional.of( admin ) );
 
 		Role newRole = new Role( "ROLE_ADMIN" );
 		newRole.addPermission( new Permission( "access administration" ) );
