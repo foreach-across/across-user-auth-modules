@@ -4,7 +4,7 @@ debugWebModule:
 
 spring:
   datasource:
-    url: jdbc:h2:./db/oauth2-module
+    url: jdbc:h2:./local-data/db/oauth2-module
     username: sa
 
 adminWebModule:
@@ -18,3 +18,9 @@ acrossModule:
 
 oauth2Module:
   use-jdbc-authorization-code-services: true
+server:
+  error:
+    whitelabel:
+      enabled: false
+    include-stacktrace: always
+
