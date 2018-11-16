@@ -38,6 +38,15 @@
 			<artifactId>admin-web-module</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>logging-module</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.13</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 		</dependency>

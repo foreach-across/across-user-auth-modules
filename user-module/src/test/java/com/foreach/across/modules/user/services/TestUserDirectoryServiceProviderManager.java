@@ -58,4 +58,11 @@ public class TestUserDirectoryServiceProviderManager
 		assertNull( manager.getServiceProvider( InternalUserDirectory.class ) );
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void nullServiceProviderManagerThrowsException() {
+		UserDirectoryServiceProviderManager manager
+				= new UserDirectoryServiceProviderManager( Collections.emptyList() );
+		assertNull( manager.getServiceProvider( (UserDirectory) null ) );
+	}
+
 }
