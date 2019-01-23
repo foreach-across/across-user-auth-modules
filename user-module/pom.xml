@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>user-module-project</artifactId>
-		<version>3.1.0.RELEASE</version>
+		<version>3.1.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>user-module</artifactId>
@@ -116,6 +116,7 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- TODO: remove obsolete driver -->
 		<dependency>
 			<groupId>net.sourceforge.jtds</groupId>
 			<artifactId>jtds</artifactId>
@@ -124,6 +125,21 @@
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
