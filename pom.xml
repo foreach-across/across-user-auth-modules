@@ -74,7 +74,7 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>debug-web-module</artifactId>
-				<version>1.0.2-SNAPSHOT</version>
+				<version>1.0.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
