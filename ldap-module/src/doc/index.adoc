@@ -1,9 +1,9 @@
 = LdapModule
 Arne Vandamme
-1.0.1.RELEASE
+1.0.2-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 1.0.1.RELEASE
+:module-version: 1.0.2-SNAPSHOT
 :module-name: LdapModule
 :module-artifact: ldap-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/LdapModule
@@ -88,6 +88,9 @@ All properties start with the ldapModule. prefix.
 
 == What's new in this version?
 :numbered!:
+
+=== 1.0.2-SNAPSHOTT
+* Added H2, postgres and sql server drivers for tests
 
 === 1.0.1.RELEASE
 * Be more lenient when a user or group cannot be deleted
