@@ -19,7 +19,6 @@ import com.foreach.across.core.annotations.RefreshableCollection;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.util.SerializationUtils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -59,9 +58,9 @@ public class CustomJdbcAuthorizationCodeServices implements AuthorizationCodeSer
 	public String createAuthorizationCode( OAuth2Authentication authentication ) {
 		String code = UUID.randomUUID().toString();
 		jdbcTemplate.update( insertAuthenticationSql,
-		                     new Object[] { code, new SqlLobValue( serializeAuthentication( authentication ) ),
+		                     new Object[] { code, serializeAuthentication( authentication ),
 		                                    new Date() }, new int[] {
-						Types.VARCHAR, Types.BLOB, Types.TIMESTAMP } );
+						Types.VARCHAR, Types.LONGVARBINARY, Types.TIMESTAMP } );
 		return code;
 	}
 
