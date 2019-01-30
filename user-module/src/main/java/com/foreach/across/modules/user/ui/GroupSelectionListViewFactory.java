@@ -19,9 +19,7 @@ package com.foreach.across.modules.user.ui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
-import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -44,10 +42,10 @@ public class GroupSelectionListViewFactory extends EntityViewProcessorAdapter
 	                       ContainerViewElementBuilderSupport<?, ?> containerBuilder,
 	                       ViewElementBuilderMap builderMap,
 	                       ViewElementBuilderContext builderContext ) {
-		builderMap.get( SortableTableRenderingViewProcessor.TABLE_BUILDER, SortableTableBuilder.class )
-		          .hideResultNumber()
-		          .headerRowProcessor( new SelectableItemHeaderPostProcessor() )
-		          .valueRowProcessor( new SelectableItemValuePostProcessor() );
+//		builderMap.get( SortableTableRenderingViewProcessor.TABLE_BUILDER, SortableTableBuilder.class )
+//		          .hideResultNumber()
+//		          .headerRowProcessor( new SelectableItemHeaderPostProcessor() )
+//		          .valueRowProcessor( new SelectableItemValuePostProcessor() );
 	}
 
 	private static class SelectableItemHeaderPostProcessor implements ViewElementPostProcessor<TableViewElement.Row>
