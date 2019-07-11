@@ -21,12 +21,12 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>standard-module-bom</artifactId>
-		<version>3.0.0.RELEASE</version>
+		<version>3.2.0.RELEASE</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
 	<artifactId>spring-security-acl-module-project</artifactId>
-	<version>3.0.1.RELEASE</version>
+	<version>3.0.2.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -89,7 +89,7 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>entity-module</artifactId>
-				<version>3.0.1.RELEASE</version>
+				<version>3.2.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>

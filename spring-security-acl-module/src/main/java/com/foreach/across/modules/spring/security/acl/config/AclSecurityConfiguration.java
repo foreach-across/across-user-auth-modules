@@ -86,6 +86,10 @@ public class AclSecurityConfiguration
 			aclService.setClassIdentityQuery( "SELECT acl_class_sequence.currval FROM dual" );
 			aclService.setSidIdentityQuery( "SELECT acl_sid_sequence.currval FROM dual" );
 		}
+		else if ( databaseInfo.isPostgres() ) {
+			aclService.setClassIdentityQuery("select currval(pg_get_serial_sequence('acl_class', 'id'))");
+			aclService.setSidIdentityQuery("select currval(pg_get_serial_sequence('acl_sid', 'id'))");
+		}
 
 		return aclService;
 	}

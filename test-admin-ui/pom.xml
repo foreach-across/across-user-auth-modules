@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>spring-security-acl-module-project</artifactId>
-		<version>3.0.1.RELEASE</version>
+		<version>3.0.2.RELEASE</version>
 	</parent>
 
 	<artifactId>test-admin-ui</artifactId>
