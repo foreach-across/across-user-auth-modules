@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>standard-module-bom</artifactId>
-		<version>3.1.3-SNAPSHOT</version>
+		<version>3.2.0.RELEASE</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
@@ -33,20 +33,19 @@
 	<description>
 		Provides a domain module for User, Group, Role and Permission.
 	</description>
-	<url>https://foreach.atlassian.net/wiki/display/AX/UserModule</url>
+	<url>https://across.dev/modules/UserModule</url>
 	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
 
 	<developers>
 		<developer>
 			<name>Arne Vandamme</name>
-			<email>arne at foreach.be</email>
 			<organization>Foreach</organization>
-			<organizationUrl>http://www.foreach.be</organizationUrl>
+			<organizationUrl>https://www.foreach.be</organizationUrl>
 		</developer>
 	</developers>
 
@@ -93,12 +92,12 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-acl-module</artifactId>
-				<version>3.0.2-SNAPSHOT</version>
+				<version>3.0.2.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>admin-web-module</artifactId>
-				<version>3.1.0.RELEASE</version>
+				<version>3.1.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
