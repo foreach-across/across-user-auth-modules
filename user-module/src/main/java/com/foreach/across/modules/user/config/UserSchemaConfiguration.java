@@ -18,9 +18,11 @@ package com.foreach.across.modules.user.config;
 
 import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.core.database.SchemaObject;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+@Component
 public class UserSchemaConfiguration extends SchemaConfiguration
 {
 	public static final String TABLE_PERMISSION = "um_permission";

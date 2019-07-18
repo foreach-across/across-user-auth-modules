@@ -17,11 +17,17 @@
 package com.foreach.across.modules.user.ui;
 
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+
+import static com.foreach.across.modules.web.resource.WebResource.CSS;
+import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
+import static com.foreach.across.modules.web.resource.WebResourceRule.add;
+import static com.foreach.across.modules.web.resource.WebResourceRule.addPackage;
 
 /**
  * Auto-suggest for selecting multiple groups.
@@ -37,16 +43,16 @@ public class GroupsFormElementBuilder implements ViewElementBuilder<ViewElement>
 		textbox.setCustomTemplate( "th/UserModule/groups :: groups-autosuggest-control(${component})" );
 		textbox.setControlName( "entity.groups" );
 
-		WebResourceRegistry webResourceRegistry = builderContext.getAttribute( WebResourceRegistry.class );
-		webResourceRegistry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, "typeahead",
-		                                "https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js",
-		                                WebResource.EXTERNAL );
-		webResourceRegistry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, "user-module",
-		                                "/static/UserModule/js/user-module.js",
-		                                WebResource.VIEWS );
-		webResourceRegistry.addWithKey( WebResource.CSS, "user-module",
-		                                "/static/UserModule/css/user-module.css",
-		                                WebResource.VIEWS );
+		builderContext.getAttribute( WebResourceRegistry.class ).apply(
+				addPackage( BootstrapUiFormElementsWebResources.NAME ),
+				add( WebResource.javascript( "@static:/UserModule/js/user-module.js" ) )
+						.withKey( "user-module" )
+						.toBucket( JAVASCRIPT_PAGE_END ),
+				add( WebResource.javascript( "@static:/UserModule/css/user-module.css" ) )
+						.withKey( "user-module" )
+						.toBucket( CSS )
+
+		);
 
 		return textbox;
 	}

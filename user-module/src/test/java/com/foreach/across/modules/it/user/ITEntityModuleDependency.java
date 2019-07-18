@@ -29,7 +29,8 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.UserService;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.modules.web.AcrossWebModule;
+import com.foreach.across.test.AcrossTestConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +123,7 @@ public class ITEntityModuleDependency
 	}
 
 	@Configuration
-	@AcrossTestWebConfiguration
+	@AcrossTestConfiguration(modules = { AcrossWebModule.NAME })
 	static class Config implements AcrossContextConfigurer
 	{
 		@Override
