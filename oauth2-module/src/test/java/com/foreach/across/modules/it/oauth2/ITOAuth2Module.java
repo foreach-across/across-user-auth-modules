@@ -419,14 +419,13 @@ public class ITOAuth2Module
 
 		private OAuth2Module oauth2Module() {
 			OAuth2Module oAuth2Module = new OAuth2Module();
+			oAuth2Module.addApplicationContextConfigurer( DummyResourceServerConfigurerAdapter.class );
 			configureModule( oAuth2Module );
 			return oAuth2Module;
 		}
 
 		private SpringSecurityModule springSecurityModule() {
-			SpringSecurityModule springSecurityModule = new SpringSecurityModule();
-			springSecurityModule.addApplicationContextConfigurer( DummyResourceServerConfigurerAdapter.class );
-			return springSecurityModule;
+			return new SpringSecurityModule();
 		}
 
 		protected abstract void configureModule( OAuth2Module module );

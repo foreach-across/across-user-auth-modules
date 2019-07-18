@@ -28,7 +28,7 @@
 
 	<artifactId>oauth2-module-test-website</artifactId>
 
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<properties>
 		<sonar.skip>true</sonar.skip>

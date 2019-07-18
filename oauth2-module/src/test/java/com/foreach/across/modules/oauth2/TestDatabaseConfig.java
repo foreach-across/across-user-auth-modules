@@ -16,9 +16,9 @@
 package com.foreach.across.modules.oauth2;
 
 import com.foreach.across.core.AcrossContext;
-import com.foreach.across.database.support.HikariDataSourceHelper;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.hibernate.provider.PackagesToScanProvider;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -56,7 +56,11 @@ public class TestDatabaseConfig
 
 	@Bean
 	public DataSource dataSource() throws Exception {
-		return HikariDataSourceHelper.create( "org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:/hsql/user-module", "sa",
-		                                      StringUtils.EMPTY );
+		HikariDataSource dataSource = new HikariDataSource();
+		dataSource.setDriverClassName( "org.hsqldb.jdbc.JDBCDriver" );
+		dataSource.setJdbcUrl( "jdbc:hsqldb:mem:/hsql/user-module" );
+		dataSource.setUsername( "sa" );
+		dataSource.setPassword( StringUtils.EMPTY );
+		return dataSource;
 	}
 }
