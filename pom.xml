@@ -33,20 +33,19 @@
 	<description>
 		Provides infrastructure for managing ACLs with Spring security.
 	</description>
-	<url>https://foreach.atlassian.net/wiki/display/AX/SpringSecurityAclModule</url>
+	<url>https://across.dev/modules/access-control-module</url>
 	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
 
 	<developers>
 		<developer>
 			<name>Arne Vandamme</name>
-			<email>arne@foreach.be</email>
 			<organization>Foreach</organization>
-			<organizationUrl>http://www.foreach.be</organizationUrl>
+			<organizationUrl>https://www.foreach.be</organizationUrl>
 		</developer>
 	</developers>
 
