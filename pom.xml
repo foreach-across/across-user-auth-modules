@@ -129,6 +129,12 @@
 				<artifactId>debug-web-module</artifactId>
 				<version>3.0.0-SNAPSHOT</version>
 			</dependency>
+			<!-- Upgrade Liquibase version for SQL Server support -->
+			<dependency>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-core</artifactId>
+				<version>3.7.0</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
