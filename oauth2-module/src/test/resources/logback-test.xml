@@ -17,5 +17,5 @@
 <configuration>
 	<include resource="logback-across-test.xml"/>
 
-	<logger name="org.hibernate.SQL" level="DEBUG" />
+	<logger name="org.hibernate.SQL" level="WARN" />
 </configuration>
