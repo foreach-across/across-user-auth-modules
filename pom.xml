@@ -112,6 +112,12 @@
 				<version>${lombok.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			<!-- Upgrade Liquibase version for SQL Server support -->
+			<dependency>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-core</artifactId>
+				<version>3.7.0</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

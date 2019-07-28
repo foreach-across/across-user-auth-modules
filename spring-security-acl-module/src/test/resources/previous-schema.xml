@@ -410,6 +410,9 @@
 	
 	<!-- Install pre-existing test data -->
 	<changeSet id="201907281035" author="arne" dbms="h2, hsqldb, mssql, postgresql">
+		<sql dbms="mssql">
+			set identity_insert acl_sid on;
+		</sql>
 		<insert tableName="acl_sid">
 			<column name="id">32</column>
 			<column name="principal">true</column>
@@ -420,10 +423,18 @@
 			<column name="principal">true</column>
 			<column name="sid">john</column>
 		</insert>
+		<sql dbms="mssql">
+			set identity_insert acl_sid off;
+			set identity_insert acl_class on;
+		</sql>
 		<insert tableName="acl_class">
 			<column name="id">34</column>
 			<column name="class">my.domain.SomeObject</column>
 		</insert>
+		<sql dbms="mssql">
+			set identity_insert acl_class off;
+			set identity_insert acl_object_identity on;
+		</sql>
 		<insert tableName="acl_object_identity">
 			<column name="id">35</column>
 			<column name="object_id_class">34</column>
@@ -431,6 +442,10 @@
 			<column name="owner_sid">32</column>
 			<column name="entries_inheriting">false</column>
 		</insert>
+		<sql dbms="mssql">
+			set identity_insert acl_object_identity off;
+			set identity_insert acl_entry on;
+		</sql>
 		<insert tableName="acl_entry">
 			<column name="id">36</column>
 			<column name="acl_object_identity">35</column>
@@ -441,6 +456,9 @@
 			<column name="audit_success">false</column>
 			<column name="audit_failure">false</column>
 		</insert>
+		<sql dbms="mssql">
+			set identity_insert acl_entry off;
+		</sql>
 	</changeSet>
 
 	<changeSet id="201907281036" author="arne" dbms="mysql, oracle">
@@ -476,4 +494,5 @@
 			<column name="audit_failure">0</column>
 		</insert>
 	</changeSet>
+
 </databaseChangeLog>
