@@ -137,4 +137,30 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 
 		return classes;
 	}
+
+	// todo: remove this workaround as of spring-security 5.2 - see https://github.com/spring-projects/spring-security/issues/5508
+	@Override
+	public List<ObjectIdentity> findChildren( ObjectIdentity parentIdentity ) {
+		return super.findChildren( toStringObjectIdentity( parentIdentity ) );
+	}
+
+	// todo: remove this workaround as of spring-security 5.2 - see https://github.com/spring-projects/spring-security/issues/5508
+	@Override
+	protected Long retrieveObjectIdentityPrimaryKey( ObjectIdentity oid ) {
+		return super.retrieveObjectIdentityPrimaryKey( toStringObjectIdentity( oid ) );
+	}
+
+	// todo: remove this workaround as of spring-security 5.2 - see https://github.com/spring-projects/spring-security/issues/5508
+	@Override
+	protected void createObjectIdentity( ObjectIdentity object, Sid owner ) {
+		super.createObjectIdentity( toStringObjectIdentity( object ), owner );
+	}
+
+	// todo: remove this workaround as of spring-security 5.2 - see https://github.com/spring-projects/spring-security/issues/5508
+	private ObjectIdentity toStringObjectIdentity( ObjectIdentity oid ) {
+		if ( oid.getIdentifier() instanceof String ) {
+			return oid;
+		}
+		return new ObjectIdentityImpl( oid.getType(), oid.getIdentifier().toString() );
+	}
 }

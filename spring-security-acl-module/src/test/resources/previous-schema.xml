@@ -409,7 +409,7 @@
 	</changeSet>
 	
 	<!-- Install pre-existing test data -->
-	<changeSet id="201907281035" author="arne" dbms="h2, hsqldb, mssql">
+	<changeSet id="201907281035" author="arne" dbms="h2, hsqldb, mssql, postgresql">
 		<insert tableName="acl_sid">
 			<column name="id">32</column>
 			<column name="principal">true</column>
