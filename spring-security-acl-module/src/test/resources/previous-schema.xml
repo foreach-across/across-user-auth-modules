@@ -445,31 +445,31 @@
 
 	<changeSet id="201907281036" author="arne" dbms="mysql, oracle">
 		<insert tableName="acl_sid">
-			<column name="id">32</column>
+			<column name="id">1</column>
 			<column name="principal">1</column>
 			<column name="sid">system</column>
 		</insert>
 		<insert tableName="acl_sid">
-			<column name="id">33</column>
+			<column name="id">2</column>
 			<column name="principal">1</column>
 			<column name="sid">john</column>
 		</insert>
 		<insert tableName="acl_class">
-			<column name="id">34</column>
+			<column name="id">1</column>
 			<column name="class">my.domain.SomeObject</column>
 		</insert>
 		<insert tableName="acl_object_identity">
-			<column name="id">35</column>
-			<column name="object_id_class">34</column>
+			<column name="id">1</column>
+			<column name="object_id_class">1</column>
 			<column name="object_id_identity">123</column>
-			<column name="owner_sid">32</column>
+			<column name="owner_sid">1</column>
 			<column name="entries_inheriting">0</column>
 		</insert>
 		<insert tableName="acl_entry">
-			<column name="id">36</column>
-			<column name="acl_object_identity">35</column>
+			<column name="id">1</column>
+			<column name="acl_object_identity">1</column>
 			<column name="ace_order">1</column>
-			<column name="sid">33</column>
+			<column name="sid">2</column>
 			<column name="mask">1</column>
 			<column name="granting">1</column>
 			<column name="audit_success">0</column>

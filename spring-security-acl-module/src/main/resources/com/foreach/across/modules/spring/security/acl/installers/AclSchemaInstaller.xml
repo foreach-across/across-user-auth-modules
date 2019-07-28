@@ -412,11 +412,20 @@
 	<changeSet id="201907281036" author="arne" dbms="hsqldb, h2">
 		<modifyDataType tableName="acl_object_identity" columnName="object_id_identity" newDataType="varchar_ignorecase(36)" />
 	</changeSet>
-	<changeSet id="201907281037" author="arne" dbms="postgresql, mysql, mssql">
+
+	<changeSet id="201907281037" author="arne" dbms="postgresql, mysql">
 		<modifyDataType tableName="acl_object_identity" columnName="object_id_identity" newDataType="varchar(36)" />
 	</changeSet>
-	<changeSet id="201907281036" author="arne" dbms="oracle">
+
+	<changeSet id="201907281038" author="arne" dbms="oracle">
+		<dropUniqueConstraint tableName="acl_object_identity" constraintName="uk_acl_object_identity" />
 		<modifyDataType tableName="acl_object_identity" columnName="object_id_identity" newDataType="nvarchar2(64)" />
+		<addUniqueConstraint tableName="acl_object_identity" columnNames="object_id_class, object_id_identity" constraintName="uk_acl_object_identity" />
 	</changeSet>
 
+	<changeSet id="201907281039" author="arne" dbms="mssql">
+		<dropUniqueConstraint tableName="acl_object_identity" constraintName="uk_acl_object_identity" />
+		<modifyDataType tableName="acl_object_identity" columnName="object_id_identity" newDataType="varchar(36)" />
+		<addUniqueConstraint tableName="acl_object_identity" columnNames="object_id_class, object_id_identity" constraintName="uk_acl_object_identity" />
+	</changeSet>
 </databaseChangeLog>
