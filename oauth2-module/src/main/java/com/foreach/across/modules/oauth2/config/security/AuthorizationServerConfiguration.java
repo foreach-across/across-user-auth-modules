@@ -84,6 +84,12 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		return new UserDetailsOAuth2AuthenticationSerializer();
 	}
 
+	@Bean
+	@Lazy
+	IsolatedLockHandler isolatedLockHandler() {
+		return new IsolatedLockHandler();
+	}
+
 	/**
 	 * Overrides the default baen in {@link org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration}
 	 */
@@ -97,6 +103,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 		if ( oAuth2ModuleSettings.getUseLockingForTokenCreation() ) {
 			// delayed get of DistributedLockRepository, don't force across to create it if not to be used
+			tokenServices.setIsolatedLockHandler( isolatedLockHandler() );
 			tokenServices.setObjectLockRepository( beanFactory.getBean( DistributedLockRepository.class ) );
 		}
 		//tokenServices.setTokenEnhancer(tokenEnchancer());

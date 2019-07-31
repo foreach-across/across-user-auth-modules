@@ -16,8 +16,9 @@
 package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
-import com.foreach.common.concurrent.locks.CloseableObjectLock;
+import com.foreach.common.concurrent.locks.ObjectLock;
 import com.foreach.common.concurrent.locks.ObjectLockRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.core.AuthenticationException;
@@ -40,6 +41,7 @@ public class CachingAndLockingTokenServices extends DefaultTokenServices
 
 	private TokenStore tokenStore;
 	private ObjectLockRepository<String> objectLockRepository;
+	private IsolatedLockHandler isolatedLockHandler;
 
 	public CachingAndLockingTokenServices( CacheManager cacheManager ) {
 		cache = cacheManager.getCache( OAuth2ModuleCache.ACCESS_TOKENS_TO_AUTHENTICATION );
@@ -49,12 +51,22 @@ public class CachingAndLockingTokenServices extends DefaultTokenServices
 		this.objectLockRepository = objectLockRepository;
 	}
 
+	@Autowired
+	public void setIsolatedLockHandler( IsolatedLockHandler isolatedLockHandler ) {
+		this.isolatedLockHandler = isolatedLockHandler;
+	}
+
 	@Override
 	public OAuth2AccessToken createAccessToken( OAuth2Authentication authentication ) throws AuthenticationException {
 		if ( objectLockRepository != null ) {
-			try (CloseableObjectLock ignore
-					     = objectLockRepository.lock( Objects.toString( authentication.getPrincipal() ) )) {
+			ObjectLock lock = null;
+
+			try {
+				lock = isolatedLockHandler.lock( objectLockRepository, Objects.toString( authentication.getPrincipal() ) );
 				return super.createAccessToken( authentication );
+			}
+			finally {
+				isolatedLockHandler.unlock( lock );
 			}
 		}
 		else {
@@ -66,9 +78,14 @@ public class CachingAndLockingTokenServices extends DefaultTokenServices
 	public OAuth2AccessToken refreshAccessToken( String refreshTokenValue, TokenRequest request ) {
 		try {
 			if ( objectLockRepository != null ) {
-				try (CloseableObjectLock ignore
-						     = objectLockRepository.lock( refreshTokenValue )) {
+				ObjectLock lock = null;
+
+				try {
+					lock = isolatedLockHandler.lock( objectLockRepository, refreshTokenValue );
 					return super.refreshAccessToken( refreshTokenValue, request );
+				}
+				finally {
+					isolatedLockHandler.unlock( lock );
 				}
 			}
 			else {
