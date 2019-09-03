@@ -23,14 +23,24 @@ import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 public class SpringSecurityAclModulePermissionIcons
 {
 	public static final String ADD = "permission-add";
+	public static final String REMOVE = "permission-remove";
 
 	public static final String TOOLTIP = "permission-tooltip";
+	public static final String MENU_ITEM = "permission-menu-item";
 
-	public AbstractNodeViewElement add(){
+	public AbstractNodeViewElement add() {
 		return IconSetRegistry.getIconSet( SpringSecurityAclModule.NAME ).icon( ADD );
 	}
 
-	public AbstractNodeViewElement tooltip(){
+	public AbstractNodeViewElement remove() {
+		return IconSetRegistry.getIconSet( SpringSecurityAclModule.NAME ).icon( REMOVE );
+	}
+
+	public AbstractNodeViewElement tooltip() {
 		return IconSetRegistry.getIconSet( SpringSecurityAclModule.NAME ).icon( TOOLTIP );
+	}
+
+	public AbstractNodeViewElement menuItem() {
+		return IconSetRegistry.getIconSet( SpringSecurityAclModule.NAME ).icon( MENU_ITEM );
 	}
 }

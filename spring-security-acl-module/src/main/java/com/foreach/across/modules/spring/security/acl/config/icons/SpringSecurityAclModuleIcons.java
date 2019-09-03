@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 import static com.foreach.across.modules.bootstrapui.config.FontAwesomeIconSetConfiguration.FONT_AWESOME_SOLID_ICON_SET;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 @Configuration
 public class SpringSecurityAclModuleIcons
@@ -36,7 +37,12 @@ public class SpringSecurityAclModuleIcons
 		SimpleIconSet iconSet = new SimpleIconSet();
 
 		iconSet.add( SpringSecurityAclModulePermissionIcons.ADD, ( name ) -> IconSetRegistry.getIconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "plus-circle" ) );
-		iconSet.add( SpringSecurityAclModulePermissionIcons.TOOLTIP, ( name ) -> IconSetRegistry.getIconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "question-circle" ) );
+		iconSet.add( SpringSecurityAclModulePermissionIcons.REMOVE, ( name ) -> IconSetRegistry.getIconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" )
+		                                                                                       .set( css.text.muted ) );
+
+		iconSet.add( SpringSecurityAclModulePermissionIcons.MENU_ITEM, ( name ) -> IconSetRegistry.getIconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "lock" ) );
+		iconSet.add( SpringSecurityAclModulePermissionIcons.TOOLTIP,
+		             ( name ) -> IconSetRegistry.getIconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "question-circle" ) );
 
 		IconSetRegistry.addIconSet( SpringSecurityAclModule.NAME, iconSet );
 	}

@@ -19,7 +19,6 @@ package com.foreach.across.modules.spring.security.acl.ui;
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.FaIcon;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -34,6 +33,7 @@ import org.springframework.stereotype.Component;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 import static com.foreach.across.modules.entity.views.EntityViewFactoryAttributes.defaultAccessValidator;
+import static com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModuleIcons.springSecurityAclIcons;
 
 /**
  * Registers the different ACL permissions form views on the relevant entities.
@@ -66,7 +66,7 @@ class AclPermissionsFormViewConfiguration implements EntityConfigurer
 				        AclPermissionsForm.VIEW_NAME,
 				        basicSettings()
 						        .adminMenu( AclPermissionsForm.MENU_PATH,
-						                    item -> item.attribute( NavComponentBuilder.ATTR_ICON, new FaIcon( FaIcon.WebApp.LOCK ) ) )
+						                    item -> item.attribute( NavComponentBuilder.ATTR_ICON, springSecurityAclIcons.permission.menuItem() ) )
 						        .accessValidator( defaultAccessValidator().and( this::isAclFormAllowed ) )
 						        .andThen( formSettings().forExtension( true ) )
 						        .andThen( builder -> builder.viewProcessor( aclFormProcessor ) )

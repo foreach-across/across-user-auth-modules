@@ -17,7 +17,6 @@
 package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.FaIcon;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
@@ -298,10 +297,9 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 				.tableCell()
 				.css( CSS_REMOVE_CELL )
 				.add(
-						link().css( "text-muted" )
-						      .url( "#" )
+						link().url( "#" )
 						      .title( resolvePermissionCode( "removeEntry", "Remove" ) )
-						      .add( new FaIcon( FaIcon.WebApp.REMOVE ) )
+						      .add( springSecurityAclIcons.permission.remove() )
 				);
 
 	}
