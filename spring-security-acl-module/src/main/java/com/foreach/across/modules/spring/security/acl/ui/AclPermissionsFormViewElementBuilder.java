@@ -144,13 +144,16 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 
 		// section heading
 		String description = resolveLabel( "description", "", formSectionPrefix, sectionPrefix );
-		ViewElementBuilder itemSelectorBuilder = section.getItemSelectorBuilder()
-		                                                .andThen( ( ctx, element ) -> {
-			                                                if ( element instanceof NodeViewElement ) {
-				                                                element.set( css.display.inlineBlock );
-				                                                element.set( witherFor( NodeViewElement.class, this::makeFormGroupInlineBlock ) );
-			                                                }
-		                                                } );
+		ViewElementBuilder itemSelectorBuilder = section.getItemSelectorBuilder();
+		if ( itemSelectorBuilder != null ) {
+			itemSelectorBuilder = itemSelectorBuilder.andThen( ( ctx, element ) -> {
+				if ( element instanceof NodeViewElement ) {
+					element.set( css.display.inlineBlock );
+					element.set( witherFor( NodeViewElement.class, this::makeFormGroupInlineBlock ) );
+				}
+			} );
+
+		}
 
 		return BootstrapUiBuilders
 				.div()
