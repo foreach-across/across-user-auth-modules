@@ -18,6 +18,7 @@ package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.FaIcon;
+import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.spring.security.acl.services.AclOperations;
@@ -25,6 +26,7 @@ import com.foreach.across.modules.spring.security.acl.services.AclPermissionFact
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +50,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.util.EntityUtils.generateDisplayName;
+import static com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModuleIcons.springSecurityAclIcons;
+import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.witherFor;
 
 /**
  * Responsible for rendering an ACL permissions form.
@@ -133,12 +138,20 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 		return formData.getSidCache().computeIfAbsent( sid, s -> section.getObjectForSidResolver().apply( s ) );
 	}
 
+	@SuppressWarnings("unchecked")
 	private ViewElementBuilder buildSection( AclPermissionsFormSection section ) {
 		this.sectionPrefix = "aclSection[" + section.getName() + "]";
 		this.formSectionPrefix = formPrefix + "." + sectionPrefix;
 
 		// section heading
 		String description = resolveLabel( "description", "", formSectionPrefix, sectionPrefix );
+		ViewElementBuilder itemSelectorBuilder = section.getItemSelectorBuilder()
+		                                                .andThen( ( ctx, element ) -> {
+			                                                if ( element instanceof NodeViewElement ) {
+				                                                element.set( css.display.inlineBlock );
+				                                                element.set( witherFor( NodeViewElement.class, this::makeFormGroupInlineBlock ) );
+			                                                }
+		                                                } );
 
 		return BootstrapUiBuilders
 				.div()
@@ -146,7 +159,13 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 				.add( node( "h3" ).add( html( resolveLabel( "title", section.getName(), formSectionPrefix, sectionPrefix ) ) ) )
 				.add( !description.isEmpty() ? paragraph().add( html( description ) ) : null )
 				.add( buildPermissionsTable( section ) )
-				.add( section.getItemSelectorBuilder() );
+				.add( itemSelectorBuilder );
+	}
+
+	private void makeFormGroupInlineBlock( NodeViewElement selector ) {
+		selector.findAll( e -> e instanceof FormGroupElement )
+		        .findFirst()
+		        .ifPresent( formGroup -> formGroup.set( css.display.inlineBlock ) );
 	}
 
 	private ViewElementBuilder buildPermissionsTable( AclPermissionsFormSection section ) {
@@ -171,6 +190,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 			permissionGroupRow.add(
 					table.heading()
 					     .css( CSS_FIRST_OF_GROUP )
+					     .with( css.text.center )
 					     .columnSpan( permissions.length )
 					     .add( hasGroupName ? html( resolvePermissionCode( "permissionGroup[" + groupName + "]", generateDisplayName( groupName ) ) ) : null )
 					     .add( hasGroupName ? tooltip( resolvePermissionCode( "permissionGroup[" + groupName + "].tooltip", "" ) ) : null )
@@ -182,6 +202,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 			      .map( permissionName ->
 					            table.heading()
 					                 .css( itemCount.getAndDecrement() == 0 ? CSS_FIRST_OF_GROUP : "" )
+					                 .with( css.text.center )
 					                 .add( html( resolvePermissionCode( "permission[" + permissionName + "]", generateDisplayName( permissionName ) ) ) )
 					                 .add( tooltip( resolvePermissionCode( "permission[" + permissionName + "].tooltip", "" ) ) )
 			      )
@@ -217,6 +238,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 						Stream.of( permissions )
 						      .forEach( aclPermission -> row
 								      .add( table.cell()
+								                 .with( css.text.center )
 								                 .css( CSS_PERMISSION_TOGGLE, itemCount.getAndDecrement() == 0 ? CSS_FIRST_OF_GROUP : "" )
 								                 .add(
 										                 checkbox().controlName( controlPrefix + "['" + index + "'].permissions" )
@@ -236,7 +258,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 		// no entries row
 		table.body().add(
 				table.row()
-				     .css( CSS_NO_ENTRIES, rowCount.get() > 0 ? "hidden" : "" )
+				     .css( CSS_NO_ENTRIES, rowCount.get() > 0 ? "d-none" : "" )
 				     .add(
 						     table.cell().columnSpan( formData.getPermissionsForSection( section ).length + 2 )
 						          .add( html( resolvePermissionCode( "noEntries", "No entries yet" ) ) )
@@ -245,7 +267,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 
 		// template row
 		val templateRow = table.row()
-		                       .css( CSS_TEMPLATE_ROW, CSS_ITEM_ROW, "hidden" )
+		                       .css( CSS_TEMPLATE_ROW, CSS_ITEM_ROW, "d-none" )
 		                       .add( table.cell().add( text( "{{item}}" ) ) )
 		                       .add( hidden().disabled().controlName( controlPrefix + "['{{itemIndex}}'].section" ).value( section.getName() ) )
 		                       .add( hidden().disabled().controlName( controlPrefix + "['{{itemIndex}}'].id" ).value( "" ) );
@@ -256,6 +278,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 			      .forEach( aclPermission -> templateRow
 					      .add( table.cell()
 					                 .css( CSS_PERMISSION_TOGGLE, itemCount.getAndDecrement() == 0 ? CSS_FIRST_OF_GROUP : "" )
+					                 .with( css.text.center )
 					                 .add(
 							                 checkbox().disabled()
 							                           .controlName( controlPrefix + "['{{itemIndex}}'].permissions" )
@@ -290,7 +313,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 					.attribute( "title", tooltip )
 					.attribute( "data-html", true )
 					.attribute( "data-toggle", "tooltip" )
-					.add( new FaIcon( FaIcon.WebApp.QUESTION_CIRCLE ) );
+					.add( springSecurityAclIcons.permission.tooltip() );
 		}
 
 		return null;

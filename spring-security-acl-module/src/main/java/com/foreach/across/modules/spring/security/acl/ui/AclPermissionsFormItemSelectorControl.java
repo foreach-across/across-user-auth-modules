@@ -18,7 +18,6 @@ package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -28,6 +27,8 @@ import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElemen
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.util.Assert;
+
+import static com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModuleIcons.springSecurityAclIcons;
 
 /**
  * Custom {@link ViewElementBuilder} for creating the default item selector control for a {@link AclPermissionsFormSection}.
@@ -83,7 +84,7 @@ public final class AclPermissionsFormItemSelectorControl extends AbstractNodeVie
 
 		ButtonViewElement button = new ButtonViewElement();
 		button.addCssClass( "acl-permissions-form-selector-button" );
-		button.setIcon( new GlyphIcon( GlyphIcon.PLUS_SIGN ) );
+		button.setIcon( springSecurityAclIcons.permission.add() );
 
 		row.addChild( button );
 
