@@ -20,12 +20,22 @@ import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
+import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.Collections;
+
+import static com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModulePermissionIcons.ADD;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -37,6 +47,18 @@ public class TestAclPermissionsFormItemSelectorControl extends AbstractViewEleme
 {
 	private ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
 
+	@Before
+	public void setUp() {
+		SimpleIconSet iconSet = new SimpleIconSet();
+		iconSet.setDefaultIconResolver( ( name ) -> Collections.singletonList( ADD ).contains( name ) ? html.i().addCssClass( "add" ) : null );
+		IconSetRegistry.addIconSet( SpringSecurityAclModule.NAME, iconSet );
+	}
+
+	@After
+	public void cleanUp() {
+		IconSetRegistry.removeIconSet( SpringSecurityAclModule.NAME );
+	}
+
 	@Test
 	public void defaultRow() {
 		renderAndExpect(
@@ -47,7 +69,7 @@ public class TestAclPermissionsFormItemSelectorControl extends AbstractViewEleme
 				"<div class='acl-permissions-form-selector' test='value'>" +
 						"<input data-bootstrapui-adapter-type=\"basic\" type='text' class='form-control' />" +
 						"<button type=\"button\" class=\"acl-permissions-form-selector-button btn btn-default\">" +
-						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-plus-sign\"></span></button>" +
+						"<i class=\"add\"></i></button>" +
 						"</div>"
 		);
 	}
