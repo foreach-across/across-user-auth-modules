@@ -20,16 +20,15 @@
 
 	<parent>
 		<groupId>com.foreach.across</groupId>
-		<artifactId>standard-module-bom</artifactId>
-		<version>5.0.0-SNAPSHOT</version>
+		<artifactId>across-standard-module-parent</artifactId>
+		<version>5.0.0-TEST-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
 	<artifactId>oauth2-module-project</artifactId>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>${revision}</version>
 	<packaging>pom</packaging>
 
-	<name>${project.groupId}:${project.artifactId}</name>
 	<description>
 		Provides OAuth2 related domain model and infrastructure using Spring security OAuth2.
 	</description>
@@ -43,7 +42,7 @@
 
 	<developers>
 		<developer>
-			<name>Arne Vandamme</name>
+			<name>Foreach</name>
 			<organization>Foreach</organization>
 			<organizationUrl>https://www.foreach.be</organizationUrl>
 		</developer>
@@ -51,15 +50,16 @@
 
 	<repositories>
 		<repository>
-			<id>foreach-nexus</id>
-			<name>Foreach repository</name>
-			<url>http://repository.foreach.be/nexus/repository/public</url>
+			<id>across</id>
+			<name>Across Repository</name>
+			<url>https://repository.foreach.be/nexus/repository/public/</url>
 		</repository>
 	</repositories>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<revision>3.0.0-TEST-SNAPSHOT</revision>
 	</properties>
 
 	<modules>
@@ -77,57 +77,57 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>across-hibernate-module</artifactId>
-				<version>5.0.0-SNAPSHOT</version>
+				<version>5.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>properties-module</artifactId>
-				<version>2.0.0-SNAPSHOT</version>
+				<version>2.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>entity-module</artifactId>
-				<version>4.0.0-SNAPSHOT</version>
+				<version>4.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>bootstrap-ui-module</artifactId>
-				<version>3.0.0-SNAPSHOT</version>
+				<version>3.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-module</artifactId>
-				<version>4.0.0-SNAPSHOT</version>
+				<version>4.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-acl-module</artifactId>
-				<version>4.0.0-SNAPSHOT</version>
+				<version>4.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>admin-web-module</artifactId>
-				<version>4.0.0-SNAPSHOT</version>
+				<version>4.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>ehcache-module</artifactId>
-				<version>2.0.0-SNAPSHOT</version>
+				<version>2.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>logging-module</artifactId>
-				<version>1.0.0.RELEASE</version>
+				<version>3.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>user-module</artifactId>
-				<version>4.0.0-SNAPSHOT</version>
+				<version>4.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>debug-web-module</artifactId>
-				<version>3.0.0-SNAPSHOT</version>
+				<version>3.0.0-TEST-SNAPSHOT</version>
 			</dependency>
 			<!-- Upgrade Liquibase version for SQL Server support -->
 			<dependency>
@@ -138,33 +138,7 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.5.5</version>
-				<inherited>false</inherited>
-				<configuration>
-					<finalName>${project.artifactId}</finalName>
-					<descriptors>
-						<descriptor>site.xml</descriptor>
-					</descriptors>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
 	<scm>
-		<connection>scm:git:https://bitbucket.org/beforeach/oauth2-module.git</connection>
-		<developerConnection>scm:git:https://bitbucket.org/beforeach/oauth2-module.git</developerConnection>
 		<url>https://bitbucket.org/beforeach/oauth2-module</url>
 	</scm>
 
