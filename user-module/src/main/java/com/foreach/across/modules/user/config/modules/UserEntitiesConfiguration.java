@@ -66,7 +66,7 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 						             .viewElementBuilder( ViewElementMode.CONTROL, rolePermissionsFormElementBuilder() )
 		             )
 		             .listView(
-				             lvb -> lvb.defaultSort( new Sort( "name" ) )
+				             lvb -> lvb.defaultSort( Sort.by( "name" ) )
 				                       .showProperties( "name", "authority", "description", "lastModified" )
 		             )
 		             .createOrUpdateFormView( fvb -> fvb.viewProcessor( roleFormProcessorAdapter() ) );
