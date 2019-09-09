@@ -26,10 +26,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.scheduling.config.IntervalTask;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+
+import java.time.Instant;
 
 /**
  * @author Marc Vanbrabant
@@ -39,29 +38,22 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @EnableScheduling
 @ConditionalOnBean(LdapSynchronizationTask.class)
 @RequiredArgsConstructor
-public class LdapSchedulerTaskConfiguration implements SchedulingConfigurer
+public class LdapSchedulerTaskConfiguration
 {
+	private TaskScheduler taskScheduler;
 	private final LdapSynchronizationTask ldapSynchronizationTask;
 	private final LdapModuleSettings ldapModuleSettings;
-	private ScheduledTaskRegistrar taskRegistrar;
-
-	@Override
-	public void configureTasks( ScheduledTaskRegistrar taskRegistrar ) {
-		taskRegistrar.setScheduler( taskScheduler() );
-		this.taskRegistrar = taskRegistrar;
-	}
 
 	@EventListener
 	public void registerTasks( AcrossContextBootstrappedEvent ignore ) {
-		taskRegistrar.addFixedDelayTask( new IntervalTask( ldapSynchronizationTask,
-		                                                   ldapModuleSettings.getSynchronizationTaskInterval().toMillis(),
-		                                                   ldapModuleSettings.getSynchronizationTaskInitialDelay().toMillis()
-		) );
-		taskRegistrar.afterPropertiesSet();
+		Instant initial = Instant.now().plus( ldapModuleSettings.getSynchronizationTaskInitialDelay() );
+
+		taskScheduler.scheduleWithFixedDelay( ldapSynchronizationTask, initial, ldapModuleSettings.getSynchronizationTaskInterval() );
 	}
 
 	@Bean(destroyMethod = "shutdown")
 	public TaskScheduler taskScheduler() {
-		return new ThreadPoolTaskScheduler();
+		taskScheduler = new ThreadPoolTaskScheduler();
+		return taskScheduler;
 	}
 }
