@@ -38,7 +38,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -110,7 +110,7 @@ public class TestInvalidateTokenEndpoint
 		                                                                                         tokenValue );
 		OAuth2TokenDto body = responseEntity.getBody();
 		assertEquals( tokenValue, body.getValue() );
-		verify( tokenStore, never() ).removeAccessToken( (OAuth2AccessToken) anyObject() );
+		verify( tokenStore, never() ).removeAccessToken( any( OAuth2AccessToken.class ) );
 		verify( tokenStore ).removeRefreshToken( token );
 	}
 }
