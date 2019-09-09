@@ -23,12 +23,10 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>spring-security-acl-module-project</artifactId>
-		<version>4.0.0-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>test-admin-ui</artifactId>
-
-	<name>${project.groupId}:${project.artifactId}</name>
 
 	<properties>
 		<sonar.skip>true</sonar.skip>
@@ -38,7 +36,7 @@
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>spring-security-acl-module</artifactId>
-			<version>${project.parent.version}</version>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
@@ -84,26 +82,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.2</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>

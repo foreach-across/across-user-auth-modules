@@ -4,3 +4,4 @@ target
 .idea/libraries
 *.iml
 local-data
+.flattened-pom.xml
