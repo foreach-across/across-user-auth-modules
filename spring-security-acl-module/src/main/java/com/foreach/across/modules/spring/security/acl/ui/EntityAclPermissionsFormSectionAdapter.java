@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.spring.security.acl.ui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -29,6 +28,7 @@ import com.foreach.across.modules.spring.security.infrastructure.services.Securi
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.beans.factory.ObjectProvider;
@@ -153,7 +153,7 @@ class EntityAclPermissionsFormSectionAdapter
 			BiFunction<Object, ViewElementBuilderContext, ViewElement> objectLabelViewElementProvider,
 			EntityConfiguration<Object> entityConfiguration ) {
 		if ( objectLabelViewElementProvider == null ) {
-			return ( object, builderContext ) -> BootstrapUiBuilders.text( entityConfiguration.getLabel( object ) ).build( builderContext );
+			return ( object, builderContext ) -> HtmlViewElements.html.builders.text( entityConfiguration.getLabel( object ) ).build( builderContext );
 		}
 		return objectLabelViewElementProvider;
 	}

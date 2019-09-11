@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.spring.security.acl.ui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -41,6 +40,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 import java.util.Optional;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
@@ -89,7 +89,7 @@ public class TestEntityAclPermissionsFormSectionAdapter
 				.transportIdForObjectResolver( user -> (String) user )
 				.objectForTransportIdResolver( transportId -> "original:" + transportId )
 				.objectLabelViewElementProvider( ( object, builderContext ) -> TextViewElement.text( (String) object ) )
-				.itemSelectorBuilder( AclPermissionsForm.selectorControl().control( BootstrapUiBuilders.textbox() ) )
+				.itemSelectorBuilder( AclPermissionsForm.selectorControl().control( bootstrap.builders.textbox() ) )
 				.build();
 
 		AclPermissionsFormSection adapted = adapt( original );
