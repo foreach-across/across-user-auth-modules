@@ -19,7 +19,6 @@ package com.foreach.across.modules.spring.security.acl.ui;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
@@ -34,6 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Collections;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModulePermissionIcons.ADD;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -63,7 +63,7 @@ public class TestAclPermissionsFormItemSelectorControl extends AbstractViewEleme
 	public void defaultRow() {
 		renderAndExpect(
 				AclPermissionsForm.selectorControl()
-				                  .control( BootstrapUiBuilders.textbox() )
+				                  .control( bootstrap.builders.textbox() )
 				                  .attribute( "test", "value" )
 				                  .build( builderContext ),
 				"<div class='acl-permissions-form-selector' test='value'>" +

@@ -17,7 +17,6 @@
 package test.acl.application;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
@@ -43,6 +42,7 @@ import test.acl.application.domain.user.UserRepository;
 
 import java.util.Optional;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.spring.security.acl.ui.AclPermissionsForm.permissionGroup;
 
@@ -138,7 +138,7 @@ class AclFormConfiguration implements EntityConfigurer
 										.objectForTransportIdResolver( userRepository::findOneByName )
 										.objectLabelViewElementProvider( ( object, builderContext ) -> TextViewElement.text( ( (User) object ).getName() ) )
 										.itemSelectorBuilder( AclPermissionsForm.selectorControl().control(
-												BootstrapUiBuilders.formGroup().control( BootstrapUiBuilders.textbox() ) )
+												bootstrap.builders.formGroup().control( bootstrap.builders.textbox() ) )
 										)
 										.build()
 						)
