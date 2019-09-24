@@ -17,18 +17,20 @@
 package com.foreach.across.modules.user.config.modules;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.repositories.RoleRepository;
 import com.foreach.across.modules.user.services.UserService;
-import com.foreach.across.modules.user.ui.GroupsFormElementBuilder;
 import com.foreach.across.modules.user.ui.GroupsFormProcessorAdapter;
 import com.foreach.across.modules.user.ui.RoleFormProcessorAdapter;
 import com.foreach.across.modules.user.ui.RolePermissionsFormElementBuilder;
 import com.foreach.across.modules.user.ui.support.EQStringToRoleConverter;
 import com.foreach.across.modules.user.ui.support.EQValueToRoleConverter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,10 +39,11 @@ import org.springframework.data.domain.Sort;
 
 @ConditionalOnAcrossModule("EntityModule")
 @Configuration
+@RequiredArgsConstructor
 public class UserEntitiesConfiguration implements EntityConfigurer
 {
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
+	private final AutoSuggestDataAttributeRegistrar autoSuggestData;
 
 	@Autowired
 	public void registerEntityQueryConverters( ConverterRegistry mvcConversionService, RoleRepository roleRepository ) {
@@ -93,9 +96,9 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 
 		configuration.assignableTo( GroupedPrincipal.class )
 		             .properties(
-				             props -> props
-						             .property( "groups" )
-						             .viewElementBuilder( ViewElementMode.CONTROL, groupsFormElementBuilder() )
+				             props -> props.property( "groups" )
+				                           .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+				                           .attribute( autoSuggestData.entityQuery( "name ilike '%{0}%'" ) )
 		             )
 		             .createOrUpdateFormView( fvb -> fvb.viewProcessor( groupsFormProcessorAdapter() ) );
 
@@ -111,11 +114,6 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 				                       )
 		             );
 		             */
-	}
-
-	@Bean
-	protected GroupsFormElementBuilder groupsFormElementBuilder() {
-		return new GroupsFormElementBuilder();
 	}
 
 	@Bean
