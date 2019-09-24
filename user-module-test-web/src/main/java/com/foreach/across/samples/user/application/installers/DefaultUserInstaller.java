@@ -19,45 +19,81 @@ package com.foreach.across.samples.user.application.installers;
 import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
-import com.foreach.across.modules.user.business.InternalUserDirectory;
-import com.foreach.across.modules.user.business.User;
-import com.foreach.across.modules.user.business.UserDirectory;
+import com.foreach.across.core.installers.InstallerRunCondition;
+import com.foreach.across.modules.user.business.*;
+import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.modules.user.services.UserDirectoryService;
 import com.foreach.across.modules.user.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * @author Steven Gentens
  * @since 3.1.0
  */
 @RequiredArgsConstructor
-@Installer(description = "Creates a secondary user directory with a test user", phase = InstallerPhase.AfterContextBootstrap)
+@Installer(description = "Creates additional user directories, groups and users", phase = InstallerPhase.AfterContextBootstrap, runCondition = InstallerRunCondition.AlwaysRun)
 public class DefaultUserInstaller
 {
+	private final GroupService groupService;
 	private final UserService userService;
 	private final RoleService roleService;
 	private final UserDirectoryService userDirectoryService;
 
 	@InstallerMethod
 	public void createUserDirectory() {
-		UserDirectory userDirectory = new InternalUserDirectory();
-		userDirectory.setName( "my-user-directory" );
-		userDirectory.setActive( true );
-		userDirectory = userDirectoryService.save( userDirectory );
+		UserDirectory customDirectory = userDirectoryService.save( getUserDirectory( "my-user-directory", true ) );
 
-		User jane = new User();
-		jane.setUsername( "jane" );
-		jane.setDisplayName( "Jane Doe" );
-		jane.setEmailConfirmed( true );
-		jane.setEmail( "jane@localhost" );
-		jane.setPassword( "jane" );
-		jane.setFirstName( "Jane" );
-		jane.setLastName( "Doe" );
-		jane.setUserDirectory( userDirectory );
-		jane.setRoles( Collections.singleton( roleService.getRole( "ROLE_ADMIN" ) ) );
+		Role admin = roleService.getRole( "ROLE_ADMIN" );
+
+		Group customDirectoryGroup = getGroup( "externals", admin );
+		customDirectoryGroup.setUserDirectory( customDirectory );
+		groupService.save( customDirectoryGroup );
+		Group managers = groupService.save( getGroup( "managers", admin ) );
+		Group extras = groupService.save( getGroup( "extras" ) );
+
+		User jane = getUser( "jane", "doe", admin );
+		jane.setUserDirectory( customDirectory );
 		userService.save( jane );
+
+		userService.save( getUser( "john", "lee", admin ) );
+
+		User joshua = getUser( "joshua", "doe" );
+		joshua.setGroups( Arrays.asList( managers, extras ) );
+		userService.save( joshua );
+	}
+
+	private UserDirectory getUserDirectory( String name, boolean active ) {
+		UserDirectory userDirectory = userDirectoryService.getUserDirectories().stream()
+		                                                  .filter( ud -> StringUtils.equals( name, ud.getName() ) )
+		                                                  .findFirst()
+		                                                  .orElse( new InternalUserDirectory() );
+		userDirectory.setName( name );
+		userDirectory.setActive( active );
+		return userDirectory;
+	}
+
+	private User getUser( String username, String lastname, Role... roles ) {
+		User user = userService.findOne( QUser.user.username.eq( username ) ).orElse( new User() );
+		String firstName = StringUtils.capitalize( username );
+		String lastName = StringUtils.capitalize( lastname );
+		user.setUsername( username );
+		user.setFirstName( firstName );
+		user.setLastName( lastName );
+		user.setDisplayName( firstName + " " + lastName );
+		user.setEmail( username + "@localhost" );
+		user.setPassword( username );
+		user.setRoles( Arrays.asList( roles ) );
+		return user;
+	}
+
+	private Group getGroup( String groupName, Role... roles ) {
+		Group group = groupService.getGroupByName( groupName ).orElse( new Group() );
+		group.setName( groupName );
+		group.setRoles( Arrays.asList( roles ) );
+		return group;
 	}
 }
