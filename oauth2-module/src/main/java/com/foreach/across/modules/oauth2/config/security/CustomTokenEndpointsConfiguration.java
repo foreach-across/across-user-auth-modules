@@ -17,7 +17,7 @@ package com.foreach.across.modules.oauth2.config.security;
 
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
-import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,7 +41,7 @@ import java.util.Collection;
  */
 @Configuration
 @OrderInModule(2)
-public class CustomTokenEndpointsConfiguration extends SpringSecurityWebConfigurerAdapter
+public class CustomTokenEndpointsConfiguration implements AcrossWebSecurityConfigurer
 {
 	@Autowired(required = false)
 	private TokenStore tokenStore;
