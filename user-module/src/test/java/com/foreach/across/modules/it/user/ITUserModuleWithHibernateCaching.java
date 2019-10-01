@@ -23,7 +23,7 @@ import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.MachinePrincipal;
@@ -101,7 +101,7 @@ public class ITUserModuleWithHibernateCaching
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config extends SpringSecurityWebConfigurerAdapter implements AcrossContextConfigurer
+	static class Config implements AcrossWebSecurityConfigurer, AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {
