@@ -19,7 +19,6 @@ package com.foreach.across.samples.user.application.installers;
 import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
-import com.foreach.across.core.installers.InstallerRunCondition;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.RoleService;
@@ -35,7 +34,7 @@ import java.util.Arrays;
  * @since 3.1.0
  */
 @RequiredArgsConstructor
-@Installer(description = "Creates additional user directories, groups and users", phase = InstallerPhase.AfterContextBootstrap, runCondition = InstallerRunCondition.AlwaysRun)
+@Installer(description = "Creates additional user directories, groups and users", phase = InstallerPhase.AfterContextBootstrap, version = 2)
 public class DefaultUserInstaller
 {
 	private final GroupService groupService;

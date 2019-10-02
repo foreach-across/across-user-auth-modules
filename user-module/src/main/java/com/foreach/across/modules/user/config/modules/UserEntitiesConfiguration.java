@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.repositories.RoleRepository;
@@ -75,6 +76,10 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 		             .createOrUpdateFormView( fvb -> fvb.viewProcessor( roleFormProcessorAdapter() ) );
 
 		configuration.withType( User.class )
+		             .properties(
+				             props -> props.property( "groups" )
+				                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER )
+		             )
 		             .entityModel( mb -> mb.saveMethod( userService::save ) )
 		             .listView( lvb -> lvb
 				             .defaultSort( "displayName" )
