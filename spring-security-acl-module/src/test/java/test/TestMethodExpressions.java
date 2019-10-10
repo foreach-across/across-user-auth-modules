@@ -25,7 +25,7 @@ import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclPermissionFactory;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
-import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.CloseableAuthentication;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
@@ -118,7 +118,7 @@ public class TestMethodExpressions
 
 	@Configuration
 	@AcrossTestConfiguration(modules = SpringSecurityAclModule.NAME)
-	protected static class Config extends SpringSecurityWebConfigurerAdapter implements AcrossBootstrapConfigurer
+	protected static class Config implements AcrossWebSecurityConfigurer, AcrossBootstrapConfigurer
 	{
 		@Override
 		public void configureContext( AcrossBootstrapConfig contextConfiguration ) {

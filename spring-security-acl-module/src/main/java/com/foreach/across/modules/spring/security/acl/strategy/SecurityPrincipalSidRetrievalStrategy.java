@@ -18,6 +18,7 @@ package com.foreach.across.modules.spring.security.acl.strategy;
 import com.foreach.across.modules.spring.security.acl.business.SecurityPrincipalSid;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalHierarchy;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Sid;
@@ -55,14 +56,17 @@ public class SecurityPrincipalSidRetrievalStrategy implements SidRetrievalStrate
 		List<Sid> sids = new ArrayList<>( authorities.size() + 1 + parents.size() );
 
 		if ( principal instanceof SecurityPrincipal ) {
-			sids.add( new SecurityPrincipalSid( (SecurityPrincipal) principal ) );
+			sids.add( SecurityPrincipalSid.of( (SecurityPrincipal) principal ) );
+		}
+		else if ( principal instanceof SecurityPrincipalId ) {
+			sids.add( SecurityPrincipalSid.of( (SecurityPrincipalId) principal ) );
 		}
 		else {
 			sids.add( new PrincipalSid( authentication ) );
 		}
 
 		for ( SecurityPrincipal parent : parents ) {
-			sids.add( new SecurityPrincipalSid( parent ) );
+			sids.add( SecurityPrincipalSid.of( parent ) );
 		}
 
 		for ( GrantedAuthority authority : authorities ) {

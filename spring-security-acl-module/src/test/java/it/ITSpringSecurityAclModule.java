@@ -22,7 +22,7 @@ import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.infrastructure.CurrentAclSecurityPrincipalProxy;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
-import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalRetrievalStrategy;
 import com.foreach.across.test.AcrossTestConfiguration;
@@ -91,7 +91,7 @@ public class ITSpringSecurityAclModule
 
 	@Configuration
 	@AcrossTestConfiguration
-	protected static class Config extends SpringSecurityWebConfigurerAdapter implements AcrossContextConfigurer
+	protected static class Config implements AcrossWebSecurityConfigurer, AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {

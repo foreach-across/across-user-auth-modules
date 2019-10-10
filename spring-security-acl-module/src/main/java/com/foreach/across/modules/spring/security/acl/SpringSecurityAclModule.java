@@ -24,9 +24,6 @@ import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.installers.AcrossSequencesInstaller;
-import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
-import com.foreach.across.modules.hibernate.provider.HibernatePackageConfiguringModule;
-import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.config.AclSecurityConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.ModuleAclSecurityConfiguration;
@@ -37,7 +34,6 @@ import com.foreach.across.modules.spring.security.acl.config.modules.SpringSecur
 import com.foreach.across.modules.spring.security.acl.installers.AclEntityAuditableInstaller;
 import com.foreach.across.modules.spring.security.acl.installers.AclSchemaInstaller;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 
@@ -49,7 +45,7 @@ import java.util.Set;
 		required = { SpringSecurityModule.NAME, SpringSecurityInfrastructureModule.NAME },
 		optional = { "AcrossHibernateJpaModule", "EhcacheModule", "LoggingModule", "EntityModule" }
 )
-public class SpringSecurityAclModule extends AcrossModule implements HibernatePackageConfiguringModule
+public class SpringSecurityAclModule extends AcrossModule
 {
 	public static final String NAME = "SpringSecurityAclModule";
 
@@ -69,13 +65,6 @@ public class SpringSecurityAclModule extends AcrossModule implements HibernatePa
 		                                                      AcrossHibernateJpaModuleConfiguration.class,
 		                                                      EntityUiModuleConfiguration.class,
 		                                                      SpringSecurityAclModuleIcons.class ) );
-	}
-
-	@Override
-	public void configureHibernatePackage( HibernatePackageRegistry hibernatePackage ) {
-		if ( StringUtils.equals( AcrossHibernateJpaModule.NAME, hibernatePackage.getName() ) ) {
-			hibernatePackage.addPackageToScan( "com.foreach.across.modules.spring.security.acl.business" );
-		}
 	}
 
 	@Override

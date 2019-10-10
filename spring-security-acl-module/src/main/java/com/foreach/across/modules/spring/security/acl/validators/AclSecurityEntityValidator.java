@@ -41,7 +41,7 @@ public class AclSecurityEntityValidator extends EntityValidatorSupport<AclSecuri
 	}
 
 	@Override
-	protected void postValidation( AclSecurityEntity entity, Errors errors ) {
+	protected void postValidation( AclSecurityEntity entity, Errors errors, Object... validationHints ) {
 		if ( !errors.hasFieldErrors( "name" ) ) {
 			AclSecurityEntity other = aclSecurityEntityService.getSecurityEntityByName( entity.getName() ).orElse( null );
 

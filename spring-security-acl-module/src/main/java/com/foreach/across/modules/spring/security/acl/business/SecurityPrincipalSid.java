@@ -16,6 +16,7 @@
 package com.foreach.across.modules.spring.security.acl.business;
 
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import org.springframework.security.acls.domain.PrincipalSid;
 
 /**
@@ -23,7 +24,15 @@ import org.springframework.security.acls.domain.PrincipalSid;
  */
 public class SecurityPrincipalSid extends PrincipalSid
 {
-	public SecurityPrincipalSid( SecurityPrincipal principal ) {
-		super( principal.getPrincipalName() );
+	private SecurityPrincipalSid( SecurityPrincipalId principalId ) {
+		super( principalId.getId() );
+	}
+
+	public static SecurityPrincipalSid of( SecurityPrincipal principal ) {
+		return of( principal.getSecurityPrincipalId() );
+	}
+
+	public static SecurityPrincipalSid of( SecurityPrincipalId principalId ) {
+		return new SecurityPrincipalSid( principalId );
 	}
 }

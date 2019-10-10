@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.spring.security.acl.support.AclUtils;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -102,8 +103,11 @@ class EntityAclPermissionsFormSectionAdapter
 				if ( object instanceof SecurityPrincipal ) {
 					return AclUtils.sid( (SecurityPrincipal) object );
 				}
+				if ( ( object instanceof SecurityPrincipalId ) ) {
+					return AclUtils.sid( (SecurityPrincipalId) object );
+				}
 				throw new IllegalArgumentException(
-						"Unable to generate a default sid for " + object + "; must either implement GrantedAuthority or SecurityPrincipal" );
+						"Unable to generate a default sid for " + object + "; must either implement GrantedAuthority or SecurityPrincipalId" );
 			};
 		}
 		return sidForObjectResolver;

@@ -38,6 +38,7 @@ import com.foreach.across.modules.spring.security.acl.services.AclSecurityServic
 import com.foreach.across.modules.spring.security.acl.support.AclUtils;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
@@ -48,7 +49,6 @@ import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.function.Function;
 
@@ -133,15 +133,13 @@ public class AclPermissionsFormViewProcessor extends ExtensionViewProcessorAdapt
 	protected void registerWebResources( EntityViewRequest entityViewRequest,
 	                                     EntityView entityView,
 	                                     WebResourceRegistry webResourceRegistry ) {
-		webResourceRegistry.addWithKey(
-				WebResource.JAVASCRIPT_PAGE_END, AclPermissionsFormViewProcessor.class.getName(),
-				"/static/SpringSecurityAclModule/js/acl-permissions-form-controller.js",
-				WebResource.VIEWS
-		);
-		webResourceRegistry.addWithKey(
-				WebResource.CSS, AclPermissionsFormViewProcessor.class.getName(),
-				"/static/SpringSecurityAclModule/css/acl-permissions-form-controller.css",
-				WebResource.VIEWS
+		webResourceRegistry.apply(
+				WebResourceRule.add( WebResource.javascript( "@static:/SpringSecurityAclModule/js/acl-permissions-form-controller.js" ) )
+				               .withKey( AclPermissionsFormViewProcessor.class.getName() )
+				               .toBucket( WebResource.JAVASCRIPT_PAGE_END ),
+				WebResourceRule.add( WebResource.css( "@static:SpringSecurityAclModule/css/acl-permissions-form-controller.css" ) )
+				               .withKey( AclPermissionsFormViewProcessor.class.getName() )
+				               .toBucket( WebResource.CSS )
 		);
 	}
 
@@ -154,9 +152,10 @@ public class AclPermissionsFormViewProcessor extends ExtensionViewProcessorAdapt
 
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 		entityView.setRedirectUrl(
-				UriComponentsBuilder.fromUriString( entityViewContext.getLinkBuilder().update( entityViewContext.getEntity() ) )
-				                    .queryParam( "view", entityViewRequest.getViewName() )
-				                    .toUriString()
+				entityViewContext.getLinkBuilder().forInstance( entityViewContext.getEntity() )
+				                 .updateView()
+				                 .withQueryParam( "view", entityViewRequest.getViewName() )
+				                 .toUriString()
 		);
 	}
 
@@ -187,7 +186,7 @@ public class AclPermissionsFormViewProcessor extends ExtensionViewProcessorAdapt
 		container.find( "btn-cancel", ButtonViewElement.class )
 		         .ifPresent( button -> {
 			         EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-			         button.setUrl( entityViewContext.getLinkBuilder().update( entityViewContext.getEntity() ) );
+			         button.setUrl( entityViewContext.getLinkBuilder().forInstance( entityViewContext.getEntity() ).updateView().toUriString() );
 		         } );
 	}
 
