@@ -17,10 +17,14 @@
 package com.foreach.across.modules.user.security;
 
 import com.foreach.across.modules.spring.security.AuthenticationUtils;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +33,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class CurrentUserProxyImpl implements CurrentUserProxy
 {
+	@Autowired
+	private SecurityPrincipalService securityPrincipalService;
+
 	@Override
 	public Long getId() {
 		return isAuthenticated() ? getUser().getId() : null;
@@ -85,13 +92,30 @@ public class CurrentUserProxyImpl implements CurrentUserProxy
 
 	@Override
 	public User getUser() {
-		return isAuthenticated() ? (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal() : null;
+		if ( isAuthenticated() ) {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			if ( principal != null && principal.getClass().isAssignableFrom( SecurityPrincipalId.class ) ) {
+				SecurityPrincipal securityPrincipal = securityPrincipalService.getPrincipalById( (SecurityPrincipalId) principal ).orElse( null );
+				if ( securityPrincipal instanceof User ) {
+					return (User) securityPrincipal;
+				}
+				else {
+					return null;
+				}
+			}
+			else {
+				return null;
+			}
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
 	public boolean isAuthenticated() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication != null && authentication.isAuthenticated() && authentication
-				.getPrincipal() instanceof User;
+				.getPrincipal() instanceof SecurityPrincipalId;
 	}
 }

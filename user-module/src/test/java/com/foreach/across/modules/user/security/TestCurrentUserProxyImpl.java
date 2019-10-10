@@ -16,11 +16,14 @@
 
 package com.foreach.across.modules.user.security;
 
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -32,6 +35,7 @@ import org.springframework.security.core.context.SecurityContextImpl;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -43,7 +47,11 @@ import static org.mockito.Mockito.*;
 public class TestCurrentUserProxyImpl
 {
 	@Spy
-	private CurrentUserProxyImpl proxy = new CurrentUserProxyImpl();
+	@InjectMocks
+	private CurrentUserProxy proxy = new CurrentUserProxyImpl();
+
+	@Mock
+	private SecurityPrincipalService securityPrincipalService;
 
 	@Mock
 	private User user;
@@ -72,9 +80,11 @@ public class TestCurrentUserProxyImpl
 		when( auth.getPrincipal() ).thenReturn( mock( MachinePrincipal.class ) );
 		assertFalse( proxy.isAuthenticated() );
 
-		when( auth.getPrincipal() ).thenReturn( user );
+		when( auth.getPrincipal() ).thenReturn( SecurityPrincipalId.of( "principalName" ) );
+		when( securityPrincipalService.getPrincipalById( SecurityPrincipalId.of( "principalName" ) ) ).thenReturn( Optional.of( user ) );
 		assertTrue( proxy.isAuthenticated() );
 
+		reset( securityPrincipalService );
 		when( auth.isAuthenticated() ).thenReturn( false );
 		assertFalse( proxy.isAuthenticated() );
 	}
@@ -86,11 +96,13 @@ public class TestCurrentUserProxyImpl
 		ctx.setAuthentication( auth );
 		SecurityContextHolder.setContext( ctx );
 
-		when( auth.getPrincipal() ).thenReturn( user );
+		when( auth.getPrincipal() ).thenReturn( SecurityPrincipalId.of( "principalName" ) );
 
 		doReturn( true ).when( proxy ).isAuthenticated();
+		when( securityPrincipalService.getPrincipalById( SecurityPrincipalId.of( "principalName" ) ) ).thenReturn( Optional.of( user ) );
 		assertSame( user, proxy.getUser() );
 
+		reset( securityPrincipalService );
 		doReturn( false ).when( proxy ).isAuthenticated();
 		assertNull( proxy.getUser() );
 	}
@@ -102,6 +114,7 @@ public class TestCurrentUserProxyImpl
 
 		when( user.getId() ).thenReturn( 123L );
 		doReturn( true ).when( proxy ).isAuthenticated();
+
 		doReturn( user ).when( proxy ).getUser();
 
 		assertEquals( Long.valueOf( 123 ), proxy.getId() );

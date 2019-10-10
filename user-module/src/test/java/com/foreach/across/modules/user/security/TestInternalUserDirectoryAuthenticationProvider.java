@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.user.security;
 
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
@@ -149,8 +150,8 @@ public class TestInternalUserDirectoryAuthenticationProvider
 		authenticationProvider.setUserService( userService );
 		Authentication successfulAuthentication = authenticationProvider.authenticate( authentication );
 		assertNotNull( successfulAuthentication );
-		assertTrue( successfulAuthentication.getPrincipal() instanceof User );
-		assertEquals( "username", ( (User) successfulAuthentication.getPrincipal() ).getUsername() );
+		assertTrue( successfulAuthentication.getPrincipal() instanceof SecurityPrincipalId );
+		assertEquals( "username", ( (SecurityPrincipalId) successfulAuthentication.getPrincipal() ).getId() );
 	}
 
 	private InternalUserDirectoryAuthenticationProvider internalUserDirectoryAuthenticationProvider() throws Exception {
