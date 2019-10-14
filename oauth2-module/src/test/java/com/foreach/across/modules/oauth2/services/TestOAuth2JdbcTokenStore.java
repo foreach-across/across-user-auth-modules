@@ -332,8 +332,8 @@ public class TestOAuth2JdbcTokenStore
 		}
 
 		@Bean
-		public UserDetailsOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
-			return spy( new UserDetailsOAuth2AuthenticationSerializer() );
+		public SecurityPrincipalIdOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
+			return spy( new SecurityPrincipalIdOAuth2AuthenticationSerializer() );
 		}
 
 		@Bean
