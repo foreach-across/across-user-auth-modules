@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.spring.security.acl.config.icons;
 
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
@@ -26,6 +27,7 @@ import static com.foreach.across.modules.bootstrapui.config.FontAwesomeIconSetCo
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 @Configuration
+@ConditionalOnAcrossModule("BootstrapUiModule")
 public class SpringSecurityAclModuleIcons
 {
 	public final static SpringSecurityAclModuleIcons springSecurityAclIcons = new SpringSecurityAclModuleIcons();
