@@ -32,19 +32,19 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, Queryd
 {
 	@Caching(
 			put = {
-					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.get().username", condition = "#result.isPresent()"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().id", condition = "#result.isPresent()"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().principalName", condition = "#result.isPresent()")
 			}
 	)
 	Optional<User> findByUsername( String userName );
 
 	@Caching(
 			put = {
-					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username", condition = "#result != null"),
-					@CachePut(value = UserModuleCache.USERS, key = "'email:' + #result.email", condition = "#result != null"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.get().username", condition = "#result.isPresent()"),
+					@CachePut(value = UserModuleCache.USERS, key = "'email:' + #result.get().email", condition = "#result.isPresent()"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().id", condition = "#result.isPresent()"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().principalName", condition = "#result.isPresent()")
 			}
 	)
 	Optional<User> findByEmail( String email );
@@ -53,9 +53,9 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, Queryd
 
 	@Caching(
 			put = {
-					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.username"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName")
+					@CachePut(value = UserModuleCache.USERS, key = "'username:' + #result.get().username"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().id"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().principalName")
 			}
 	)
 	@Override

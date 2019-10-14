@@ -34,8 +34,8 @@ public interface MachinePrincipalRepository
 {
 	@Caching(
 			put = {
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().id", condition = "#result.isPresent()"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().principalName", condition = "#result.isPresent()")
 			}
 	)
 	@Override

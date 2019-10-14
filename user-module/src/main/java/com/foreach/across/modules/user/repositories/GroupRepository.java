@@ -33,22 +33,22 @@ import java.util.Optional;
  */
 public interface GroupRepository extends IdBasedEntityJpaRepository<Group>, QuerydslPredicateExecutor<Group>
 {
-	String GROUP_KEY = "#result.userDirectory.id + ':' + #result.name";
+	String GROUP_KEY = "#result.get().userDirectory.id + ':' + #result.get().name";
 
 	@Caching(
 			put = {
-					@CachePut(value = UserModuleCache.GROUPS, key = GROUP_KEY, condition = "#result != null"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = UserModuleCache.GROUPS, key = GROUP_KEY, condition = "#result.isPresent()"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().id", condition = "#result.isPresent()"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().principalName", condition = "#result.isPresent()")
 			}
 	)
 	Optional<Group> findByNameAndUserDirectory( String name, UserDirectory userDirectory );
 
 	@Caching(
 			put = {
-					@CachePut(value = UserModuleCache.GROUPS, key = GROUP_KEY, condition = "#result != null"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.id", condition = "#result != null"),
-					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
+					@CachePut(value = UserModuleCache.GROUPS, key = GROUP_KEY, condition = "#result.isPresent()"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().id", condition = "#result.isPresent()"),
+					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.get().principalName", condition = "#result.isPresent()")
 			}
 	)
 	@Override
