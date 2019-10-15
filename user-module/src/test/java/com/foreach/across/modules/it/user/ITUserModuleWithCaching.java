@@ -29,6 +29,7 @@ import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.repositories.UserRepository;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.UserService;
@@ -77,6 +78,9 @@ public class ITUserModuleWithCaching
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	private Map<Object, Object> securityPrincipalCache, groupCache, userCache;
 
@@ -221,12 +225,23 @@ public class ITUserModuleWithCaching
 		User.setEmail( "someEmail@localhost" );
 		User.setPassword( "pwd" );
 
-		// Null value should be cached
 		assertTrue( securityPrincipalCache.isEmpty() );
 		assertTrue( userCache.isEmpty() );
+
+		// Null value should not be cached when called from repository
+		assertEquals( Optional.empty(), userRepository.findByUsername( "someUser" ) );
+		assertEquals( Optional.empty(), userRepository.findByEmail( "someEmail@localhost" ) );
+		assertEquals( Optional.empty(), userRepository.findById( -1000L ) );
+
+		assertTrue( securityPrincipalCache.isEmpty() );
+		assertTrue( userCache.isEmpty() );
+
+		// Null value should be cached when called from userservice
 		assertEquals( Optional.empty(), userService.getUserByUsername( "someUser" ) );
 		assertEquals( Optional.empty(), userService.getUserByEmail( "someEmail@localhost" ) );
-		assertTrue( securityPrincipalCache.isEmpty() );
+		assertEquals( Optional.empty(), userService.getUserById( -1000 ) );
+
+		assertEquals( 1, securityPrincipalCache.size() );
 		assertEquals( 2, userCache.size() );
 
 		User actual = mock( User.class );
@@ -242,7 +257,7 @@ public class ITUserModuleWithCaching
 		assertNotNull( byUsername );
 		assertEquals( created, byUsername );
 		assertEquals( 1, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 		assertSame( byUsername, userCache.get( "username:" + created.getUsername() ) );
 		assertSame( byUsername, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byUsername, securityPrincipalCache.get( created.getPrincipalName() ) );
@@ -250,12 +265,12 @@ public class ITUserModuleWithCaching
 		User byId = userService.getUserById( created.getId() ).orElse( null );
 		assertSame( byUsername, byId );
 		assertEquals( 1, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 
 		User byEmail = userService.getUserByEmail( created.getEmail() ).orElse( null );
 		assertEquals( created, byEmail );
 		assertEquals( 2, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 		assertSame( byEmail, userCache.get( "username:" + created.getUsername() ) );
 		assertSame( byEmail, userCache.get( "email:" + created.getEmail() ) );
 		assertSame( byEmail, securityPrincipalCache.get( created.getId() ) );
@@ -269,11 +284,11 @@ public class ITUserModuleWithCaching
 		User other = userService.save( otherDto );
 		assertNotNull( other );
 		assertEquals( 2, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 
 		other = userService.getUserByEmail( other.getEmail() ).orElse( null );
 		assertEquals( 4, userCache.size() );
-		assertEquals( 4, securityPrincipalCache.size() );
+		assertEquals( 5, securityPrincipalCache.size() );
 		assertSame( other, userCache.get( "username:" + other.getUsername() ) );
 		assertSame( other, userCache.get( "email:" + other.getEmail() ) );
 		assertSame( other, securityPrincipalCache.get( other.getId() ) );
@@ -281,7 +296,7 @@ public class ITUserModuleWithCaching
 
 		userService.save( User );
 		assertEquals( 2, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 		assertSame( other, userCache.get( "username:" + other.getUsername() ) );
 		assertSame( other, userCache.get( "email:" + other.getEmail() ) );
 		assertSame( other, securityPrincipalCache.get( other.getId() ) );
