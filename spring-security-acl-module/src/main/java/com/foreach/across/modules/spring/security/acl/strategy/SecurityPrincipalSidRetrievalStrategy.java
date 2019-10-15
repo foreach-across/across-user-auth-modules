@@ -19,6 +19,8 @@ import com.foreach.across.modules.spring.security.acl.business.SecurityPrincipal
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalHierarchy;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Sid;
@@ -41,9 +43,11 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
+@RequiredArgsConstructor
 public class SecurityPrincipalSidRetrievalStrategy implements SidRetrievalStrategy
 {
-	private static final Collection<SecurityPrincipal> EMPTY = Collections.emptyList();
+	private static final Collection<SecurityPrincipal> EMPTY = new ArrayList<>(  );
+	private final SecurityPrincipalService securityPrincipalService;
 
 	@Override
 	public List<Sid> getSids( Authentication authentication ) {
@@ -59,6 +63,13 @@ public class SecurityPrincipalSidRetrievalStrategy implements SidRetrievalStrate
 			sids.add( SecurityPrincipalSid.of( (SecurityPrincipal) principal ) );
 		}
 		else if ( principal instanceof SecurityPrincipalId ) {
+			securityPrincipalService.getPrincipalById( (SecurityPrincipalId) principal )
+			                        .ifPresent( securityPrincipal -> {
+				                        if ( securityPrincipal instanceof SecurityPrincipalHierarchy ) {
+					                        parents.addAll( ( (SecurityPrincipalHierarchy) securityPrincipal ).getParentPrincipals() );
+				                        }
+			                        } );
+
 			sids.add( SecurityPrincipalSid.of( (SecurityPrincipalId) principal ) );
 		}
 		else {

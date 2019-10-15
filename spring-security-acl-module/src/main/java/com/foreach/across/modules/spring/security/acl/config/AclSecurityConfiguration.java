@@ -22,6 +22,7 @@ import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCac
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.services.*;
 import com.foreach.across.modules.spring.security.acl.strategy.SecurityPrincipalSidRetrievalStrategy;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -49,6 +50,7 @@ public class AclSecurityConfiguration
 
 	private final DataSource dataSource;
 	private final CacheManager cacheManager;
+	private final SecurityPrincipalService securityPrincipalService;
 
 	/**
 	 * Create and expose the custom {@code PermissionFactory} that should be used.
@@ -62,7 +64,7 @@ public class AclSecurityConfiguration
 	@Bean
 	public AclPermissionEvaluator aclPermissionEvaluator() {
 		AclPermissionEvaluator evaluator = new AclPermissionEvaluator( aclService() );
-		evaluator.setSidRetrievalStrategy( new SecurityPrincipalSidRetrievalStrategy() );
+		evaluator.setSidRetrievalStrategy( new SecurityPrincipalSidRetrievalStrategy( securityPrincipalService ) );
 		evaluator.setPermissionFactory( aclPermissionFactory() );
 
 		return evaluator;
@@ -87,8 +89,8 @@ public class AclSecurityConfiguration
 			aclService.setSidIdentityQuery( "SELECT acl_sid_sequence.currval FROM dual" );
 		}
 		else if ( databaseInfo.isPostgres() ) {
-			aclService.setClassIdentityQuery("select currval(pg_get_serial_sequence('acl_class', 'id'))");
-			aclService.setSidIdentityQuery("select currval(pg_get_serial_sequence('acl_sid', 'id'))");
+			aclService.setClassIdentityQuery( "select currval(pg_get_serial_sequence('acl_class', 'id'))" );
+			aclService.setSidIdentityQuery( "select currval(pg_get_serial_sequence('acl_sid', 'id'))" );
 		}
 
 		return aclService;
@@ -134,6 +136,6 @@ public class AclSecurityConfiguration
 
 	@Bean
 	public SidRetrievalStrategy sidRetrievalStrategy() {
-		return new SecurityPrincipalSidRetrievalStrategy();
+		return new SecurityPrincipalSidRetrievalStrategy( securityPrincipalService );
 	}
 }
