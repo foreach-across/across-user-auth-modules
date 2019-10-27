@@ -246,9 +246,9 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 
 	protected void buildAuthoritySet( Set<GrantedAuthority> authorities ) {
 		for ( Role role : getRoles() ) {
-			authorities.add( role );
+			authorities.add( role.toGrantedAuthority() );
 			for ( Permission permission : role.getPermissions() ) {
-				authorities.add( permission );
+				authorities.add( permission.toGrantedAuthority() );
 			}
 		}
 	}

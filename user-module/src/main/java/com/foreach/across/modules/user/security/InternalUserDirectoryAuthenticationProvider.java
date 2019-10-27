@@ -69,7 +69,14 @@ public class InternalUserDirectoryAuthenticationProvider extends AbstractUserInD
 	protected UserDetails buildUserDetails( User user,
 	                                        UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
 		// todo: passwordencoder, check hash etc
-		return user;
+		return new org.springframework.security.core.userdetails.User( user.getUsername(),
+		                                                               user.getPassword(),
+		                                                               user.isEnabled(),
+		                                                               user.isAccountNonExpired(),
+		                                                               user.isCredentialsNonExpired(),
+		                                                               user.isAccountNonLocked(),
+		                                                               user.getAuthorities()
+		);
 	}
 
 	@Override

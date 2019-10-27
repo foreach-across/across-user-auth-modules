@@ -138,6 +138,6 @@ public class TestGroup
 		g.addRole( role );
 
 		List<? extends GrantedAuthority> authorities = new ArrayList<>( g.getAuthorities() );
-		assertEquals( Arrays.asList( perm, role ), authorities );
+		assertEquals( Arrays.asList( perm.toGrantedAuthority(), role.toGrantedAuthority() ), authorities );
 	}
 }

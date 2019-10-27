@@ -24,6 +24,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -45,7 +46,7 @@ import java.util.Set;
 @Table(name = UserSchemaConfiguration.TABLE_ROLE)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Role extends SettableIdAuditableEntity<Role>
-		implements GrantedAuthority, Serializable
+		implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 	public static final String AUTHORITY_PREFIX = "ROLE_";
@@ -173,6 +174,10 @@ public class Role extends SettableIdAuditableEntity<Role>
 	@Override
 	public String toString() {
 		return getAuthority();
+	}
+
+	public SimpleGrantedAuthority toGrantedAuthority() {
+		return new SimpleGrantedAuthority( getAuthority() );
 	}
 
 	/**

@@ -19,6 +19,7 @@ package com.foreach.across.modules.user.business;
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,15 +66,15 @@ public class TestRole
 		role.setId( 123L );
 
 		Set<GrantedAuthority> actuals = new HashSet<>();
-		actuals.add( role );
+		actuals.add( new SimpleGrantedAuthority( role.getAuthority() ) );
 
 		AuthorityMatcher matcher = AuthorityMatcher.allOf( "ROLE_ADMIN" );
 		assertTrue( matcher.matches( actuals ) );
 
-		matcher = AuthorityMatcher.allOf( role );
+		matcher = AuthorityMatcher.allOf( new SimpleGrantedAuthority( role.getAuthority() ) );
 		assertTrue( matcher.matches( actuals ) );
 
-		matcher = AuthorityMatcher.allOf( new Role( "ROLE_ADMIN" ) );
+		matcher = AuthorityMatcher.allOf( new SimpleGrantedAuthority( new Role( "ROLE_ADMIN" ).getAuthority() ) );
 		assertTrue( matcher.matches( actuals ) );
 	}
 

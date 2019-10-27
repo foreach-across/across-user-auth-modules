@@ -22,6 +22,7 @@ import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -43,7 +44,7 @@ import java.io.Serializable;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Permission
 		extends SettableIdBasedEntity<Permission>
-		implements GrantedAuthority, Serializable
+		implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -101,7 +102,6 @@ public class Permission
 		this.name = name;
 	}
 
-	@Override
 	public String getAuthority() {
 		return authorityString( getName() );
 	}
@@ -133,6 +133,10 @@ public class Permission
 
 	private void readObject( ObjectInputStream ois ) throws IOException, ClassNotFoundException {
 		name = (String) ois.readObject();
+	}
+
+	public SimpleGrantedAuthority toGrantedAuthority() {
+		return new SimpleGrantedAuthority( getAuthority() );
 	}
 
 	/**

@@ -18,6 +18,10 @@ package com.foreach.across.modules.user.business;
 
 import com.foreach.across.modules.spring.security.authority.AuthorityMatcher;
 import org.junit.Test;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,6 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TestPermission
 {
+	private GenericConversionService conversionService = new DefaultConversionService();
 	@Test
 	public void authorityEqualsPermissionName() {
 		Permission p = new Permission( "my Permission" );
@@ -48,12 +53,15 @@ public class TestPermission
 		actuals.add( p );
 
 		AuthorityMatcher matcher = AuthorityMatcher.allOf( "some permission" );
-		assertTrue( matcher.matches( actuals ) );
+		Set<GrantedAuthority> actualsConverted = (Set<GrantedAuthority>) conversionService.convert( actuals, TypeDescriptor
+				.collection( Set.class, TypeDescriptor.valueOf( GrantedAuthority.class ) ) );
 
-		matcher = AuthorityMatcher.allOf( new Permission( "some permission" ) );
-		assertTrue( matcher.matches( actuals ) );
+		assertTrue( matcher.matches( actualsConverted ) );
 
-		matcher = AuthorityMatcher.allOf( p );
-		assertTrue( matcher.matches( actuals ) );
+		matcher = AuthorityMatcher.allOf( conversionService.convert( new Permission( "some permission" ), GrantedAuthority.class ) );
+		assertTrue( matcher.matches( actualsConverted ) );
+
+		matcher = AuthorityMatcher.allOf( p.toGrantedAuthority() );
+		assertTrue( matcher.matches( actualsConverted ) );
 	}
 }
