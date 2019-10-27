@@ -99,7 +99,8 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		return StringUtils.lowerCase( principalName );
 	}
 
-	protected final void setPrincipalName( String principalName ) {
+	@SuppressWarnings( "WeakerAccess" )
+	protected void setPrincipalName( String principalName ) {
 		this.principalName = StringUtils.lowerCase( principalName );
 		prefixPrincipalName();
 	}
@@ -117,7 +118,7 @@ public abstract class BasicSecurityPrincipal<T extends SettableIdBasedEntity<?>>
 		return userDirectory;
 	}
 
-	public final void setUserDirectory( UserDirectory userDirectory ) {
+	public void setUserDirectory( UserDirectory userDirectory ) {
 		this.userDirectory = userDirectory;
 		prefixPrincipalName();
 	}

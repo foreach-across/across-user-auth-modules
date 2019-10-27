@@ -16,15 +16,12 @@
 
 package com.foreach.across.samples.user;
 
+import com.foreach.across.AcrossApplicationRunner;
 import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.user.UserModule;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -35,7 +32,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @AcrossApplication(modules = {
 		UserModule.NAME, AdminWebModule.NAME, EntityModule.NAME
 })
-@Import({ DataSourceAutoConfiguration.class, H2ConsoleAutoConfiguration.class })
 public class UserModuleApplication
 {
 	@Bean
@@ -44,6 +40,6 @@ public class UserModuleApplication
 	}
 
 	public static void main( String[] args ) {
-		SpringApplication.run( UserModuleApplication.class, args );
+		AcrossApplicationRunner.run( UserModuleApplication.class, args );
 	}
 }
