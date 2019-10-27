@@ -25,7 +25,7 @@ import org.springframework.security.acls.domain.PrincipalSid;
 public class SecurityPrincipalSid extends PrincipalSid
 {
 	private SecurityPrincipalSid( SecurityPrincipalId principalId ) {
-		super( principalId.getId() );
+		super( principalId.toString() );
 	}
 
 	public static SecurityPrincipalSid of( SecurityPrincipal principal ) {

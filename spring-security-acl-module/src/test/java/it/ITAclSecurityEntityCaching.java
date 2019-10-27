@@ -24,6 +24,7 @@ import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCac
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import org.junit.After;
 import org.junit.Before;
@@ -78,7 +79,7 @@ public class ITAclSecurityEntityCaching
 		entityCache.clear();
 
 		SecurityPrincipal principal = mock( SecurityPrincipal.class );
-		when( principal.toString() ).thenReturn( "principal" );
+		when( principal.getSecurityPrincipalId() ).thenReturn( SecurityPrincipalId.of( "principal" ) );
 
 		securityPrincipalService.authenticate( principal );
 	}
