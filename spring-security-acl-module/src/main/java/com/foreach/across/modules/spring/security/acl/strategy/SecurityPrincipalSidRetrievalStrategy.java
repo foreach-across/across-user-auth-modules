@@ -30,7 +30,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,15 +45,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityPrincipalSidRetrievalStrategy implements SidRetrievalStrategy
 {
-	private static final Collection<SecurityPrincipal> EMPTY = new ArrayList<>(  );
 	private final SecurityPrincipalService securityPrincipalService;
 
 	@Override
 	public List<Sid> getSids( Authentication authentication ) {
 		Object principal = authentication.getPrincipal();
 
-		Collection<SecurityPrincipal> parents = ( principal instanceof SecurityPrincipalHierarchy ) ?
-				( (SecurityPrincipalHierarchy) principal ).getParentPrincipals() : EMPTY;
+		Collection<SecurityPrincipal> parents = ( principal instanceof SecurityPrincipalHierarchy )
+				? ( (SecurityPrincipalHierarchy) principal ).getParentPrincipals() : new ArrayList<>();
 
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 		List<Sid> sids = new ArrayList<>( authorities.size() + 1 + parents.size() );
