@@ -23,6 +23,7 @@ import com.foreach.across.core.context.configurer.ConfigurerScope;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleCache;
@@ -102,7 +103,7 @@ public class ITUserModuleWithCaching
 		userCache.clear();
 
 		SecurityPrincipal principal = mock( SecurityPrincipal.class );
-		when( principal.toString() ).thenReturn( "principal" );
+		when( principal.getSecurityPrincipalId() ).thenReturn( SecurityPrincipalId.of( "principal" ) );
 
 		securityPrincipalService.authenticate( principal );
 	}

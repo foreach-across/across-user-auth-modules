@@ -135,7 +135,12 @@ public class Permission
 		name = (String) ois.readObject();
 	}
 
-	public SimpleGrantedAuthority toGrantedAuthority() {
+	/**
+	 * Convert this permission to a Spring security {@link GrantedAuthority} for use in authentication.
+	 *
+	 * @return granted authority
+	 */
+	public GrantedAuthority toGrantedAuthority() {
 		return new SimpleGrantedAuthority( getAuthority() );
 	}
 

@@ -151,7 +151,7 @@ public class TestInternalUserDirectoryAuthenticationProvider
 		Authentication successfulAuthentication = authenticationProvider.authenticate( authentication );
 		assertNotNull( successfulAuthentication );
 		assertTrue( successfulAuthentication.getPrincipal() instanceof SecurityPrincipalId );
-		assertEquals( "username", ( (SecurityPrincipalId) successfulAuthentication.getPrincipal() ).getId() );
+		assertEquals( "username", successfulAuthentication.getPrincipal().toString() );
 	}
 
 	private InternalUserDirectoryAuthenticationProvider internalUserDirectoryAuthenticationProvider() throws Exception {

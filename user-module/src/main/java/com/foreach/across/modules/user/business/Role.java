@@ -176,7 +176,12 @@ public class Role extends SettableIdAuditableEntity<Role>
 		return getAuthority();
 	}
 
-	public SimpleGrantedAuthority toGrantedAuthority() {
+	/**
+	 * Convert this role to a Spring security {@link GrantedAuthority} for use in authentication.
+	 *
+	 * @return granted authority
+	 */
+	public GrantedAuthority toGrantedAuthority() {
 		return new SimpleGrantedAuthority( getAuthority() );
 	}
 
