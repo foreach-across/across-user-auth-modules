@@ -220,6 +220,19 @@ public class ITUserModuleWithCaching
 	}
 
 	@Test
+	public void findByUnknownValueShouldNotThrowException() {
+		assertEquals( Optional.empty(), userService.getUserById( -1000 ) );
+		assertEquals( 1, securityPrincipalCache.size() );
+		assertEquals( 0, userCache.size() );
+		assertEquals( Optional.empty(), userService.getUserByUsername( "iojoifqezjf" ) );
+		assertEquals( 1, securityPrincipalCache.size() );
+		assertEquals( 1, userCache.size() );
+		assertEquals( Optional.empty(), userService.getUserByEmail( "foo@localhost" ) );
+		assertEquals( 1, securityPrincipalCache.size() );
+		assertEquals( 2, userCache.size() );
+	}
+
+	@Test
 	public void createAndGetUser() {
 		User User = new User();
 		User.setUsername( "someUser" );
