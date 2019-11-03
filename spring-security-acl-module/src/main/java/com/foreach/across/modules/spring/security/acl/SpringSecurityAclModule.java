@@ -20,6 +20,7 @@ import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.annotations.AcrossRole;
 import com.foreach.across.core.context.AcrossModuleRole;
 import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
+import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
 import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
@@ -69,9 +70,7 @@ public class SpringSecurityAclModule extends AcrossModule
 
 	@Override
 	public void prepareForBootstrap( ModuleBootstrapConfig currentModule, AcrossBootstrapConfig contextConfig ) {
-		contextConfig.getModule( SpringSecurityInfrastructureModule.NAME ).addApplicationContextConfigurer(
-				new AnnotatedClassConfigurer( SpringSecurityInfrastructureModuleConfiguration.class )
-		);
+		contextConfig.extendModule( AcrossBootstrapConfigurer.CONTEXT_INFRASTRUCTURE_MODULE, SpringSecurityInfrastructureModuleConfiguration.class );
 
 		setProperties( contextConfig.getModule( SpringSecurityModule.NAME ).getModule().getProperties() );
 
