@@ -77,9 +77,7 @@ public class SpringSecurityAclModule extends AcrossModule
 		for ( ModuleBootstrapConfig module : contextConfig.getModules() ) {
 			// Later modules can use ACL permission checking
 			if ( module.getBootstrapIndex() > currentModule.getBootstrapIndex() ) {
-				module.addApplicationContextConfigurer(
-						new AnnotatedClassConfigurer( ModuleAclSecurityConfiguration.class )
-				);
+				module.addApplicationContextConfigurer( true, new AnnotatedClassConfigurer( ModuleAclSecurityConfiguration.class ) );
 			}
 		}
 	}
