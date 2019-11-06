@@ -19,8 +19,8 @@ import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.cache.AcrossCompositeCacheManager;
-import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
-import com.foreach.across.core.context.configurer.ConfigurerScope;
+import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
+import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.oauth2.OAuth2Module;
 import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
@@ -114,7 +114,7 @@ public class ITOAuth2ModuleWithCaching
 
 	@Configuration
 	@AcrossTestConfiguration(modules = AcrossWebModule.NAME)
-	static class Config implements AcrossContextConfigurer
+	static class Config implements AcrossContextConfigurer, AcrossBootstrapConfigurer
 	{
 		@Bean(name = SpringSecurityModuleCache.SECURITY_PRINCIPAL)
 		@Exposed
@@ -135,11 +135,11 @@ public class ITOAuth2ModuleWithCaching
 			context.addModule( oauth2Module() );
 			context.addModule( propertiesModule() );
 			context.addModule( springSecurityModule() );
+		}
 
-			context.addApplicationContextConfigurer(
-					new AnnotatedClassConfigurer( EnableCachingConfiguration.class ),
-					ConfigurerScope.MODULES_ONLY
-			);
+		@Override
+		public void configureModule( ModuleBootstrapConfig moduleConfiguration ) {
+			moduleConfiguration.extendModule( false, true, EnableCachingConfiguration.class );
 		}
 
 		private PropertiesModule propertiesModule() {
