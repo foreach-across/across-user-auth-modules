@@ -80,8 +80,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	}
 
 	@Bean
-	public UserDetailsOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
-		return new UserDetailsOAuth2AuthenticationSerializer();
+	public SecurityPrincipalIdOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
+		return new SecurityPrincipalIdOAuth2AuthenticationSerializer();
 	}
 
 	@Bean

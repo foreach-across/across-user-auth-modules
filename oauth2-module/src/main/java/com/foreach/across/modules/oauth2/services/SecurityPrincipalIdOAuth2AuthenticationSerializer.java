@@ -26,7 +26,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-public class UserDetailsOAuth2AuthenticationSerializer extends OAuth2AuthenticationSerializer<String>
+public class SecurityPrincipalIdOAuth2AuthenticationSerializer extends OAuth2AuthenticationSerializer<String>
 {
 	@Autowired
 	private ClientDetailsService clientDetailsService;
@@ -42,7 +42,8 @@ public class UserDetailsOAuth2AuthenticationSerializer extends OAuth2Authenticat
 
 	@Override
 	public OAuth2Authentication deserialize( AuthenticationSerializerObject<String> serializerObject ) {
-		SecurityPrincipal securityPrincipal = securityPrincipalService.getPrincipalByName( serializerObject.getObject() ).orElse( null );
+		SecurityPrincipal securityPrincipal = securityPrincipalService.getPrincipalById( SecurityPrincipalId.of( serializerObject.getObject() ) )
+		                                                              .orElse( null );
 		User user = null;
 
 		if ( securityPrincipal instanceof User ) {
