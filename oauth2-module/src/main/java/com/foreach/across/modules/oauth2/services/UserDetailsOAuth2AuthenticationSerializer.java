@@ -37,7 +37,7 @@ public class UserDetailsOAuth2AuthenticationSerializer extends OAuth2Authenticat
 	@Override
 	protected byte[] serializePrincipal( Object object, OAuth2Request oAuth2Request ) {
 		SecurityPrincipalId principalId = (SecurityPrincipalId) object;
-		return super.serializeObject( principalId.getId(), oAuth2Request );
+		return super.serializeObject( principalId.toString(), oAuth2Request );
 	}
 
 	@Override
@@ -56,23 +56,22 @@ public class UserDetailsOAuth2AuthenticationSerializer extends OAuth2Authenticat
 		ClientDetails clientDetails = clientDetailsService.loadClientByClientId( serializerObject.getClientId() );
 		OAuth2Request userRequest = serializerObject.getOAuth2Request( clientDetails.getAuthorities() );
 
-		return new OAuth2Authentication( userRequest, new PreAuthenticatedAuthenticationToken( user.getPrincipalId(), null,
-		                                                                                       user.getAuthorities() ) );
+		return new OAuth2Authentication( userRequest, new PreAuthenticatedAuthenticationToken( user.getSecurityPrincipalId(), null, user.getAuthorities() ) );
 	}
 
 	private boolean isAllowedToLogon( User user ) {
-		return user.isEnabled() && user.isAccountNonExpired() && user.isAccountNonLocked()
-				&& user.isCredentialsNonExpired();
+		return user.isEnabled() && user.isAccountNonExpired() && user.isAccountNonLocked() && user.isCredentialsNonExpired();
 	}
 
 	@Override
 	public boolean canSerialize( OAuth2Authentication authentication ) {
 		Object principal = authentication.getPrincipal();
-		return principal != null && principal instanceof SecurityPrincipalId;
+		return principal instanceof SecurityPrincipalId;
 	}
 
 	@Override
 	public boolean canDeserialize( AuthenticationSerializerObject serializerObject ) {
-		return super.canDeserialize( serializerObject ) || serializerObject.getClassName().equals( "com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer" );
+		return super.canDeserialize( serializerObject )
+				|| serializerObject.getClassName().equals( "com.foreach.across.modules.oauth2.services.UserOAuth2AuthenticationSerializer" );
 	}
 }
