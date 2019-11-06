@@ -42,7 +42,8 @@ public class SecurityPrincipalIdOAuth2AuthenticationSerializer extends OAuth2Aut
 
 	@Override
 	public OAuth2Authentication deserialize( AuthenticationSerializerObject<String> serializerObject ) {
-		SecurityPrincipal securityPrincipal = securityPrincipalService.getPrincipalByName( serializerObject.getObject() ).orElse( null );
+		SecurityPrincipal securityPrincipal = securityPrincipalService.getPrincipalById( SecurityPrincipalId.of( serializerObject.getObject() ) )
+		                                                              .orElse( null );
 		User user = null;
 
 		if ( securityPrincipal instanceof User ) {
