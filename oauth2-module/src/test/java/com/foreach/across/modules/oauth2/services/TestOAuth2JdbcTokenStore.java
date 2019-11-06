@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -184,9 +183,8 @@ public class TestOAuth2JdbcTokenStore
 
 		user.setId( 777L );
 
-		UserDetails userDetails = mock( UserDetails.class );
 		when( clientDetailsService.loadClientByClientId( "testClientId" ) ).thenReturn( client );
-		when( securityPrincipalService.getPrincipalByName( "testusername" ) ).thenReturn( Optional.of( user ) );
+		when( securityPrincipalService.getPrincipalById( SecurityPrincipalId.of( "testusername" ) ) ).thenReturn( Optional.of( user ) );
 
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken( SecurityPrincipalId.of( user.getUsername() ), user.getPassword() );
 		OAuth2Authentication oAuth2Authentication = new OAuth2Authentication( request, userAuthentication );
@@ -205,7 +203,7 @@ public class TestOAuth2JdbcTokenStore
 		assertNotNull( storedAuthentication );
 
 		verify( oAuth2StatelessJdbcTokenStore ).serializeAuthentication( eq( oAuth2Authentication ) );
-		verify( securityPrincipalService ).getPrincipalByName( "testusername" );
+		verify( securityPrincipalService ).getPrincipalById( SecurityPrincipalId.of( "testusername" ) );
 		verify( clientDetailsService ).loadClientByClientId( "testClientId" );
 
 		assertEquals( Collections.singletonMap( "userkeyParam", "userkeyValue" ),
