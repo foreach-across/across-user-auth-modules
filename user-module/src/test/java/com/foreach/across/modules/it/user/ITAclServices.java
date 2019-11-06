@@ -22,6 +22,7 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.EmptyAcrossModule;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Refreshable;
+import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
 import com.foreach.across.core.context.info.AcrossContextInfo;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
@@ -32,7 +33,6 @@ import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.QueryableAclSecurityService;
-import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.spring.security.infrastructure.aop.AuditableEntityInterceptor;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModule;
@@ -140,7 +140,7 @@ public class ITAclServices
 		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
 
 		assertNotNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
-		assertNotNull( acrossContextInfo.getModuleInfo( SpringSecurityInfrastructureModule.NAME )
+		assertNotNull( acrossContextInfo.getModuleInfo( AcrossBootstrapConfigurer.CONTEXT_INFRASTRUCTURE_MODULE )
 		                                .getApplicationContext().getBean( AuditableEntityInterceptor.class ) );
 	}
 

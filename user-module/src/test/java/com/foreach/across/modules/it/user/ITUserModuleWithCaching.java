@@ -18,14 +18,14 @@ package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
+import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
+import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ConfigurerScope;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
-import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
-import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.MachinePrincipal;
@@ -318,7 +318,7 @@ public class ITUserModuleWithCaching
 	}
 
 	@Configuration
-	static class CacheConfig implements AcrossContextConfigurer
+	static class CacheConfig implements AcrossContextConfigurer, AcrossBootstrapConfigurer
 	{
 		@Bean(name = SpringSecurityModuleCache.SECURITY_PRINCIPAL)
 		public ConcurrentMapCache securityPrincipalCache() {
@@ -347,15 +347,12 @@ public class ITUserModuleWithCaching
 
 		@Override
 		public void configure( AcrossContext acrossContext ) {
-			acrossContext.addApplicationContextConfigurer( new AnnotatedClassConfigurer(
-					                                               CacheConfiguration.class ),
-			                                               ConfigurerScope.CONTEXT_ONLY
-			);
+			acrossContext.addApplicationContextConfigurer( new AnnotatedClassConfigurer( CacheConfiguration.class ), ConfigurerScope.CONTEXT_ONLY );
+		}
 
-			acrossContext.getModule( UserModule.NAME )
-			             .addApplicationContextConfigurer( EnableCachingConfiguration.class );
-			acrossContext.getModule( SpringSecurityInfrastructureModule.NAME )
-			             .addApplicationContextConfigurer( EnableCachingConfiguration.class );
+		@Override
+		public void configureModule( ModuleBootstrapConfig moduleConfiguration ) {
+			moduleConfiguration.extendModule( false, true, EnableCachingConfiguration.class );
 		}
 	}
 
