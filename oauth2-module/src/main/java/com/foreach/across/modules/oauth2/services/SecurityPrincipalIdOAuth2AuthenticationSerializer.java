@@ -17,6 +17,7 @@ package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalReference;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,8 @@ public class SecurityPrincipalIdOAuth2AuthenticationSerializer extends OAuth2Aut
 
 	@Override
 	protected byte[] serializePrincipal( Object object, OAuth2Request oAuth2Request ) {
-		SecurityPrincipalId principalId = (SecurityPrincipalId) object;
+		SecurityPrincipalId principalId = object instanceof SecurityPrincipalId
+				? (SecurityPrincipalId) object : ( (SecurityPrincipalReference) object ).getSecurityPrincipalId();
 		return super.serializeObject( principalId.toString(), oAuth2Request );
 	}
 
@@ -67,7 +69,7 @@ public class SecurityPrincipalIdOAuth2AuthenticationSerializer extends OAuth2Aut
 	@Override
 	public boolean canSerialize( OAuth2Authentication authentication ) {
 		Object principal = authentication.getPrincipal();
-		return principal instanceof SecurityPrincipalId;
+		return principal instanceof SecurityPrincipalId || principal instanceof SecurityPrincipalReference;
 	}
 
 	@Override

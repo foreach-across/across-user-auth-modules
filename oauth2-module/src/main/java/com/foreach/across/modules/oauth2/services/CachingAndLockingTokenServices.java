@@ -16,12 +16,15 @@
 package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalReference;
 import com.foreach.common.concurrent.locks.ObjectLock;
 import com.foreach.common.concurrent.locks.ObjectLockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -62,7 +65,7 @@ public class CachingAndLockingTokenServices extends DefaultTokenServices
 			ObjectLock lock = null;
 
 			try {
-				lock = isolatedLockHandler.lock( objectLockRepository, Objects.toString( authentication.getPrincipal() ) );
+				lock = isolatedLockHandler.lock( objectLockRepository, principalLockId( authentication.getPrincipal() ) );
 				return super.createAccessToken( authentication );
 			}
 			finally {
@@ -72,6 +75,19 @@ public class CachingAndLockingTokenServices extends DefaultTokenServices
 		else {
 			return super.createAccessToken( authentication );
 		}
+	}
+
+	private String principalLockId( Object principal ) {
+		if ( principal instanceof SecurityPrincipal ) {
+			return ( (SecurityPrincipal) principal ).getSecurityPrincipalId().toString();
+		}
+		else if ( principal instanceof SecurityPrincipalReference ) {
+			return ( (SecurityPrincipalReference) principal ).getSecurityPrincipalId().toString();
+		}
+		else if ( principal instanceof UserDetails ) {
+			return ( (UserDetails) principal ).getUsername();
+		}
+		return Objects.toString( principal );
 	}
 
 	@Override
