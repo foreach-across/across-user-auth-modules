@@ -16,9 +16,11 @@
 
 package com.foreach.across.modules.user.security;
 
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
-import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
-import com.foreach.across.modules.user.business.*;
+import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
+import com.foreach.across.modules.user.business.Group;
+import com.foreach.across.modules.user.business.Permission;
+import com.foreach.across.modules.user.business.Role;
+import com.foreach.across.modules.user.business.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,15 +29,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -51,7 +46,7 @@ public class TestCurrentUserProxyImpl
 	private CurrentUserProxy proxy = new CurrentUserProxyImpl();
 
 	@Mock
-	private SecurityPrincipalService securityPrincipalService;
+	private CurrentSecurityPrincipalProxy currentSecurityPrincipalProxy;
 
 	@Mock
 	private User user;
@@ -67,80 +62,43 @@ public class TestCurrentUserProxyImpl
 	}
 
 	@Test
-	public void onlyAuthenticatedIfUserPrincipalOnValidAuthentication() {
+	public void isAuthenticatedGoesToOtherProxy() {
 		assertFalse( proxy.isAuthenticated() );
-
-		Authentication auth = mock( Authentication.class );
-		SecurityContextImpl ctx = new SecurityContextImpl();
-		ctx.setAuthentication( auth );
-		SecurityContextHolder.setContext( ctx );
-		assertFalse( proxy.isAuthenticated() );
-
-		when( auth.isAuthenticated() ).thenReturn( true );
-		when( auth.getPrincipal() ).thenReturn( mock( MachinePrincipal.class ) );
-		assertFalse( proxy.isAuthenticated() );
-
-		when( auth.getPrincipal() ).thenReturn( SecurityPrincipalId.of( "principalName" ) );
-		when( securityPrincipalService.getPrincipalById( SecurityPrincipalId.of( "principalName" ) ) ).thenReturn( Optional.of( user ) );
+		when( currentSecurityPrincipalProxy.isAuthenticated() ).thenReturn( true );
 		assertTrue( proxy.isAuthenticated() );
-
-		reset( securityPrincipalService );
-		when( auth.isAuthenticated() ).thenReturn( false );
-		assertFalse( proxy.isAuthenticated() );
 	}
 
 	@Test
-	public void userReturnedOnlyIfAuthenticated() {
-		Authentication auth = mock( Authentication.class );
-		SecurityContextImpl ctx = new SecurityContextImpl();
-		ctx.setAuthentication( auth );
-		SecurityContextHolder.setContext( ctx );
-
-		when( auth.getPrincipal() ).thenReturn( SecurityPrincipalId.of( "principalName" ) );
-
-		doReturn( true ).when( proxy ).isAuthenticated();
-		when( securityPrincipalService.getPrincipalById( SecurityPrincipalId.of( "principalName" ) ) ).thenReturn( Optional.of( user ) );
-		assertSame( user, proxy.getUser() );
-
-		reset( securityPrincipalService );
-		doReturn( false ).when( proxy ).isAuthenticated();
+	public void getUserGoesToProxy() {
 		assertNull( proxy.getUser() );
+		when( currentSecurityPrincipalProxy.getPrincipal( User.class ) ).thenReturn( user );
+		assertSame( user, proxy.getUser() );
 	}
 
 	@Test
 	public void idReturnedOnlyIfAuthenticated() {
-		doReturn( false ).when( proxy ).isAuthenticated();
 		assertNull( proxy.getId() );
 
 		when( user.getId() ).thenReturn( 123L );
-		doReturn( true ).when( proxy ).isAuthenticated();
-
-		doReturn( user ).when( proxy ).getUser();
-
+		when( currentSecurityPrincipalProxy.getPrincipal( User.class ) ).thenReturn( user );
 		assertEquals( Long.valueOf( 123 ), proxy.getId() );
 	}
 
 	@Test
 	public void emailReturnedOnlyIfAuthenticated() {
-		doReturn( false ).when( proxy ).isAuthenticated();
 		assertNull( proxy.getEmail() );
 
 		when( user.getEmail() ).thenReturn( "test" );
-		doReturn( true ).when( proxy ).isAuthenticated();
-		doReturn( user ).when( proxy ).getUser();
-
+		when( currentSecurityPrincipalProxy.getPrincipal( User.class ) ).thenReturn( user );
 		assertEquals( "test", proxy.getEmail() );
 	}
 
 	@Test
 	public void usernameReturnedOnlyIfAuthenticated() {
-		doReturn( false ).when( proxy ).isAuthenticated();
 		assertNull( proxy.getUsername() );
 
 		when( user.getUsername() ).thenReturn( "test" );
-		doReturn( true ).when( proxy ).isAuthenticated();
-		doReturn( user ).when( proxy ).getUser();
-
+		when( currentSecurityPrincipalProxy.getPrincipal( User.class ) ).thenReturn( user );
 		assertEquals( "test", proxy.getUsername() );
 	}
 
@@ -148,26 +106,22 @@ public class TestCurrentUserProxyImpl
 	public void memberOfOnlyCalledWhenAuthenticated() {
 		Group g = mock( Group.class );
 
-		doReturn( false ).when( proxy ).isAuthenticated();
 		assertFalse( proxy.isMemberOf( g ) );
 		verify( user, never() ).isMemberOf( g );
 
 		when( user.isMemberOf( g ) ).thenReturn( true );
-		doReturn( true ).when( proxy ).isAuthenticated();
-		doReturn( user ).when( proxy ).getUser();
+		when( currentSecurityPrincipalProxy.getPrincipal( User.class ) ).thenReturn( user );
 
 		assertTrue( proxy.isMemberOf( g ) );
 	}
 
 	@Test
 	public void hasRoleByNameCalledWhenAuthenticated() {
-		doReturn( false ).when( proxy ).isAuthenticated();
 		assertFalse( proxy.hasRole( "myrole" ) );
 		verify( user, never() ).hasRole( "myrole" );
 
 		when( user.hasRole( "myrole" ) ).thenReturn( true );
-		doReturn( true ).when( proxy ).isAuthenticated();
-		doReturn( user ).when( proxy ).getUser();
+		when( currentSecurityPrincipalProxy.getPrincipal( User.class ) ).thenReturn( user );
 
 		assertTrue( proxy.hasRole( "myrole" ) );
 	}
@@ -176,26 +130,22 @@ public class TestCurrentUserProxyImpl
 	public void hasRoleCalledWhenAuthenticated() {
 		Role r = mock( Role.class );
 
-		doReturn( false ).when( proxy ).isAuthenticated();
 		assertFalse( proxy.hasRole( r ) );
 		verify( user, never() ).hasRole( r );
 
 		when( user.hasRole( r ) ).thenReturn( true );
-		doReturn( true ).when( proxy ).isAuthenticated();
-		doReturn( user ).when( proxy ).getUser();
+		when( currentSecurityPrincipalProxy.getPrincipal( User.class ) ).thenReturn( user );
 
 		assertTrue( proxy.hasRole( r ) );
 	}
 
 	@Test
 	public void hasPermissionByNameCalledWhenAuthenticated() {
-		doReturn( false ).when( proxy ).isAuthenticated();
 		assertFalse( proxy.hasPermission( "mypermission" ) );
 		verify( user, never() ).hasPermission( "mypermission" );
 
 		when( user.hasPermission( "mypermission" ) ).thenReturn( true );
-		doReturn( true ).when( proxy ).isAuthenticated();
-		doReturn( user ).when( proxy ).getUser();
+		when( currentSecurityPrincipalProxy.getPrincipal( User.class ) ).thenReturn( user );
 
 		assertTrue( proxy.hasPermission( "mypermission" ) );
 	}
@@ -204,36 +154,22 @@ public class TestCurrentUserProxyImpl
 	public void hasPermissionCalledWhenAuthenticated() {
 		Permission p = mock( Permission.class );
 
-		doReturn( false ).when( proxy ).isAuthenticated();
 		assertFalse( proxy.hasPermission( p ) );
 		verify( user, never() ).hasPermission( p );
 
 		when( user.hasPermission( p ) ).thenReturn( true );
-		doReturn( true ).when( proxy ).isAuthenticated();
-		doReturn( user ).when( proxy ).getUser();
+		when( currentSecurityPrincipalProxy.getPrincipal( User.class ) ).thenReturn( user );
 
 		assertTrue( proxy.hasPermission( p ) );
 	}
 
 	@Test
-	public void hasAuthorityDelegatesToAuthentication() {
+	public void hasAuthorityDelegatesToPrincipalProxy() {
 		assertFalse( proxy.hasAuthority( "some auth" ) );
 		assertFalse( proxy.hasAuthority( new SimpleGrantedAuthority( "some auth" ) ) );
 
-		Authentication auth = mock( Authentication.class );
-		SecurityContextImpl ctx = new SecurityContextImpl();
-		ctx.setAuthentication( auth );
-		SecurityContextHolder.setContext( ctx );
-
-		Collection<? extends GrantedAuthority> authorities = Collections.singleton( new SimpleGrantedAuthority( "some auth" ) );
-		when( auth.getAuthorities() ).thenAnswer( invocation -> authorities );
-
-		doReturn( false ).when( proxy ).isAuthenticated();
-		assertFalse( proxy.hasAuthority( "some auth" ) );
-		assertFalse( proxy.hasAuthority( new SimpleGrantedAuthority( "some auth" ) ) );
-		verify( auth, never() ).getAuthorities();
-
-		doReturn( true ).when( proxy ).isAuthenticated();
+		when( currentSecurityPrincipalProxy.hasAuthority( "some auth" ) ).thenReturn( true );
+		when( currentSecurityPrincipalProxy.hasAuthority( new SimpleGrantedAuthority( "some auth" ) ) ).thenReturn( true );
 		assertTrue( proxy.hasAuthority( "some auth" ) );
 		assertTrue( proxy.hasAuthority( new SimpleGrantedAuthority( "some auth" ) ) );
 	}

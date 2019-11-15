@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.user.security;
 
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalUserDetails;
 import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.User;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -61,21 +62,20 @@ public class InternalUserDirectoryAuthenticationProvider extends AbstractUserInD
 
 	@Override
 	protected void doAfterPropertiesSet() throws Exception {
-		Assert.isTrue( userDirectory instanceof InternalUserDirectory,
-		               "Only InternalUserDirectory types are supported" );
+		Assert.isTrue( userDirectory instanceof InternalUserDirectory, "Only InternalUserDirectory types are supported" );
 	}
 
 	@Override
-	protected UserDetails buildUserDetails( User user,
-	                                        UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
+	protected UserDetails buildUserDetails( User user, UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
 		// todo: passwordencoder, check hash etc
-		return new org.springframework.security.core.userdetails.User( user.getUsername(),
-		                                                               user.getPassword(),
-		                                                               user.isEnabled(),
-		                                                               user.isAccountNonExpired(),
-		                                                               user.isCredentialsNonExpired(),
-		                                                               user.isAccountNonLocked(),
-		                                                               user.getAuthorities()
+		return new SecurityPrincipalUserDetails( user.getSecurityPrincipalId(),
+		                                         user.getUsername(),
+		                                         user.getPassword(),
+		                                         user.isEnabled(),
+		                                         user.isAccountNonExpired(),
+		                                         user.isCredentialsNonExpired(),
+		                                         user.isAccountNonLocked(),
+		                                         user.getAuthorities()
 		);
 	}
 
@@ -83,7 +83,7 @@ public class InternalUserDirectoryAuthenticationProvider extends AbstractUserInD
 	@SuppressWarnings("deprecation")
 	protected void additionalAuthenticationChecks( UserDetails userDetails,
 	                                               UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
-			if ( authentication.getCredentials() == null ) {
+		if ( authentication.getCredentials() == null ) {
 			LOG.debug( "Authentication failed: no credentials provided" );
 
 			throw new BadCredentialsException( messages.getMessage(
@@ -101,20 +101,20 @@ public class InternalUserDirectoryAuthenticationProvider extends AbstractUserInD
 		}
 	}
 
+	protected PasswordEncoder getPasswordEncoder() {
+		return passwordEncoder;
+	}
+
 	/**
 	 * Sets the PasswordEncoder instance to be used to encode and validate passwords. If
 	 * not set, the password will be compared using {@link PasswordEncoderFactories#createDelegatingPasswordEncoder()}
 	 *
 	 * @param passwordEncoder must be an instance of one of the {@code PasswordEncoder}
-	 * types.
+	 *                        types.
 	 */
-	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-		Assert.notNull(passwordEncoder, "passwordEncoder cannot be null");
+	public void setPasswordEncoder( PasswordEncoder passwordEncoder ) {
+		Assert.notNull( passwordEncoder, "passwordEncoder cannot be null" );
 		this.passwordEncoder = passwordEncoder;
 		this.userNotFoundEncodedPassword = null;
-	}
-
-	protected PasswordEncoder getPasswordEncoder() {
-		return passwordEncoder;
 	}
 }

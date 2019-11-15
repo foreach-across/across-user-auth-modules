@@ -16,106 +16,81 @@
 
 package com.foreach.across.modules.user.security;
 
-import com.foreach.across.modules.spring.security.AuthenticationUtils;
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
-import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
+@Deprecated
 public class CurrentUserProxyImpl implements CurrentUserProxy
 {
 	@Autowired
-	private SecurityPrincipalService securityPrincipalService;
+	private CurrentSecurityPrincipalProxy currentSecurityPrincipalProxy;
 
 	@Override
 	public Long getId() {
-		return isAuthenticated() ? getUser().getId() : null;
+		return Optional.ofNullable( getUser() ).map( User::getId ).orElse( null );
 	}
 
 	@Override
 	public String getEmail() {
-		return isAuthenticated() ? getUser().getEmail() : null;
+		return Optional.ofNullable( getUser() ).map( User::getEmail ).orElse( null );
 	}
 
 	@Override
 	public String getUsername() {
-		return isAuthenticated() ? getUser().getUsername() : null;
+		return Optional.ofNullable( getUser() ).map( User::getUsername ).orElse( null );
 	}
 
 	@Override
 	public boolean isMemberOf( Group group ) {
-		return isAuthenticated() && getUser().isMemberOf( group );
+		return Optional.ofNullable( getUser() ).map( u -> u.isMemberOf( group ) ).orElse( false );
 	}
 
 	@Override
 	public boolean hasRole( String authority ) {
-		return isAuthenticated() && getUser().hasRole( authority );
+		return Optional.ofNullable( getUser() ).map( u -> u.hasRole( authority ) ).orElse( false );
 	}
 
 	@Override
 	public boolean hasRole( Role role ) {
-		return isAuthenticated() && getUser().hasRole( role );
+		return Optional.ofNullable( getUser() ).map( u -> u.hasRole( role ) ).orElse( false );
 	}
 
 	@Override
 	public boolean hasPermission( String name ) {
-		return isAuthenticated() && getUser().hasPermission( name );
+		return Optional.ofNullable( getUser() ).map( u -> u.hasPermission( name ) ).orElse( false );
 	}
 
 	@Override
 	public boolean hasPermission( Permission permission ) {
-		return isAuthenticated() && getUser().hasPermission( permission );
+		return Optional.ofNullable( getUser() ).map( u -> u.hasPermission( permission ) ).orElse( false );
 	}
 
 	@Override
 	public boolean hasAuthority( String authority ) {
-		return isAuthenticated() && AuthenticationUtils.hasAuthority(
-				SecurityContextHolder.getContext().getAuthentication(), authority
-		);
+		return currentSecurityPrincipalProxy.hasAuthority( authority );
 	}
 
 	@Override
 	public boolean hasAuthority( GrantedAuthority authority ) {
-		return isAuthenticated() && AuthenticationUtils.hasAuthority(
-				SecurityContextHolder.getContext().getAuthentication(), authority.getAuthority()
-		);
+		return currentSecurityPrincipalProxy.hasAuthority( authority );
 	}
 
 	@Override
 	public User getUser() {
-		if ( isAuthenticated() ) {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if ( principal != null && principal.getClass().isAssignableFrom( SecurityPrincipalId.class ) ) {
-				SecurityPrincipal securityPrincipal = securityPrincipalService.getPrincipalById( (SecurityPrincipalId) principal ).orElse( null );
-				if ( securityPrincipal instanceof User ) {
-					return (User) securityPrincipal;
-				}
-				else {
-					return null;
-				}
-			}
-			else {
-				return null;
-			}
-		}
-		else {
-			return null;
-		}
+		return currentSecurityPrincipalProxy.getPrincipal( User.class );
 	}
 
 	@Override
 	public boolean isAuthenticated() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return authentication != null && authentication.isAuthenticated() && authentication
-				.getPrincipal() instanceof SecurityPrincipalId;
+		return currentSecurityPrincipalProxy.isAuthenticated();
 	}
 }

@@ -17,7 +17,9 @@
 package com.foreach.across.modules.user.config.modules;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -38,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.domain.Sort;
 
-@ConditionalOnAcrossModule("EntityModule")
+@ConditionalOnAcrossModule(allOf = { EntityModule.NAME, AdminWebModule.NAME })
 @Configuration
 @RequiredArgsConstructor
 public class UserEntitiesConfiguration implements EntityConfigurer

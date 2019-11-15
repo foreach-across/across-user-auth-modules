@@ -17,6 +17,7 @@
 package com.foreach.across.modules.user.security;
 
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalUserDetails;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.User;
@@ -40,12 +41,10 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService
 {
 	private final SecurityPrincipalService securityPrincipalService;
-
 	private final UserDirectoryService userDirectoryService;
 
 	@Autowired
-	public UserDetailsServiceImpl( SecurityPrincipalService securityPrincipalService,
-	                               UserDirectoryService userDirectoryService ) {
+	public UserDetailsServiceImpl( SecurityPrincipalService securityPrincipalService, UserDirectoryService userDirectoryService ) {
 		this.securityPrincipalService = securityPrincipalService;
 		this.userDirectoryService = userDirectoryService;
 	}
@@ -59,13 +58,15 @@ public class UserDetailsServiceImpl implements UserDetailsService
 
 			if ( principal instanceof User ) {
 				User user = (User) principal;
-				return new org.springframework.security.core.userdetails.User( user.getUsername(),
-				                                                               user.getPassword(),
-				                                                               user.isEnabled(),
-				                                                               user.isAccountNonExpired(),
-				                                                               user.isCredentialsNonExpired(),
-				                                                               user.isAccountNonLocked(),
-				                                                               user.getAuthorities()
+				return new SecurityPrincipalUserDetails(
+						user.getSecurityPrincipalId(),
+						user.getUsername(),
+						user.getPassword(),
+						user.isEnabled(),
+						user.isAccountNonExpired(),
+						user.isCredentialsNonExpired(),
+						user.isAccountNonLocked(),
+						user.getAuthorities()
 				);
 			}
 		}
@@ -76,5 +77,4 @@ public class UserDetailsServiceImpl implements UserDetailsService
 	private String buildPrincipalName( String username, UserDirectory userDirectory ) {
 		return BasicSecurityPrincipal.uniquePrincipalName( username, userDirectory );
 	}
-
 }
