@@ -83,7 +83,7 @@ public class TestLdapAuthenticationProvider
 	}
 
 	@Test
-	public void testThatKnownUserGetsAuthenticated() throws Exception {
+	public void knownUserGetsAuthenticatedAsSecurityPrincipal() throws Exception {
 		User user = new User();
 		user.setUsername( "abergin" );
 		user.setPassword( "inflict" );
@@ -95,10 +95,7 @@ public class TestLdapAuthenticationProvider
 				authentication = ldapAuthenticationProvider.authenticate(
 				new UsernamePasswordAuthenticationToken( "abergin", "inflict" ) );
 		assertNotNull( authentication );
-		assertTrue( authentication.getPrincipal() instanceof User );
-		User details = (User) authentication.getPrincipal();
-		assertEquals( "abergin", details.getUsername() );
-		assertEquals( "inflict", details.getPassword() );
+		assertEquals( user.getSecurityPrincipalId(), authentication.getPrincipal() );
 	}
 
 	@Configuration

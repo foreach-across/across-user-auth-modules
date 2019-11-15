@@ -20,7 +20,7 @@ import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.ldap.repositories.LdapUserDirectoryRepository;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
-import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockManager;
@@ -153,7 +153,7 @@ public class TestLdapConnectorSynchronizationTaskLocking
 
 	@AcrossTestConfiguration(modules = { UserModule.NAME })
 	@Configuration
-	public static class Config extends SpringSecurityWebConfigurerAdapter
+	public static class Config implements AcrossWebSecurityConfigurer
 	{
 	}
 }

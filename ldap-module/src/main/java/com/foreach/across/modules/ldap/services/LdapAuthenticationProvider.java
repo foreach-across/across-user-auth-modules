@@ -19,6 +19,7 @@ package com.foreach.across.modules.ldap.services;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.services.support.LdapContextSourceHelper;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalUserDetails;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.security.AbstractUserInDirectoryAuthenticationProvider;
 import org.apache.commons.logging.Log;
@@ -62,14 +63,20 @@ public class LdapAuthenticationProvider extends AbstractUserInDirectoryAuthentic
 
 	@Override
 	protected void doAfterPropertiesSet() throws Exception {
-		Assert.isTrue( userDirectory instanceof LdapUserDirectory,
-		               "Only LdapUserDirectory types are supported" );
+		Assert.isTrue( userDirectory instanceof LdapUserDirectory, "Only LdapUserDirectory types are supported" );
 	}
 
 	@Override
-	protected UserDetails buildUserDetails( User user,
-	                                        UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
-		return user;
+	protected UserDetails buildUserDetails( User user, UsernamePasswordAuthenticationToken authentication ) throws AuthenticationException {
+		return new SecurityPrincipalUserDetails( user.getSecurityPrincipalId(),
+		                                         user.getUsername(),
+		                                         user.getPassword(),
+		                                         user.isEnabled(),
+		                                         user.isAccountNonExpired(),
+		                                         user.isCredentialsNonExpired(),
+		                                         user.isAccountNonLocked(),
+		                                         user.getAuthorities()
+		);
 	}
 
 	public void setSearchFilter( String searchFilter ) {
