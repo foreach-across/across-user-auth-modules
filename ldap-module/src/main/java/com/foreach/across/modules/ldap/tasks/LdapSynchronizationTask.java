@@ -71,7 +71,9 @@ public class LdapSynchronizationTask implements Runnable
 		}
 		finally {
 			LOG.info( "Finished task" );
-			lock.unlock();
+			if ( lock.isHeldByCurrentThread() ) {
+				lock.unlock();
+			}
 		}
 	}
 }

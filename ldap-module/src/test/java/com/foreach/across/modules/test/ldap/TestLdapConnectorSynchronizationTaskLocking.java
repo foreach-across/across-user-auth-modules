@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import static org.mockito.Mockito.*;
@@ -97,31 +97,22 @@ public class TestLdapConnectorSynchronizationTaskLocking
 		ExecutorService executorService = Executors.newFixedThreadPool( numberOfServers );
 		ArrayList<Callable<Object>> serverCalls = new ArrayList<>();
 		CountDownLatch latch = new CountDownLatch( numberOfServers );
-		AtomicBoolean callableRequiredLock = new AtomicBoolean();
+
+		AtomicInteger numberOfLocks = new AtomicInteger( 0 );
+
+		final LdapUserDirectoryRepository repository = mock( LdapUserDirectoryRepository.class );
+		doAnswer( invocationOnMock -> {
+			LOG.info( "Thread {} has the lock", Thread.currentThread() );
+			numberOfLocks.incrementAndGet();
+			// sleep long enough to make sure that others will all have been processed
+			Thread.sleep( numberOfServers * 20 );
+			return Collections.emptyList();
+		} ).when( repository ).findAllByActiveTrue();
+
 		IntStream.range( 0, numberOfServers ).forEach( ( i ) -> serverCalls.add( () -> {
 			try {
-				final LdapUserDirectoryRepository repository = mock( LdapUserDirectoryRepository.class );
-				AtomicBoolean currentThreadWithLock = new AtomicBoolean();
-				if ( !callableRequiredLock.get() ) {
-					doAnswer( invocationOnMock -> {
-						LOG.info( "Thread {} has the lock", Thread.currentThread() );
-						callableRequiredLock.set( true );
-						currentThreadWithLock.set( true );
-						Thread.sleep( numberOfServers * 20 );
-						return Collections.emptyList();
-					} ).when( repository ).findAllByActiveTrue();
-				}
-
-				LdapSynchronizationTask ldapSynchronizationTask = ldapSynchronizationTask(
-						repository );
+				LdapSynchronizationTask ldapSynchronizationTask = ldapSynchronizationTask( repository );
 				ldapSynchronizationTask.run();
-				if ( callableRequiredLock.get() && !currentThreadWithLock.get() ) {
-					// If one of the callables has aquired a lock and it's not the himself, the other callables should see it as locked
-					Assert.assertTrue( distributedLockManager.isLocked( LdapSynchronizationTask.LOCK_NAME ) );
-				}
-				else {
-					Assert.assertFalse( distributedLockManager.isLocked( LdapSynchronizationTask.LOCK_NAME ) );
-				}
 				latch.countDown();
 			}
 			catch ( Throwable t ) {
@@ -135,8 +126,11 @@ public class TestLdapConnectorSynchronizationTaskLocking
 		boolean hasErrors = !latch.await( numberOfServers * 50, TimeUnit.SECONDS );
 		executorService.shutdownNow();
 		if ( hasErrors ) {
-			throw new RuntimeException( "Some threads didn't acquire/release the lock properly" );
+			Assert.fail( "Some threads didn't acquire/release the lock properly" );
 		}
+
+		Assert.assertEquals( "Only a single thread should have acquired the lock and been able to fetch the user directories", numberOfLocks.get(), 1 );
+		verify( repository, times( 1 ) ).findAllByActiveTrue();
 	}
 
 	public LdapSynchronizationTask ldapSynchronizationTask() {
