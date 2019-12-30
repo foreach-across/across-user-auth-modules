@@ -28,7 +28,6 @@ import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.config.AclSecurityConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.ModuleAclSecurityConfiguration;
-import com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModuleIcons;
 import com.foreach.across.modules.spring.security.acl.config.modules.AcrossHibernateJpaModuleConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.modules.EntityUiModuleConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.modules.SpringSecurityInfrastructureModuleConfiguration;

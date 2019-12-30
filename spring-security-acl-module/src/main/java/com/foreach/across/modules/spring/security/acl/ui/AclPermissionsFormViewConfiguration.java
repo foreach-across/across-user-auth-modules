@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 import static com.foreach.across.modules.entity.views.EntityViewFactoryAttributes.defaultAccessValidator;
-import static com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModuleIcons.springSecurityAclIcons;
+import static com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleIcons.springSecurityAclIcons;
 
 /**
  * Registers the different ACL permissions form views on the relevant entities.

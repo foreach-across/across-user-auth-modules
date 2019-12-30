@@ -34,7 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.Collections;
 
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
-import static com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModulePermissionIcons.ADD;
+import static com.foreach.across.modules.spring.security.acl.ui.icons.SpringSecurityAclModulePermissionIcons.ADD;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**

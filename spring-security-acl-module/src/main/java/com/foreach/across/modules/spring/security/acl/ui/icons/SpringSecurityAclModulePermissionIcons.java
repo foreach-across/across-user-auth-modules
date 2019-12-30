@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.spring.security.acl.config.icons;
+package com.foreach.across.modules.spring.security.acl.ui.icons;
 
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 
 public class SpringSecurityAclModulePermissionIcons
 {
@@ -28,19 +28,19 @@ public class SpringSecurityAclModulePermissionIcons
 	public static final String TOOLTIP = "permission-tooltip";
 	public static final String MENU_ITEM = "permission-menu-item";
 
-	public AbstractNodeViewElement add() {
+	public HtmlViewElement add() {
 		return IconSetRegistry.getIconSet( SpringSecurityAclModule.NAME ).icon( ADD );
 	}
 
-	public AbstractNodeViewElement remove() {
+	public HtmlViewElement remove() {
 		return IconSetRegistry.getIconSet( SpringSecurityAclModule.NAME ).icon( REMOVE );
 	}
 
-	public AbstractNodeViewElement tooltip() {
+	public HtmlViewElement tooltip() {
 		return IconSetRegistry.getIconSet( SpringSecurityAclModule.NAME ).icon( TOOLTIP );
 	}
 
-	public AbstractNodeViewElement menuItem() {
+	public HtmlViewElement menuItem() {
 		return IconSetRegistry.getIconSet( SpringSecurityAclModule.NAME ).icon( MENU_ITEM );
 	}
 }

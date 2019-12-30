@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableAct
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleIcons;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
@@ -35,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +51,11 @@ public class EntityUiModuleConfiguration implements EntityConfigurer
 	@Bean
 	public AclSecurityEntityValidator aclSecurityEntityValidator( AclSecurityEntityService aclSecurityEntityService ) {
 		return new AclSecurityEntityValidator( aclSecurityEntityService );
+	}
+
+	@PostConstruct
+	void registerIcons() {
+		SpringSecurityAclModuleIcons.registerIconSet();
 	}
 
 	@Override

@@ -28,7 +28,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.util.Assert;
 
-import static com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModuleIcons.springSecurityAclIcons;
+import static com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleIcons.springSecurityAclIcons;
 
 /**
  * Custom {@link ViewElementBuilder} for creating the default item selector control for a {@link AclPermissionsFormSection}.

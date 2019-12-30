@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.util.EntityUtils.generateDisplayName;
-import static com.foreach.across.modules.spring.security.acl.config.icons.SpringSecurityAclModuleIcons.springSecurityAclIcons;
+import static com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleIcons.springSecurityAclIcons;
 import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.witherFor;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static com.foreach.across.modules.web.ui.elements.TextViewElement.html;
