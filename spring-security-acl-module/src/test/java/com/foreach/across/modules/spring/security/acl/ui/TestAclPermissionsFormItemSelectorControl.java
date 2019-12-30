@@ -42,7 +42,6 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
  * @since 3.0.0
  */
 @ContextConfiguration(classes = TestAclPermissionsFormItemSelectorControl.Config.class)
-
 public class TestAclPermissionsFormItemSelectorControl extends AbstractViewElementTemplateTest
 {
 	private ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
@@ -68,7 +67,7 @@ public class TestAclPermissionsFormItemSelectorControl extends AbstractViewEleme
 				                  .build( builderContext ),
 				"<div class='acl-permissions-form-selector' test='value'>" +
 						"<input data-bootstrapui-adapter-type=\"basic\" type='text' class='form-control' />" +
-						"<button type=\"button\" class=\"acl-permissions-form-selector-button btn btn-default\">" +
+						"<button type=\"button\" class=\"btn btn-light acl-permissions-form-selector-button\">" +
 						"<i class=\"add\"></i></button>" +
 						"</div>"
 		);
