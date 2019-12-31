@@ -67,7 +67,7 @@ public class TestAclPermissionsFormItemSelectorControl extends AbstractViewEleme
 				                  .build( builderContext ),
 				"<div class='acl-permissions-form-selector' test='value'>" +
 						"<input data-bootstrapui-adapter-type=\"basic\" type='text' class='form-control' />" +
-						"<button type=\"button\" class=\"btn btn-light acl-permissions-form-selector-button\">" +
+						"<button type=\"button\" class=\"btn acl-permissions-form-selector-button\">" +
 						"<i class=\"add\"></i></button>" +
 						"</div>"
 		);
