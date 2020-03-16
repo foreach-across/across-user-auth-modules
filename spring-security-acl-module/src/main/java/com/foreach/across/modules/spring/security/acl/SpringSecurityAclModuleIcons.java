@@ -18,10 +18,10 @@ package com.foreach.across.modules.spring.security.acl;
 
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.spring.security.acl.ui.icons.SpringSecurityAclModulePermissionIcons;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 public class SpringSecurityAclModuleIcons
 {
@@ -36,7 +36,7 @@ public class SpringSecurityAclModuleIcons
 
 		iconSet.add( SpringSecurityAclModulePermissionIcons.ADD, ( name ) -> IconSetRegistry.getIconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "plus-circle" ) );
 		iconSet.add( SpringSecurityAclModulePermissionIcons.REMOVE, ( name ) -> IconSetRegistry.getIconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "times" )
-		                                                                                       .set( css.text.muted ) );
+		                                                                                       .set( AcrossBootstrapStyles.css.text.muted ) );
 
 		iconSet.add( SpringSecurityAclModulePermissionIcons.MENU_ITEM, ( name ) -> IconSetRegistry.getIconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "lock" ) );
 		iconSet.add( SpringSecurityAclModulePermissionIcons.TOOLTIP,

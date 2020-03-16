@@ -18,6 +18,7 @@ package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.spring.security.acl.services.AclOperations;
 import com.foreach.across.modules.spring.security.acl.services.AclPermissionFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -148,7 +149,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 		if ( itemSelectorBuilder != null ) {
 			itemSelectorBuilder = itemSelectorBuilder.andThen( ( ctx, element ) -> {
 				if ( element instanceof NodeViewElement ) {
-					element.set( css.display.inlineBlock );
+					element.set( AcrossBootstrapStyles.css.display.inlineBlock );
 					element.set( witherFor( NodeViewElement.class, this::makeFormGroupInlineBlock ) );
 				}
 			} );
@@ -167,7 +168,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 	private void makeFormGroupInlineBlock( NodeViewElement selector ) {
 		selector.findAll( e -> e instanceof FormGroupElement )
 		        .findFirst()
-		        .ifPresent( formGroup -> formGroup.set( css.display.inlineBlock ) );
+		        .ifPresent( formGroup -> formGroup.set( AcrossBootstrapStyles.css.display.inlineBlock ) );
 	}
 
 	private ViewElementBuilder buildPermissionsTable( AclPermissionsFormSection section ) {
@@ -194,7 +195,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 			permissionGroupRow.add(
 					table.heading()
 					     .css( CSS_FIRST_OF_GROUP )
-					     .with( css.text.center )
+					     .with( AcrossBootstrapStyles.css.text.center )
 					     .columnSpan( permissions.length )
 					     .add( hasGroupName ? html( resolvePermissionCode( "permissionGroup[" + groupName + "]", generateDisplayName( groupName ) ) ) : null )
 					     .add( hasGroupName ? tooltip( resolvePermissionCode( "permissionGroup[" + groupName + "].tooltip", "" ) ) : null )
@@ -206,7 +207,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 			      .map( permissionName ->
 					            table.heading()
 					                 .css( itemCount.getAndDecrement() == 0 ? CSS_FIRST_OF_GROUP : "" )
-					                 .with( css.text.center )
+					                 .with( AcrossBootstrapStyles.css.text.center )
 					                 .add( html( resolvePermissionCode( "permission[" + permissionName + "]", generateDisplayName( permissionName ) ) ) )
 					                 .add( tooltip( resolvePermissionCode( "permission[" + permissionName + "].tooltip", "" ) ) )
 			      )
@@ -244,7 +245,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 						Stream.of( permissions )
 						      .forEach( aclPermission -> row
 								      .add( table.cell()
-								                 .with( css.text.center )
+								                 .with( AcrossBootstrapStyles.css.text.center )
 								                 .css( CSS_PERMISSION_TOGGLE, itemCount.getAndDecrement() == 0 ? CSS_FIRST_OF_GROUP : "" )
 								                 .add(
 										                 bootstrap.builders.checkbox().controlName( controlPrefix + "['" + index + "'].permissions" )
@@ -285,7 +286,7 @@ final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<C
 			      .forEach( aclPermission -> templateRow
 					      .add( table.cell()
 					                 .css( CSS_PERMISSION_TOGGLE, itemCount.getAndDecrement() == 0 ? CSS_FIRST_OF_GROUP : "" )
-					                 .with( css.text.center )
+					                 .with( AcrossBootstrapStyles.css.text.center )
 					                 .add(
 							                 bootstrap.builders.checkbox().disabled()
 							                                   .controlName( controlPrefix + "['{{itemIndex}}'].permissions" )
