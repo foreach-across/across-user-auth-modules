@@ -55,7 +55,7 @@ public class GroupServiceImpl implements GroupService
 
 	@Override
 	public Collection<Group> getGroups() {
-		return groupRepository.findAll( new Sort( Sort.Direction.ASC, "name" ) );
+		return groupRepository.findAll( Sort.by( Sort.Direction.ASC, "name" ) );
 	}
 
 	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)

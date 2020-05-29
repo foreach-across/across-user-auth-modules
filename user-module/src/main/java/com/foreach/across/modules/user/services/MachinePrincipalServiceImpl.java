@@ -53,7 +53,7 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 
 	@Override
 	public Collection<MachinePrincipal> getMachinePrincipals() {
-		return machinePrincipalRepository.findAll( new Sort( Sort.Direction.ASC, "name" ) );
+		return machinePrincipalRepository.findAll( Sort.by( Sort.Direction.ASC, "name" ) );
 	}
 
 	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
