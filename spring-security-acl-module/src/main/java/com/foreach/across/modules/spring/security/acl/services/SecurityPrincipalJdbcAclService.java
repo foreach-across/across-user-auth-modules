@@ -97,36 +97,35 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 	@Transactional(readOnly = true)
 	@Override
 	public List<ObjectIdentity> findObjectIdentitiesWithAclForSid( Sid sid ) {
-		Long ownerId = createOrRetrieveSidPrimaryKey( sid, false );
+		Long ownerId = createOrRetrieveSidPrimaryKey(sid, false);
 
-		if ( ownerId == null ) {
+		if (ownerId == null) {
 			return Collections.emptyList();
 		}
 
-		Object[] args = { ownerId };
-		return jdbcTemplate.query( SELECT_OBJECT_IDENTITIES_FOR_SID, args,
-		                           ( rs, rowNum ) -> {
-			                           String javaType = rs.getString( "class" );
-			                           Long identifier = rs.getLong( "obj_id" );
+		Object[] args = {ownerId};
+		return jdbcOperations.query(SELECT_OBJECT_IDENTITIES_FOR_SID, args,
+				(rs, rowNum) -> {
+					String javaType = rs.getString("class");
+					Long identifier = rs.getLong("obj_id");
 
-			                           return new ObjectIdentityImpl( javaType,
-			                                                          identifier );
-		                           } );
+					return new ObjectIdentityImpl(javaType,
+							identifier);
+				});
 	}
 
 	@Override
 	public Collection<Class<?>> getRegisteredAclClasses() {
-		List<String> classNames = jdbcTemplate.query( SELECT_ALL_CLASSES, new RowMapper<String>()
-		{
+		List<String> classNames = jdbcOperations.query(SELECT_ALL_CLASSES, new RowMapper<String>() {
 			@Override
-			public String mapRow( ResultSet rs, int rowNum ) throws SQLException {
-				return rs.getString( "class" );
+			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getString("class");
 			}
-		} );
+		});
 
 		Set<Class<?>> classes = new HashSet<>();
 
-		for ( String className : classNames ) {
+		for (String className : classNames) {
 			try {
 				Class<?> clazz = ClassUtils.getClass( className );
 				classes.add( clazz );
