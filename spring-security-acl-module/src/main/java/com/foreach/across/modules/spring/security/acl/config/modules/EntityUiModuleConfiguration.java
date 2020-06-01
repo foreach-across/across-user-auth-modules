@@ -18,6 +18,7 @@ package com.foreach.across.modules.spring.security.acl.config.modules;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
@@ -44,7 +45,7 @@ import java.util.Map;
  * @author Arne Vandamme
  */
 @Configuration
-@ConditionalOnAcrossModule({ EntityModule.NAME, AdminWebModule.NAME })
+@ConditionalOnAcrossModule({ EntityModule.NAME, AdminWebModule.NAME, BootstrapUiModule.NAME })
 @ComponentScan(basePackageClasses = AclPermissionsForm.class)
 public class EntityUiModuleConfiguration implements EntityConfigurer
 {
