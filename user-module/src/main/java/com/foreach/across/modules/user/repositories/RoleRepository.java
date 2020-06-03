@@ -18,9 +18,11 @@ package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 import com.foreach.across.modules.user.business.Role;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-public interface RoleRepository extends IdBasedEntityJpaRepository<Role>, QueryDslPredicateExecutor<Role>
+import java.util.Optional;
+
+public interface RoleRepository extends IdBasedEntityJpaRepository<Role>, QuerydslPredicateExecutor<Role>
 {
-	Role findByAuthorityIgnoringCase( String authority );
+	Optional<Role> findByAuthorityIgnoringCase( String authority );
 }

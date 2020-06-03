@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.user.security;
 
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
@@ -25,6 +26,7 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -81,7 +83,7 @@ public class TestInternalUserDirectoryAuthenticationProvider
 		user.setRestrictions( Collections.singletonList( UserRestriction.LOCKED ) );
 		user.setUsername( "username" );
 		user.setPassword( "password" );
-		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( user );
+		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
 		authenticationProvider.setUserService( userService );
 		authenticationProvider.authenticate( authentication );
 		assertTrue( "shouldn't come here", false );
@@ -97,7 +99,7 @@ public class TestInternalUserDirectoryAuthenticationProvider
 		user.setRestrictions( Collections.singletonList( UserRestriction.DISABLED ) );
 		user.setUsername( "username" );
 		user.setPassword( "password" );
-		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( user );
+		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
 		authenticationProvider.setUserService( userService );
 		authenticationProvider.authenticate( authentication );
 		assertTrue( "shouldn't come here", false );
@@ -113,7 +115,7 @@ public class TestInternalUserDirectoryAuthenticationProvider
 		user.setRestrictions( Collections.singletonList( UserRestriction.EXPIRED ) );
 		user.setUsername( "username" );
 		user.setPassword( "password" );
-		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( user );
+		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
 		authenticationProvider.setUserService( userService );
 		authenticationProvider.authenticate( authentication );
 		assertTrue( "shouldn't come here", false );
@@ -128,8 +130,8 @@ public class TestInternalUserDirectoryAuthenticationProvider
 		User user = new User();
 		user.setRestrictions( Collections.singletonList( UserRestriction.CREDENTIALS_EXPIRED ) );
 		user.setUsername( "username" );
-		user.setPassword( "password" );
-		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( user );
+		user.setPassword( "{noop}password" );
+		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
 		authenticationProvider.setUserService( userService );
 		authenticationProvider.authenticate( authentication );
 		assertTrue( "shouldn't come here", false );
@@ -143,14 +145,13 @@ public class TestInternalUserDirectoryAuthenticationProvider
 		UserService userService = mock( UserService.class );
 		User user = new User();
 		user.setUsername( "username" );
-		user.setPassword( "password" );
-		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( user );
+		user.setPassword( "{noop}password" );
+		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
 		authenticationProvider.setUserService( userService );
 		Authentication successfulAuthentication = authenticationProvider.authenticate( authentication );
 		assertNotNull( successfulAuthentication );
-		assertTrue( successfulAuthentication.getPrincipal() instanceof User );
-		assertEquals( "username", ( (User) successfulAuthentication.getPrincipal() ).getUsername() );
-		assertEquals( "password", ( (User) successfulAuthentication.getPrincipal() ).getPassword() );
+		assertTrue( successfulAuthentication.getPrincipal() instanceof SecurityPrincipalId );
+		assertEquals( "username", successfulAuthentication.getPrincipal().toString() );
 	}
 
 	private InternalUserDirectoryAuthenticationProvider internalUserDirectoryAuthenticationProvider() throws Exception {

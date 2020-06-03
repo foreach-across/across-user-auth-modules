@@ -17,8 +17,10 @@
 package com.foreach.across.modules.user.security;
 
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalUserDetails;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
+import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserDirectoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +41,10 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService
 {
 	private final SecurityPrincipalService securityPrincipalService;
-
 	private final UserDirectoryService userDirectoryService;
 
 	@Autowired
-	public UserDetailsServiceImpl( SecurityPrincipalService securityPrincipalService,
-	                               UserDirectoryService userDirectoryService ) {
+	public UserDetailsServiceImpl( SecurityPrincipalService securityPrincipalService, UserDirectoryService userDirectoryService ) {
 		this.securityPrincipalService = securityPrincipalService;
 		this.userDirectoryService = userDirectoryService;
 	}
@@ -53,10 +53,21 @@ public class UserDetailsServiceImpl implements UserDetailsService
 	public UserDetails loadUserByUsername( String username ) throws UsernameNotFoundException {
 		for ( UserDirectory userDirectory : userDirectoryService.getActiveUserDirectories() ) {
 			String principalName = buildPrincipalName( username, userDirectory );
-			SecurityPrincipal principal = securityPrincipalService.getPrincipalByName( principalName );
 
-			if ( principal != null && principal instanceof UserDetails ) {
-				return (UserDetails) principal;
+			SecurityPrincipal principal = securityPrincipalService.getPrincipalByName( principalName ).orElse( null );
+
+			if ( principal instanceof User ) {
+				User user = (User) principal;
+				return new SecurityPrincipalUserDetails(
+						user.getSecurityPrincipalId(),
+						user.getUsername(),
+						user.getPassword(),
+						user.isEnabled(),
+						user.isAccountNonExpired(),
+						user.isCredentialsNonExpired(),
+						user.isAccountNonLocked(),
+						user.getAuthorities()
+				);
 			}
 		}
 
@@ -66,5 +77,4 @@ public class UserDetailsServiceImpl implements UserDetailsService
 	private String buildPrincipalName( String username, UserDirectory userDirectory ) {
 		return BasicSecurityPrincipal.uniquePrincipalName( username, userDirectory );
 	}
-
 }

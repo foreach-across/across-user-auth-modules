@@ -39,6 +39,6 @@ public class EQStringToRoleConverter implements Converter<EQString, Role>
 
 	@Override
 	public Role convert( EQString source ) {
-		return roleRepository.findOne( QRole.role.name.equalsIgnoreCase( source.getValue() ) );
+		return roleRepository.findOne( QRole.role.name.equalsIgnoreCase( source.getValue() ) ).orElse( null );
 	}
 }

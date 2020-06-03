@@ -32,6 +32,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -61,9 +62,9 @@ public class ITSecurityPrincipalService
 		User expectedUserOne = createUser( UUID.randomUUID().toString() );
 		User expectedUserTwo = createUser( UUID.randomUUID().toString() );
 
-		assertEquals( expectedUserOne,
+		assertEquals( Optional.of( expectedUserOne ),
 		              securityPrincipalService.getPrincipalByName( expectedUserOne.getPrincipalName() ) );
-		assertEquals( expectedUserTwo,
+		assertEquals( Optional.of( expectedUserTwo ),
 		              securityPrincipalService.getPrincipalByName( expectedUserTwo.getPrincipalName() ) );
 
 		UserProperties propsOne = userService.getProperties( expectedUserOne );
@@ -102,9 +103,9 @@ public class ITSecurityPrincipalService
 		Group expectedGroupOne = createGroup( RandomStringUtils.randomAscii( 50 ) );
 		Group expectedGroupTwo = createGroup( RandomStringUtils.randomAscii( 50 ) );
 
-		assertEquals( expectedGroupOne,
+		assertEquals( Optional.of( expectedGroupOne ),
 		              securityPrincipalService.getPrincipalByName( expectedGroupOne.getPrincipalName() ) );
-		assertEquals( expectedGroupTwo,
+		assertEquals( Optional.of( expectedGroupTwo ),
 		              securityPrincipalService.getPrincipalByName( expectedGroupTwo.getPrincipalName() ) );
 
 		GroupProperties propsOne = groupService.getProperties( expectedGroupOne );

@@ -55,7 +55,7 @@ public class UserValidator implements Validator
 			defaultUserDirectoryStrategy.apply( userDto );
 
 			if ( settings.isRequireEmailUnique() ) {
-				User userByEmail = userService.getUserByEmail( userDto.getEmail() );
+				User userByEmail = userService.getUserByEmail( userDto.getEmail() ).orElse( null );
 				if ( userByEmail != null && !userByEmail.getId().equals( userDto.getId() ) ) {
 					errors.reject( null, "email already exists" );
 				}
@@ -89,11 +89,9 @@ public class UserValidator implements Validator
 					principalName = userDto.getEmail();
 				}
 
-				SecurityPrincipal principal = securityPrincipalService.getPrincipalByName( principalName );
-
-				if ( principal != null && !isSamePrincipal( principal, userDto ) ) {
-					errors.rejectValue( "username", null, "username is not available" );
-				}
+				securityPrincipalService.getPrincipalByName( principalName )
+				                        .filter( principal -> !isSamePrincipal( principal, userDto ) )
+				                        .ifPresent( p -> errors.rejectValue( "username", "alreadyExists", "username is not available" ) );
 			}
 
 			if ( !errors.hasFieldErrors( "groups" ) ) {

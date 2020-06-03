@@ -21,10 +21,10 @@ import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 /**
  * Base class for user directory implementations.

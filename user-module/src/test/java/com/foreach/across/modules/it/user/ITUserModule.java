@@ -24,13 +24,16 @@ import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.*;
 import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.dialect.Oracle10gDialect;
 import org.hibernate.dialect.SQLServer2008Dialect;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +41,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -46,6 +50,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -78,7 +83,7 @@ public class ITUserModule
 	@Test
 	public void verifyBootstrapped() {
 		assertNotNull( userService );
-		User admin = userService.getUserByUsername( "admin" );
+		User admin = userService.getUserByUsername( "admin" ).orElse( null );
 		assertNotNull( admin );
 		assertEquals( "admin", admin.getUsername() );
 		assertEquals( EnumSet.noneOf( UserRestriction.class ), admin.getRestrictions() );
@@ -90,7 +95,7 @@ public class ITUserModule
 		assertEquals( true, admin.isAccountNonLocked() );
 		assertEquals( true, admin.isCredentialsNonExpired() );
 
-		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" );
+		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" ).orElse( null );
 		assertNotNull( machine );
 
 		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
@@ -152,7 +157,7 @@ public class ITUserModule
 
 		assertTrue( user.getId() > 0 );
 
-		User existing = userService.getUserById( user.getId() );
+		User existing = userService.getUserById( user.getId() ).orElse( null );
 		assertEquals( user.getUsername(), existing.getUsername() );
 		assertEquals( user.getFirstName(), existing.getFirstName() );
 		assertEquals( user.getLastName(), existing.getLastName() );
@@ -162,7 +167,7 @@ public class ITUserModule
 
 	@Test
 	public void usersCanHaveNegativeIds() {
-		User existing = userService.getUserById( -100 );
+		User existing = userService.getUserById( -100 ).orElse( null );
 		assertNull( existing );
 
 		User user = new User();
@@ -176,7 +181,7 @@ public class ITUserModule
 
 		userService.save( user );
 
-		existing = userService.getUserById( -100 );
+		existing = userService.getUserById( -100 ).orElse( null );
 		assertNotNull( existing );
 
 		assertEquals( "test-user:-100", existing.getUsername() );
@@ -204,7 +209,7 @@ public class ITUserModule
 
 		assertTrue( failed );
 
-		User admin = userService.getUserByUsername( "admin" );
+		User admin = userService.getUserByUsername( "admin" ).orElse( null );
 		UserProperties adminProperties = userService.getProperties( admin );
 		adminProperties.put( "admin", "test" );
 
@@ -218,7 +223,7 @@ public class ITUserModule
 	public void queryDslUserFinding() {
 		QUser user = QUser.user;
 
-		Page<User> found = userService.findAll( user.email.eq( "some@email.com" ), new QPageRequest( 0, 10 ) );
+		Page<User> found = userService.findAll( user.email.eq( "some@email.com" ), PageRequest.of( 0, 10 ) );
 		assertEquals( 0, found.getTotalElements() );
 		assertEquals( 0, found.getTotalPages() );
 
@@ -327,7 +332,7 @@ public class ITUserModule
 
 		Long id = saved.getId();
 		assertEquals( 1, saved.getRestrictions().size() );
-		User user = userService.getUserById( id );
+		User user = userService.getUserById( id ).orElse( null );
 		assertNotSame( userWithRestriction, user );
 		assertEquals( 1, user.getRestrictions().size() );
 	}
@@ -349,10 +354,10 @@ public class ITUserModule
 		Group groupInOtherDir = groupService.save( group );
 		assertNotEquals( groupInDefaultDir, groupInOtherDir );
 
-		assertEquals( groupInDefaultDir, groupService.getGroupByName( "dir group" ) );
-		assertEquals( groupInDefaultDir,
+		assertEquals( Optional.of( groupInDefaultDir ), groupService.getGroupByName( "dir group" ) );
+		assertEquals( Optional.of( groupInDefaultDir ),
 		              groupService.getGroupByName( "dir group", groupInDefaultDir.getUserDirectory() ) );
-		assertEquals( groupInOtherDir, groupService.getGroupByName( "dir group", otherDir ) );
+		assertEquals( Optional.of( groupInOtherDir ), groupService.getGroupByName( "dir group", otherDir ) );
 	}
 
 	@Test
@@ -372,12 +377,12 @@ public class ITUserModule
 		MachinePrincipal machineInOtherDir = machinePrincipalService.save( machine );
 		assertNotEquals( machineInDefaultDir, machineInOtherDir );
 
-		assertEquals( machineInDefaultDir, machinePrincipalService.getMachinePrincipalByName( "dir group" ) );
+		assertEquals( Optional.of( machineInDefaultDir ), machinePrincipalService.getMachinePrincipalByName( "dir group" ) );
 		assertEquals(
-				machineInDefaultDir,
+				Optional.of( machineInDefaultDir ),
 				machinePrincipalService.getMachinePrincipalByName( "dir group", machineInDefaultDir.getUserDirectory() )
 		);
-		assertEquals( machineInOtherDir, machinePrincipalService.getMachinePrincipalByName( "dir group", otherDir ) );
+		assertEquals( Optional.of( machineInOtherDir ), machinePrincipalService.getMachinePrincipalByName( "dir group", otherDir ) );
 
 		assertEquals(
 				"dir group",
@@ -387,15 +392,23 @@ public class ITUserModule
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config implements AcrossContextConfigurer
+	static class Config implements AcrossWebSecurityConfigurer, AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {
 			AcrossHibernateJpaModule module = new AcrossHibernateJpaModule();
-			if ( "mssql".equals( System.getProperty( "acrossTest.datasource" ) ) ) {
-				// TODO:
-				module.setHibernateProperty( AvailableSettings.DIALECT, SQLServer2008Dialect.class.getName() );
+
+			String testDataSource = StringUtils.defaultString( System.getProperty( "acrossTest.datasource" ) );
+
+			switch ( testDataSource ) {
+				case "mssql":
+					module.setHibernateProperty( AvailableSettings.DIALECT, SQLServer2008Dialect.class.getName() );
+					break;
+				case "oracle":
+					module.setHibernateProperty( AvailableSettings.DIALECT, Oracle10gDialect.class.getName() );
+					break;
 			}
+
 			context.addModule( module );
 			context.addModule( userModule() );
 			context.addModule( propertiesModule() );

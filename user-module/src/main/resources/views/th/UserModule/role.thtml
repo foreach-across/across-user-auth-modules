@@ -17,19 +17,19 @@
 <!--/* Renders permissions by group as an accordeon */-->
 <div th:fragment="permissions(component)" th:inline="text" th:with="permissionsByPermissionGroup=${component.getAttribute('permissionsByPermissionGroup')}"
      class="panel-group" id="permissions-accordion" role="tablist" aria-multiselectable="true">
-	<div th:each="entry,entryStat : ${permissionsByPermissionGroup}" th:with="group=${entry.key},permissions=${entry.value}" class="panel panel-default">
-		<div class="panel-heading" role="tab" th:id="${#ids.seq('pg-heading')}">
-			<h4 class="panel-title" th:with="bodyId=${#ids.seq('pg-body')}">
+	<div th:each="entry,entryStat : ${permissionsByPermissionGroup}" th:with="group=${entry.key},permissions=${entry.value}" class="card mb-1">
+		<div class="card-header" role="tab" th:id="${#ids.seq('pg-heading')}">
+			<th:block class="card-title my-0" th:with="bodyId=${#ids.seq('pg-body')}">
 				<a role="button" data-toggle="collapse" data-parent="#permissions-accordion"
 				   th:href="${'#' + bodyId}" th:attr="aria-controls=${bodyId},aria-expanded=${entryStat.first}" th:classappend="${not entryStat.first} ? 'collapsed'">
 					[[${group.title}]]
 				</a>
-			</h4>
+            </th:block>
 		</div>
-		<div th:id="${#ids.prev('pg-body')}" class="panel-collapse collapse" role="tabpanel"
+		<div th:id="${#ids.prev('pg-body')}" class="collapse" role="tabpanel"
 		     th:attr="aria-labelledby=${#ids.prev('pg-heading')}" th:classappend="${entryStat.first} ? 'in'">
-			<div class="panel-body">
-				[[${group.description}]]
+			<div class="card-body">
+				<p>[[${group.description}]]</p>
 				<div class="checkbox" th:each="permission : ${permissions}">
 					<label>
 						<input type="checkbox" th:value="${permission.id}" th:checked="${entity.hasPermission(permission)}" name="entity.permissions"/>

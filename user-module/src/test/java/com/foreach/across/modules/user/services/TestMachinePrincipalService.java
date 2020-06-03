@@ -22,7 +22,6 @@ import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.MachinePrincipalRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
 
 /**
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.*;
  * @since 2.0.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = TestMachinePrincipalService.Config.class)
+@ContextConfiguration(classes = TestMachinePrincipalService.Config.class)
 public class TestMachinePrincipalService extends AbstractQueryDslPredicateExecutorTest
 {
 	@Autowired
@@ -69,9 +70,9 @@ public class TestMachinePrincipalService extends AbstractQueryDslPredicateExecut
 		MachinePrincipal expected = new MachinePrincipal();
 		expected.setName( "expected" );
 
-		when( securityPrincipalService.getPrincipalByName( "123@@@expected" ) ).thenReturn( expected );
+		when( securityPrincipalService.getPrincipalByName( "123@@@expected" ) ).thenReturn( Optional.of( expected ) );
 
-		assertSame( expected, machinePrincipalService.getMachinePrincipalByName( "EXPECTED" ) );
+		assertEquals( Optional.of( expected ), machinePrincipalService.getMachinePrincipalByName( "EXPECTED" ) );
 	}
 
 	@Test
@@ -99,6 +100,21 @@ public class TestMachinePrincipalService extends AbstractQueryDslPredicateExecut
 	@Configuration
 	protected static class Config
 	{
+		@Bean
+		public SecurityPrincipalService securityPrincipalService() {
+			return mock( SecurityPrincipalService.class );
+		}
+
+		@Bean
+		public MachinePrincipalRepository machinePrincipalRepository() {
+			return mock( MachinePrincipalRepository.class );
+		}
+
+		@Bean
+		public DefaultUserDirectoryStrategy userDirectoryStrategy() {
+			return mock( DefaultUserDirectoryStrategy.class );
+		}
+
 		@Bean
 		public MachinePrincipalService machinePrincipalService() {
 			return new MachinePrincipalServiceImpl();

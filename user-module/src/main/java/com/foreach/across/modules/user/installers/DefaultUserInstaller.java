@@ -64,7 +64,7 @@ public class DefaultUserInstaller implements UserAuthorities
 	}
 
 	private MachinePrincipal createSystemAccount() {
-		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" );
+		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" ).orElse( null );
 
 		if ( machine == null ) {
 			MachinePrincipal dto = new MachinePrincipal();
@@ -127,7 +127,7 @@ public class DefaultUserInstaller implements UserAuthorities
 	}
 
 	private void createUser() {
-		User existing = userService.getUserByUsername( "admin" );
+		User existing = userService.getUserByUsername( "admin" ).orElse( null );
 
 		if ( existing == null ) {
 			User user = new User();

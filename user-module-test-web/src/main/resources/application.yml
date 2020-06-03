@@ -25,3 +25,8 @@ server:
 security:
   basic:
     enabled: false
+
+acrossModule:
+  UserModule:
+    resources:
+      ../user-module/src/main/resources

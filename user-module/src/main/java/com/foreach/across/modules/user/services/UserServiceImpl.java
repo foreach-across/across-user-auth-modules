@@ -44,6 +44,7 @@ import org.springframework.validation.Errors;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService
@@ -77,31 +78,31 @@ public class UserServiceImpl implements UserService
 
 	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
-	public User getUserById( long id ) {
-		return userRepository.findOne( id );
+	public Optional<User> getUserById( long id ) {
+		return userRepository.findById( id );
 	}
 
 	@Cacheable(value = UserModuleCache.USERS, key = "('email:' + #email).toLowerCase()", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
-	public User getUserByEmail( String email ) {
+	public Optional<User> getUserByEmail( String email ) {
 		return userRepository.findByEmail( email );
 	}
 
 	@Override
-	public User getUserByEmail( String email, UserDirectory userDirectory ) {
+	public Optional<User> getUserByEmail( String email, UserDirectory userDirectory ) {
 		QUser query = QUser.user;
 		return userRepository.findOne( query.email.eq( email ).and( query.userDirectory.eq( userDirectory ) ) );
 	}
 
 	@Override
-	public User getUserByUsername( String username, UserDirectory userDirectory ) {
+	public Optional<User> getUserByUsername( String username, UserDirectory userDirectory ) {
 		QUser query = QUser.user;
 		return userRepository.findOne( query.username.eq( username ).and( query.userDirectory.eq( userDirectory ) ) );
 	}
 
 	@Cacheable(value = UserModuleCache.USERS, key = "('username:' + #username).toLowerCase()", unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
-	public User getUserByUsername( String username ) {
+	public Optional<User> getUserByUsername( String username ) {
 		return userRepository.findByUsername( username );
 	}
 
@@ -128,7 +129,7 @@ public class UserServiceImpl implements UserService
 						"Impossible to update a user with id 0, 0 is a special id that should never be used for persisted entities." );
 			}
 
-			user = getUserById( existingUserId );
+			user = getUserById( existingUserId ).orElse( null );
 
 			if ( user == null ) {
 				throw new UserModuleException(
@@ -190,9 +191,11 @@ public class UserServiceImpl implements UserService
 	@Override
 	@Transactional(HibernateJpaConfiguration.TRANSACTION_MANAGER)
 	public void delete( long userId ) {
-		User user = userRepository.findOne( userId );
-		deleteProperties( userId );
-		userRepository.delete( user );
+		userRepository.findById( userId )
+		              .ifPresent( user -> {
+			              deleteProperties( userId );
+			              userRepository.delete( user );
+		              } );
 	}
 
 	@Override
@@ -224,7 +227,7 @@ public class UserServiceImpl implements UserService
 			return Collections.emptyList();
 		}
 
-		return userRepository.findAll( userIds );
+		return userRepository.findAllById( userIds );
 	}
 
 	@Override
@@ -238,7 +241,7 @@ public class UserServiceImpl implements UserService
 	}
 
 	@Override
-	public User findOne( Predicate predicate ) {
+	public Optional<User> findOne( Predicate predicate ) {
 		return userRepository.findOne( predicate );
 	}
 

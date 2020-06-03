@@ -32,7 +32,9 @@ import org.springframework.security.core.GrantedAuthority;
  * favour the more generic {@link CurrentSecurityPrincipalProxy} instead.
  *
  * @see CurrentSecurityPrincipalProxy
+ * @deprecated use the {@link CurrentSecurityPrincipalProxy} instead
  */
+@Deprecated
 public interface CurrentUserProxy
 {
 	Long getId();

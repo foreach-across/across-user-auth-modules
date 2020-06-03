@@ -18,7 +18,6 @@ package com.foreach.across.modules.user;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.core.database.HasSchemaConfiguration;
 import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
@@ -36,7 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 		required = { AcrossHibernateJpaModule.NAME, PropertiesModule.NAME, SpringSecurityModule.NAME },
 		optional = { "AdminWebModule", SpringSecurityInfrastructureModule.ACL_MODULE, "EntityModule" }
 )
-public class UserModule extends AcrossModule implements HibernatePackageConfiguringModule, HasSchemaConfiguration
+public class UserModule extends AcrossModule implements HibernatePackageConfiguringModule
 {
 	public static final String NAME = "UserModule";
 
@@ -56,10 +55,14 @@ public class UserModule extends AcrossModule implements HibernatePackageConfigur
 	public Object[] getInstallers() {
 		return new Object[] {
 				AcrossSequencesInstaller.class,
-				new GroupPropertiesSchemaInstaller( schemaConfiguration ),
-				new UserPropertiesSchemaInstaller( schemaConfiguration ),
-				new UserSchemaInstaller( schemaConfiguration ),
-				new AuditableTablesInstaller( schemaConfiguration ),
+				GroupPropertiesSchemaInstaller.class,
+				UserPropertiesSchemaInstaller.class,
+				UserSchemaInstaller.class,
+				AuditableTablesInstaller.class,
+//				new GroupPropertiesSchemaInstaller( schemaConfiguration ),
+//				new UserPropertiesSchemaInstaller( schemaConfiguration ),
+//				new UserSchemaInstaller( schemaConfiguration ),
+//				new AuditableTablesInstaller( schemaConfiguration ),
 				DefaultUserInstaller.class,
 				AclPermissionsInstaller.class
 		};
@@ -73,8 +76,4 @@ public class UserModule extends AcrossModule implements HibernatePackageConfigur
 		}
 	}
 
-	@Override
-	public SchemaConfiguration getSchemaConfiguration() {
-		return schemaConfiguration;
-	}
 }

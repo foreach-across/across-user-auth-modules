@@ -33,10 +33,6 @@ import java.util.Collection;
 )
 public class AuditableTablesInstaller extends AuditableSchemaInstaller
 {
-	public AuditableTablesInstaller( SchemaConfiguration schemaConfiguration ) {
-		super( schemaConfiguration );
-	}
-
 	@Override
 	protected Collection<String> getTableNames() {
 		return Arrays.asList(

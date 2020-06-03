@@ -237,6 +237,7 @@ public class TestUser
 		u.addGroup( g );
 
 		List<? extends GrantedAuthority> authorities = new ArrayList<>( u.getAuthorities() );
-		assertEquals( Arrays.asList( perm, groupPerm, g.asGrantedAuthority(), groupRole, role ), authorities );
+		assertEquals( Arrays.asList( perm.toGrantedAuthority(), groupPerm.toGrantedAuthority(), g.asGrantedAuthority(), groupRole.toGrantedAuthority(),
+		                             role.toGrantedAuthority() ), authorities );
 	}
 }

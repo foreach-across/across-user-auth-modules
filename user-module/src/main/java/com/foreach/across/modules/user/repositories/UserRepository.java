@@ -23,11 +23,12 @@ import com.foreach.across.modules.user.business.User;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.Collection;
+import java.util.Optional;
 
-public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryDslPredicateExecutor<User>
+public interface UserRepository extends IdBasedEntityJpaRepository<User>, QuerydslPredicateExecutor<User>
 {
 	@Caching(
 			put = {
@@ -36,7 +37,7 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
-	User findByUsername( String userName );
+	Optional<User> findByUsername( String userName );
 
 	@Caching(
 			put = {
@@ -46,7 +47,7 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 					@CachePut(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, key = "#result.principalName", condition = "#result != null")
 			}
 	)
-	User findByEmail( String email );
+	Optional<User> findByEmail( String email );
 
 	Collection<User> findAllByGroups( Group group );
 
@@ -58,7 +59,7 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 			}
 	)
 	@Override
-	User findOne( Long id );
+	Optional<User> findById( Long id );
 
 	@Caching(
 			evict = {
@@ -100,7 +101,7 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 			}
 	)
 	@Override
-	void delete( Long id );
+	void deleteById( Long id );
 
 	@Caching(
 			evict = {
@@ -127,7 +128,7 @@ public interface UserRepository extends IdBasedEntityJpaRepository<User>, QueryD
 			}
 	)
 	@Override
-	void delete( Iterable<? extends User> entities );
+	void deleteAll( Iterable<? extends User> entities );
 
 	@Caching(
 			evict = {

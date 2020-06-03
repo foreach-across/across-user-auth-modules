@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.*;
 
 /**
@@ -63,9 +65,7 @@ public class TestGroupValidator
 		group.setName( "GROUP NAME" );
 
 		QGroup q = QGroup.group;
-		when( groupService.findOne(
-				q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) )
-		) ).thenReturn( null );
+		when( groupService.findOne( q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) ) ) ).thenReturn( Optional.empty() );
 
 		validator.validate( group, errors );
 
@@ -82,7 +82,7 @@ public class TestGroupValidator
 		QGroup q = QGroup.group;
 		when( groupService.findOne(
 				q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) )
-		) ).thenReturn( group );
+		) ).thenReturn( Optional.of( group ) );
 
 		validator.validate( group, errors );
 
@@ -102,7 +102,7 @@ public class TestGroupValidator
 		QGroup q = QGroup.group;
 		when( groupService.findOne(
 				q.name.equalsIgnoreCase( "GROUP NAME" ).and( q.userDirectory.eq( defaultDir ) )
-		) ).thenReturn( existing );
+		) ).thenReturn( Optional.of( existing ) );
 
 		validator.validate( group, errors );
 

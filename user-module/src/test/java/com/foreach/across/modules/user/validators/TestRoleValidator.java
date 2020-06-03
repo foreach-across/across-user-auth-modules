@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.*;
 
 /**
@@ -79,7 +81,7 @@ public class TestRoleValidator
 		QRole q = QRole.role;
 
 		when( repository.findOne( q.name.equalsIgnoreCase( "My role" ) ) )
-				.thenReturn( null );
+				.thenReturn( Optional.empty() );
 
 		validator.validate( role, errors );
 
@@ -96,8 +98,7 @@ public class TestRoleValidator
 
 		QRole q = QRole.role;
 
-		when( repository.findOne( q.name.equalsIgnoreCase( "My role" ) ) )
-				.thenReturn( role );
+		when( repository.findOne( q.name.equalsIgnoreCase( "My role" ) ) ).thenReturn( Optional.of( role ) );
 
 		validator.validate( role, errors );
 
@@ -116,8 +117,7 @@ public class TestRoleValidator
 		other.setName( "My role" );
 
 		QRole q = QRole.role;
-		when( repository.findOne( q.name.equalsIgnoreCase( "My role" ) ) )
-				.thenReturn( other );
+		when( repository.findOne( q.name.equalsIgnoreCase( "My role" ) ) ).thenReturn( Optional.of( other ) );
 
 		validator.validate( role, errors );
 
@@ -137,8 +137,7 @@ public class TestRoleValidator
 		other.setName( "My role" );
 
 		QRole q = QRole.role;
-		when( repository.findOne( q.authority.equalsIgnoreCase( "ROLE_my auth" ) ) )
-				.thenReturn( other );
+		when( repository.findOne( q.authority.equalsIgnoreCase( "ROLE_my auth" ) ) ).thenReturn( Optional.of( other ) );
 
 		validator.validate( role, errors );
 

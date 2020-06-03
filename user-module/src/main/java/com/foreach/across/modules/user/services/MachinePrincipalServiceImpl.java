@@ -34,6 +34,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * @author Arne Vandamme
@@ -57,19 +58,19 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 
 	@Cacheable(value = SpringSecurityModuleCache.SECURITY_PRINCIPAL, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
-	public MachinePrincipal getMachinePrincipalById( long id ) {
-		return machinePrincipalRepository.findOne( id );
+	public Optional<MachinePrincipal> getMachinePrincipalById( long id ) {
+		return machinePrincipalRepository.findById( id );
 	}
 
 	@Override
-	public MachinePrincipal getMachinePrincipalByName( String name ) {
+	public Optional<MachinePrincipal> getMachinePrincipalByName( String name ) {
 		return getMachinePrincipalByName( name, defaultUserDirectoryStrategy.getDefaultUserDirectory() );
 	}
 
 	@Override
-	public MachinePrincipal getMachinePrincipalByName( String name, UserDirectory userDirectory ) {
+	public Optional<MachinePrincipal> getMachinePrincipalByName( String name, UserDirectory userDirectory ) {
 		String principalName = BasicSecurityPrincipal.uniquePrincipalName( name, userDirectory );
-		return (MachinePrincipal) securityPrincipalService.getPrincipalByName( principalName );
+		return securityPrincipalService.getPrincipalByName( principalName );
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public class MachinePrincipalServiceImpl implements MachinePrincipalService
 	}
 
 	@Override
-	public MachinePrincipal findOne( Predicate predicate ) {
+	public Optional<MachinePrincipal> findOne( Predicate predicate ) {
 		return machinePrincipalRepository.findOne( predicate );
 	}
 

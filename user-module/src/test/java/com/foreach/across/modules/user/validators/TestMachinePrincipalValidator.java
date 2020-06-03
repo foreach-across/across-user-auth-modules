@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.*;
 
 /**
@@ -63,9 +65,7 @@ public class TestMachinePrincipalValidator
 		machinePrincipal.setName( "PRINCIPAL NAME" );
 
 		QMachinePrincipal q = QMachinePrincipal.machinePrincipal;
-		when( repository
-				      .findOne( q.name.equalsIgnoreCase( "principal name" ).and( q.userDirectory.eq( defaultDir ) ) ) )
-				.thenReturn( null );
+		when( repository.findOne( q.name.equalsIgnoreCase( "principal name" ).and( q.userDirectory.eq( defaultDir ) ) ) ).thenReturn( Optional.empty() );
 
 		validator.validate( machinePrincipal, errors );
 
@@ -81,9 +81,8 @@ public class TestMachinePrincipalValidator
 		machinePrincipal.setName( "PRINCIPAL NAME" );
 
 		QMachinePrincipal q = QMachinePrincipal.machinePrincipal;
-		when( repository
-				      .findOne( q.name.equalsIgnoreCase( "principal name" ).and( q.userDirectory.eq( defaultDir ) ) ) )
-				.thenReturn( machinePrincipal );
+		when( repository.findOne( q.name.equalsIgnoreCase( "principal name" ).and( q.userDirectory.eq( defaultDir ) ) ) )
+				.thenReturn( Optional.of( machinePrincipal ) );
 
 		validator.validate( machinePrincipal, errors );
 
@@ -104,7 +103,7 @@ public class TestMachinePrincipalValidator
 		QMachinePrincipal q = QMachinePrincipal.machinePrincipal;
 		when( repository
 				      .findOne( q.name.equalsIgnoreCase( "principal name" ).and( q.userDirectory.eq( defaultDir ) ) ) )
-				.thenReturn( existing );
+				.thenReturn( Optional.of( existing ) );
 
 		validator.validate( machinePrincipal, errors );
 

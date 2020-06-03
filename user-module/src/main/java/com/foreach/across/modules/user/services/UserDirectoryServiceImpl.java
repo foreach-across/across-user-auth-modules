@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 /**
@@ -37,14 +38,16 @@ public class UserDirectoryServiceImpl implements UserDirectoryService
 
 	@Override
 	public UserDirectory getDefaultUserDirectory() {
-		return userDirectoryRepository.findOne( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );
+		return userDirectoryRepository
+				.findById( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID )
+				.orElseThrow( () -> new IllegalStateException( "No default UserDirectory available" ) );
 	}
 
 	@Override
 	public Collection<UserDirectory> getActiveUserDirectories() {
 		return getUserDirectories().stream()
 		                           .filter( UserDirectory::isActive )
-		                           .sorted( ( l, r ) -> Integer.compare( l.getOrder(), r.getOrder() ) )
+		                           .sorted( Comparator.comparingInt( UserDirectory::getOrder ) )
 		                           .collect( Collectors.toList() );
 	}
 

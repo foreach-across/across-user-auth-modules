@@ -22,6 +22,7 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.EmptyAcrossModule;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Refreshable;
+import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
 import com.foreach.across.core.context.info.AcrossContextInfo;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
@@ -32,7 +33,6 @@ import com.foreach.across.modules.spring.security.acl.business.AclPermission;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.acl.services.QueryableAclSecurityService;
-import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.spring.security.infrastructure.aop.AuditableEntityInterceptor;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModule;
@@ -117,7 +117,7 @@ public class ITAclServices
 
 	@Before
 	public void createUsers() {
-		securityPrincipalService.authenticate( securityPrincipalService.getPrincipalByName( "system" ) );
+		securityPrincipalService.authenticate( securityPrincipalService.getPrincipalByName( "system" ).orElse( null ) );
 
 		permissionService.definePermission( "manage files", "Manage all files and folders", "unit-test" );
 		roleService.defineRole( "ROLE_FILE_MANAGER", "File manager", Arrays.asList( "manage files" ) );
@@ -140,12 +140,12 @@ public class ITAclServices
 		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
 
 		assertNotNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
-		assertNotNull( acrossContextInfo.getModuleInfo( SpringSecurityInfrastructureModule.NAME )
+		assertNotNull( acrossContextInfo.getModuleInfo( AcrossBootstrapConfigurer.CONTEXT_INFRASTRUCTURE_MODULE )
 		                                .getApplicationContext().getBean( AuditableEntityInterceptor.class ) );
 	}
 
 	private Group createGroup( String... roles ) {
-		Group group = groupService.getGroupById( -999 );
+		Group group = groupService.getGroupById( -999 ).orElse( null );
 
 		if ( group == null ) {
 			Group dto = new Group();
@@ -196,10 +196,10 @@ public class ITAclServices
 		assertTrue( adminRole.hasPermission( AclAuthorities.MODIFY_ACL ) );
 		assertTrue( adminRole.hasPermission( AclAuthorities.TAKE_OWNERSHIP ) );
 
-		AclSecurityEntity system = aclSecurityEntityService.getSecurityEntityByName( "system" );
+		AclSecurityEntity system = aclSecurityEntityService.getSecurityEntityByName( "system" ).orElse( null );
 		assertNotNull( system );
 
-		AclSecurityEntity groups = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+		AclSecurityEntity groups = aclSecurityEntityService.getSecurityEntityByName( "groups" ).orElse( null );
 		assertNotNull( groups );
 		assertEquals( system, groups.getParent() );
 
@@ -380,15 +380,15 @@ public class ITAclServices
 		MutableAcl ownAcl = acl.getAcl( savedGroup );
 		assertNotNull( ownAcl );
 		Long parentAclId = (Long) ownAcl.getParentAcl().getObjectIdentity().getIdentifier();
-		AclSecurityEntity parentEntity = aclSecurityEntityService.getSecurityEntityById( parentAclId );
+		AclSecurityEntity parentEntity = aclSecurityEntityService.getSecurityEntityById( parentAclId ).orElse( null );
 		assertNotNull( parentEntity );
 		assertEquals( parentEntity.getName(), "groups" );
 
 		groupService.delete( savedGroup.getId() );
-		assertNull( groupService.getGroupById( savedGroup.getId() ) );
+		assertEquals( Optional.empty(), groupService.getGroupById( savedGroup.getId() ) );
 		assertNull( acl.getAcl( savedGroup ) );
 
-		AclSecurityEntity groupsSecurityEntity = aclSecurityEntityService.getSecurityEntityByName( "groups" );
+		AclSecurityEntity groupsSecurityEntity = aclSecurityEntityService.getSecurityEntityByName( "groups" ).orElse( null );
 		assertNotNull( groupsSecurityEntity );
 		assertNotNull( groupsSecurityEntity.getCreatedDate() );
 		assertNotNull( groupsSecurityEntity.getCreatedBy() );
@@ -407,9 +407,9 @@ public class ITAclServices
 		assertNull( acl.getAcl( savedGroup2 ) );
 
 		groupService.delete( savedGroup2.getId() );
-		assertNull( groupService.getGroupById( savedGroup2.getId() ) );
+		assertEquals( Optional.empty(), ( groupService.getGroupById( savedGroup2.getId() ) ) );
 		assertNull( acl.getAcl( savedGroup2 ) );
-		assertNotNull( aclSecurityEntityService.getSecurityEntityByName( "groups" ) );
+		assertTrue( aclSecurityEntityService.getSecurityEntityByName( "groups" ).isPresent() );
 
 		//Back to the original situation
 		settings.setEnableDefaultAcls( true );
@@ -417,7 +417,7 @@ public class ITAclServices
 
 	@Test
 	public void usersShouldHaveAuditInfo() {
-		securityPrincipalService.authenticate( machinePrincipalService.getMachinePrincipalByName( "system" ) );
+		securityPrincipalService.authenticate( machinePrincipalService.getMachinePrincipalByName( "system" ).orElse( null ) );
 
 		User createdUser = createRandomUser( new ArrayList<Group>(), new ArrayList<String>() );
 		assertNotNull( createdUser.getCreatedDate() );

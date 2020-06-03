@@ -40,7 +40,7 @@ public class EQValueToRoleConverter implements Converter<EQValue, Role>
 	@Override
 	public Role convert( EQValue source ) {
 		return StringUtils.isNumeric( source.getValue() )
-				? roleRepository.findOne( Long.valueOf( source.getValue() ) )
-				: roleRepository.findByAuthorityIgnoringCase( Role.authorityString( source.getValue() ) );
+				? roleRepository.findById( Long.valueOf( source.getValue() ) ).orElse( null )
+				: roleRepository.findByAuthorityIgnoringCase( Role.authorityString( source.getValue() ) ).orElse( null );
 	}
 }

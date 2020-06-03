@@ -25,7 +25,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -51,7 +53,7 @@ public class TestEQStringToRoleConverter
 	public void lookupByName() {
 		EQString value = new EQString( "admin" );
 		Predicate predicate = QRole.role.name.equalsIgnoreCase( "admin" );
-		when( roleRepository.findOne( predicate ) ).thenReturn( mock( Role.class ) );
+		when( roleRepository.findOne( predicate ) ).thenReturn( Optional.of( mock( Role.class ) ) );
 
 		assertNotNull( converter.convert( value ) );
 	}

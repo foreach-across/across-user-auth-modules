@@ -23,7 +23,7 @@ import com.foreach.across.core.installers.AcrossLiquibaseInstaller;
 @Installer(description = "Installs database schema for user authorization.", version = 19)
 public class UserSchemaInstaller extends AcrossLiquibaseInstaller
 {
-	public UserSchemaInstaller( SchemaConfiguration schemaConfiguration ) {
-		super( schemaConfiguration );
+	public UserSchemaInstaller( ) {
+		super( "com/foreach/across/modules/user/installers/UserSchemaInstaller.xml" );
 	}
 }

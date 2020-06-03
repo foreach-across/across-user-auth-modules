@@ -21,10 +21,11 @@ import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.IOException;
@@ -43,7 +44,7 @@ import java.io.Serializable;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Permission
 		extends SettableIdBasedEntity<Permission>
-		implements GrantedAuthority, Serializable
+		implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -101,7 +102,6 @@ public class Permission
 		this.name = name;
 	}
 
-	@Override
 	public String getAuthority() {
 		return authorityString( getName() );
 	}
@@ -133,6 +133,15 @@ public class Permission
 
 	private void readObject( ObjectInputStream ois ) throws IOException, ClassNotFoundException {
 		name = (String) ois.readObject();
+	}
+
+	/**
+	 * Convert this permission to a Spring security {@link GrantedAuthority} for use in authentication.
+	 *
+	 * @return granted authority
+	 */
+	public GrantedAuthority toGrantedAuthority() {
+		return new SimpleGrantedAuthority( getAuthority() );
 	}
 
 	/**

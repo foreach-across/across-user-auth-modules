@@ -19,6 +19,7 @@ import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.modules.properties.installers.EntityPropertiesInstaller;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
+import lombok.RequiredArgsConstructor;
 
 /**
  * @author Arne Vandamme
@@ -26,15 +27,9 @@ import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 @Installer(description = "Installs the group properties table", version = 1)
 public class GroupPropertiesSchemaInstaller extends EntityPropertiesInstaller
 {
-	private final SchemaConfiguration schemaConfiguration;
-
-	public GroupPropertiesSchemaInstaller( SchemaConfiguration schemaConfiguration ) {
-		this.schemaConfiguration = schemaConfiguration;
-	}
-
 	@Override
 	protected String getTableName() {
-		return schemaConfiguration.getCurrentTableName( UserSchemaConfiguration.TABLE_GROUP_PROPERTIES );
+		return UserSchemaConfiguration.TABLE_GROUP_PROPERTIES;
 	}
 
 	@Override

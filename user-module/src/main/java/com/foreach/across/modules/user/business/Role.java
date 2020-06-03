@@ -23,12 +23,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -45,7 +46,7 @@ import java.util.Set;
 @Table(name = UserSchemaConfiguration.TABLE_ROLE)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Role extends SettableIdAuditableEntity<Role>
-		implements GrantedAuthority, Serializable
+		implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 	public static final String AUTHORITY_PREFIX = "ROLE_";
@@ -173,6 +174,15 @@ public class Role extends SettableIdAuditableEntity<Role>
 	@Override
 	public String toString() {
 		return getAuthority();
+	}
+
+	/**
+	 * Convert this role to a Spring security {@link GrantedAuthority} for use in authentication.
+	 *
+	 * @return granted authority
+	 */
+	public GrantedAuthority toGrantedAuthority() {
+		return new SimpleGrantedAuthority( getAuthority() );
 	}
 
 	/**

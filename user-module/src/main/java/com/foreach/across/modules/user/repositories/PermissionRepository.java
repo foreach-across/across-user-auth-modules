@@ -19,7 +19,9 @@ package com.foreach.across.modules.user.repositories;
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 import com.foreach.across.modules.user.business.Permission;
 
+import java.util.Optional;
+
 public interface PermissionRepository extends IdBasedEntityJpaRepository<Permission>
 {
-	Permission findByNameIgnoringCase( String name );
+	Optional<Permission> findByNameIgnoringCase( String name );
 }

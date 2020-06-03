@@ -20,16 +20,15 @@ import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import com.foreach.across.modules.user.converters.HibernateUserRestriction;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -39,7 +38,7 @@ import java.util.Set;
 @Entity
 @DiscriminatorValue("user")
 @Table(name = UserSchemaConfiguration.TABLE_USER)
-public class User extends GroupedPrincipal<User> implements UserDetails, Undeletable
+public class User extends GroupedPrincipal<User> implements Undeletable
 {
 	// todo: cant just use validation for controller since current version only sets username after
 	// validation in case email as username is set
@@ -179,22 +178,18 @@ public class User extends GroupedPrincipal<User> implements UserDetails, Undelet
 		return !getRestrictions().isEmpty();
 	}
 
-	@Override
 	public boolean isAccountNonExpired() {
 		return !getRestrictions().contains( UserRestriction.EXPIRED );
 	}
 
-	@Override
 	public boolean isAccountNonLocked() {
 		return !getRestrictions().contains( UserRestriction.LOCKED );
 	}
 
-	@Override
 	public boolean isCredentialsNonExpired() {
 		return !getRestrictions().contains( UserRestriction.CREDENTIALS_EXPIRED );
 	}
 
-	@Override
 	public boolean isEnabled() {
 		return !getRestrictions().contains( UserRestriction.DISABLED )
 				&& !getRestrictions().contains( UserRestriction.REQUIRES_CONFIRMATION );

@@ -18,17 +18,19 @@ package com.foreach.across.modules.it.user;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
+import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
+import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ConfigurerScope;
 import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
-import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
-import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.UserModuleCache;
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.User;
+import com.foreach.across.modules.user.repositories.UserRepository;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.UserService;
@@ -51,6 +53,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -77,6 +80,9 @@ public class ITUserModuleWithCaching
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private UserRepository userRepository;
+
 	private Map<Object, Object> securityPrincipalCache, groupCache, userCache;
 
 	@Autowired
@@ -97,7 +103,7 @@ public class ITUserModuleWithCaching
 		userCache.clear();
 
 		SecurityPrincipal principal = mock( SecurityPrincipal.class );
-		when( principal.toString() ).thenReturn( "principal" );
+		when( principal.getSecurityPrincipalId() ).thenReturn( SecurityPrincipalId.of( "principal" ) );
 
 		securityPrincipalService.authenticate( principal );
 	}
@@ -114,7 +120,7 @@ public class ITUserModuleWithCaching
 
 		// Null value should be cached
 		assertTrue( securityPrincipalCache.isEmpty() );
-		assertNull( machinePrincipalService.getMachinePrincipalByName( "somePrincipal" ) );
+		assertEquals( Optional.empty(), machinePrincipalService.getMachinePrincipalByName( "somePrincipal" ) );
 		assertEquals( 1, securityPrincipalCache.size() );
 
 		MachinePrincipal created = machinePrincipalService.save( principalDto );
@@ -122,14 +128,14 @@ public class ITUserModuleWithCaching
 
 		assertTrue( securityPrincipalCache.isEmpty() );
 
-		MachinePrincipal byName = machinePrincipalService.getMachinePrincipalByName( created.getName() );
+		MachinePrincipal byName = machinePrincipalService.getMachinePrincipalByName( created.getName() ).orElse( null );
 		assertNotNull( byName );
 		assertEquals( created, byName );
 		assertEquals( 2, securityPrincipalCache.size() );
 		assertSame( byName, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byName, securityPrincipalCache.get( created.getName() ) );
 
-		MachinePrincipal byId = machinePrincipalService.getMachinePrincipalById( created.getId() );
+		MachinePrincipal byId = machinePrincipalService.getMachinePrincipalById( created.getId() ).orElse( null );
 		assertNotNull( byId );
 		assertEquals( created, byId );
 		assertSame( byName, byId );
@@ -146,7 +152,7 @@ public class ITUserModuleWithCaching
 		assertSame( byId, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byId, securityPrincipalCache.get( created.getName() ) );
 
-		other = machinePrincipalService.getMachinePrincipalByName( other.getName() );
+		other = machinePrincipalService.getMachinePrincipalByName( other.getName() ).orElse( null );
 		assertEquals( 4, securityPrincipalCache.size() );
 
 		machinePrincipalService.save( principalDto );
@@ -163,7 +169,7 @@ public class ITUserModuleWithCaching
 		// Null value should be cached
 		assertTrue( securityPrincipalCache.isEmpty() );
 		assertTrue( groupCache.isEmpty() );
-		assertNull( groupService.getGroupByName( "someGroup" ) );
+		assertEquals( Optional.empty(), groupService.getGroupByName( "someGroup" ) );
 		assertTrue( securityPrincipalCache.isEmpty() );
 		assertEquals( 1, groupCache.size() );
 
@@ -173,7 +179,7 @@ public class ITUserModuleWithCaching
 
 		assertTrue( securityPrincipalCache.isEmpty() );
 
-		Group byName = groupService.getGroupByName( created.getName() );
+		Group byName = groupService.getGroupByName( created.getName() ).orElse( null );
 		assertNotNull( byName );
 		assertEquals( created, byName );
 		assertEquals( 1, groupCache.size() );
@@ -182,7 +188,7 @@ public class ITUserModuleWithCaching
 		assertSame( byName, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byName, securityPrincipalCache.get( created.getPrincipalName() ) );
 
-		Group byId = groupService.getGroupById( created.getId() );
+		Group byId = groupService.getGroupById( created.getId() ).orElse( null );
 		assertNotNull( byId );
 		assertEquals( created, byId );
 		assertSame( byName, byId );
@@ -202,7 +208,7 @@ public class ITUserModuleWithCaching
 		assertSame( byId, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byId, securityPrincipalCache.get( created.getPrincipalName() ) );
 
-		other = groupService.getGroupByName( other.getName() );
+		other = groupService.getGroupByName( other.getName() ).orElse( null );
 		assertEquals( 1, groupCache.size() );
 		assertEquals( 4, securityPrincipalCache.size() );
 
@@ -214,47 +220,71 @@ public class ITUserModuleWithCaching
 	}
 
 	@Test
+	public void findByUnknownValueShouldNotThrowException() {
+		assertEquals( Optional.empty(), userService.getUserById( -1000 ) );
+		assertEquals( 1, securityPrincipalCache.size() );
+		assertEquals( 0, userCache.size() );
+		assertEquals( Optional.empty(), userService.getUserByUsername( "iojoifqezjf" ) );
+		assertEquals( 1, securityPrincipalCache.size() );
+		assertEquals( 1, userCache.size() );
+		assertEquals( Optional.empty(), userService.getUserByEmail( "foo@localhost" ) );
+		assertEquals( 1, securityPrincipalCache.size() );
+		assertEquals( 2, userCache.size() );
+	}
+
+	@Test
 	public void createAndGetUser() {
 		User User = new User();
 		User.setUsername( "someUser" );
 		User.setEmail( "someEmail@localhost" );
 		User.setPassword( "pwd" );
 
-		// Null value should be cached
 		assertTrue( securityPrincipalCache.isEmpty() );
 		assertTrue( userCache.isEmpty() );
-		assertNull( userService.getUserByUsername( "someUser" ) );
-		assertNull( userService.getUserByEmail( "someEmail@localhost" ) );
+
+		// Null value should not be cached when called from repository
+		assertEquals( Optional.empty(), userRepository.findByUsername( "someUser" ) );
+		assertEquals( Optional.empty(), userRepository.findByEmail( "someEmail@localhost" ) );
+		assertEquals( Optional.empty(), userRepository.findById( -1000L ) );
+
 		assertTrue( securityPrincipalCache.isEmpty() );
+		assertTrue( userCache.isEmpty() );
+
+		// Null value should be cached when called from userservice
+		assertEquals( Optional.empty(), userService.getUserByUsername( "someUser" ) );
+		assertEquals( Optional.empty(), userService.getUserByEmail( "someEmail@localhost" ) );
+		assertEquals( Optional.empty(), userService.getUserById( -1000 ) );
+
+		assertEquals( 1, securityPrincipalCache.size() );
 		assertEquals( 2, userCache.size() );
 
 		User actual = mock( User.class );
 		userCache.put( "email:someemail@localhost", actual );
-		assertSame( actual, userService.getUserByEmail( "someEmail@localhost" ) );
+		assertEquals( Optional.of( actual ), userService.getUserByEmail( "someEmail@localhost" ) );
 
 		User created = userService.save( User );
 		assertNotNull( created );
 
 		assertTrue( userCache.isEmpty() );
 
-		User byUsername = userService.getUserByUsername( created.getUsername() );
+		User byUsername = userService.getUserByUsername( created.getUsername() ).orElse( null );
 		assertNotNull( byUsername );
 		assertEquals( created, byUsername );
 		assertEquals( 1, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 		assertSame( byUsername, userCache.get( "username:" + created.getUsername() ) );
 		assertSame( byUsername, securityPrincipalCache.get( created.getId() ) );
 		assertSame( byUsername, securityPrincipalCache.get( created.getPrincipalName() ) );
 
-		User byId = userService.getUserById( created.getId() );
+		User byId = userService.getUserById( created.getId() ).orElse( null );
 		assertSame( byUsername, byId );
 		assertEquals( 1, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 
-		User byEmail = userService.getUserByEmail( created.getEmail() );
+		User byEmail = userService.getUserByEmail( created.getEmail() ).orElse( null );
 		assertEquals( created, byEmail );
 		assertEquals( 2, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 		assertSame( byEmail, userCache.get( "username:" + created.getUsername() ) );
 		assertSame( byEmail, userCache.get( "email:" + created.getEmail() ) );
 		assertSame( byEmail, securityPrincipalCache.get( created.getId() ) );
@@ -268,11 +298,11 @@ public class ITUserModuleWithCaching
 		User other = userService.save( otherDto );
 		assertNotNull( other );
 		assertEquals( 2, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 
-		other = userService.getUserByEmail( other.getEmail() );
+		other = userService.getUserByEmail( other.getEmail() ).orElse( null );
 		assertEquals( 4, userCache.size() );
-		assertEquals( 4, securityPrincipalCache.size() );
+		assertEquals( 5, securityPrincipalCache.size() );
 		assertSame( other, userCache.get( "username:" + other.getUsername() ) );
 		assertSame( other, userCache.get( "email:" + other.getEmail() ) );
 		assertSame( other, securityPrincipalCache.get( other.getId() ) );
@@ -280,7 +310,7 @@ public class ITUserModuleWithCaching
 
 		userService.save( User );
 		assertEquals( 2, userCache.size() );
-		assertEquals( 2, securityPrincipalCache.size() );
+		assertEquals( 3, securityPrincipalCache.size() );
 		assertSame( other, userCache.get( "username:" + other.getUsername() ) );
 		assertSame( other, userCache.get( "email:" + other.getEmail() ) );
 		assertSame( other, securityPrincipalCache.get( other.getId() ) );
@@ -288,7 +318,7 @@ public class ITUserModuleWithCaching
 	}
 
 	@Configuration
-	static class CacheConfig implements AcrossContextConfigurer
+	static class CacheConfig implements AcrossContextConfigurer, AcrossBootstrapConfigurer
 	{
 		@Bean(name = SpringSecurityModuleCache.SECURITY_PRINCIPAL)
 		public ConcurrentMapCache securityPrincipalCache() {
@@ -317,15 +347,12 @@ public class ITUserModuleWithCaching
 
 		@Override
 		public void configure( AcrossContext acrossContext ) {
-			acrossContext.addApplicationContextConfigurer( new AnnotatedClassConfigurer(
-					                                               CacheConfiguration.class ),
-			                                               ConfigurerScope.CONTEXT_ONLY
-			);
+			acrossContext.addApplicationContextConfigurer( new AnnotatedClassConfigurer( CacheConfiguration.class ), ConfigurerScope.CONTEXT_ONLY );
+		}
 
-			acrossContext.getModule( UserModule.NAME )
-			             .addApplicationContextConfigurer( EnableCachingConfiguration.class );
-			acrossContext.getModule( SpringSecurityInfrastructureModule.NAME )
-			             .addApplicationContextConfigurer( EnableCachingConfiguration.class );
+		@Override
+		public void configureModule( ModuleBootstrapConfig moduleConfiguration ) {
+			moduleConfiguration.extendModule( false, true, EnableCachingConfiguration.class );
 		}
 	}
 

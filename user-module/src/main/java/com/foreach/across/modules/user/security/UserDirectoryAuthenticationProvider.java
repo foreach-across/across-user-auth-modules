@@ -77,11 +77,9 @@ public class UserDirectoryAuthenticationProvider extends EntityInterceptorAdapte
 			List<AuthenticationProvider> authenticationProviders = new ArrayList<>();
 			userDirectoryService.getActiveUserDirectories().forEach(
 					dir -> {
-						UserDirectoryServiceProvider serviceProvider
-								= userDirectoryServiceProviderManager.getServiceProvider( dir );
+						UserDirectoryServiceProvider serviceProvider = userDirectoryServiceProviderManager.getServiceProvider( dir );
 						if ( serviceProvider != null ) {
-							AuthenticationProvider authenticationProvider
-									= serviceProvider.getAuthenticationProvider( dir );
+							AuthenticationProvider authenticationProvider = serviceProvider.getAuthenticationProvider( dir );
 							if ( authenticationProvider != null ) {
 								authenticationProviders.add( authenticationProvider );
 							}

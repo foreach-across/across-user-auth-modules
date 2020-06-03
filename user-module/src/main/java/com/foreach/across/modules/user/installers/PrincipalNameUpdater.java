@@ -40,14 +40,11 @@ public class PrincipalNameUpdater
 
 	@Autowired
 	private DataSource dataSource;
-	@Autowired
-	private UserModule currentModule;
 
 	@InstallerMethod
 	public void install() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate( dataSource );
-		String tableName = currentModule.getSchemaConfiguration().getCurrentTableName(
-				UserSchemaConfiguration.TABLE_PRINCIPAL );
+		String tableName = UserSchemaConfiguration.TABLE_PRINCIPAL ;
 		jdbcTemplate.query(
 				"SELECT id,principal_name, user_directory_id FROM " + tableName + " WHERE principal_name LIKE '%,%'",
 				new Object[] {},

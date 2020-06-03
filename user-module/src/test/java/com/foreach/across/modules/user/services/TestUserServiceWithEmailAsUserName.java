@@ -16,10 +16,11 @@
 
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.repositories.UserRepository;
-import com.foreach.common.test.MockedLoader;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,12 +37,13 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = TestUserServiceWithEmailAsUserName.Config.class)
+@ContextConfiguration(classes = TestUserServiceWithEmailAsUserName.Config.class)
 @DirtiesContext
 public class TestUserServiceWithEmailAsUserName
 {
@@ -73,8 +75,8 @@ public class TestUserServiceWithEmailAsUserName
 		User otherUser = new User();
 		otherUser.setId( 123L );
 
-		when( userRepository.findOne( firstUserId ) ).thenReturn( user );
-		when( userRepository.findByEmail( "498@email.com" ) ).thenReturn( otherUser );
+		when( userRepository.findById( firstUserId ) ).thenReturn( Optional.of( user ) );
+		when( userRepository.findByEmail( "498@email.com" ) ).thenReturn( Optional.of( otherUser ) );
 
 		try {
 			userService.save( userDto );
@@ -159,6 +161,31 @@ public class TestUserServiceWithEmailAsUserName
 	@Configuration
 	static class Config
 	{
+		@Bean
+		public UserRepository userRepository() {
+			return mock( UserRepository.class );
+		}
+
+		@Bean
+		public SecurityPrincipalService securityPrincipalService() {
+			return mock( SecurityPrincipalService.class );
+		}
+
+		@Bean
+		public DefaultUserDirectoryStrategy defaultUserDirectoryStrategy() {
+			return mock( DefaultUserDirectoryStrategy.class );
+		}
+
+		@Bean
+		public UserPropertiesService userPropertiesService() {
+			return mock( UserPropertiesService.class );
+		}
+
+		@Bean
+		public UserModifiedNotifier userModifiedNotifier() {
+			return mock( UserModifiedNotifier.class );
+		}
+
 		@Bean
 		public UserService userService() {
 			return spy( new UserServiceImpl() );

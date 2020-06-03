@@ -16,13 +16,14 @@
 
 package com.foreach.across.modules.user.services;
 
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.repositories.UserRepository;
-import com.foreach.common.test.MockedLoader;
+import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.junit.Before;
@@ -43,13 +44,14 @@ import org.springframework.validation.ObjectError;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = TestUserService.Config.class)
+@ContextConfiguration(classes = TestUserService.Config.class)
 @DirtiesContext
 public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 {
@@ -116,7 +118,7 @@ public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 		assertEquals( EnumSet.of( UserRestriction.CREDENTIALS_EXPIRED ), userDto.getRestrictions() );
 		assertEquals( true, userDto.hasRestrictions() );
 
-		assertEquals( Sets.newSet( role_1, perm1, perm2 ), user.getAuthorities() );
+		assertEquals( Sets.newSet( role_1.toGrantedAuthority(), perm1.toGrantedAuthority(), perm2.toGrantedAuthority() ), user.getAuthorities() );
 	}
 
 	@Test
@@ -273,7 +275,7 @@ public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 		update.setUsername( "other" );
 		update.setEmail( "other@email.com" );
 
-		when( userRepository.findOne( 321L ) ).thenReturn( existing );
+		when( userRepository.findById( 321L ) ).thenReturn( Optional.of( existing ) );
 
 		userService.save( update );
 
@@ -301,7 +303,7 @@ public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 		}
 
 		assertTrue( failed );
-		verify( userRepository, never() ).findOne( any( Long.class ) );
+		verify( userRepository, never() ).findById( any( Long.class ) );
 	}
 
 	@Test
@@ -319,12 +321,37 @@ public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 		}
 
 		assertTrue( failed );
-		verify( userRepository ).findOne( 132L );
+		verify( userRepository ).findById( 132L );
 	}
 
 	@Configuration
 	static class Config
 	{
+		@Bean
+		public UserRepository userRepository() {
+			return mock( UserRepository.class );
+		}
+
+		@Bean
+		public SecurityPrincipalService securityPrincipalService() {
+			return mock( SecurityPrincipalService.class );
+		}
+
+		@Bean
+		public DefaultUserDirectoryStrategy userDirectoryStrategy() {
+			return mock( DefaultUserDirectoryStrategy.class );
+		}
+
+		@Bean
+		public UserPropertiesService userPropertiesService() {
+			return mock( UserPropertiesService.class );
+		}
+
+		@Bean
+		public UserModifiedNotifier userModifiedNotifier() {
+			return mock( UserModifiedNotifier.class );
+		}
+
 		@Bean
 		public UserService userService() {
 			return new UserServiceImpl();

@@ -21,7 +21,6 @@ import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.repositories.GroupRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +29,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
 
 /**
@@ -39,7 +40,7 @@ import static org.mockito.Mockito.*;
  * @since 2.0.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = TestGroupService.Config.class)
+@ContextConfiguration(classes = TestGroupService.Config.class)
 public class TestGroupService extends AbstractQueryDslPredicateExecutorTest
 {
 	@Autowired
@@ -65,9 +66,9 @@ public class TestGroupService extends AbstractQueryDslPredicateExecutorTest
 		Group expected = new Group();
 		expected.setName( "expected" );
 
-		when( groupRepository.findByNameAndUserDirectory( "groupName", dir ) ).thenReturn( expected );
+		when( groupRepository.findByNameAndUserDirectory( "groupName", dir ) ).thenReturn( Optional.of( expected ) );
 
-		assertSame( expected, groupService.getGroupByName( "groupName" ) );
+		assertEquals( Optional.of( expected ), groupService.getGroupByName( "groupName" ) );
 	}
 
 	@Test
@@ -95,6 +96,21 @@ public class TestGroupService extends AbstractQueryDslPredicateExecutorTest
 	@Configuration
 	protected static class Config
 	{
+		@Bean
+		public GroupRepository groupRepository() {
+			return mock( GroupRepository.class );
+		}
+
+		@Bean
+		public GroupPropertiesService groupPropertiesService() {
+			return mock( GroupPropertiesService.class );
+		}
+
+		@Bean
+		public DefaultUserDirectoryStrategy userDirectoryStrategy() {
+			return mock( DefaultUserDirectoryStrategy.class );
+		}
+
 		@Bean
 		public GroupService groupService() {
 			return new GroupServiceImpl();

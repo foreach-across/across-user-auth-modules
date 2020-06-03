@@ -20,7 +20,7 @@ import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRep
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,13 +32,13 @@ import static org.mockito.Mockito.verify;
 public abstract class AbstractQueryDslPredicateExecutorTest
 {
 	@SuppressWarnings( "unchecked" )
-	protected void queryDslPredicateExecutorTest( QueryDslPredicateExecutor<?> service,
+	protected void queryDslPredicateExecutorTest( QuerydslPredicateExecutor<?> service,
 	                                              IdBasedEntityJpaRepository<?> jpaRepository ) {
 		Predicate predicate = mock( Predicate.class );
 		OrderSpecifier[] orderSpecifiers = new OrderSpecifier[2];
 		Pageable pageable = mock( Pageable.class );
 
-		QueryDslPredicateExecutor repository = (QueryDslPredicateExecutor) jpaRepository;
+		QuerydslPredicateExecutor repository = (QuerydslPredicateExecutor) jpaRepository;
 
 		service.findAll( predicate );
 		verify( repository ).findAll( predicate );

@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.user.security;
 
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserService;
@@ -187,13 +188,19 @@ public abstract class AbstractUserInDirectoryAuthenticationProvider implements A
 					this.userCache.putUserInCache( userDetails );
 				}
 
-				Object principalToReturn = userDetails;
+				if ( user != null ) {
+					Object principalToReturn = SecurityPrincipalId.of( user.getPrincipalName() );
 
-				if ( forcePrincipalAsString && user != null ) {
-					principalToReturn = user.getPrincipalName();
+					if ( forcePrincipalAsString ) {
+						principalToReturn = user.getPrincipalName();
+					}
+
+					return createSuccessAuthentication( principalToReturn, authentication, userDetails );
+				}
+				else {
+					return null;
 				}
 
-				return createSuccessAuthentication( principalToReturn, authentication, userDetails );
 			}
 		}
 
@@ -257,7 +264,7 @@ public abstract class AbstractUserInDirectoryAuthenticationProvider implements A
 	 */
 	protected User retrieveUser( String username ) throws AuthenticationException {
 		try {
-			User user = userService.getUserByUsername( username, userDirectory );
+			User user = userService.getUserByUsername( username, userDirectory ).orElse( null );
 
 			if ( user == null && throwExceptionIfUserNotFound ) {
 				throw new BadCredentialsException( messages.getMessage(
