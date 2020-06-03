@@ -32,7 +32,7 @@ public class TestAclPermissionsFormSection
 	public void defaultValues() {
 		assertThatExceptionOfType( IllegalArgumentException.class )
 				.isThrownBy( () -> AclPermissionsFormSection.builder().build() )
-				.withMessage( "name is null" );
+				.withMessage( "name is marked non-null but is null" );
 	}
 
 	@Test

@@ -352,7 +352,7 @@ public class AclSecurityServiceImpl implements QueryableAclSecurityService
 		Collection<Sid> authoritySids = new LinkedHashSet<>();
 
 		for ( SecurityPrincipal candidate : principals ) {
-			sids.add( new SecurityPrincipalSid( candidate ) );
+			sids.add( SecurityPrincipalSid.of( candidate ) );
 
 			for ( GrantedAuthority authority : candidate.getAuthorities() ) {
 				authoritySids.add( new GrantedAuthoritySid( authority ) );

@@ -19,35 +19,56 @@ package com.foreach.across.modules.spring.security.acl.ui;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
+import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.Collections;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.spring.security.acl.ui.icons.SpringSecurityAclModulePermissionIcons.ADD;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
  * @since 3.0.0
  */
 @ContextConfiguration(classes = TestAclPermissionsFormItemSelectorControl.Config.class)
-
 public class TestAclPermissionsFormItemSelectorControl extends AbstractViewElementTemplateTest
 {
 	private ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
+
+	@Before
+	public void setUp() {
+		SimpleIconSet iconSet = new SimpleIconSet();
+		iconSet.setDefaultIconResolver( ( name ) -> Collections.singletonList( ADD ).contains( name ) ? html.i().addCssClass( "add" ) : null );
+		IconSetRegistry.addIconSet( SpringSecurityAclModule.NAME, iconSet );
+	}
+
+	@After
+	public void cleanUp() {
+		IconSetRegistry.removeIconSet( SpringSecurityAclModule.NAME );
+	}
 
 	@Test
 	public void defaultRow() {
 		renderAndExpect(
 				AclPermissionsForm.selectorControl()
-				                  .control( BootstrapUiBuilders.textbox() )
+				                  .control( bootstrap.builders.textbox() )
 				                  .attribute( "test", "value" )
 				                  .build( builderContext ),
 				"<div class='acl-permissions-form-selector' test='value'>" +
-						"<input type='text' class='form-control' />" +
-						"<button type=\"button\" class=\"acl-permissions-form-selector-button btn btn-default\">" +
-						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-plus-sign\"></span></button>" +
+						"<input data-bootstrapui-adapter-type=\"basic\" type='text' class='form-control' />" +
+						"<button type=\"button\" class=\"btn acl-permissions-form-selector-button\">" +
+						"<i class=\"add\"></i></button>" +
 						"</div>"
 		);
 	}

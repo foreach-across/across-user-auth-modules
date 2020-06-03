@@ -19,10 +19,7 @@ import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.hibernate.aop.EntityInterceptorAdapter;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * <p>Base class for an interceptor hooked to repository persistence methods.
@@ -32,8 +29,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * if one of them is active.</p>
  *
  * @author Arne Vandamme
+ * @deprecated since 4.0.0 - This class offers no real added functionality and will be removed in a future release
  */
 @ConditionalOnAcrossModule(anyOf = { "AcrossHibernateModule", "AcrossHibernateJpaModule" })
+@Deprecated
 public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity> extends EntityInterceptorAdapter<T>
 {
 	@Autowired
@@ -42,28 +41,4 @@ public abstract class IdBasedEntityAclInterceptor<T extends IdBasedEntity> exten
 	protected AclSecurityService aclSecurityService() {
 		return aclSecurityService;
 	}
-
-	/**
-	 * @return The current SecurityPrincipal or null in case there is no instance of SecurityPrincipal attached.
-	 */
-	protected SecurityPrincipal currentSecurityPrincipal() {
-		if ( isAuthenticated() ) {
-			Object principal = currentAuthentication().getPrincipal();
-
-			if ( principal instanceof SecurityPrincipal ) {
-				return (SecurityPrincipal) principal;
-			}
-		}
-
-		return null;
-	}
-
-	protected boolean isAuthenticated() {
-		return currentAuthentication().isAuthenticated();
-	}
-
-	protected Authentication currentAuthentication() {
-		return SecurityContextHolder.getContext().getAuthentication();
-	}
-
 }

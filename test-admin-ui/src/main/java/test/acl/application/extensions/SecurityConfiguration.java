@@ -21,6 +21,7 @@ import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 
 import java.util.Collections;
 
@@ -28,14 +29,15 @@ import java.util.Collections;
  * @author Arne Vandamme
  */
 @ModuleConfiguration(SpringSecurityModule.NAME)
+@EnableGlobalAuthentication
 public class SecurityConfiguration
 {
 	@Autowired
 	public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
 		auth.inMemoryAuthentication()
-		    .withUser( "admin" ).password( "admin" )
+		    .withUser( "admin" ).password( "{noop}admin" )
 		    .authorities( "access administration", AclAuthorities.TAKE_OWNERSHIP, AclAuthorities.MODIFY_ACL ).and()
-		    .withUser( "user" ).password( "user" )
+		    .withUser( "user" ).password( "{noop}user" )
 		    .authorities( Collections.emptyList() );
 	}
 }

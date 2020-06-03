@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.services;
 
-import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
+package test.acl.application.config;
 
-import java.util.Optional;
+import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import org.springframework.context.annotation.Configuration;
+import test.acl.application.domain.DomainMarker;
 
-/**
- * @author Arne Vandamme
- */
-public interface AclSecurityEntityService
+@Configuration
+@EnableAcrossJpaRepositories(basePackageClasses = DomainMarker.class)
+class DomainConfiguration
 {
-	Optional<AclSecurityEntity> getSecurityEntityById( long id );
-
-	Optional<AclSecurityEntity> getSecurityEntityByName( String name );
-
-	AclSecurityEntity save( AclSecurityEntity securityEntityDto );
 }

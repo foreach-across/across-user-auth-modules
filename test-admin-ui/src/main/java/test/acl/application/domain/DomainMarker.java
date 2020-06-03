@@ -13,20 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.services;
 
-import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
+package test.acl.application.domain;
 
-import java.util.Optional;
-
-/**
- * @author Arne Vandamme
- */
-public interface AclSecurityEntityService
+public interface DomainMarker
 {
-	Optional<AclSecurityEntity> getSecurityEntityById( long id );
-
-	Optional<AclSecurityEntity> getSecurityEntityByName( String name );
-
-	AclSecurityEntity save( AclSecurityEntity securityEntityDto );
 }

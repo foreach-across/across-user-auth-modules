@@ -14,109 +14,107 @@
  * limitations under the License.
  */
 .acl-permissions-form-section {
-  margin-bottom: 35px;
-
-  > table {
-    margin-bottom: 15px;
-
+//  margin-bottom: 35px;
+//
+//  > table {
+//    margin-bottom: 15px;
+//
     tbody {
-      border-bottom: solid 2px #ddd;
+      border-bottom: solid 2px #dee2e6;
     }
-  }
-
-  .acl-permissions-form-group-header-row .tooltip-link,
-  .acl-permissions-form-permission-header-row .tooltip-link {
-    margin-left: 4px;
-  }
-
+//  }
+//
+//  .acl-permissions-form-group-header-row .tooltip-link,
+//  .acl-permissions-form-permission-header-row .tooltip-link {
+//    margin-left: 4px;
+//  }
+//
   .acl-permissions-form-group-header-row th {
-    border-bottom: solid 1px #ddd;
-    text-align: center;
+    border-bottom: solid 1px #dee2e6;
 
     &:first-child:empty {
       border-bottom: 0;
     }
-
-    &.acl-permissions-form-first-of-group {
-      border-left: 0;
-    }
+//
+//    &.acl-permissions-form-first-of-group {
+//      border-left: 0;
+//    }
   }
-
-  .acl-permissions-form-remove-item {
-    text-align: center;
-    width: 50px;
-    a {
-      display: none;
-    }
-  }
-
-  .acl-permissions-form-permission-header-row {
-    th:first-child {
-      min-width: 150px;
-    }
-  }
-
-  .acl-permissions-form-item-row {
-    td:first-child {
-      min-width: 150px;
-    }
-
-    &:hover {
-      .acl-permissions-form-remove-item a {
-        display: inline-block;
-      }
-    }
-  }
-
+//
+//  .acl-permissions-form-remove-item {
+//    text-align: center;
+//    width: 50px;
+//    a {
+//      display: none;
+//    }
+//  }
+//
+//  .acl-permissions-form-permission-header-row {
+//    th:first-child {
+//      min-width: 150px;
+//    }
+//  }
+//
+//  .acl-permissions-form-item-row {
+//    td:first-child {
+//      min-width: 150px;
+//    }
+//
+//    &:hover {
+//      .acl-permissions-form-remove-item a {
+//        display: inline-block;
+//      }
+//    }
+//  }
+//
   .acl-permissions-form-permission-header-row th {
     border-top: 0;
-    text-align: center;
   }
 
   .acl-permissions-form-first-of-group {
-    border-left: dotted 1px #ddd;
+    border-left: dotted 1px #dee2e6;
   }
-
-  .acl-permissions-form-permission-toggle {
-    text-align: center;
-  }
-
-  .table-striped tr.acl-permissions-form-no-entries-row {
-    background-color: #f4f4f4;
-    color: #666;
-  }
-
-  .acl-permissions-form-selector {
-    .form-group {
-      display: inline-block;
-      margin: 0 10px 0 0;
-      vertical-align: middle;
-
-      .control-label {
-        display: inline-block;
-        float: left;
-        line-height: 35px;
-        margin: 0 15px 0 0;
-        vertical-align: middle;
-      }
-
-      .form-control,
-      .form-control-static {
-        display: inline-block;
-        float: left;
-        margin: 0;
-        vertical-align: middle;
-        width: 340px;
-      }
-    }
-  }
-
-  .btn.acl-permissions-form-selector-button {
-    background-color: transparent;
-    border: 0;
-    display: inline-block;
-    padding: 6px 10px;
-  }
+//
+//  .acl-permissions-form-permission-toggle {
+//    text-align: center;
+//  }
+//
+//  .table-striped tr.acl-permissions-form-no-entries-row {
+//    background-color: #f4f4f4;
+//    color: #666;
+//  }
+//
+//  .acl-permissions-form-selector {
+//    .form-group {
+//      display: inline-block;
+//      margin: 0 10px 0 0;
+//      vertical-align: middle;
+//
+//      .control-label {
+//        display: inline-block;
+//        float: left;
+//        line-height: 35px;
+//        margin: 0 15px 0 0;
+//        vertical-align: middle;
+//      }
+//
+//      .form-control,
+//      .form-control-static {
+//        display: inline-block;
+//        float: left;
+//        margin: 0;
+//        vertical-align: middle;
+//        width: 340px;
+//      }
+//    }
+//  }
+//
+//  .btn.acl-permissions-form-selector-button {
+//    background-color: transparent;
+//    border: 0;
+//    display: inline-block;
+//    padding: 6px 10px;
+//  }
 }
 
 
