@@ -38,6 +38,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Optional;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -81,11 +83,11 @@ public class TestLdapAuthenticationProvider
 	}
 
 	@Test
-	public void testThatKnownUserGetsAuthenticated() throws Exception {
+	public void knownUserGetsAuthenticatedAsSecurityPrincipal() throws Exception {
 		User user = new User();
 		user.setUsername( "abergin" );
 		user.setPassword( "inflict" );
-		when( userService.getUserByUsername( "abergin", ldapUserDirectory ) ).thenReturn( user );
+		when( userService.getUserByUsername( "abergin", ldapUserDirectory ) ).thenReturn( Optional.of( user ) );
 		LdapConnectorSettings ldapConnectorSettings = mock( LdapConnectorSettings.class );
 		when( ldapConnectorSettings.getUserObjectFilterForUser() ).thenReturn( "foo" );
 		ldapAuthenticationProvider.setSearchFilter( "(&(objectclass=inetorgperson)(uid={0}))" );
@@ -93,10 +95,7 @@ public class TestLdapAuthenticationProvider
 				authentication = ldapAuthenticationProvider.authenticate(
 				new UsernamePasswordAuthenticationToken( "abergin", "inflict" ) );
 		assertNotNull( authentication );
-		assertTrue( authentication.getPrincipal() instanceof User );
-		User details = (User) authentication.getPrincipal();
-		assertEquals( "abergin", details.getUsername() );
-		assertEquals( "inflict", details.getPassword() );
+		assertEquals( user.getSecurityPrincipalId(), authentication.getPrincipal() );
 	}
 
 	@Configuration

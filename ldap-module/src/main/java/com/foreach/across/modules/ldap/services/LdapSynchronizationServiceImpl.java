@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.ldap.services;
 
-import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.business.LdapConnector;
 import com.foreach.across.modules.ldap.business.LdapConnectorSettings;
@@ -24,7 +23,6 @@ import com.foreach.across.modules.ldap.business.LdapUserDirectory;
 import com.foreach.across.modules.ldap.events.LdapEntityDeletedEvent;
 import com.foreach.across.modules.ldap.events.LdapEntityProcessedEvent;
 import com.foreach.across.modules.ldap.services.properties.LdapConnectorSettingsService;
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalAuthenticationToken;
 import com.foreach.across.modules.spring.security.infrastructure.services.CloseableAuthentication;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
@@ -36,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.ldap.core.DirContextAdapter;
 
 import java.util.*;
@@ -53,7 +52,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 	private final LdapConnectorSettingsService ldapConnectorSettingsService;
 	private final LdapSearchService ldapSearchService;
 	private final SecurityPrincipalService securityPrincipalService;
-	private final AcrossEventPublisher eventPublisher;
+	private final ApplicationEventPublisher eventPublisher;
 	private final LdapPropertiesService ldapPropertiesService;
 	private final LdapModuleSettings ldapModuleSettings;
 	private Set<LdapUserDirectory> busy = new HashSet<>();
@@ -110,7 +109,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 				               user.getGroups().clear();
 				               userService.save( user );
 				               try {
-					               eventPublisher.publish( new LdapEntityDeletedEvent<>( user ) );
+					               eventPublisher.publishEvent( new LdapEntityDeletedEvent<>( user ) );
 					               userService.delete( user.getId() );
 				               }
 				               catch ( Exception e ) {
@@ -131,7 +130,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 					userService.save( user );
 				} );
 				try {
-					eventPublisher.publish( new LdapEntityDeletedEvent<>( group ) );
+					eventPublisher.publishEvent( new LdapEntityDeletedEvent<>( group ) );
 					groupService.delete( group.getId() );
 				}
 				catch ( Exception e ) {
@@ -143,11 +142,9 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 	private CloseableAuthentication authenticateAsConnector( LdapConnector connector ) {
 		if ( connector.getSynchronizationPrincipalName() != null ) {
-			SecurityPrincipal principal = securityPrincipalService.getPrincipalByName(
-					connector.getSynchronizationPrincipalName() );
-			if ( principal != null ) {
-				return new CloseableAuthentication( new SecurityPrincipalAuthenticationToken( principal ) );
-			}
+			return securityPrincipalService.getPrincipalByName( connector.getSynchronizationPrincipalName() )
+			                               .map( principal -> new CloseableAuthentication( new SecurityPrincipalAuthenticationToken( principal ) ) )
+			                               .orElse( null );
 		}
 		return null;
 	}
@@ -248,7 +245,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 							     .findFirst().ifPresent( user -> {
 								                             user.setGroups( groupsForUser );
 								                             userService.save( user );
-								                             eventPublisher.publish( new LdapEntityProcessedEvent<>( user, true, adapter ) );
+								eventPublisher.publishEvent( new LdapEntityProcessedEvent<>( user, true, adapter ) );
 							                             }
 							);
 
@@ -299,12 +296,12 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 								group.setUserDirectory( userDirectory );
 								groupService.save( group );
 								ldapPropertiesService.saveLdapProperties( group, adapter );
-								eventPublisher.publish( new LdapEntityProcessedEvent<>( group, false, adapter ) );
+								eventPublisher.publishEvent( new LdapEntityProcessedEvent<>( group, false, adapter ) );
 								itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), group );
 							}
 							else {
 								Group group = groups.iterator().next();
-								eventPublisher.publish( new LdapEntityProcessedEvent<>( group, true, adapter ) );
+								eventPublisher.publishEvent( new LdapEntityProcessedEvent<>( group, true, adapter ) );
 								itemsInLdap.putIfAbsent( adapter.getNameInNamespace(), group );
 							}
 

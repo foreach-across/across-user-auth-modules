@@ -16,10 +16,11 @@
 
 package com.foreach.across.modules.ldap.events;
 
-import com.foreach.across.core.events.ParameterizedAcrossEvent;
+import com.foreach.across.core.events.AcrossEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.ResolvableTypeProvider;
 import org.springframework.ldap.core.DirContextAdapter;
 
 /**
@@ -27,7 +28,7 @@ import org.springframework.ldap.core.DirContextAdapter;
  */
 @Getter
 @AllArgsConstructor
-public class LdapEntityProcessedEvent<T> implements ParameterizedAcrossEvent
+public class LdapEntityProcessedEvent<T> implements AcrossEvent, ResolvableTypeProvider
 {
 	private T entity;
 	private boolean update;
@@ -41,7 +42,7 @@ public class LdapEntityProcessedEvent<T> implements ParameterizedAcrossEvent
 	}
 
 	@Override
-	public ResolvableType[] getEventGenericTypes() {
-		return new ResolvableType[] { ResolvableType.forInstance( entity ) };
+	public ResolvableType getResolvableType() {
+		return ResolvableType.forClassWithGenerics( LdapEntityProcessedEvent.class, ResolvableType.forInstance( entity ) );
 	}
 }

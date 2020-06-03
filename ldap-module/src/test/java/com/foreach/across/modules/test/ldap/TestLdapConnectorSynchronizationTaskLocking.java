@@ -20,11 +20,11 @@ import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.ldap.repositories.LdapUserDirectoryRepository;
 import com.foreach.across.modules.ldap.services.LdapSynchronizationService;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockManager;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
-import com.foreach.common.test.MockedLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@ContextConfiguration(loader = MockedLoader.class, classes = TestLdapConnectorSynchronizationTaskLocking.Config.class)
+@ContextConfiguration(classes = TestLdapConnectorSynchronizationTaskLocking.Config.class)
 @Slf4j
 public class TestLdapConnectorSynchronizationTaskLocking
 {
@@ -147,7 +147,7 @@ public class TestLdapConnectorSynchronizationTaskLocking
 
 	@AcrossTestConfiguration(modules = { UserModule.NAME })
 	@Configuration
-	public static class Config
+	public static class Config implements AcrossWebSecurityConfigurer
 	{
 	}
 }

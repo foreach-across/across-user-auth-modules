@@ -16,19 +16,20 @@
 
 package com.foreach.across.modules.ldap.events;
 
-import com.foreach.across.core.events.ParameterizedAcrossEvent;
+import com.foreach.across.core.events.AcrossEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.ResolvableTypeProvider;
 
 @Getter
 @AllArgsConstructor
-public class LdapEntityDeletedEvent<T> implements ParameterizedAcrossEvent
+public class LdapEntityDeletedEvent<T> implements AcrossEvent, ResolvableTypeProvider
 {
 	private T entity;
 
 	@Override
-	public ResolvableType[] getEventGenericTypes() {
-		return new ResolvableType[] { ResolvableType.forInstance( entity ) };
+	public ResolvableType getResolvableType() {
+		return ResolvableType.forClassWithGenerics( LdapEntityDeletedEvent.class, ResolvableType.forInstance( entity ) );
 	}
 }

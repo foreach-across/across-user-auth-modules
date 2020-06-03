@@ -20,7 +20,7 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.ldap.LdapModule;
-import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
@@ -59,6 +59,23 @@ public class ITBootstrapWithAdditionalModules
 
 	private TestContextManager testContextManager;
 
+	public ITBootstrapWithAdditionalModules( String profile
+	) {
+		this.profile = profile;
+	}
+
+	@Parameterized.Parameters(name = "{index}: modules: {0}")
+	public static Collection primeNumbers() {
+		Set<Set<String>> powerset = Sets.powerSet( Sets.newHashSet( "entitymodule", "adminwebmodule", "usermodule" ) );
+		Object[] parameters = new Object[powerset.size()];
+		final AtomicInteger i = new AtomicInteger();
+		powerset.stream().forEach( item -> {
+			parameters[i.get()] = new Object[] { StringUtils.join( item, "," ) };
+			i.incrementAndGet();
+		} );
+		return Arrays.asList( parameters );
+	}
+
 	@Before
 	public void setUpContext() throws Exception {
 		// For Spring 4.2
@@ -76,11 +93,6 @@ public class ITBootstrapWithAdditionalModules
 		testContextManager.getTestContextFromTestContextManager().setAttribute(
 				DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE );
 		System.clearProperty( AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME );
-	}
-
-	public ITBootstrapWithAdditionalModules( String profile
-	) {
-		this.profile = profile;
 	}
 
 	@Test
@@ -118,7 +130,7 @@ public class ITBootstrapWithAdditionalModules
 
 		@Profile("usermodule")
 		@Configuration
-		public static class UserModuleProfile extends SpringSecurityWebConfigurerAdapter
+		public static class UserModuleProfile implements AcrossWebSecurityConfigurer
 		{
 			@Bean
 			public UserModule userModule() {
@@ -136,18 +148,6 @@ public class ITBootstrapWithAdditionalModules
 		TestContext getTestContextFromTestContextManager() {
 			return super.getTestContext();
 		}
-	}
-
-	@Parameterized.Parameters(name = "{index}: modules: {0}")
-	public static Collection primeNumbers() {
-		Set<Set<String>> powerset = Sets.powerSet( Sets.newHashSet( "entitymodule", "adminwebmodule", "usermodule" ) );
-		Object[] parameters = new Object[powerset.size()];
-		final AtomicInteger i = new AtomicInteger();
-		powerset.stream().forEach( item -> {
-			parameters[i.get()] = new Object[] { StringUtils.join( item, "," ) };
-			i.incrementAndGet();
-		} );
-		return Arrays.asList( parameters );
 	}
 
 	static class CustomProfilesResolver implements ActiveProfilesResolver

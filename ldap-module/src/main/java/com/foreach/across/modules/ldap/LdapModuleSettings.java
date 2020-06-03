@@ -19,22 +19,46 @@ package com.foreach.across.modules.ldap;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
+
 /**
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
-@ConfigurationProperties("ldapModule")
+@ConfigurationProperties("ldap-module")
 @Data
 @SuppressWarnings("unused")
 public class LdapModuleSettings
 {
 	public static final String DISABLE_SYNCHRONIZATION_TASK = "ldapModule.disableSynchronizationTask";
+	@Deprecated
 	public static final String SYNCHRONIZATION_TASK_INTERVAL_IN_SECONDS =
 			"ldapModule.synchronizationTaskIntervalInSeconds";
+	public static final String SYNCHRONIZATION_TASK_INTERVAL =
+			"ldapModule.synchronizationTaskInterval";
+	public static final String SYNCHRONIZATION_TASK_INITIAL_DELAY =
+			"ldapModule.synchronizationTaskInitialDelay";
 	public static final String DELETE_USERS_AND_GROUPS_WHEN_DELETED_FROM_LDAPSOURCE =
 			"ldapModule.deleteUsersAndGroupsWhenDeletedFromLdapSource";
 
 	private boolean disableSynchronizationTask;
-	private long synchronizationTaskIntervalInSeconds = 300;
+	private Duration synchronizationTaskInterval = Duration.ofSeconds( 300 );
+	private Duration synchronizationTaskInitialDelay = Duration.ofSeconds( 90 );
 	private boolean deleteUsersAndGroupsWhenDeletedFromLdapSource = false;
+
+	@Deprecated
+	/*
+	  Deprecated in favour of {@link #getSynchronizationTaskInterval}
+	 */
+	public long getSynchronizationTaskIntervalInSeconds() {
+		return synchronizationTaskInterval.getSeconds();
+	}
+
+	@Deprecated
+	/*
+	  Deprecated in favour of {@link #setSynchronizationTaskInterval}
+	 */
+	public void setSynchronizationTaskIntervalInSeconds( long synchronizationTaskIntervalInSeconds ) {
+		this.synchronizationTaskInterval = Duration.ofSeconds( synchronizationTaskIntervalInSeconds );
+	}
 }
