@@ -80,8 +80,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	}
 
 	@Bean
-	public UserDetailsOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
-		return new UserDetailsOAuth2AuthenticationSerializer();
+	public SecurityPrincipalIdOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
+		return new SecurityPrincipalIdOAuth2AuthenticationSerializer();
+	}
+
+	@Bean
+	@Lazy
+	IsolatedLockHandler isolatedLockHandler() {
+		return new IsolatedLockHandler();
 	}
 
 	/**
@@ -97,6 +103,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 		if ( oAuth2ModuleSettings.getUseLockingForTokenCreation() ) {
 			// delayed get of DistributedLockRepository, don't force across to create it if not to be used
+			tokenServices.setIsolatedLockHandler( isolatedLockHandler() );
 			tokenServices.setObjectLockRepository( beanFactory.getBean( DistributedLockRepository.class ) );
 		}
 		//tokenServices.setTokenEnhancer(tokenEnchancer());

@@ -60,7 +60,7 @@ public interface OAuth2ClientScopeRepository extends JpaRepository<OAuth2ClientS
 			}
 	)
 	@Override
-	<S extends OAuth2ClientScope> List<S> save( Iterable<S> entities );
+	<S extends OAuth2ClientScope> List<S> saveAll( Iterable<S> entities );
 
 	@Caching(
 			evict = {
@@ -88,7 +88,7 @@ public interface OAuth2ClientScopeRepository extends JpaRepository<OAuth2ClientS
 			}
 	)
 	@Override
-	void delete( OAuth2ClientScopeId oAuth2ClientScopeId );
+	void deleteById( OAuth2ClientScopeId oAuth2ClientScopeId );
 
 	@Caching(
 			evict = {
@@ -107,7 +107,7 @@ public interface OAuth2ClientScopeRepository extends JpaRepository<OAuth2ClientS
 			}
 	)
 	@Override
-	void delete( Iterable<? extends OAuth2ClientScope> entities );
+	void deleteAll( Iterable<? extends OAuth2ClientScope> entities );
 
 	@Caching(
 			evict = {

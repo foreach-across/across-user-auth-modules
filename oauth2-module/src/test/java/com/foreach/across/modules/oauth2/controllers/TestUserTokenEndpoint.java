@@ -15,13 +15,12 @@
  */
 package com.foreach.across.modules.oauth2.controllers;
 
-import com.foreach.common.test.MockedLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,8 +33,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.Serializable;
 import java.util.*;
@@ -46,18 +43,17 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = { TestUserTokenEndpoint.Config.class })
+@RunWith(MockitoJUnitRunner.class)
 public class TestUserTokenEndpoint
 {
-	@Autowired
-	private UserTokenEndpoint endpoint;
-
-	@Autowired
+	@Mock
 	private UserDetailsService userDetailsService;
 
-	@Autowired
+	@Mock
 	private AuthorizationServerTokenServices authorizationServerTokenServices;
+
+	@InjectMocks
+	private UserTokenEndpoint endpoint;
 
 	private UserDetails user;
 	private OAuth2Request oAuth2Request;
@@ -166,14 +162,5 @@ public class TestUserTokenEndpoint
 		expectedValues.put( "scope", "full" );
 		assertEquals( expectedValues, response.getBody() );
 
-	}
-
-	@Configuration
-	protected static class Config
-	{
-		@Bean
-		public UserTokenEndpoint userTokenEndpoint() {
-			return new UserTokenEndpoint();
-		}
 	}
 }

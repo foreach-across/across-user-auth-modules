@@ -19,8 +19,8 @@ import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.cache.AcrossCompositeCacheManager;
-import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
-import com.foreach.across.core.context.configurer.ConfigurerScope;
+import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
+import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.oauth2.OAuth2Module;
 import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
@@ -50,6 +50,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 import static org.junit.Assert.*;
@@ -89,15 +90,15 @@ public class ITOAuth2ModuleWithCaching
 
 		assertTrue( principalMap.isEmpty() );
 
-		OAuth2Client unexisting = oauth2Service.getClientById( "blablabla" );
+		OAuth2Client unexisting = oauth2Service.getClientById( "blablabla" ).orElse( null );
 		assertNull( unexisting );
 		assertTrue( principalMap.isEmpty() );
 		assertEquals( 1, clientMap.size() );
 		assertTrue( clientMap.containsKey( "blablabla" ) );
 
-		assertNull( oauth2Service.getClientById( "blablabla" ) );
+		assertEquals( Optional.empty(), oauth2Service.getClientById( "blablabla" ) );
 
-		OAuth2Client existing = oauth2Service.getClientById( "fredClient" );
+		OAuth2Client existing = oauth2Service.getClientById( "fredClient" ).orElse( null );
 		assertNotNull( existing );
 		assertEquals( oAuth2Client, existing );
 
@@ -105,15 +106,15 @@ public class ITOAuth2ModuleWithCaching
 		assertSame( existing, principalMap.get( oAuth2Client.getPrincipalName() ) );
 		assertSame( existing, clientMap.get( "fredClient" ) );
 
-		OAuth2Client fetchedAgain = oauth2Service.getClientById( "fredClient" );
+		OAuth2Client fetchedAgain = oauth2Service.getClientById( "fredClient" ).orElse( null );
 		assertSame( existing, fetchedAgain );
 
-		assertSame( existing, securityPrincipalService.getPrincipalByName( fetchedAgain.getPrincipalName() ) );
+		assertSame( existing, securityPrincipalService.<OAuth2Client>getPrincipalByName( fetchedAgain.getPrincipalName() ).orElse( null ) );
 	}
 
 	@Configuration
 	@AcrossTestConfiguration(modules = AcrossWebModule.NAME)
-	static class Config implements AcrossContextConfigurer
+	static class Config implements AcrossContextConfigurer, AcrossBootstrapConfigurer
 	{
 		@Bean(name = SpringSecurityModuleCache.SECURITY_PRINCIPAL)
 		@Exposed
@@ -134,11 +135,11 @@ public class ITOAuth2ModuleWithCaching
 			context.addModule( oauth2Module() );
 			context.addModule( propertiesModule() );
 			context.addModule( springSecurityModule() );
+		}
 
-			context.addApplicationContextConfigurer(
-					new AnnotatedClassConfigurer( EnableCachingConfiguration.class ),
-					ConfigurerScope.MODULES_ONLY
-			);
+		@Override
+		public void configureModule( ModuleBootstrapConfig moduleConfiguration ) {
+			moduleConfiguration.extendModule( false, true, EnableCachingConfiguration.class );
 		}
 
 		private PropertiesModule propertiesModule() {

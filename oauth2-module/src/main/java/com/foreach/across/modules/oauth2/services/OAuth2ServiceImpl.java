@@ -27,6 +27,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class OAuth2ServiceImpl implements OAuth2Service
@@ -56,8 +57,8 @@ public class OAuth2ServiceImpl implements OAuth2Service
 	}
 
 	@Override
-	public OAuth2Scope getScopeById( long id ) {
-		return oAuth2ScopeRepository.findOne( id );
+	public Optional<OAuth2Scope> getScopeById( long id ) {
+		return oAuth2ScopeRepository.findById( id );
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class OAuth2ServiceImpl implements OAuth2Service
 
 	@Cacheable(value = OAuth2ModuleCache.CLIENTS, unless = SpringSecurityModuleCache.UNLESS_NULLS_ONLY)
 	@Override
-	public OAuth2Client getClientById( String clientId ) {
+	public Optional<OAuth2Client> getClientById( String clientId ) {
 		return oAuth2ClientRepository.findByClientId( clientId );
 	}
 }

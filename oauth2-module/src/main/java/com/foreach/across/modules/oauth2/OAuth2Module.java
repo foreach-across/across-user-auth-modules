@@ -19,21 +19,20 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
-import com.foreach.across.core.database.HasSchemaConfiguration;
-import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.core.filters.BeanFilterComposite;
 import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.core.installers.AcrossSequencesInstaller;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageConfiguringModule;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
-import com.foreach.across.modules.hibernate.provider.TableAliasProvider;
-import com.foreach.across.modules.oauth2.config.*;
+import com.foreach.across.modules.oauth2.config.OAuth2EndpointsConfiguration;
+import com.foreach.across.modules.oauth2.config.OAuth2EntityConfiguration;
+import com.foreach.across.modules.oauth2.config.OAuth2RepositoriesConfiguration;
+import com.foreach.across.modules.oauth2.config.OAuth2ServicesConfiguration;
 import com.foreach.across.modules.oauth2.config.aop.EntityInterceptorConfiguration;
 import com.foreach.across.modules.oauth2.config.security.AuthorizationServerSecurityConfiguration;
 import com.foreach.across.modules.oauth2.config.security.CustomTokenEndpointsConfiguration;
 import com.foreach.across.modules.oauth2.config.security.ResourceServerSecurityConfiguration;
-import com.foreach.across.modules.oauth2.installers.OAuth2SchemaInstaller;
 import com.foreach.across.modules.oauth2.installers.TokenStoreSchemaInstaller;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.user.UserModule;
@@ -46,11 +45,9 @@ import java.util.Set;
 		required = { UserModule.NAME, SpringSecurityModule.NAME },
 		optional = { "EhcacheModule", "EntityModule" }
 )
-public class OAuth2Module extends AcrossModule implements HibernatePackageConfiguringModule, HasSchemaConfiguration
+public class OAuth2Module extends AcrossModule implements HibernatePackageConfiguringModule
 {
 	public static final String NAME = "OAuth2Module";
-
-	private final SchemaConfiguration schemaConfiguration = new OAuth2SchemaConfiguration();
 
 	@Override
 	public String getName() {
@@ -65,7 +62,6 @@ public class OAuth2Module extends AcrossModule implements HibernatePackageConfig
 	public OAuth2Module() {
 		setExposeFilter(
 				new BeanFilterComposite(
-						defaultExposeFilter(),
 						new ClassBeanFilter( FrameworkEndpointHandlerMapping.class )
 				)
 		);
@@ -75,7 +71,6 @@ public class OAuth2Module extends AcrossModule implements HibernatePackageConfig
 	public Object[] getInstallers() {
 		return new Object[] {
 				new AcrossSequencesInstaller(),
-				new OAuth2SchemaInstaller( schemaConfiguration ),
 				new TokenStoreSchemaInstaller()
 		};
 	}
@@ -100,12 +95,7 @@ public class OAuth2Module extends AcrossModule implements HibernatePackageConfig
 	public void configureHibernatePackage( HibernatePackageRegistry hibernatePackage ) {
 		if ( StringUtils.equals( AcrossHibernateJpaModule.NAME, hibernatePackage.getName() ) ) {
 			hibernatePackage.addPackageToScan( "com.foreach.across.modules.oauth2.business" );
-			hibernatePackage.add( new TableAliasProvider( schemaConfiguration.getTables() ) );
 		}
 	}
 
-	@Override
-	public SchemaConfiguration getSchemaConfiguration() {
-		return schemaConfiguration;
-	}
 }

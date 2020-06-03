@@ -16,6 +16,7 @@
 package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.oauth2.business.OAuth2Client;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -31,10 +32,18 @@ public class ClientDetailsServiceImpl implements ClientDetailsService
 
 	@Override
 	public ClientDetails loadClientByClientId( String clientId ) throws ClientRegistrationException {
-		OAuth2Client clientById = oAuth2Service.getClientById( clientId );
+		OAuth2Client clientById = oAuth2Service.getClientById( clientId ).orElse( null );
 		if ( clientById == null ) {
 			throw new NoSuchClientException( "No client found with clientId: " + clientId );
 		}
+
+		// todo - this is a workaround remove and setup configuration with real password encoding
+		if ( !StringUtils.startsWith( clientById.getClientSecret(), "{" ) ) {
+			OAuth2Client dto = clientById.toDto();
+			dto.setClientSecret( "{noop}" + dto.getClientSecret() );
+			return dto;
+		}
+
 		return clientById;
 	}
 }

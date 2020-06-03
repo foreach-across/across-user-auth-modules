@@ -33,9 +33,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -115,7 +117,7 @@ public class TestOAuthAccessTokenRepository
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config implements AcrossContextConfigurer
+	static class Config extends ResourceServerConfigurerAdapter implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {
@@ -130,6 +132,11 @@ public class TestOAuthAccessTokenRepository
 		@Autowired
 		public NamedParameterJdbcTemplate jdbcTemplate( DataSource dataSource ) {
 			return new NamedParameterJdbcTemplate( dataSource );
+		}
+
+		@Override
+		public void configure( HttpSecurity http ) throws Exception {
+			http.authorizeRequests().antMatchers( "/api/**" ).authenticated();
 		}
 	}
 }

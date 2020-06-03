@@ -16,11 +16,15 @@
 package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.oauth2.OAuth2ModuleCache;
-import com.foreach.common.concurrent.locks.CloseableObjectLock;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalReference;
+import com.foreach.common.concurrent.locks.ObjectLock;
 import com.foreach.common.concurrent.locks.ObjectLockRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -40,6 +44,7 @@ public class CachingAndLockingTokenServices extends DefaultTokenServices
 
 	private TokenStore tokenStore;
 	private ObjectLockRepository<String> objectLockRepository;
+	private IsolatedLockHandler isolatedLockHandler;
 
 	public CachingAndLockingTokenServices( CacheManager cacheManager ) {
 		cache = cacheManager.getCache( OAuth2ModuleCache.ACCESS_TOKENS_TO_AUTHENTICATION );
@@ -49,12 +54,22 @@ public class CachingAndLockingTokenServices extends DefaultTokenServices
 		this.objectLockRepository = objectLockRepository;
 	}
 
+	@Autowired
+	public void setIsolatedLockHandler( IsolatedLockHandler isolatedLockHandler ) {
+		this.isolatedLockHandler = isolatedLockHandler;
+	}
+
 	@Override
 	public OAuth2AccessToken createAccessToken( OAuth2Authentication authentication ) throws AuthenticationException {
 		if ( objectLockRepository != null ) {
-			try (CloseableObjectLock ignore
-					     = objectLockRepository.lock( Objects.toString( authentication.getPrincipal() ) )) {
+			ObjectLock lock = null;
+
+			try {
+				lock = isolatedLockHandler.lock( objectLockRepository, principalLockId( authentication.getPrincipal() ) );
 				return super.createAccessToken( authentication );
+			}
+			finally {
+				isolatedLockHandler.unlock( lock );
 			}
 		}
 		else {
@@ -62,13 +77,31 @@ public class CachingAndLockingTokenServices extends DefaultTokenServices
 		}
 	}
 
+	private String principalLockId( Object principal ) {
+		if ( principal instanceof SecurityPrincipal ) {
+			return ( (SecurityPrincipal) principal ).getSecurityPrincipalId().toString();
+		}
+		else if ( principal instanceof SecurityPrincipalReference ) {
+			return ( (SecurityPrincipalReference) principal ).getSecurityPrincipalId().toString();
+		}
+		else if ( principal instanceof UserDetails ) {
+			return ( (UserDetails) principal ).getUsername();
+		}
+		return Objects.toString( principal );
+	}
+
 	@Override
 	public OAuth2AccessToken refreshAccessToken( String refreshTokenValue, TokenRequest request ) {
 		try {
 			if ( objectLockRepository != null ) {
-				try (CloseableObjectLock ignore
-						     = objectLockRepository.lock( refreshTokenValue )) {
+				ObjectLock lock = null;
+
+				try {
+					lock = isolatedLockHandler.lock( objectLockRepository, refreshTokenValue );
 					return super.refreshAccessToken( refreshTokenValue, request );
+				}
+				finally {
+					isolatedLockHandler.unlock( lock );
 				}
 			}
 			else {

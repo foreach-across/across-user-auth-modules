@@ -17,6 +17,8 @@ package com.foreach.across.modules.oauth2.services;
 
 import com.foreach.across.modules.oauth2.business.OAuth2Client;
 import com.foreach.across.modules.spring.security.AuthenticationUtils;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.business.Permission;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
@@ -25,8 +27,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.collections.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -51,12 +55,14 @@ import static org.mockito.Mockito.*;
 @DirtiesContext
 public class TestOAuth2JdbcTokenStore
 {
-	@Autowired
+	@MockBean
 	private DataSource dataSource;
-	@Autowired
+	@MockBean
 	private UserDetailsService userDetailsService;
-	@Autowired
+	@MockBean
 	private ClientDetailsService clientDetailsService;
+	@MockBean
+	private SecurityPrincipalService securityPrincipalService;
 	@Autowired
 	private OAuth2StatelessJdbcTokenStore oAuth2StatelessJdbcTokenStore;
 	@Autowired
@@ -177,11 +183,10 @@ public class TestOAuth2JdbcTokenStore
 
 		user.setId( 777L );
 
-		when( userDetailsService.loadUserByUsername( "testusername" ) ).thenReturn( user );
 		when( clientDetailsService.loadClientByClientId( "testClientId" ) ).thenReturn( client );
+		when( securityPrincipalService.getPrincipalById( SecurityPrincipalId.of( "testusername" ) ) ).thenReturn( Optional.of( user ) );
 
-		Authentication userAuthentication = mock( Authentication.class );
-		when( userAuthentication.getPrincipal() ).thenReturn( user );
+		Authentication userAuthentication = new UsernamePasswordAuthenticationToken( SecurityPrincipalId.of( user.getUsername() ), user.getPassword() );
 		OAuth2Authentication oAuth2Authentication = new OAuth2Authentication( request, userAuthentication );
 		byte[] bytes = oAuth2StatelessJdbcTokenStore.serializeAuthentication( oAuth2Authentication );
 
@@ -198,7 +203,7 @@ public class TestOAuth2JdbcTokenStore
 		assertNotNull( storedAuthentication );
 
 		verify( oAuth2StatelessJdbcTokenStore ).serializeAuthentication( eq( oAuth2Authentication ) );
-		verify( userDetailsService ).loadUserByUsername( "testusername" );
+		verify( securityPrincipalService ).getPrincipalById( SecurityPrincipalId.of( "testusername" ) );
 		verify( clientDetailsService ).loadClientByClientId( "testClientId" );
 
 		assertEquals( Collections.singletonMap( "userkeyParam", "userkeyValue" ),
@@ -315,23 +320,8 @@ public class TestOAuth2JdbcTokenStore
 	static class Config
 	{
 		@Bean
-		public DataSource dataSource() {
-			return mock( DataSource.class );
-		}
-
-		@Bean
-		public UserDetailsService userDetailsService() {
-			return mock( UserDetailsService.class );
-		}
-
-		@Bean
-		public ClientDetailsService clientDetailsService() {
-			return mock( ClientDetailsService.class );
-		}
-
-		@Bean
-		public OAuth2StatelessJdbcTokenStore oAuth2StatelessJdbcTokenStore() {
-			return spy( new OAuth2StatelessJdbcTokenStore( dataSource() ) );
+		public OAuth2StatelessJdbcTokenStore oAuth2StatelessJdbcTokenStore( DataSource dataSource ) {
+			return spy( new OAuth2StatelessJdbcTokenStore( dataSource ) );
 		}
 
 		@Bean
@@ -340,8 +330,8 @@ public class TestOAuth2JdbcTokenStore
 		}
 
 		@Bean
-		public UserDetailsOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
-			return spy( new UserDetailsOAuth2AuthenticationSerializer() );
+		public SecurityPrincipalIdOAuth2AuthenticationSerializer userOAuth2AuthenticationSerializer() {
+			return spy( new SecurityPrincipalIdOAuth2AuthenticationSerializer() );
 		}
 
 		@Bean

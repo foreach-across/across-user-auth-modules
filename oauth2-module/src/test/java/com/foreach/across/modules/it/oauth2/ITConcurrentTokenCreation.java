@@ -34,6 +34,7 @@ import com.foreach.across.modules.spring.security.SpringSecurityModuleCache;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.test.AcrossTestConfiguration;
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,14 +75,23 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration
 public class ITConcurrentTokenCreation
 {
+	// Maximum number of threads for concurrency, the datasource needs to have a larger
+	// pool size which is at least double to allow for efficient lock taking and releasing
+	private static final int MAX_THREADS = 10;
+
 	@Autowired
 	private OAuth2Service oAuth2Service;
 
 	@Autowired
 	private AuthorizationServerTokenServices tokenServices;
 
+	@Autowired
+	private HikariDataSource dataSource;
+
 	@Before
 	public void before() {
+		dataSource.getHikariConfigMXBean().setMaximumPoolSize( MAX_THREADS * 2 );
+
 		OAuth2Scope scope = new OAuth2Scope();
 		scope.setName( "full" );
 		oAuth2Service.saveScope( scope );
@@ -126,14 +136,13 @@ public class ITConcurrentTokenCreation
 				                                           Collections.<String, Serializable>emptyMap() );
 
 				OAuth2Authentication authentication = new OAuth2Authentication( request, null );
-
 				OAuth2AccessToken token = tokenServices.createAccessToken( authentication );
 
 				return token.getValue();
 			} );
 		}
 
-		ExecutorService executor = Executors.newFixedThreadPool( 10 );
+		ExecutorService executor = Executors.newFixedThreadPool( MAX_THREADS );
 		Collection<Future<String>> generatedTokens = executor.invokeAll( tokenTasks );
 
 		Map<?, Long> tokenCount = generatedTokens.stream().map( f -> {

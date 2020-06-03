@@ -16,7 +16,7 @@
 package com.foreach.across.modules.oauth2.config.security;
 
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
-import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 @Configuration
 @Import({ AuthorizationServerEndpointsConfiguration.class, AuthorizationServerConfiguration.class })
-public class AuthorizationServerSecurityConfiguration extends SpringSecurityWebConfigurerAdapter
+public class AuthorizationServerSecurityConfiguration implements AcrossWebSecurityConfigurer
 {
 	@Autowired
 	private ClientDetailsService clientDetailsService;

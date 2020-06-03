@@ -6,8 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="oauth2-module" />
         <module name="oauth2-module-test-website" />
+        <module name="oauth2-module" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
