@@ -19,6 +19,7 @@ package com.foreach.across.modules.spring.security.acl.support;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.acl.business.SecurityPrincipalSid;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -58,7 +59,11 @@ public class AclUtils
 	}
 
 	public static Sid sid( SecurityPrincipal principal ) {
-		return new SecurityPrincipalSid( principal );
+		return SecurityPrincipalSid.of( principal );
+	}
+
+	public static Sid sid( SecurityPrincipalId principalId ) {
+		return SecurityPrincipalSid.of( principalId );
 	}
 
 	public static ObjectIdentity objectIdentity( IdBasedEntity entity ) {

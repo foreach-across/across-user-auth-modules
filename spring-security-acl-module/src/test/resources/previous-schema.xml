@@ -407,25 +407,92 @@
 			<column name="name" />
 		</createIndex>
 	</changeSet>
-
-	<!-- Column type change - Spring Security ACL 5.x -->
-	<changeSet id="201907281036" author="arne" dbms="hsqldb, h2">
-		<modifyDataType tableName="acl_object_identity" columnName="object_id_identity" newDataType="varchar_ignorecase(36)" />
+	
+	<!-- Install pre-existing test data -->
+	<changeSet id="201907281035" author="arne" dbms="h2, hsqldb, mssql, postgresql">
+		<sql dbms="mssql">
+			set identity_insert acl_sid on;
+		</sql>
+		<insert tableName="acl_sid">
+			<column name="id">32</column>
+			<column name="principal">true</column>
+			<column name="sid">system</column>
+		</insert>
+		<insert tableName="acl_sid">
+			<column name="id">33</column>
+			<column name="principal">true</column>
+			<column name="sid">john</column>
+		</insert>
+		<sql dbms="mssql">
+			set identity_insert acl_sid off;
+			set identity_insert acl_class on;
+		</sql>
+		<insert tableName="acl_class">
+			<column name="id">34</column>
+			<column name="class">my.domain.SomeObject</column>
+		</insert>
+		<sql dbms="mssql">
+			set identity_insert acl_class off;
+			set identity_insert acl_object_identity on;
+		</sql>
+		<insert tableName="acl_object_identity">
+			<column name="id">35</column>
+			<column name="object_id_class">34</column>
+			<column name="object_id_identity">123</column>
+			<column name="owner_sid">32</column>
+			<column name="entries_inheriting">false</column>
+		</insert>
+		<sql dbms="mssql">
+			set identity_insert acl_object_identity off;
+			set identity_insert acl_entry on;
+		</sql>
+		<insert tableName="acl_entry">
+			<column name="id">36</column>
+			<column name="acl_object_identity">35</column>
+			<column name="ace_order">1</column>
+			<column name="sid">33</column>
+			<column name="mask">1</column>
+			<column name="granting">true</column>
+			<column name="audit_success">false</column>
+			<column name="audit_failure">false</column>
+		</insert>
+		<sql dbms="mssql">
+			set identity_insert acl_entry off;
+		</sql>
 	</changeSet>
 
-	<changeSet id="201907281037" author="arne" dbms="postgresql, mysql">
-		<modifyDataType tableName="acl_object_identity" columnName="object_id_identity" newDataType="varchar(36)" />
+	<changeSet id="201907281036" author="arne" dbms="mysql, oracle">
+		<insert tableName="acl_sid">
+			<column name="id">1</column>
+			<column name="principal">1</column>
+			<column name="sid">system</column>
+		</insert>
+		<insert tableName="acl_sid">
+			<column name="id">2</column>
+			<column name="principal">1</column>
+			<column name="sid">john</column>
+		</insert>
+		<insert tableName="acl_class">
+			<column name="id">1</column>
+			<column name="class">my.domain.SomeObject</column>
+		</insert>
+		<insert tableName="acl_object_identity">
+			<column name="id">1</column>
+			<column name="object_id_class">1</column>
+			<column name="object_id_identity">123</column>
+			<column name="owner_sid">1</column>
+			<column name="entries_inheriting">0</column>
+		</insert>
+		<insert tableName="acl_entry">
+			<column name="id">1</column>
+			<column name="acl_object_identity">1</column>
+			<column name="ace_order">1</column>
+			<column name="sid">2</column>
+			<column name="mask">1</column>
+			<column name="granting">1</column>
+			<column name="audit_success">0</column>
+			<column name="audit_failure">0</column>
+		</insert>
 	</changeSet>
 
-	<changeSet id="201907281038" author="arne" dbms="oracle">
-		<dropUniqueConstraint tableName="acl_object_identity" constraintName="uk_acl_object_identity" />
-		<modifyDataType tableName="acl_object_identity" columnName="object_id_identity" newDataType="nvarchar2(64)" />
-		<addUniqueConstraint tableName="acl_object_identity" columnNames="object_id_class, object_id_identity" constraintName="uk_acl_object_identity" />
-	</changeSet>
-
-	<changeSet id="201907281039" author="arne" dbms="mssql">
-		<dropUniqueConstraint tableName="acl_object_identity" constraintName="uk_acl_object_identity" />
-		<modifyDataType tableName="acl_object_identity" columnName="object_id_identity" newDataType="varchar(36)" />
-		<addUniqueConstraint tableName="acl_object_identity" columnNames="object_id_class, object_id_identity" constraintName="uk_acl_object_identity" />
-	</changeSet>
 </databaseChangeLog>

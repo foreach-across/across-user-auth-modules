@@ -24,6 +24,7 @@ import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleCac
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import org.junit.After;
 import org.junit.Before;
@@ -78,7 +79,7 @@ public class ITAclSecurityEntityCaching
 		entityCache.clear();
 
 		SecurityPrincipal principal = mock( SecurityPrincipal.class );
-		when( principal.toString() ).thenReturn( "principal" );
+		when( principal.getSecurityPrincipalId() ).thenReturn( SecurityPrincipalId.of( "principal" ) );
 
 		securityPrincipalService.authenticate( principal );
 	}
@@ -98,14 +99,14 @@ public class ITAclSecurityEntityCaching
 
 		assertTrue( entityCache.isEmpty() );
 
-		AclSecurityEntity byName = securityEntityService.getSecurityEntityByName( created.getName() );
+		AclSecurityEntity byName = securityEntityService.getSecurityEntityByName( created.getName() ).orElse( null );
 		assertNotNull( byName );
 		assertEquals( created, byName );
 		assertEquals( 2, entityCache.size() );
 		assertSame( byName, entityCache.get( created.getId() ) );
 		assertSame( byName, entityCache.get( created.getName() ) );
 
-		AclSecurityEntity byId = securityEntityService.getSecurityEntityById( created.getId() );
+		AclSecurityEntity byId = securityEntityService.getSecurityEntityById( created.getId() ).orElse( null );
 		assertNotNull( byId );
 		assertEquals( created, byId );
 		assertSame( byName, byId );
@@ -122,7 +123,8 @@ public class ITAclSecurityEntityCaching
 		assertSame( byId, entityCache.get( created.getId() ) );
 		assertSame( byId, entityCache.get( created.getName() ) );
 
-		other = securityEntityService.getSecurityEntityByName( other.getName() );
+		other = securityEntityService.getSecurityEntityByName( other.getName() ).orElse( null );
+		assertNotNull( other );
 		assertEquals( 4, entityCache.size() );
 
 		securityEntityService.save( entityDto );

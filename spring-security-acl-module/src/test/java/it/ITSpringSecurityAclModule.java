@@ -22,6 +22,7 @@ import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.spring.security.acl.infrastructure.CurrentAclSecurityPrincipalProxy;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalRetrievalStrategy;
 import com.foreach.across.test.AcrossTestConfiguration;
@@ -36,6 +37,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -78,7 +81,7 @@ public class ITSpringSecurityAclModule
 		when( auth.getPrincipal() ).thenReturn( "principalName" );
 
 		SecurityPrincipal principal = mock( SecurityPrincipal.class );
-		when( principalRetrievalStrategy.getPrincipalByName( "principalName" ) ).thenReturn( principal );
+		when( principalRetrievalStrategy.getPrincipalByName( "principalName" ) ).thenReturn( Optional.of( principal ) );
 
 		SecurityContextHolder.getContext().setAuthentication( auth );
 
@@ -88,7 +91,7 @@ public class ITSpringSecurityAclModule
 
 	@Configuration
 	@AcrossTestConfiguration
-	protected static class Config implements AcrossContextConfigurer
+	protected static class Config implements AcrossWebSecurityConfigurer, AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {

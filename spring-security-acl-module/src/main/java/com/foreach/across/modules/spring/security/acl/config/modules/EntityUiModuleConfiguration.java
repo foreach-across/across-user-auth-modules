@@ -18,11 +18,13 @@ package com.foreach.across.modules.spring.security.acl.config.modules;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModuleIcons;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntityService;
@@ -35,6 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,13 +45,18 @@ import java.util.Map;
  * @author Arne Vandamme
  */
 @Configuration
-@ConditionalOnAcrossModule({ EntityModule.NAME, AdminWebModule.NAME })
+@ConditionalOnAcrossModule({ EntityModule.NAME, AdminWebModule.NAME, BootstrapUiModule.NAME })
 @ComponentScan(basePackageClasses = AclPermissionsForm.class)
 public class EntityUiModuleConfiguration implements EntityConfigurer
 {
 	@Bean
 	public AclSecurityEntityValidator aclSecurityEntityValidator( AclSecurityEntityService aclSecurityEntityService ) {
 		return new AclSecurityEntityValidator( aclSecurityEntityService );
+	}
+
+	@PostConstruct
+	void registerIcons() {
+		SpringSecurityAclModuleIcons.registerIconSet();
 	}
 
 	@Override

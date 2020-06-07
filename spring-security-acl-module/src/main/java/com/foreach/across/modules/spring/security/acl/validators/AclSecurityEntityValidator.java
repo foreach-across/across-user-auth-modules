@@ -41,9 +41,9 @@ public class AclSecurityEntityValidator extends EntityValidatorSupport<AclSecuri
 	}
 
 	@Override
-	protected void postValidation( AclSecurityEntity entity, Errors errors ) {
+	protected void postValidation( AclSecurityEntity entity, Errors errors, Object... validationHints ) {
 		if ( !errors.hasFieldErrors( "name" ) ) {
-			AclSecurityEntity other = aclSecurityEntityService.getSecurityEntityByName( entity.getName() );
+			AclSecurityEntity other = aclSecurityEntityService.getSecurityEntityByName( entity.getName() ).orElse( null );
 
 			if ( other != null && !other.equals( entity ) ) {
 				errors.rejectValue( "name", "alreadyExists" );
@@ -59,7 +59,9 @@ public class AclSecurityEntityValidator extends EntityValidatorSupport<AclSecuri
 					parent = null;
 				}
 				else {
-					parent = aclSecurityEntityService.getSecurityEntityByName( parent.getName() ).getParent();
+					parent = aclSecurityEntityService.getSecurityEntityByName( parent.getName() )
+					                                 .map( AclSecurityEntity::getParent )
+					                                 .orElse( null );
 				}
 			}
 		}

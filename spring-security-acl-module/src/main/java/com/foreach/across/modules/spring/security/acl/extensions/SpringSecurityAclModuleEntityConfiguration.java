@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.services;
 
-import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
+package com.foreach.across.modules.spring.security.acl.extensions;
 
-import java.util.Optional;
+import com.foreach.across.core.annotations.ModuleConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-/**
- * @author Arne Vandamme
- */
-public interface AclSecurityEntityService
+@ModuleConfiguration("AcrossHibernateJpaModule")
+@EntityScan("com.foreach.across.modules.spring.security.acl.business")
+public class SpringSecurityAclModuleEntityConfiguration
 {
-	Optional<AclSecurityEntity> getSecurityEntityById( long id );
-
-	Optional<AclSecurityEntity> getSecurityEntityByName( String name );
-
-	AclSecurityEntity save( AclSecurityEntity securityEntityDto );
 }

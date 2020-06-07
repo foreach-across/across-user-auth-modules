@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.spring.security.acl.ui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -25,10 +24,12 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.spring.security.acl.support.AclUtils;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.beans.factory.ObjectProvider;
@@ -102,8 +103,11 @@ class EntityAclPermissionsFormSectionAdapter
 				if ( object instanceof SecurityPrincipal ) {
 					return AclUtils.sid( (SecurityPrincipal) object );
 				}
+				if ( ( object instanceof SecurityPrincipalId ) ) {
+					return AclUtils.sid( (SecurityPrincipalId) object );
+				}
 				throw new IllegalArgumentException(
-						"Unable to generate a default sid for " + object + "; must either implement GrantedAuthority or SecurityPrincipal" );
+						"Unable to generate a default sid for " + object + "; must either implement GrantedAuthority or SecurityPrincipalId" );
 			};
 		}
 		return sidForObjectResolver;
@@ -118,7 +122,7 @@ class EntityAclPermissionsFormSectionAdapter
 
 			return sid -> {
 				if ( sid instanceof PrincipalSid ) {
-					return securityPrincipalService.getPrincipalByName( ( (PrincipalSid) sid ).getPrincipal() );
+					return securityPrincipalService.getPrincipalByName( ( (PrincipalSid) sid ).getPrincipal() ).orElse( null );
 				}
 				return null;
 			};
@@ -153,7 +157,7 @@ class EntityAclPermissionsFormSectionAdapter
 			BiFunction<Object, ViewElementBuilderContext, ViewElement> objectLabelViewElementProvider,
 			EntityConfiguration<Object> entityConfiguration ) {
 		if ( objectLabelViewElementProvider == null ) {
-			return ( object, builderContext ) -> BootstrapUiBuilders.text( entityConfiguration.getLabel( object ) ).build( builderContext );
+			return ( object, builderContext ) -> HtmlViewElements.html.builders.text( entityConfiguration.getLabel( object ) ).build( builderContext );
 		}
 		return objectLabelViewElementProvider;
 	}
@@ -173,4 +177,5 @@ class EntityAclPermissionsFormSectionAdapter
 		}
 		return itemSelectorBuilder;
 	}
+
 }

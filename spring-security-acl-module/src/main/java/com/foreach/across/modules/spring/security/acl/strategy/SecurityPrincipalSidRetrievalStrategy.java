@@ -18,6 +18,9 @@ package com.foreach.across.modules.spring.security.acl.strategy;
 import com.foreach.across.modules.spring.security.acl.business.SecurityPrincipalSid;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalHierarchy;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipalId;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Sid;
@@ -27,7 +30,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,29 +42,40 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
+@RequiredArgsConstructor
 public class SecurityPrincipalSidRetrievalStrategy implements SidRetrievalStrategy
 {
-	private static final Collection<SecurityPrincipal> EMPTY = Collections.emptyList();
+	private final SecurityPrincipalService securityPrincipalService;
 
 	@Override
 	public List<Sid> getSids( Authentication authentication ) {
 		Object principal = authentication.getPrincipal();
 
-		Collection<SecurityPrincipal> parents = ( principal instanceof SecurityPrincipalHierarchy ) ?
-				( (SecurityPrincipalHierarchy) principal ).getParentPrincipals() : EMPTY;
+		Collection<SecurityPrincipal> parents = ( principal instanceof SecurityPrincipalHierarchy )
+				? ( (SecurityPrincipalHierarchy) principal ).getParentPrincipals() : new ArrayList<>();
 
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 		List<Sid> sids = new ArrayList<>( authorities.size() + 1 + parents.size() );
 
 		if ( principal instanceof SecurityPrincipal ) {
-			sids.add( new SecurityPrincipalSid( (SecurityPrincipal) principal ) );
+			sids.add( SecurityPrincipalSid.of( (SecurityPrincipal) principal ) );
+		}
+		else if ( principal instanceof SecurityPrincipalId ) {
+			securityPrincipalService.getPrincipalById( (SecurityPrincipalId) principal )
+			                        .ifPresent( securityPrincipal -> {
+				                        if ( securityPrincipal instanceof SecurityPrincipalHierarchy ) {
+					                        parents.addAll( ( (SecurityPrincipalHierarchy) securityPrincipal ).getParentPrincipals() );
+				                        }
+			                        } );
+
+			sids.add( SecurityPrincipalSid.of( (SecurityPrincipalId) principal ) );
 		}
 		else {
 			sids.add( new PrincipalSid( authentication ) );
 		}
 
 		for ( SecurityPrincipal parent : parents ) {
-			sids.add( new SecurityPrincipalSid( parent ) );
+			sids.add( SecurityPrincipalSid.of( parent ) );
 		}
 
 		for ( GrantedAuthority authority : authorities ) {

@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.spring.security.acl.ui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -31,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -39,7 +38,9 @@ import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.Optional;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
@@ -88,7 +89,7 @@ public class TestEntityAclPermissionsFormSectionAdapter
 				.transportIdForObjectResolver( user -> (String) user )
 				.objectForTransportIdResolver( transportId -> "original:" + transportId )
 				.objectLabelViewElementProvider( ( object, builderContext ) -> TextViewElement.text( (String) object ) )
-				.itemSelectorBuilder( AclPermissionsForm.selectorControl().control( BootstrapUiBuilders.textbox() ) )
+				.itemSelectorBuilder( AclPermissionsForm.selectorControl().control( bootstrap.builders.textbox() ) )
 				.build();
 
 		AclPermissionsFormSection adapted = adapt( original );
@@ -140,7 +141,7 @@ public class TestEntityAclPermissionsFormSectionAdapter
 		val objectForSidResolver = adapted.getObjectForSidResolver();
 
 		SecurityPrincipal principal = mock( SecurityPrincipal.class );
-		when( securityPrincipalService.getPrincipalByName( "some principal" ) ).thenReturn( principal );
+		when( securityPrincipalService.getPrincipalByName( "some principal" ) ).thenReturn( Optional.of( principal ) );
 
 		assertThat( objectForSidResolver ).isNotNull();
 		assertThat( objectForSidResolver.apply( new GrantedAuthoritySid( "some principal" ) ) ).isNull();
