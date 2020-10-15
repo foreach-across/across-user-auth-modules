@@ -25,9 +25,9 @@ import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -46,14 +46,14 @@ public class TestAclPermissionsFormItemSelectorControl extends AbstractViewEleme
 {
 	private ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		SimpleIconSet iconSet = new SimpleIconSet();
 		iconSet.setDefaultIconResolver( ( name ) -> Collections.singletonList( ADD ).contains( name ) ? html.i().addCssClass( "add" ) : null );
 		IconSetRegistry.addIconSet( SpringSecurityAclModule.NAME, iconSet );
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		IconSetRegistry.removeIconSet( SpringSecurityAclModule.NAME );
 	}

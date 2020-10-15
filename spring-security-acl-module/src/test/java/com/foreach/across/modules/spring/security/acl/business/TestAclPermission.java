@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.spring.security.acl.business;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.CumulativePermission;
 

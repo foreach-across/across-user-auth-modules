@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.spring.security.acl.ui;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.acls.model.Permission;
 
 import static com.foreach.across.modules.spring.security.acl.business.AclPermission.*;

@@ -18,11 +18,11 @@ package com.foreach.across.modules.spring.security.acl.services;
 
 import lombok.Data;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.MutableAcl;
@@ -32,15 +32,15 @@ import org.springframework.security.acls.model.Sid;
 import java.util.Optional;
 
 import static com.foreach.across.modules.spring.security.acl.business.AclPermission.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 /**
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestAclOperations
 {
 	@Mock
@@ -52,7 +52,7 @@ public class TestAclOperations
 	private MutableAcl acl;
 	private AclOperations operations;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		acl = new AclImpl( new ObjectIdentityImpl( "object", 1 ), 1, mock( AclAuthorizationStrategy.class ), mock( AuditLogger.class ) );
 		operations = new AclOperations( acl, new DefaultAclPermissionFactory() );

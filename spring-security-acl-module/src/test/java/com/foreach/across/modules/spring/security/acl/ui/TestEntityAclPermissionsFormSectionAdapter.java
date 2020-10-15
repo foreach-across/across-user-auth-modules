@@ -26,11 +26,13 @@ import com.foreach.across.modules.spring.security.infrastructure.services.Securi
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -50,8 +52,9 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestEntityAclPermissionsFormSectionAdapter
 {
 	private AclPermissionsFormSection empty = AclPermissionsForm.section( "user" ).entityType( String.class ).permissions().build();
@@ -68,7 +71,7 @@ public class TestEntityAclPermissionsFormSectionAdapter
 	@Mock
 	private SecurityPrincipalService securityPrincipalService;
 
-	@Before
+	@BeforeEach
 	public void defaults() {
 		when( entityConfiguration.getName() ).thenReturn( "user" );
 		when( entityConfiguration.getEntityType() ).thenReturn( SecurityPrincipal.class );

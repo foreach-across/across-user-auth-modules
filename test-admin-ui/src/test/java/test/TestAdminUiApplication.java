@@ -18,11 +18,11 @@ package test;
 
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.spring.security.acl.business.AclSecurityEntity;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import test.acl.AdminUiApplication;
 import test.acl.application.domain.customer.Customer;
 import test.acl.application.domain.group.Group;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(
 		webEnvironment = SpringBootTest.WebEnvironment.MOCK,
 		classes = AdminUiApplication.class,

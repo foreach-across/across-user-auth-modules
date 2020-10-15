@@ -17,7 +17,7 @@
 package com.foreach.across.modules.spring.security.acl.ui;
 
 import com.foreach.across.modules.spring.security.acl.business.AclPermission;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
