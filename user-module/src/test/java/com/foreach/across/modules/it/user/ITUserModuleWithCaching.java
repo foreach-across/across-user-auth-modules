@@ -34,10 +34,10 @@ import com.foreach.across.modules.user.repositories.UserRepository;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.UserService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
@@ -49,20 +49,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @ContextConfiguration(classes = { ITUserModule.Config.class,
                                   ITUserModuleWithCaching.CacheConfig.class })
@@ -96,7 +96,7 @@ public class ITUserModuleWithCaching
 		this.userCache = userCache.getNativeCache();
 	}
 
-	@Before
+	@BeforeEach
 	public void before() {
 		securityPrincipalCache.clear();
 		groupCache.clear();
@@ -108,7 +108,7 @@ public class ITUserModuleWithCaching
 		securityPrincipalService.authenticate( principal );
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		securityPrincipalService.clearAuthentication();
 	}

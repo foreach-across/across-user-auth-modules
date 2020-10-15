@@ -18,13 +18,12 @@ package com.foreach.across.modules.user.services;
 
 import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.UserDirectory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,11 +57,13 @@ public class TestUserDirectoryServiceProviderManager
 		assertNull( manager.getServiceProvider( InternalUserDirectory.class ) );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void nullServiceProviderManagerThrowsException() {
-		UserDirectoryServiceProviderManager manager
-				= new UserDirectoryServiceProviderManager( Collections.emptyList() );
-		assertNull( manager.getServiceProvider( (UserDirectory) null ) );
+		assertThrows( IllegalArgumentException.class, () -> {
+			UserDirectoryServiceProviderManager manager
+					= new UserDirectoryServiceProviderManager( Collections.emptyList() );
+			assertNull( manager.getServiceProvider( (UserDirectory) null ) );
+		} );
 	}
 
 }

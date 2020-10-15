@@ -19,8 +19,8 @@ package com.foreach.across.modules.user.validators;
 import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserDirectoryService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.validation.Errors;
@@ -41,7 +41,7 @@ public class TestUserDirectoryValidator
 	private UserDirectoryValidator validator;
 	private Errors errors;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks( this );
 		validator = new UserDirectoryValidator( userDirectoryService );

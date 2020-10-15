@@ -21,8 +21,8 @@ import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserDirectoryService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +32,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +50,7 @@ public class TestUserDetailsService
 
 	private UserDetailsService userDetailsService;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks( this );
 		userDetailsService = new UserDetailsServiceImpl( securityPrincipalService, userDirectoryService );
@@ -78,8 +78,10 @@ public class TestUserDetailsService
 		verify( securityPrincipalService ).getPrincipalByName( "2@@@myname" );
 	}
 
-	@Test(expected = UsernameNotFoundException.class)
+	@Test
 	public void usernameNotFoundExceptionIsThrown() {
-		userDetailsService.loadUserByUsername( "myname" );
+		org.junit.jupiter.api.Assertions.assertThrows( UsernameNotFoundException.class, () -> {
+			userDetailsService.loadUserByUsername( "myname" );
+		} );
 	}
 }

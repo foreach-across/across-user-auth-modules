@@ -20,10 +20,10 @@ import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserDirectoryService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 /**
@@ -35,7 +35,7 @@ public class TestDefaultUserDirectoryStrategy
 	private UserDirectoryService userDirectoryService;
 	private DefaultUserDirectoryStrategy userDirectoryStrategy;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		userDirectoryService = mock( UserDirectoryService.class );
 		userDirectoryStrategy = new DefaultUserDirectoryStrategyImpl( userDirectoryService );

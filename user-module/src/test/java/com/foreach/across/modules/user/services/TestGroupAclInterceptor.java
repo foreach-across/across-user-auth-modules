@@ -20,21 +20,21 @@ import com.foreach.across.modules.spring.security.acl.services.AclSecurityEntity
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
 import com.foreach.across.modules.user.UserModuleSettings;
 import com.foreach.across.modules.user.business.Group;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestGroupAclInterceptor.Config.class)
 @DirtiesContext
 public class TestGroupAclInterceptor
@@ -51,7 +51,7 @@ public class TestGroupAclInterceptor
 	@Autowired
 	private AclSecurityEntityService aclSecurityEntityService;
 
-	@Before
+	@BeforeEach
 	public void resetMocks() {
 		reset( userModuleSettings, aclSecurityService, aclSecurityEntityService );
 	}

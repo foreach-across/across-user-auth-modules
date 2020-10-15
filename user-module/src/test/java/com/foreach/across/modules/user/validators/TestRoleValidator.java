@@ -19,8 +19,8 @@ package com.foreach.across.modules.user.validators;
 import com.foreach.across.modules.user.business.QRole;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.repositories.RoleRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -38,7 +38,7 @@ public class TestRoleValidator
 	private Validator validator;
 	private Errors errors;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		repository = mock( RoleRepository.class );
 

@@ -19,8 +19,8 @@ package com.foreach.across.modules.user.validators;
 import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -40,7 +40,7 @@ public class TestGroupValidator
 
 	private UserDirectory defaultDir;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		defaultDir = new InternalUserDirectory();
 		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );

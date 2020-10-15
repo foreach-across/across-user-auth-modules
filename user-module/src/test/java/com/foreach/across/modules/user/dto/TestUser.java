@@ -17,14 +17,14 @@ package com.foreach.across.modules.user.dto;
 
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestUser
 {
@@ -40,7 +40,7 @@ public class TestUser
 		dto2.setRestrictions( restrictions );
 
 		Set<UserRestriction> retrievedUserRestrictions = dto2.getRestrictions();
-		assertNotNull( "restriction cannot be null", retrievedUserRestrictions );
+		assertNotNull( retrievedUserRestrictions, "restriction cannot be null" );
 		assertEquals( 3, restrictions.size() );
 		assertEquals( restrictions, dto2.getRestrictions() );
 
@@ -48,10 +48,10 @@ public class TestUser
 		assertTrue( dto2.hasRestriction( UserRestriction.LOCKED ) );
 
 		User dto3 = new User();
-		dto3.setRestrictions( new HashSet<UserRestriction>() );
+		dto3.setRestrictions( new HashSet<>() );
 
 		Set<UserRestriction> retrievedUserRestrictions3 = dto3.getRestrictions();
-		assertNotNull( "restriction cannot be null", retrievedUserRestrictions3 );
+		assertNotNull( retrievedUserRestrictions3, "restriction cannot be null" );
 		assertEquals( 0, retrievedUserRestrictions3.size() );
 		assertEquals( Collections.<UserRestriction>emptySet(), retrievedUserRestrictions3 );
 	}

@@ -26,16 +26,16 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +50,7 @@ public class TestRolePermissionsFormElementBuilder extends AbstractViewElementTe
 
 	private RolePermissionsFormElementBuilder formElementBuilder;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		MockitoAnnotations.initMocks( this );
 
@@ -68,7 +68,7 @@ public class TestRolePermissionsFormElementBuilder extends AbstractViewElementTe
 	}
 
 	@Test
-	@Ignore("complex markup testing doesn't work very well")
+	@Disabled("complex markup testing doesn't work very well")
 	public void outputRenderingInAlphabeticOrder() {
 		PermissionGroup groupOne = new PermissionGroup();
 		groupOne.setName( "group b" );

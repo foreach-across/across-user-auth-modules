@@ -42,10 +42,10 @@ import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.services.*;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,16 +59,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @ContextConfiguration(classes = { ITUserModule.Config.class, ITAclServices.SecurityConfig.class })
 public class ITAclServices
@@ -115,7 +115,7 @@ public class ITAclServices
 	private Group group;
 	private User userOne, userTwo, userThree, userFour;
 
-	@Before
+	@BeforeEach
 	public void createUsers() {
 		securityPrincipalService.authenticate( securityPrincipalService.getPrincipalByName( "system" ).orElse( null ) );
 
@@ -130,7 +130,7 @@ public class ITAclServices
 		userFour = createRandomUser( Collections.singleton( group ), Collections.emptyList() );
 	}
 
-	@After
+	@AfterEach
 	public void logout() {
 		securityPrincipalService.clearAuthentication();
 	}
@@ -162,7 +162,7 @@ public class ITAclServices
 		return group;
 	}
 
-	@After
+	@AfterEach
 	public void clearAcls() {
 		acl.deleteAcl( repository, true );
 	}

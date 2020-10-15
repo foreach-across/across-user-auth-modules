@@ -20,8 +20,8 @@ import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserDirectoryService;
 import com.foreach.across.modules.user.services.UserDirectoryServiceProvider;
 import com.foreach.across.modules.user.services.UserDirectoryServiceProviderManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -53,16 +53,18 @@ public class TestUserDirectoryAuthenticationProvider
 
 	private UserDirectoryAuthenticationProvider authenticationProvider;
 
-	@Before
+	@BeforeEach
 	public void initMocks() {
 		MockitoAnnotations.initMocks( this );
 		authenticationProvider = new UserDirectoryAuthenticationProvider( userDirectoryService,
 		                                                                  userDirectoryServiceProviderManager );
 	}
 
-	@Test(expected = BadCredentialsException.class)
+	@Test
 	public void badCredentialsExceptionIfNoUserFound() {
-		authenticationProvider.authenticate( auth );
+		assertThrows( BadCredentialsException.class, () -> {
+			authenticationProvider.authenticate( auth );
+		} );
 	}
 
 	@Test

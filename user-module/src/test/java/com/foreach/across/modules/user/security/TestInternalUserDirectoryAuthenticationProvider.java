@@ -21,14 +21,14 @@ import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
 import com.foreach.across.modules.user.services.UserService;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,28 +40,35 @@ public class TestInternalUserDirectoryAuthenticationProvider
 {
 	private InternalUserDirectory internalUserDirectory = new InternalUserDirectory();
 
-	@Test(expected = IllegalArgumentException.class)
-	public void providerWithoutUserDirectoryThrowsAssertion() throws Exception {
-		InternalUserDirectoryAuthenticationProvider authenticationProvider =
-				new InternalUserDirectoryAuthenticationProvider();
-		authenticationProvider.afterPropertiesSet();
+	@Test
+	public void providerWithoutUserDirectoryThrowsAssertion() {
+		assertThrows( IllegalArgumentException.class, () -> {
+			InternalUserDirectoryAuthenticationProvider authenticationProvider =
+					new InternalUserDirectoryAuthenticationProvider();
+			authenticationProvider.afterPropertiesSet();
+		} );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void providerWithoutUserServiceThrowsAssertion() throws Exception {
-		InternalUserDirectoryAuthenticationProvider authenticationProvider =
-				new InternalUserDirectoryAuthenticationProvider();
-		authenticationProvider.afterPropertiesSet();
+	@Test
+	public void providerWithoutUserServiceThrowsAssertion() {
+		assertThrows( IllegalArgumentException.class, () -> {
+			InternalUserDirectoryAuthenticationProvider authenticationProvider =
+					new InternalUserDirectoryAuthenticationProvider();
+			authenticationProvider.afterPropertiesSet();
+		} );
+
 	}
 
-	@Test(expected = InternalAuthenticationServiceException.class)
-	public void providerThrowsErrorWhenUserIsNotFoundAndThrowExceptionIfUserNotFoundIsTrue() throws Exception {
-		Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
-		InternalUserDirectoryAuthenticationProvider authenticationProvider =
-				internalUserDirectoryAuthenticationProvider();
-		authenticationProvider.setThrowExceptionIfUserNotFound( true );
-		authenticationProvider.authenticate( authentication );
-		assertTrue( "shouldn't come here", false );
+	@Test
+	public void providerThrowsErrorWhenUserIsNotFoundAndThrowExceptionIfUserNotFoundIsTrue() {
+		assertThrows( InternalAuthenticationServiceException.class, () -> {
+			Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
+			InternalUserDirectoryAuthenticationProvider authenticationProvider =
+					internalUserDirectoryAuthenticationProvider();
+			authenticationProvider.setThrowExceptionIfUserNotFound( true );
+			authenticationProvider.authenticate( authentication );
+			assertTrue( false, "shouldn't come here" );
+		} );
 	}
 
 	@Test
@@ -73,68 +80,76 @@ public class TestInternalUserDirectoryAuthenticationProvider
 		assertNull( unsuccessfulAuthentication );
 	}
 
-	@Test(expected = LockedException.class)
-	public void providerReturnsLockedExceptionWhenUserIsLockedAndThrowExceptionIfUserNotFoundIsFalse() throws Exception {
-		Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
-		InternalUserDirectoryAuthenticationProvider authenticationProvider =
-				internalUserDirectoryAuthenticationProvider();
-		UserService userService = mock( UserService.class );
-		User user = new User();
-		user.setRestrictions( Collections.singletonList( UserRestriction.LOCKED ) );
-		user.setUsername( "username" );
-		user.setPassword( "password" );
-		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
-		authenticationProvider.setUserService( userService );
-		authenticationProvider.authenticate( authentication );
-		assertTrue( "shouldn't come here", false );
+	@Test
+	public void providerReturnsLockedExceptionWhenUserIsLockedAndThrowExceptionIfUserNotFoundIsFalse() {
+		assertThrows( LockedException.class, () -> {
+			Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
+			InternalUserDirectoryAuthenticationProvider authenticationProvider =
+					internalUserDirectoryAuthenticationProvider();
+			UserService userService = mock( UserService.class );
+			User user = new User();
+			user.setRestrictions( Collections.singletonList( UserRestriction.LOCKED ) );
+			user.setUsername( "username" );
+			user.setPassword( "password" );
+			when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
+			authenticationProvider.setUserService( userService );
+			authenticationProvider.authenticate( authentication );
+			assertTrue( false, "shouldn't come here" );
+		} );
 	}
 
-	@Test(expected = DisabledException.class)
-	public void providerReturnsDisabledExceptionWhenUserIsLockedAndThrowExceptionIfUserNotFoundIsFalse() throws Exception {
-		Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
-		InternalUserDirectoryAuthenticationProvider authenticationProvider =
-				internalUserDirectoryAuthenticationProvider();
-		UserService userService = mock( UserService.class );
-		User user = new User();
-		user.setRestrictions( Collections.singletonList( UserRestriction.DISABLED ) );
-		user.setUsername( "username" );
-		user.setPassword( "password" );
-		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
-		authenticationProvider.setUserService( userService );
-		authenticationProvider.authenticate( authentication );
-		assertTrue( "shouldn't come here", false );
+	@Test
+	public void providerReturnsDisabledExceptionWhenUserIsLockedAndThrowExceptionIfUserNotFoundIsFalse() {
+		assertThrows( DisabledException.class, () -> {
+			Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
+			InternalUserDirectoryAuthenticationProvider authenticationProvider =
+					internalUserDirectoryAuthenticationProvider();
+			UserService userService = mock( UserService.class );
+			User user = new User();
+			user.setRestrictions( Collections.singletonList( UserRestriction.DISABLED ) );
+			user.setUsername( "username" );
+			user.setPassword( "password" );
+			when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
+			authenticationProvider.setUserService( userService );
+			authenticationProvider.authenticate( authentication );
+			assertTrue( false, "shouldn't come here" );
+		} );
 	}
 
-	@Test(expected = AccountExpiredException.class)
-	public void providerReturnsAccountExpiredExceptionWhenUserIsLockedAndThrowExceptionIfUserNotFoundIsFalse() throws Exception {
-		Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
-		InternalUserDirectoryAuthenticationProvider authenticationProvider =
-				internalUserDirectoryAuthenticationProvider();
-		UserService userService = mock( UserService.class );
-		User user = new User();
-		user.setRestrictions( Collections.singletonList( UserRestriction.EXPIRED ) );
-		user.setUsername( "username" );
-		user.setPassword( "password" );
-		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
-		authenticationProvider.setUserService( userService );
-		authenticationProvider.authenticate( authentication );
-		assertTrue( "shouldn't come here", false );
+	@Test
+	public void providerReturnsAccountExpiredExceptionWhenUserIsLockedAndThrowExceptionIfUserNotFoundIsFalse() {
+		assertThrows( AccountExpiredException.class, () -> {
+			Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
+			InternalUserDirectoryAuthenticationProvider authenticationProvider =
+					internalUserDirectoryAuthenticationProvider();
+			UserService userService = mock( UserService.class );
+			User user = new User();
+			user.setRestrictions( Collections.singletonList( UserRestriction.EXPIRED ) );
+			user.setUsername( "username" );
+			user.setPassword( "password" );
+			when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
+			authenticationProvider.setUserService( userService );
+			authenticationProvider.authenticate( authentication );
+			assertTrue( false, "shouldn't come here" );
+		} );
 	}
 
-	@Test(expected = CredentialsExpiredException.class)
-	public void providerReturnsCredentialsExpiredExceptionWhenUserIsLockedAndThrowExceptionIfUserNotFoundIsFalse() throws Exception {
-		Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
-		InternalUserDirectoryAuthenticationProvider authenticationProvider =
-				internalUserDirectoryAuthenticationProvider();
-		UserService userService = mock( UserService.class );
-		User user = new User();
-		user.setRestrictions( Collections.singletonList( UserRestriction.CREDENTIALS_EXPIRED ) );
-		user.setUsername( "username" );
-		user.setPassword( "{noop}password" );
-		when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
-		authenticationProvider.setUserService( userService );
-		authenticationProvider.authenticate( authentication );
-		assertTrue( "shouldn't come here", false );
+	@Test
+	public void providerReturnsCredentialsExpiredExceptionWhenUserIsLockedAndThrowExceptionIfUserNotFoundIsFalse() {
+		assertThrows( CredentialsExpiredException.class, () -> {
+			Authentication authentication = new UsernamePasswordAuthenticationToken( "username", "password" );
+			InternalUserDirectoryAuthenticationProvider authenticationProvider =
+					internalUserDirectoryAuthenticationProvider();
+			UserService userService = mock( UserService.class );
+			User user = new User();
+			user.setRestrictions( Collections.singletonList( UserRestriction.CREDENTIALS_EXPIRED ) );
+			user.setUsername( "username" );
+			user.setPassword( "{noop}password" );
+			when( userService.getUserByUsername( "username", internalUserDirectory ) ).thenReturn( Optional.of( user ) );
+			authenticationProvider.setUserService( userService );
+			authenticationProvider.authenticate( authentication );
+			assertTrue( false, "shouldn't come here" );
+		} );
 	}
 
 	@Test

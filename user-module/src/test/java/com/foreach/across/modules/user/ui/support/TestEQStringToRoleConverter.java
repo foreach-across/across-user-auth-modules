@@ -21,22 +21,22 @@ import com.foreach.across.modules.user.business.QRole;
 import com.foreach.across.modules.user.business.Role;
 import com.foreach.across.modules.user.repositories.RoleRepository;
 import com.querydsl.core.types.Predicate;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestEQStringToRoleConverter
 {
 	@Mock
@@ -44,7 +44,7 @@ public class TestEQStringToRoleConverter
 
 	private EQStringToRoleConverter converter;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		converter = new EQStringToRoleConverter( roleRepository );
 	}

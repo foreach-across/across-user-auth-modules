@@ -22,9 +22,9 @@ import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.repositories.UserRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,17 +32,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestUserServiceWithEmailAsUserName.Config.class)
 @DirtiesContext
 public class TestUserServiceWithEmailAsUserName
@@ -53,7 +53,7 @@ public class TestUserServiceWithEmailAsUserName
 	@Autowired
 	private UserRepository userRepository;
 
-	@Before
+	@BeforeEach
 	public void resetMocks() {
 		reset( userRepository );
 

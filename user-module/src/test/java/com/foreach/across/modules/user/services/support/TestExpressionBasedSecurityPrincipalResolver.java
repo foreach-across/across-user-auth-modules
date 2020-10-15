@@ -18,12 +18,12 @@ package com.foreach.across.modules.user.services.support;
 
 import com.foreach.across.modules.user.business.Group;
 import com.foreach.across.modules.user.business.User;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -35,7 +35,7 @@ public class TestExpressionBasedSecurityPrincipalResolver
 
 	private User user;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		resolver = new ExpressionBasedSecurityPrincipalLabelResolver( User.class, "label" );
 
@@ -47,14 +47,18 @@ public class TestExpressionBasedSecurityPrincipalResolver
 		user.setEmail( "jdoe@gmail.com" );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void nullNotAllowed() {
-		new ExpressionBasedSecurityPrincipalLabelResolver( null, "label" );
+		org.junit.jupiter.api.Assertions.assertThrows( IllegalArgumentException.class, () -> {
+			new ExpressionBasedSecurityPrincipalLabelResolver( null, "label" );
+		} );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void nullNotAllowedForLabelExpression() {
-		resolver.setLabelExpression( null );
+		org.junit.jupiter.api.Assertions.assertThrows( IllegalArgumentException.class, () -> {
+			resolver.setLabelExpression( null );
+		} );
 	}
 
 	@Test

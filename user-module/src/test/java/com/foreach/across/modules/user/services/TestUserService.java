@@ -26,9 +26,9 @@ import com.foreach.across.modules.user.repositories.UserRepository;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.util.collections.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
@@ -46,11 +46,11 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestUserService.Config.class)
 @DirtiesContext
 public class TestUserService extends AbstractQueryDslPredicateExecutorTest
@@ -64,7 +64,7 @@ public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 	@Autowired
 	private UserRepository userRepository;
 
-	@Before
+	@BeforeEach
 	public void resetMocks() {
 		reset( userRepository );
 
@@ -199,14 +199,13 @@ public class TestUserService extends AbstractQueryDslPredicateExecutorTest
 		}
 	}
 
-	@Test(expected = UserModuleException.class)
+	@Test
 	public void aNewUserAlwaysRequiresPassword() {
 		User dto = new User();
 		dto.setFirstName( "first" );
 		dto.setLastName( "last" );
 		dto.setUsername( "email" );
-
-		userService.save( dto );
+		assertThrows( UserModuleException.class, () -> userService.save( dto ) );
 	}
 
 	@Test
