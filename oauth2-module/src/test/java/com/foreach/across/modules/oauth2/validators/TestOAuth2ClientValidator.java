@@ -22,8 +22,8 @@ import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.InternalUserDirectory;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.support.DefaultUserDirectoryStrategy;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -45,7 +45,7 @@ public class TestOAuth2ClientValidator
 
 	private UserDirectory defaultDir;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		defaultDir = new InternalUserDirectory();
 		defaultDir.setId( UserDirectory.DEFAULT_INTERNAL_DIRECTORY_ID );

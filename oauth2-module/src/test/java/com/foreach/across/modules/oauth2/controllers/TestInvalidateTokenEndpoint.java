@@ -16,12 +16,12 @@
 package com.foreach.across.modules.oauth2.controllers;
 
 import com.foreach.across.modules.oauth2.dto.OAuth2TokenDto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,12 +36,12 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import java.io.Serializable;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestInvalidateTokenEndpoint
 {
 	@Mock
@@ -53,7 +53,7 @@ public class TestInvalidateTokenEndpoint
 	private OAuth2Request oAuth2Request;
 	private OAuth2Authentication authentication;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		reset( tokenStore );
 
@@ -69,10 +69,7 @@ public class TestInvalidateTokenEndpoint
 		                                   Collections.<String>emptySet(),
 		                                   Collections.<String, Serializable>emptyMap() );
 
-		when( authentication.getOAuth2Request() ).thenReturn( oAuth2Request );
-		when( tokenStore.readAuthentication( any( OAuth2AccessToken.class ) ) ).thenReturn( authentication );
-		when( tokenStore.readAuthenticationForRefreshToken( any( OAuth2RefreshToken.class ) ) ).thenReturn(
-				authentication );
+
 	}
 
 	@Test
@@ -86,6 +83,8 @@ public class TestInvalidateTokenEndpoint
 
 	@Test
 	public void deleteWithAccessToken() {
+		when( authentication.getOAuth2Request() ).thenReturn( oAuth2Request );
+		when( tokenStore.readAuthentication( any( OAuth2AccessToken.class ) ) ).thenReturn( authentication );
 		String tokenValue = "FRG65SS";
 		DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken( tokenValue );
 		token.setRefreshToken( new DefaultOAuth2RefreshToken( "refresh" ) );
@@ -103,6 +102,9 @@ public class TestInvalidateTokenEndpoint
 
 	@Test
 	public void deleteWithRefreshToken() {
+		when( authentication.getOAuth2Request() ).thenReturn( oAuth2Request );
+		when( tokenStore.readAuthenticationForRefreshToken( any( OAuth2RefreshToken.class ) ) ).thenReturn(
+				authentication );
 		String tokenValue = "FRG65SS";
 		DefaultOAuth2RefreshToken token = new DefaultOAuth2RefreshToken( tokenValue );
 		when( tokenStore.readRefreshToken( tokenValue ) ).thenReturn( token );

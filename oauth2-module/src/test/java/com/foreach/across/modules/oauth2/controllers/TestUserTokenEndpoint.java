@@ -15,12 +15,12 @@
  */
 package com.foreach.across.modules.oauth2.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -37,13 +37,13 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import java.io.Serializable;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestUserTokenEndpoint
 {
 	@Mock
@@ -60,13 +60,9 @@ public class TestUserTokenEndpoint
 	private OAuth2Authentication authentication;
 	private Set<String> allowedScopes;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		user = mock( UserDetails.class );
-		when( user.isAccountNonExpired() ).thenReturn( true );
-		when( user.isAccountNonLocked() ).thenReturn( true );
-		when( user.isCredentialsNonExpired() ).thenReturn( true );
-		when( user.isEnabled() ).thenReturn( true );
 
 		authentication = mock( OAuth2Authentication.class );
 
@@ -85,7 +81,6 @@ public class TestUserTokenEndpoint
 
 		when( authentication.getOAuth2Request() ).thenReturn( oAuth2Request );
 
-		when( userDetailsService.loadUserByUsername( anyString() ) ).thenReturn( user );
 	}
 
 	@Test
@@ -104,6 +99,7 @@ public class TestUserTokenEndpoint
 	public void userMustBeAllowedToLogonToCreateAToken() {
 		when( user.isEnabled() ).thenReturn( false );
 
+		when( userDetailsService.loadUserByUsername( anyString() ) ).thenReturn( user );
 		ResponseEntity<Map<String, String>> response = endpoint.createUserToken( authentication, "someuser", "full" );
 
 		assertEquals( HttpStatus.FORBIDDEN, response.getStatusCode() );
@@ -125,6 +121,12 @@ public class TestUserTokenEndpoint
 
 	@Test
 	public void validUserTokenRequest() {
+
+		when( userDetailsService.loadUserByUsername( anyString() ) ).thenReturn( user );
+		when( user.isAccountNonExpired() ).thenReturn( true );
+		when( user.isAccountNonLocked() ).thenReturn( true );
+		when( user.isCredentialsNonExpired() ).thenReturn( true );
+		when( user.isEnabled() ).thenReturn( true );
 		allowedScopes.add( "writeOnly" );
 
 		OAuth2Request clientAuthentication = new OAuth2Request(

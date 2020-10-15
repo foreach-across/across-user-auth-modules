@@ -16,15 +16,15 @@
 package com.foreach.across.modules.oauth2.business;
 
 import com.foreach.across.modules.user.business.Role;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
@@ -142,7 +142,7 @@ public class TestOAuth2Client
 		assertTrue( client.getOAuth2ClientScopes().isEmpty() );
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void principalNameIsAlwaysLowerCased() throws Exception {
 		OAuth2Client client = new OAuth2Client();

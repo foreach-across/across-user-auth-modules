@@ -14,23 +14,23 @@ import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.services.PermissionService;
 import com.foreach.across.modules.user.services.RoleService;
 import com.foreach.across.test.AcrossTestConfiguration;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestOAuth2ClientRepository.Config.class)
 @DirtiesContext
 public class TestOAuth2ClientRepository
@@ -44,7 +44,7 @@ public class TestOAuth2ClientRepository
 	@Autowired
 	private PermissionService permissionService;
 
-	@Before
+	@BeforeEach
 	public void createRolesAndPermissions() {
 		permissionService.definePermission( "perm one", "", "test-perms" );
 		permissionService.definePermission( "perm two", "", "test-perms" );
