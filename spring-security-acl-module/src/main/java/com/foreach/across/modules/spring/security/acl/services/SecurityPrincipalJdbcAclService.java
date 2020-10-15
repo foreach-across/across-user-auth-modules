@@ -21,7 +21,6 @@ import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
@@ -32,8 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -97,70 +94,37 @@ public class SecurityPrincipalJdbcAclService extends JdbcMutableAclService imple
 	@Transactional(readOnly = true)
 	@Override
 	public List<ObjectIdentity> findObjectIdentitiesWithAclForSid( Sid sid ) {
-		Long ownerId = createOrRetrieveSidPrimaryKey( sid, false );
+		Long ownerId = createOrRetrieveSidPrimaryKey(sid, false);
 
-		if ( ownerId == null ) {
+		if (ownerId == null) {
 			return Collections.emptyList();
 		}
 
-		Object[] args = { ownerId };
-		return jdbcTemplate.query( SELECT_OBJECT_IDENTITIES_FOR_SID, args,
-		                           ( rs, rowNum ) -> {
-			                           String javaType = rs.getString( "class" );
-			                           Long identifier = rs.getLong( "obj_id" );
+		Object[] args = {ownerId};
+		return jdbcOperations.query(SELECT_OBJECT_IDENTITIES_FOR_SID, args,
+				(rs, rowNum) -> {
+					String javaType = rs.getString("class");
+					Long identifier = rs.getLong("obj_id");
 
-			                           return new ObjectIdentityImpl( javaType,
-			                                                          identifier );
-		                           } );
+					return new ObjectIdentityImpl(javaType,
+							identifier);
+				});
 	}
 
 	@Override
 	public Collection<Class<?>> getRegisteredAclClasses() {
-		List<String> classNames = jdbcTemplate.query( SELECT_ALL_CLASSES, new RowMapper<String>()
-		{
-			@Override
-			public String mapRow( ResultSet rs, int rowNum ) throws SQLException {
-				return rs.getString( "class" );
-			}
-		} );
+		List<String> classNames = jdbcOperations.query(SELECT_ALL_CLASSES, (rs, rowNum) -> rs.getString("class"));
 
 		Set<Class<?>> classes = new HashSet<>();
 
-		for ( String className : classNames ) {
+		for (String className : classNames) {
 			try {
-				Class<?> clazz = ClassUtils.getClass( className );
-				classes.add( clazz );
-			}
-			catch ( ClassNotFoundException ignore ) {
+				Class<?> clazz = ClassUtils.getClass(className);
+				classes.add(clazz);
+			} catch (ClassNotFoundException ignore) {
 			}
 		}
 
 		return classes;
-	}
-
-	// todo: remove this workaround as of spring-security 5.2 - see https://github.com/spring-projects/spring-security/issues/5508
-	@Override
-	public List<ObjectIdentity> findChildren( ObjectIdentity parentIdentity ) {
-		return super.findChildren( toStringObjectIdentity( parentIdentity ) );
-	}
-
-	// todo: remove this workaround as of spring-security 5.2 - see https://github.com/spring-projects/spring-security/issues/5508
-	@Override
-	protected Long retrieveObjectIdentityPrimaryKey( ObjectIdentity oid ) {
-		return super.retrieveObjectIdentityPrimaryKey( toStringObjectIdentity( oid ) );
-	}
-
-	// todo: remove this workaround as of spring-security 5.2 - see https://github.com/spring-projects/spring-security/issues/5508
-	@Override
-	protected void createObjectIdentity( ObjectIdentity object, Sid owner ) {
-		super.createObjectIdentity( toStringObjectIdentity( object ), owner );
-	}
-
-	// todo: remove this workaround as of spring-security 5.2 - see https://github.com/spring-projects/spring-security/issues/5508
-	private ObjectIdentity toStringObjectIdentity( ObjectIdentity oid ) {
-		if ( oid.getIdentifier() instanceof String ) {
-			return oid;
-		}
-		return new ObjectIdentityImpl( oid.getType(), oid.getIdentifier().toString() );
 	}
 }
