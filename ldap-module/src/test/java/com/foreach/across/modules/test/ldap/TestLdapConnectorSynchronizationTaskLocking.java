@@ -26,15 +26,15 @@ import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockManager;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,13 +43,14 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @ContextConfiguration(classes = TestLdapConnectorSynchronizationTaskLocking.Config.class)
 @Slf4j
@@ -62,7 +63,7 @@ public class TestLdapConnectorSynchronizationTaskLocking
 	private DistributedLockManager distributedLockManager;
 	private DistributedLockRepository distributedLockRepository;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		distributedLockManager = acrossContextBeanRegistry.getBeanOfType( DistributedLockManager.class );
 		distributedLockRepository = acrossContextBeanRegistry.getBeanOfType( DistributedLockRepository.class );
@@ -79,7 +80,7 @@ public class TestLdapConnectorSynchronizationTaskLocking
 		catch ( Exception ignore ) {
 
 		}
-		Assert.assertFalse( distributedLockManager.isLocked( LdapSynchronizationTask.LOCK_NAME ) );
+		Assertions.assertFalse( distributedLockManager.isLocked( LdapSynchronizationTask.LOCK_NAME ) );
 		verify( ldapUserDirectoryRepository ).findAllByActiveTrue();
 	}
 
@@ -87,7 +88,7 @@ public class TestLdapConnectorSynchronizationTaskLocking
 	public void oneServerCanGetALockAndExecuteSynchronizationServer() throws Exception {
 		LdapSynchronizationTask ldapSynchronizationTask = ldapSynchronizationTask();
 		ldapSynchronizationTask.run();
-		Assert.assertFalse( distributedLockManager.isLocked( LdapSynchronizationTask.LOCK_NAME ) );
+		Assertions.assertFalse( distributedLockManager.isLocked( LdapSynchronizationTask.LOCK_NAME ) );
 		verify( ldapUserDirectoryRepository ).findAllByActiveTrue();
 	}
 
@@ -126,10 +127,10 @@ public class TestLdapConnectorSynchronizationTaskLocking
 		boolean hasErrors = !latch.await( numberOfServers * 50, TimeUnit.SECONDS );
 		executorService.shutdownNow();
 		if ( hasErrors ) {
-			Assert.fail( "Some threads didn't acquire/release the lock properly" );
+			Assertions.fail( "Some threads didn't acquire/release the lock properly" );
 		}
 
-		Assert.assertEquals( "Only a single thread should have acquired the lock and been able to fetch the user directories", numberOfLocks.get(), 1 );
+		assertEquals( 1, numberOfLocks.get(), "Only a single thread should have acquired the lock and been able to fetch the user directories" );
 		verify( repository, times( 1 ) ).findAllByActiveTrue();
 	}
 

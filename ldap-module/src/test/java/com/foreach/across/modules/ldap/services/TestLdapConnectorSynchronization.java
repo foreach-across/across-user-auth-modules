@@ -34,9 +34,9 @@ import com.querydsl.core.types.Predicate;
 import lombok.Getter;
 import org.apache.directory.shared.ldap.entry.Entry;
 import org.apache.directory.shared.ldap.name.LdapDN;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
@@ -48,21 +48,21 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.security.ldap.server.ApacheDSContainer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @ContextConfiguration(classes = TestLdapConnectorSynchronization.Config.class)
 public class TestLdapConnectorSynchronization
@@ -94,7 +94,7 @@ public class TestLdapConnectorSynchronization
 	@Autowired
 	private Config.EventListener applicationListener;
 
-	@Before
+	@BeforeEach
 	public void resetMocks() {
 		reset( userService, userDirectoryService, ldapModuleSettings );
 	}

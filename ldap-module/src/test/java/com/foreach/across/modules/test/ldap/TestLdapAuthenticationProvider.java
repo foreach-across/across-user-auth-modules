@@ -24,9 +24,9 @@ import com.foreach.across.modules.ldap.services.LdapAuthenticationProvider;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserDirectory;
 import com.foreach.across.modules.user.services.UserService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,17 +36,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.server.ApacheDSContainer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Marc Vanbrabant
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @ContextConfiguration
 public class TestLdapAuthenticationProvider
@@ -58,20 +58,22 @@ public class TestLdapAuthenticationProvider
 	@Autowired
 	private LdapUserDirectory ldapUserDirectory;
 
-	@Before
+	@BeforeEach
 	public void resetMocks() {
 		reset( userService );
 		ldapAuthenticationProvider.setThrowExceptionIfUserNotFound( false );
 		ldapAuthenticationProvider.setSearchFilter( null );
 	}
 
-	@Test(expected = InternalAuthenticationServiceException.class)
+	@Test
 	public void testThatUnknownUserThrowsExceptionWhenThrowExceptionIfUserNotFoundIsTrue() throws Exception {
-		ldapAuthenticationProvider.setThrowExceptionIfUserNotFound( true );
-		Authentication
-				authentication = ldapAuthenticationProvider.authenticate(
-				new UsernamePasswordAuthenticationToken( "username", "password" ) );
-		assertTrue( "shouldn't come here", false );
+		assertThrows( InternalAuthenticationServiceException.class, () -> {
+			ldapAuthenticationProvider.setThrowExceptionIfUserNotFound( true );
+			Authentication
+					authentication = ldapAuthenticationProvider.authenticate(
+					new UsernamePasswordAuthenticationToken( "username", "password" ) );
+			assertTrue( false, "shouldn't come here" );
+		} );
 	}
 
 	@Test

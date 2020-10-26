@@ -38,7 +38,7 @@ import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ActiveProfilesResolver;
-import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.Arrays;
@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @AcrossWebAppConfiguration
 @RunWith(Parameterized.class)
 @ActiveProfiles(resolver = ITBootstrapWithAdditionalModules.CustomProfilesResolver.class)
+//TODO: move this to Junit 5
 public class ITBootstrapWithAdditionalModules
 {
 	private final String profile;
@@ -88,9 +89,9 @@ public class ITBootstrapWithAdditionalModules
 
 	@After
 	public void destroyContext() {
-		testContextManager.getTestContextFromTestContextManager().markApplicationContextDirty(
+		testContextManager.getTestContext().markApplicationContextDirty(
 				DirtiesContext.HierarchyMode.EXHAUSTIVE );
-		testContextManager.getTestContextFromTestContextManager().setAttribute(
+		testContextManager.getTestContext().setAttribute(
 				DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE );
 		System.clearProperty( AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME );
 	}
@@ -136,17 +137,6 @@ public class ITBootstrapWithAdditionalModules
 			public UserModule userModule() {
 				return new UserModule();
 			}
-		}
-	}
-
-	private static class TestContextManager extends org.springframework.test.context.TestContextManager
-	{
-		private TestContextManager( Class<?> testClass ) {
-			super( testClass );
-		}
-
-		TestContext getTestContextFromTestContextManager() {
-			return super.getTestContext();
 		}
 	}
 
