@@ -41,7 +41,7 @@ public class ITBootstrapWithoutAdditionalModules
 
 	@Test
 	public void repositoriesShouldBeExposed() {
-		assertTrue( applicationContext.containsBean( "ldapConnectorRepository" ) );
+		assertTrue( applicationContext.containsBean( "com.foreach.across.modules.ldap.repositories.LdapConnectorRepository" ) );
 	}
 
 	@Configuration
