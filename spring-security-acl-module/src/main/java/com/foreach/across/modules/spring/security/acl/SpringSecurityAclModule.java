@@ -63,8 +63,7 @@ public class SpringSecurityAclModule extends AcrossModule
 	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
 		contextConfigurers.add( new AnnotatedClassConfigurer( AclSecurityConfiguration.class,
 		                                                      AcrossHibernateJpaModuleConfiguration.class,
-		                                                      EntityUiModuleConfiguration.class,
-		                                                      SpringSecurityAclModuleIcons.class ) );
+		                                                      EntityUiModuleConfiguration.class ) );
 	}
 
 	@Override
