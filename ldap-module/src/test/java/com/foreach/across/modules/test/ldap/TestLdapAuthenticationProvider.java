@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.ldap.server.ApacheDSContainer;
+import org.springframework.security.ldap.server.UnboundIdContainer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -87,15 +87,15 @@ public class TestLdapAuthenticationProvider
 	@Test
 	public void knownUserGetsAuthenticatedAsSecurityPrincipal() throws Exception {
 		User user = new User();
-		user.setUsername( "abergin" );
-		user.setPassword( "inflict" );
-		when( userService.getUserByUsername( "abergin", ldapUserDirectory ) ).thenReturn( Optional.of( user ) );
+		user.setUsername( "quoteguy" );
+		user.setPassword( "quoteguyspassword" );
+		when( userService.getUserByUsername( "quoteguy", ldapUserDirectory ) ).thenReturn( Optional.of( user ) );
 		LdapConnectorSettings ldapConnectorSettings = mock( LdapConnectorSettings.class );
 		when( ldapConnectorSettings.getUserObjectFilterForUser() ).thenReturn( "foo" );
 		ldapAuthenticationProvider.setSearchFilter( "(&(objectclass=inetorgperson)(uid={0}))" );
 		Authentication
 				authentication = ldapAuthenticationProvider.authenticate(
-				new UsernamePasswordAuthenticationToken( "abergin", "inflict" ) );
+				new UsernamePasswordAuthenticationToken( "quoteguy", "quoteguyspassword" ) );
 		assertNotNull( authentication );
 		assertEquals( user.getSecurityPrincipalId(), authentication.getPrincipal() );
 	}
@@ -118,7 +118,7 @@ public class TestLdapAuthenticationProvider
 			ldapConnector.setId( 1L );
 			ldapConnector.setUsername( "uid=admin,ou=system" );
 			ldapConnector.setPassword( "secret" );
-			ldapConnector.setBaseDn( "dc=foreach,dc=com" );
+			ldapConnector.setBaseDn( "dc=springframework,dc=org" );
 			ldapConnector.setHostName( "127.0.0.1" );
 			ldapConnector.setAdditionalUserDn( "ou=People" );
 			ldapConnector.setPort( 53389 );
@@ -134,8 +134,9 @@ public class TestLdapAuthenticationProvider
 		}
 
 		@Bean
-		public ApacheDSContainer apacheDSContainer() throws Exception {
-			return new ApacheDSContainer( "dc=foreach,dc=com", "classpath:ldif/opends.ldif" );
+		public UnboundIdContainer unboundIdContainer() throws Exception {
+			// https://github.com/spring-projects/spring-security/blob/master/ldap/src/integration-test/resources/test-server.ldif
+			return new UnboundIdContainer( "dc=springframework,dc=org", "classpath:ldif/opends.ldif" );
 		}
 
 		@Bean

@@ -32,8 +32,6 @@ import com.foreach.across.modules.user.services.UserService;
 import com.foreach.common.spring.properties.PropertyTypeRegistry;
 import com.querydsl.core.types.Predicate;
 import lombok.Getter;
-import org.apache.directory.shared.ldap.entry.Entry;
-import org.apache.directory.shared.ldap.name.LdapDN;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +43,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.security.ldap.server.ApacheDSContainer;
+import org.springframework.security.ldap.server.UnboundIdContainer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -68,7 +66,7 @@ import static org.mockito.Mockito.*;
 public class TestLdapConnectorSynchronization
 {
 	@Autowired
-	private ApacheDSContainer ldapContainer;
+	private UnboundIdContainer ldapContainer;
 
 	@Autowired
 	private LdapSynchronizationServiceImpl ldapSynchronizationService;
@@ -100,14 +98,6 @@ public class TestLdapConnectorSynchronization
 	}
 
 	@Test
-	public void apacheDsContainerHasLoadedLdifData() throws Exception {
-		Entry result = ldapContainer.getService().getAdminSession().lookup( new LdapDN( "dc=foreach,dc=com" ) );
-		assertNotNull( result );
-		assertEquals( "0.9.2342.19200300.100.1.25=foreach,0.9.2342.19200300.100.1.25=com",
-		              result.getDn().getNormName() );
-	}
-
-	@Test
 	public void ldapUserIsSynchronizedForAllUsers() {
 		PropertyTypeRegistry<String> registry = new PropertyTypeRegistry<>();
 		registry.setDefaultConversionService( conversionService );
@@ -121,7 +111,7 @@ public class TestLdapConnectorSynchronization
 		ldapUserDirectory.setLdapConnector( ldapConnector );
 		ldapSynchronizationService.synchronizeData( ldapUserDirectory );
 
-		verify( userService, times( 300 ) ).save( any( User.class ) );
+		verify( userService, times( 22 ) ).save( any( User.class ) );
 	}
 
 	@Test
@@ -216,7 +206,7 @@ public class TestLdapConnectorSynchronization
 			ldapConnector.setId( 1L );
 			ldapConnector.setUsername( "uid=admin,ou=system" );
 			ldapConnector.setPassword( "secret" );
-			ldapConnector.setBaseDn( "dc=foreach,dc=com" );
+			ldapConnector.setBaseDn( "dc=springframework,dc=org" );
 			ldapConnector.setHostName( "127.0.0.1" );
 			ldapConnector.setPort( 53389 );
 			ldapConnector.setLdapConnectorType( LdapConnectorType.OPENDS );
@@ -230,8 +220,9 @@ public class TestLdapConnectorSynchronization
 		}
 
 		@Bean
-		public ApacheDSContainer apacheDSContainer() throws Exception {
-			return new ApacheDSContainer( "dc=foreach,dc=com", "classpath:ldif/opends.ldif" );
+		public UnboundIdContainer unboundIdContainer() throws Exception {
+			// https://github.com/spring-projects/spring-security/blob/master/ldap/src/integration-test/resources/test-server.ldif
+			return new UnboundIdContainer( "dc=springframework,dc=org", "classpath:ldif/opends.ldif" );
 		}
 
 		@Bean
