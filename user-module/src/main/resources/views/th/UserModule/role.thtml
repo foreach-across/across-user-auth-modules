@@ -36,8 +36,7 @@
 						[[${permission.name}]]
 						<div class="small text-muted">[[${permission.description}]]</div>
 					</label>
-					<input type="hidden" name="_entity.restrictions" value="on"/>
-
+					<input type="hidden" name="_entity.permissions" value="on"/>
 				</div>
 			</div>
 		</div>
