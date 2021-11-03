@@ -40,6 +40,8 @@ public class LdapModuleSettings
 			"ldapModule.synchronizationTaskInitialDelay";
 	public static final String DELETE_USERS_AND_GROUPS_WHEN_DELETED_FROM_LDAPSOURCE =
 			"ldapModule.deleteUsersAndGroupsWhenDeletedFromLdapSource";
+	public static final String BREAK_ON_USER_SYNC_FAILURE =
+			"ldapModule.breakOnUserSyncFailure";
 
 	private boolean disableSynchronizationTask;
 	private Duration synchronizationTaskInterval = Duration.ofSeconds( 300 );
@@ -61,4 +63,5 @@ public class LdapModuleSettings
 	public void setSynchronizationTaskIntervalInSeconds( long synchronizationTaskIntervalInSeconds ) {
 		this.synchronizationTaskInterval = Duration.ofSeconds( synchronizationTaskIntervalInSeconds );
 	}
+	private boolean breakOnUserSyncFailure = true;
 }
