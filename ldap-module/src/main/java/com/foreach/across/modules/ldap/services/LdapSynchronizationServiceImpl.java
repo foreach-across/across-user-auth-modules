@@ -30,6 +30,7 @@ import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.GroupService;
 import com.foreach.across.modules.user.services.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -167,37 +168,13 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						if ( StringUtils.isNotBlank( name ) ) {
 							Collection<User> users = userService.findAll( query.username.equalsIgnoreCase( name ) );
 							if ( users.isEmpty() ) {
-								User user = new User();
-								user.setUsername( name );
-								user.setEmail( adapter.getStringAttribute( ldapConnectorSettings.getUserEmail() ) );
-								user.setEmailConfirmed( true );
-								user.setFirstName( adapter.getStringAttribute( ldapConnectorSettings.getFirstName() ) );
-								user.setLastName( adapter.getStringAttribute( ldapConnectorSettings.getLastName() ) );
-								user.setDisplayName(
-										adapter.getStringAttribute( ldapConnectorSettings.getDiplayName() ) );
-								user.setPassword( UUID.randomUUID().toString() );
-								user.setUserDirectory( userDirectory );
-								setRestrictions( user, ldapConnectorSettings, adapter );
-								userService.save( user );
-								itemsInLdap.add( user );
-								ldapPropertiesService.saveLdapProperties( user, adapter );
+								createNewUser( userDirectory, itemsInLdap, ldapConnectorSettings, adapter, name );
 							}
 							else {
-								users.forEach( user -> {
-									user.setEmail( adapter.getStringAttribute(
-											ldapConnectorSettings.getUserEmail() ) );
-									user.setFirstName( adapter.getStringAttribute(
-											ldapConnectorSettings.getFirstName() ) );
-									user.setLastName( adapter.getStringAttribute(
-											ldapConnectorSettings.getLastName() ) );
-									user.setDisplayName( adapter.getStringAttribute(
-											ldapConnectorSettings.getDiplayName() ) );
-									user.setDeleted( false );
-									setRestrictions( user, ldapConnectorSettings, adapter );
-									userService.save( user );
-									itemsInLdap.add( user );
-									ldapPropertiesService.saveLdapProperties( user, adapter );
-								} );
+								if ( users.size() > 1 ) {
+									LOG.debug( "Multiple users found for for name {}", name );
+								}
+								updateExistingUsers( itemsInLdap, ldapConnectorSettings, adapter, users );
 							}
 						}
 
@@ -214,6 +191,97 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 		}
 		return itemsInLdap;
+	}
+
+	private void updateExistingUsers( Set<User> itemsInLdap,
+	                                  LdapConnectorSettings ldapConnectorSettings,
+	                                  DirContextAdapter adapter,
+	                                  Collection<User> users ) {
+		users.forEach( user -> updateExistingUser( itemsInLdap, ldapConnectorSettings, adapter, user ) );
+	}
+
+	private void updateExistingUser( Set<User> itemsInLdap,
+	                                 LdapConnectorSettings ldapConnectorSettings,
+	                                 DirContextAdapter adapter,
+	                                 User user ) {
+		if ( !ldapModuleSettings.isBreakOnUserSyncFailure() ) {
+			try {
+				updateExistingUserInternal( itemsInLdap, ldapConnectorSettings, adapter, user );
+				saveLdapProperties( adapter, user );
+			}
+			catch ( Exception e ) {
+				LOG.error( "Something went wrong trying to update existing user {}", user.getDisplayName(), e );
+			}
+		}
+		else {
+			updateExistingUserInternal( itemsInLdap, ldapConnectorSettings, adapter, user );
+			saveLdapProperties( adapter, user );
+		}
+	}
+
+	private void updateExistingUserInternal( Set<User> itemsInLdap,
+	                                         LdapConnectorSettings ldapConnectorSettings,
+	                                         DirContextAdapter adapter,
+	                                         User user ) {
+		user.setEmail( adapter.getStringAttribute(
+				ldapConnectorSettings.getUserEmail() ) );
+		user.setFirstName( adapter.getStringAttribute(
+				ldapConnectorSettings.getFirstName() ) );
+		user.setLastName( adapter.getStringAttribute(
+				ldapConnectorSettings.getLastName() ) );
+		user.setDisplayName( adapter.getStringAttribute(
+				ldapConnectorSettings.getDiplayName() ) );
+		user.setDeleted( false );
+		setRestrictions( user, ldapConnectorSettings, adapter );
+
+		userService.save( user );
+		itemsInLdap.add( user );
+	}
+
+	private void saveLdapProperties( DirContextAdapter adapter, User user ) {
+		ldapPropertiesService.saveLdapProperties( user, adapter );
+	}
+
+	private void createNewUser( LdapUserDirectory userDirectory,
+	                            Set<User> itemsInLdap,
+	                            LdapConnectorSettings ldapConnectorSettings,
+	                            DirContextAdapter adapter,
+	                            String name ) {
+		if ( !ldapModuleSettings.isBreakOnUserSyncFailure() ) {
+			try {
+				User user = createNewUserInternal( userDirectory, itemsInLdap, ldapConnectorSettings, adapter, name );
+				saveLdapProperties( adapter, user );
+			}
+			catch ( Exception e ) {
+				LOG.error( "Something went wrong trying to create a new existing user for name {}", name, e );
+			}
+		}
+		else {
+			User user = createNewUserInternal( userDirectory, itemsInLdap, ldapConnectorSettings, adapter, name );
+			saveLdapProperties( adapter, user );
+		}
+	}
+
+	private User createNewUserInternal( LdapUserDirectory userDirectory,
+	                                    Set<User> itemsInLdap,
+	                                    LdapConnectorSettings ldapConnectorSettings,
+	                                    DirContextAdapter adapter,
+	                                    String name ) {
+		User user = new User();
+		user.setUsername( name );
+		user.setEmail( adapter.getStringAttribute( ldapConnectorSettings.getUserEmail() ) );
+		user.setEmailConfirmed( true );
+		user.setFirstName( adapter.getStringAttribute( ldapConnectorSettings.getFirstName() ) );
+		user.setLastName( adapter.getStringAttribute( ldapConnectorSettings.getLastName() ) );
+		user.setDisplayName(
+				adapter.getStringAttribute( ldapConnectorSettings.getDiplayName() ) );
+		user.setPassword( UUID.randomUUID().toString() );
+		user.setUserDirectory( userDirectory );
+		setRestrictions( user, ldapConnectorSettings, adapter );
+
+		userService.save( user );
+		itemsInLdap.add( user );
+		return user;
 	}
 
 	private void synchronizeUserMemberships( LdapUserDirectory userDirectory,
@@ -247,7 +315,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 								                             userService.save( user );
 								eventPublisher.publishEvent( new LdapEntityProcessedEvent<>( user, true, adapter ) );
 							                             }
-							);
+							     );
 
 						}
 
