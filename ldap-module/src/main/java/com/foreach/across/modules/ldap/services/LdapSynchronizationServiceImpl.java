@@ -167,37 +167,14 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 						if ( StringUtils.isNotBlank( name ) ) {
 							Collection<User> users = userService.findAll( query.username.equalsIgnoreCase( name ) );
 							if ( users.isEmpty() ) {
-								User user = new User();
-								user.setUsername( name );
-								user.setEmail( adapter.getStringAttribute( ldapConnectorSettings.getUserEmail() ) );
-								user.setEmailConfirmed( true );
-								user.setFirstName( adapter.getStringAttribute( ldapConnectorSettings.getFirstName() ) );
-								user.setLastName( adapter.getStringAttribute( ldapConnectorSettings.getLastName() ) );
-								user.setDisplayName(
-										adapter.getStringAttribute( ldapConnectorSettings.getDiplayName() ) );
-								user.setPassword( UUID.randomUUID().toString() );
-								user.setUserDirectory( userDirectory );
-								setRestrictions( user, ldapConnectorSettings, adapter );
-								userService.save( user );
-								itemsInLdap.add( user );
-								ldapPropertiesService.saveLdapProperties( user, adapter );
+								User user = createNewUserWithBasicProperties( userDirectory, name );
+								updateUserBasedOnLdapInformation( itemsInLdap, ldapConnectorSettings, adapter, user );
 							}
 							else {
-								users.forEach( user -> {
-									user.setEmail( adapter.getStringAttribute(
-											ldapConnectorSettings.getUserEmail() ) );
-									user.setFirstName( adapter.getStringAttribute(
-											ldapConnectorSettings.getFirstName() ) );
-									user.setLastName( adapter.getStringAttribute(
-											ldapConnectorSettings.getLastName() ) );
-									user.setDisplayName( adapter.getStringAttribute(
-											ldapConnectorSettings.getDiplayName() ) );
-									user.setDeleted( false );
-									setRestrictions( user, ldapConnectorSettings, adapter );
-									userService.save( user );
-									itemsInLdap.add( user );
-									ldapPropertiesService.saveLdapProperties( user, adapter );
-								} );
+								if ( users.size() > 1 ) {
+									LOG.debug( "Multiple users found for for name {}", name );
+								}
+								users.forEach( user -> updateUserBasedOnLdapInformation( itemsInLdap, ldapConnectorSettings, adapter, user ) );
 							}
 						}
 
@@ -214,6 +191,34 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 
 		}
 		return itemsInLdap;
+	}
+
+	private User createNewUserWithBasicProperties( LdapUserDirectory userDirectory, String name ) {
+		User user = new User();
+		user.setUsername( name );
+		user.setEmailConfirmed( true );
+		user.setPassword( UUID.randomUUID().toString() );
+		user.setUserDirectory( userDirectory );
+		return user;
+	}
+
+	private void updateUserBasedOnLdapInformation( Set<User> itemsInLdap, LdapConnectorSettings ldapConnectorSettings, DirContextAdapter adapter, User user ) {
+		try {
+			user.setEmail( adapter.getStringAttribute( ldapConnectorSettings.getUserEmail() ) );
+			user.setFirstName( adapter.getStringAttribute( ldapConnectorSettings.getFirstName() ) );
+			user.setLastName( adapter.getStringAttribute( ldapConnectorSettings.getLastName() ) );
+			user.setDisplayName( adapter.getStringAttribute( ldapConnectorSettings.getDiplayName() ) );
+			user.setDeleted( false );
+			setRestrictions( user, ldapConnectorSettings, adapter );
+
+			userService.save( user );
+
+			itemsInLdap.add( user );
+			ldapPropertiesService.saveLdapProperties( user, adapter );
+		}
+		catch ( Exception e ) {
+			LOG.error( "Something went wrong trying to update existing user {}", user.getDisplayName(), e );
+		}
 	}
 
 	private void synchronizeUserMemberships( LdapUserDirectory userDirectory,
@@ -245,7 +250,7 @@ public class LdapSynchronizationServiceImpl implements LdapSynchronizationServic
 							     .findFirst().ifPresent( user -> {
 								                             user.setGroups( groupsForUser );
 								                             userService.save( user );
-								eventPublisher.publishEvent( new LdapEntityProcessedEvent<>( user, true, adapter ) );
+								                             eventPublisher.publishEvent( new LdapEntityProcessedEvent<>( user, true, adapter ) );
 							                             }
 							);
 
