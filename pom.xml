@@ -40,6 +40,19 @@
 		</license>
 	</licenses>
 
+	<distributionManagement>
+		<repository>
+			<id>across</id>
+			<name>Across Releases Repository</name>
+			<url>https://repository.foreach.be/nexus/repository/across-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>across</id>
+			<name>Across Snapshot Repository</name>
+			<url>https://repository.foreach.be/nexus/repository/across-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<developers>
 		<developer>
 			<name>Foreach</name>
@@ -59,7 +72,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<revision>3.0.0.RELEASE</revision>
+		<revision>3.2.1-SNAPSHOT</revision>
 	</properties>
 
 	<modules>

@@ -35,14 +35,13 @@ import com.foreach.across.modules.oauth2.config.security.CustomTokenEndpointsCon
 import com.foreach.across.modules.oauth2.config.security.ResourceServerSecurityConfiguration;
 import com.foreach.across.modules.oauth2.installers.TokenStoreSchemaInstaller;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.modules.user.UserModule;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
 
 import java.util.Set;
 
 @AcrossDepends(
-		required = { UserModule.NAME, SpringSecurityModule.NAME },
+		required = { SpringSecurityModule.NAME },
 		optional = { "EhcacheModule", "EntityModule" }
 )
 public class OAuth2Module extends AcrossModule implements HibernatePackageConfiguringModule
@@ -66,7 +65,6 @@ public class OAuth2Module extends AcrossModule implements HibernatePackageConfig
 				)
 		);
 	}
-
 	@Override
 	public Object[] getInstallers() {
 		return new Object[] {
