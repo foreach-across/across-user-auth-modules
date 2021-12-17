@@ -42,11 +42,19 @@ import java.util.Set;
 
 @AcrossDepends(
 		required = { SpringSecurityModule.NAME },
-		optional = { "EhcacheModule", "EntityModule" }
+		optional = { "EhcacheModule", "EntityModule", "UserModule" }
 )
 public class OAuth2Module extends AcrossModule implements HibernatePackageConfiguringModule
 {
 	public static final String NAME = "OAuth2Module";
+
+	public OAuth2Module() {
+		setExposeFilter(
+				new BeanFilterComposite(
+						new ClassBeanFilter( FrameworkEndpointHandlerMapping.class )
+				)
+		);
+	}
 
 	@Override
 	public String getName() {
@@ -58,13 +66,6 @@ public class OAuth2Module extends AcrossModule implements HibernatePackageConfig
 		return "Provides Oauth 2 security";
 	}
 
-	public OAuth2Module() {
-		setExposeFilter(
-				new BeanFilterComposite(
-						new ClassBeanFilter( FrameworkEndpointHandlerMapping.class )
-				)
-		);
-	}
 	@Override
 	public Object[] getInstallers() {
 		return new Object[] {
