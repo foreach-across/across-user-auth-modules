@@ -18,6 +18,7 @@ package com.foreach.across.modules.ldap.config;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.controllers.AjaxTestLdapConnectorController;
@@ -50,6 +51,7 @@ public class LdapCoreConfiguration
 {
 	@Bean
 	@ConditionalOnAcrossModule({ "UserModule", "PropertiesModule" })
+	@Exposed
 	@ConditionalOnProperty(value = "disable-synchronization-task", prefix = "ldap-module", havingValue = "false", matchIfMissing = true)
 	public LdapSynchronizationTask ldapSynchronizationTask( LdapUserDirectoryRepository ldapUserDirectoryRepository,
 	                                                        DistributedLockRepository lockRepository,
