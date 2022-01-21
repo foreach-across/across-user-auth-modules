@@ -29,6 +29,7 @@ import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService;
 import com.foreach.across.modules.user.services.*;
 import com.foreach.common.concurrent.locks.distributed.DistributedLockRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,7 @@ import java.net.UnknownHostException;
  * @since 1.0.0
  */
 @Configuration
+@Slf4j
 @EnableAcrossJpaRepositories(basePackageClasses = LdapConnectorRepository.class)
 public class LdapCoreConfiguration
 {
@@ -52,6 +54,7 @@ public class LdapCoreConfiguration
 	public LdapSynchronizationTask ldapSynchronizationTask( LdapUserDirectoryRepository ldapUserDirectoryRepository,
 	                                                        DistributedLockRepository lockRepository,
 	                                                        LdapSynchronizationService ldapSynchronizationService ) throws UnknownHostException {
+		LOG.info( "Creating LdapSynchronizationTask bean" );
 		return new LdapSynchronizationTask( ldapSynchronizationService, ldapUserDirectoryRepository,
 		                                    lockRepository, InetAddress.getLocalHost().getHostName() );
 	}

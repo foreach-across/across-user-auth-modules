@@ -20,6 +20,7 @@ import com.foreach.across.core.events.AcrossContextBootstrappedEvent;
 import com.foreach.across.modules.ldap.LdapModuleSettings;
 import com.foreach.across.modules.ldap.tasks.LdapSynchronizationTask;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +39,7 @@ import java.time.Instant;
 @EnableScheduling
 @ConditionalOnBean(LdapSynchronizationTask.class)
 @RequiredArgsConstructor
+@Slf4j
 public class LdapSchedulerTaskConfiguration
 {
 	private TaskScheduler taskScheduler;
@@ -46,9 +48,12 @@ public class LdapSchedulerTaskConfiguration
 
 	@EventListener
 	public void registerTasks( AcrossContextBootstrappedEvent ignore ) {
+		LOG.info( "LdapSchedulerTaskConfiguration listening to AcrossContextBootstrappedEvent" );
 		Instant initial = Instant.now().plus( ldapModuleSettings.getSynchronizationTaskInitialDelay() );
 
+		LOG.info( "LdapSchedulerTaskConfiguration scheduling LdapSynchronizationTask" );
 		taskScheduler.scheduleWithFixedDelay( ldapSynchronizationTask, initial, ldapModuleSettings.getSynchronizationTaskInterval() );
+		LOG.info( "LdapSchedulerTaskConfiguration scheduled LdapSynchronizationTask" );
 	}
 
 	@Bean(destroyMethod = "shutdown")
