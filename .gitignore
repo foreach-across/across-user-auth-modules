@@ -5,3 +5,10 @@ target
 *.iml
 .flattened-pom.xml
 local-data
+# Maven:
+.effective-pom.xml
+.dependency-tree.txt
+.foreach-deps.txt
+
+# Emacs:
+*~
