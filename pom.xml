@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>across-standard-module-parent</artifactId>
-		<version>5.2.1-SNAPSHOT</version>
+		<version>5.2.1.RELEASE</version>
 		<relativePath/>
 	</parent>
 
@@ -60,7 +60,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<revision>3.2.1-SNAPSHOT</revision>
+		<revision>3.2.1.RELEASE</revision>
 	</properties>
 
 	<modules>
@@ -88,7 +88,7 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>entity-module</artifactId>
-				<version>4.2.1-SNAPSHOT</version>
+				<version>4.2.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
@@ -98,17 +98,17 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-module</artifactId>
-				<version>4.2.1-SNAPSHOT</version>
+				<version>4.2.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-acl-module</artifactId>
-				<version>4.2.1-SNAPSHOT</version>
+				<version>4.2.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>admin-web-module</artifactId>
-				<version>4.2.1-SNAPSHOT</version>
+				<version>4.2.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
@@ -123,7 +123,7 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>user-module</artifactId>
-				<version>4.2.1-SNAPSHOT</version>
+				<version>4.2.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
