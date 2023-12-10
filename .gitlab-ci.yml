@@ -79,54 +79,28 @@ cache:
   paths:
     - $MAVEN_REPO_DIR
 
-# Required by frontend-maven-plugin, which already slows the builds quite a lot,
-# because it builds the front-end also in all the jobs where it's not needed.
-# Having to install bzip2 so that it can unzip everything it downloads (node, yarn, ...)
-# makes it even slower (a custom docker build image would help with that).services:
-# TODO: Use GitLab CI/CD caching of the downloaded/installed node/yarn?
-# TODO: It looks like we don't need SpringSecurityAclModule anywhere, so we can probably just drop it.
-before_script:
-  - apt update
-  - apt install bzip2
-
 after_script:
   - rm -rf $MAVEN_REPO_DIR/com/foreach || echo "Nothing to delete" # Don't cache this
 
-#curl:google:
-#  script:
-#    - curl --connect-timeout 10 https://www.google.com
-#    - echo "Success Google"
-#
-#curl:nexus-foreach:
-#  script:
-#    - curl --connect-timeout 10 https://repository.foreach.be/nexus/repository/public/archetype-catalog.xml
-#    - echo "Success Nexus Foreach"
+.frontend:
+  stage: test
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:7.10.0
+  script:
+    - cd ${FRONTEND_DIR}
+    - yarn install
+    #- yarn build:prod
+    - ./node_modules/gulp/bin/gulp.js scss js --production
 
-#.frontend:
-#  stage: test
-#  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:10.15
-#  script:
-#    - cd ${FRONTEND_DIR}
-#    - yarn install
-#    - yarn build:prod
-#
-#frontend:spring-security-acl-module:
-#  extends:
-#    - .frontend
-#  variables:
-#    FRONTEND_DIR: spring-security-acl-module/src/main/frontend
-#  artifacts:
-#    paths:
-#      - spring-security-acl-module/src/main/resources/views/static/SpringSecurityAclModule/
-#
-#frontend:entity-module:
-#  extends:
-#    - .frontend
-#  variables:
-#    FRONTEND_DIR: entity-module/src/main/frontend
-#  artifacts:
-#    paths:
-#      - entity-module/src/main/resources/views/static/entity/
+# I've manually verified that this produces the exact same css/js files as in 4.1.0.RELEASE.
+# Curiously, the 4.2.1.RELEASE simply does not contain those css/js files ...
+frontend:spring-security-acl-module:
+  extends:
+    - .frontend
+  variables:
+    FRONTEND_DIR: spring-security-acl-module/src/main/frontend
+  artifacts:
+    paths:
+      - spring-security-acl-module/src/main/resources/views/static/SpringSecurityAclModule/
 
 
 # For merge requests do not `deploy` but only run `verify`.
@@ -166,34 +140,6 @@ verify:jdk8:
 #  extends:
 #    - .verify
 #  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/maven:3.8-eclipse-temurin-21
-
-# bootstrap-ui-module: end-to-end tests:
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn --batch-mode dependency:purge-local-repository -DmanualInclude=com.foreach.across -DreResolve=false -Dverbose=true
-#  cp ${HOME}/.npmrc ${bamboo.working.directory}
-#  docker-compose run --rm frontend sh -c 'yarn run build:prod'
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn clean package -U --batch-mode -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dincoming.build.key=${bamboo.buildKey} -Dincoming.build.number=${bamboo.buildNumber} -Dincoming.build.date=${bamboo.buildTimeStamp}
-#  docker-compose --no-ansi up -d --build web
-#  docker-compose --no-ansi up --build test
-# Roughly summarized, the end2end tests:
-# - run bootstrap-ui-module-test.jar in a Java container (In theory, we could run this in a job service,
-#   using the artifact published by the maven build, but we'd have to build and publish a docker image for that)
-# - run Cypress in a cypress/browsers container, with the actual end-to-end tests
-
-# entity-ui-module: end-to-end tests
-#  cp ${HOME}/.npmrc ${bamboo.working.directory}
-#  docker-compose run --rm frontend sh -c 'yarn run build:prod'
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn --batch-mode dependency:purge-local-repository -DmanualInclude=com.foreach.across -DreResolve=false -Dverbose=true
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn clean package -U -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dincoming.build.key=${bamboo.buildKey} -Dincoming.build.number=${bamboo.buildNumber} -Dincoming.build.date=${bamboo.buildTimeStamp}
-#  docker-compose --no-ansi up -d --build web
-#  docker-compose --no-ansi up --build e2e
-# This is more or less similar to bootstrap-ui-module (the docker-compose files have the same structure, but with quite a few differences)
-
-# Easiest solution is probably to run the end-to-end tests in a job:
-# - with a DinD service container
-# - and 'image: docker' for the "job" container: this has docker-compose:
-#   1. Run the application-under-test in a container
-#   2. And the tests in another
-# - Or: run the tests as the "job" container, and run (1) as a service container, using docker-compose
 
 .itest:
   stage: test
