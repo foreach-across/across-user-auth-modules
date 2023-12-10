@@ -66,21 +66,20 @@
 	<modules>
 		<module>spring-security-acl-module</module>
 		<module>test-admin-ui</module>
+		<module>user-module</module>
+		<module>user-module-test-web</module>
 	</modules>
 
 	<dependencyManagement>
 		<dependencies>
+
 			<dependency>
 				<groupId>javax.el</groupId>
 				<artifactId>javax.el-api</artifactId>
 				<version>3.0.1-b06</version>
 				<scope>test</scope>
 			</dependency>
-			<dependency>
-				<groupId>com.foreach.across.modules</groupId>
-				<artifactId>spring-security-module</artifactId>
-				<version>${across-base-modules.version}</version>
-			</dependency>
+
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>admin-web-module</artifactId>
@@ -96,16 +95,33 @@
 				<artifactId>entity-module</artifactId>
 				<version>${across-entity-admin-modules.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>properties-module</artifactId>
+                <version>${across-entity-admin-modules.version}</version>
+            </dependency>
+
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>across-hibernate-module</artifactId>
 				<version>${across-base-modules.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>ehcache-module</artifactId>
+                <version>${across-base-modules.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>logging-module</artifactId>
 				<version>${across-base-modules.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>spring-security-module</artifactId>
+                <version>${across-base-modules.version}</version>
+            </dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

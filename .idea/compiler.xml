@@ -9,6 +9,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="test-admin-ui" />
         <module name="spring-security-acl-module" />
+        <module name="user-module" />
+        <module name="user-module-test-web" />
       </profile>
     </annotationProcessing>
   </component>

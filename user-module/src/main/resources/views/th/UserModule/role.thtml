@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright 2014 the original author or authors
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!--/* Renders permissions by group as an accordeon */-->
+<div th:fragment="permissions(component)" th:inline="text" th:with="permissionsByPermissionGroup=${component.getAttribute('permissionsByPermissionGroup')}"
+     class="panel-group" id="permissions-accordion" role="tablist" aria-multiselectable="true">
+	<div th:each="entry,entryStat : ${permissionsByPermissionGroup}" th:with="group=${entry.key},permissions=${entry.value}" class="card mb-1">
+		<div class="card-header" role="tab" th:id="${#ids.seq('pg-heading')}">
+			<th:block class="card-title my-0" th:with="bodyId=${#ids.seq('pg-body')}">
+				<a role="button" data-toggle="collapse" data-parent="#permissions-accordion"
+				   th:href="${'#' + bodyId}" th:attr="aria-controls=${bodyId},aria-expanded=${entryStat.first}" th:classappend="${not entryStat.first} ? 'collapsed'">
+					[[${group.title}]]
+				</a>
+            </th:block>
+		</div>
+		<div th:id="${#ids.prev('pg-body')}" class="collapse" role="tabpanel"
+		     th:attr="aria-labelledby=${#ids.prev('pg-heading')}" th:classappend="${entryStat.first} ? 'in'">
+			<div class="card-body">
+				<p>[[${group.description}]]</p>
+				<div class="checkbox" th:each="permission : ${permissions}">
+					<label>
+						<input type="checkbox" th:value="${permission.id}" th:checked="${entity.hasPermission(permission)}" name="entity.permissions"/>
+						[[${permission.name}]]
+						<div class="small text-muted">[[${permission.description}]]</div>
+					</label>
+					<input type="hidden" name="_entity.permissions" value="on"/>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
