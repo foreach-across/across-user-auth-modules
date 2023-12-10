@@ -23,7 +23,6 @@ import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.user.UserModule;
@@ -97,15 +96,6 @@ public class ITUserModule
 
 		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" ).orElse( null );
 		assertNotNull( machine );
-
-		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
-
-		try {
-			assertNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
-		}
-		catch ( NoSuchBeanDefinitionException e ) {
-			assertTrue( true ); //If we get this exception, the desired result has been achieved.
-		}
 	}
 
 	@Test
@@ -129,16 +119,6 @@ public class ITUserModule
 		Collection<UserDirectory> directories = userDirectoryService.getUserDirectories();
 		assertTrue( directories.contains( userDirectoryService.getDefaultUserDirectory() ) );
 		assertTrue( directories.contains( saved ) );
-	}
-
-	@Test
-	public void aclInstallerShouldNotHaveRun() {
-		Role adminRole = roleService.getRole( "ROLE_ADMIN" );
-
-		assertNotNull( adminRole );
-		assertFalse( adminRole.hasPermission( AclAuthorities.AUDIT_ACL ) );
-		assertFalse( adminRole.hasPermission( AclAuthorities.MODIFY_ACL ) );
-		assertFalse( adminRole.hasPermission( AclAuthorities.TAKE_OWNERSHIP ) );
 	}
 
 	@Test

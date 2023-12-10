@@ -60,7 +60,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<revision>4.2.1.RELEASE</revision>
+		<revision>4.3-develop</revision>
 	</properties>
 
 	<modules>
@@ -88,11 +88,6 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-module</artifactId>
-				<version>4.2.1.RELEASE</version>
-			</dependency>
-			<dependency>
-				<groupId>com.foreach.across.modules</groupId>
-				<artifactId>spring-security-acl-module</artifactId>
 				<version>4.2.1.RELEASE</version>
 			</dependency>
 			<dependency>

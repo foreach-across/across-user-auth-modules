@@ -52,11 +52,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>spring-security-acl-module</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>admin-web-module</artifactId>
 			<optional>true</optional>
 		</dependency>

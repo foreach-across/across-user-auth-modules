@@ -64,7 +64,6 @@ public class UserModule extends AcrossModule implements HibernatePackageConfigur
 //				new UserSchemaInstaller( schemaConfiguration ),
 //				new AuditableTablesInstaller( schemaConfiguration ),
 				DefaultUserInstaller.class,
-				AclPermissionsInstaller.class
 		};
 	}
 

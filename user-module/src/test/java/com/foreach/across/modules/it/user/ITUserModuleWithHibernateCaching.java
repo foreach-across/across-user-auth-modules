@@ -29,7 +29,6 @@ import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
-import com.foreach.across.modules.user.services.GroupAclInterceptor;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.test.AcrossTestConfiguration;
@@ -81,13 +80,6 @@ public class ITUserModuleWithHibernateCaching
 		assertNotNull( machine );
 
 		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
-
-		try {
-			assertNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
-		}
-		catch ( NoSuchBeanDefinitionException e ) {
-			assertTrue( true ); //If we get this exception, the desired result has been achieved.
-		}
 
 		// todo: getting a cachemanager by name has been removed in ehcache version, refactor to a more robust approach?
 		CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get( 0 );
