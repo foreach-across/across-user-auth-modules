@@ -12,3 +12,5 @@ local-data
 
 # Emacs:
 *~
+
+spring-security-acl-module/src/main/resources/views/

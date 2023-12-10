@@ -20,12 +20,11 @@
 
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
-		<artifactId>spring-security-acl-module-project</artifactId>
+		<artifactId>across-user-auth-modules</artifactId>
 		<version>${revision}</version>
 	</parent>
 
 	<artifactId>spring-security-acl-module</artifactId>
-	<name>Spring Security ACL Module</name>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>

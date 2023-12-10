@@ -2,18 +2,14 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="spring-security-acl-module" />
         <module name="test-admin-ui" />
+        <module name="spring-security-acl-module" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="spring-security-acl-module" target="1.8" />
-      <module name="spring-security-acl-module-project" target="1.8" />
-      <module name="test-admin-ui" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
