@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="render(component)">
+    <div class="form-group">
+        <p>
+            <a href="#" class="btn btn-default disabled js-form-test-ldapconnector" role="button">Test connector</a>
+        </p>
+        <div class="panel panel-default hidden">
+          <div class="panel-body js-form-test-ldapconnector-output"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

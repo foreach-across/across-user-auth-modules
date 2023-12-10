@@ -1,0 +1,15 @@
+ldapUserObjectClass: user
+ldapUserObjectFilter: (&(objectCategory=Person)(sAMAccountName=*))
+ldapUserObjectFilterForUser: (&(objectCategory=Person)(sAMAccountName={0}))
+ldapUsername: sAMAccountName
+ldapUserEmail: mail
+ldapUserFirstName: givenName
+ldapUserLastName: sn
+ldapUserDisplayName: displayName
+ldapUserPassword: unicodePwd
+ldapGroupObjectClass: group
+ldapGroupObjectFilter: (objectCategory=Group)
+ldapGroupName: cn
+ldapGroupUsernames: member
+ldapUserGroup: memberOf
+ldapUserAccountControl: userAccountControl

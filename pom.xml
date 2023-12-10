@@ -68,6 +68,8 @@
 		<module>test-admin-ui</module>
 		<module>user-module</module>
 		<module>user-module-test-web</module>
+		<module>ldap-module</module>
+		<module>ldap-module-test-web</module>
 	</modules>
 
 	<dependencyManagement>
@@ -104,6 +106,11 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>across-hibernate-module</artifactId>
+				<version>${across-base-modules.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.across.modules</groupId>
+				<artifactId>debug-web-module</artifactId>
 				<version>${across-base-modules.version}</version>
 			</dependency>
             <dependency>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2014 the original author or authors
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+	<!-- Default table names -->
+	<property name="table.ldap_connector" value="ldap_connector"/>
+
+	<changeSet id="201603171006" author="marc" runAlways="true" dbms="oracle">
+		<sql>
+			ALTER session SET nls_length_semantics=CHAR;
+		</sql>
+	</changeSet>
+
+	<changeSet id="201606161418" author="marc">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.ldap_connector}"/>
+			</not>
+		</preConditions>
+
+		<comment>Creates Ldap Connector table</comment>
+
+		<createTable tableName="${table.ldap_connector}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_ldap_connector"/>
+			</column>
+			<column name="name" type="java.sql.Types.NVARCHAR(255)">
+				<constraints nullable="false" unique="false"/>
+			</column>
+			<column name="hostname" type="java.sql.Types.NVARCHAR(255)">
+				<constraints nullable="false" unique="false"/>
+			</column>
+			<column name="port" type="java.sql.Types.INTEGER"/>
+			<column name="connector_type" type="java.sql.Types.INTEGER"/>
+			<column name="username" type="java.sql.Types.NVARCHAR(255)"/>
+			<column name="password" type="java.sql.Types.NVARCHAR(100)"/>
+			<column name="read_timeout" type="java.sql.Types.INTEGER"/>
+			<column name="search_timeout" type="java.sql.Types.NVARCHAR(255)"/>
+			<column name="connection_timeout" type="java.sql.Types.NVARCHAR(255)"/>
+			<column name="base_dn" type="java.sql.Types.NVARCHAR(255)"/>
+			<column name="additional_user_dn" type="java.sql.Types.NVARCHAR(255)"/>
+			<column name="additional_group_dn" type="java.sql.Types.NVARCHAR(255)"/>
+			<column name="created_by" type="java.sql.Types.NVARCHAR(100)"/>
+			<column name="created_date" type="java.sql.Types.TIMESTAMP"/>
+			<column name="last_modified_by" type="java.sql.Types.NVARCHAR(100)"/>
+			<column name="last_modified_date" type="java.sql.Types.TIMESTAMP"/>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="201608181433" author="arne">
+		<preConditions>
+			<not>
+				<columnExists tableName="${table.ldap_connector}" columnName="authenticate_as"/>
+			</not>
+		</preConditions>
+
+		<comment>Adds authenticate_as column to LDAP connector table</comment>
+
+		<addColumn tableName="${table.ldap_connector}">
+			<column name="authenticate_as" type="java.sql.Types.VARCHAR(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<!-- AX-57 Liquibase upgrade to 3.5.3 introduced quoting of columns on reserved keywords, this broke the "password" column -->
+	<changeSet id="201611280826" author="marc">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="${table.ldap_connector}" columnName="conn_pwd"/>
+			</not>
+		</preConditions>
+
+		<comment>Rename the password column to conn_pwd, as this is a reserved keyword in Oracle</comment>
+
+		<renameColumn tableName="${table.ldap_connector}" oldColumnName="password" newColumnName="conn_pwd"
+		              columnDataType="java.sql.Types.NVARCHAR(100)"/>
+	</changeSet>
+</databaseChangeLog>

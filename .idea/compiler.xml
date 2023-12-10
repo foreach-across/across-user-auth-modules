@@ -11,6 +11,8 @@
         <module name="spring-security-acl-module" />
         <module name="user-module" />
         <module name="user-module-test-web" />
+        <module name="ldap-module-test-web" />
+        <module name="ldap-module" />
       </profile>
     </annotationProcessing>
   </component>

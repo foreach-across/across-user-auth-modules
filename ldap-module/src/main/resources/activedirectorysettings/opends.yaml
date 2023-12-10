@@ -1,0 +1,15 @@
+ldapUserObjectClass: inetorgperson
+ldapUserObjectFilter: (objectclass=inetorgperson)
+ldapUserObjectFilterForUser: (&(objectclass=inetorgperson)(uid={0}))
+ldapUsername: uid
+ldapUserEmail: mail
+ldapUserFirstName: givenName
+ldapUserLastName: sn
+ldapUserDisplayName: cn
+ldapUserPassword: userpassword
+ldapGroupObjectClass: groupOfUniqueNames
+ldapGroupObjectFilter: (objectclass=groupOfUniqueNames)
+ldapGroupName: cn
+ldapGroupUsernames: uniqueMember
+ldapUserGroup: uniqueMember
+ldapUserAccountControl: userAccountControl
