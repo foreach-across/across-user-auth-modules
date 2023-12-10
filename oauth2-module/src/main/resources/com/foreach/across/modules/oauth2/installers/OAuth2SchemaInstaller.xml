@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2014 the original author or authors
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+	<!-- Default table names -->
+	<property name="table.client" value="oauth_client"/>
+	<property name="table.principal" value="um_principal"/>
+	<property name="table.client_scope" value="oauth_client_scope"/>
+	<property name="table.scope" value="oauth_scope"/>
+	<property name="table.resource" value="oauth_resource_id"/>
+	<property name="table.grant_type" value="oauth_grant_type"/>
+	<property name="table.redirect_uri" value="oauth_redirect_uri"/>
+
+	<changeSet id="201406251551" author="asm" runAlways="true" dbms="oracle">
+		<sql>
+			ALTER session SET nls_length_semantics=CHAR;
+		</sql>
+	</changeSet>
+
+	<changeSet id="201406251552" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.client}"/>
+			</not>
+		</preConditions>
+
+		<comment>Creates OAuth client table</comment>
+
+		<createTable tableName="${table.client}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_client"/>
+			</column>
+			<column name="client_secret" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="is_secret_required" type="java.sql.Types.BOOLEAN"/>
+			<column name="access_token_validity_seconds" type="java.sql.Types.INTEGER"/>
+			<column name="refresh_token_validity_seconds" type="java.sql.Types.INTEGER"/>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="201408221234" author="arne">
+		<preConditions>
+			<not>
+				<foreignKeyConstraintExists foreignKeyTableName="${table.client}" foreignKeyName="fk_oauth_id_pid"/>
+			</not>
+		</preConditions>
+		<addForeignKeyConstraint baseTableName="${table.client}"
+		                         baseColumnNames="id"
+		                         constraintName="fk_oauth_id_pid"
+		                         referencedTableName="${table.principal}"
+		                         referencedColumnNames="id"/>
+	</changeSet>
+
+	<changeSet id="201406251607B" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.scope}"/>
+			</not>
+		</preConditions>
+
+		<comment>Create OAuth2 scope table</comment>
+
+		<createTable tableName="${table.scope}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_scope"/>
+			</column>
+			<column name="name" type="java.sql.Types.VARCHAR(255)"/>
+		</createTable>
+
+		<addNotNullConstraint tableName="${table.scope}" columnName="name"
+		                      columnDataType="java.sql.Types.VARCHAR(255)"/>
+	</changeSet>
+
+	<changeSet id="201407311028" author="arne" dbms="mysql">
+		<comment>Set character set for scope name in mysql</comment>
+		<sql>
+			ALTER TABLE ${table.scope}
+			MODIFY name VARCHAR(255)
+			CHARACTER SET utf8
+			COLLATE utf8_unicode_ci
+		</sql>
+	</changeSet>
+
+	<changeSet id="201407311029" author="arne">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="${table.scope}" columnNames="name"/>
+			</not>
+		</preConditions>
+		<createIndex tableName="${table.scope}" indexName="ix_oauth_scope_name" unique="true">
+			<column name="name"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="201406251609B" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.client_scope}"/>
+			</not>
+		</preConditions>
+
+		<comment>Creates OAuth client-scope link table</comment>
+
+		<createTable tableName="${table.client_scope}">
+			<column name="client_id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_scope"/>
+			</column>
+			<column name="scope_id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_clnt_scope"/>
+			</column>
+			<column name="auto_approve" type="java.sql.Types.BOOLEAN"/>
+		</createTable>
+
+		<addForeignKeyConstraint baseTableName="${table.client_scope}" baseColumnNames="client_id"
+		                         constraintName="fk_oauth_cs_clnt_id"
+		                         referencedTableName="${table.client}"
+		                         referencedColumnNames="id"/>
+		<addForeignKeyConstraint baseTableName="${table.client_scope}" baseColumnNames="scope_id"
+		                         constraintName="fk_oauth_cs_scope_id"
+		                         referencedTableName="${table.scope}"
+		                         referencedColumnNames="id"/>
+	</changeSet>
+
+	<changeSet id="201406251612" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.resource}"/>
+			</not>
+		</preConditions>
+
+		<comment>Create OAuth2 resource ID table</comment>
+
+		<createTable tableName="${table.resource}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_rsrcid"/>
+			</column>
+			<column name="resource_id" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="client_id" type="java.sql.Types.BIGINT"/>
+		</createTable>
+
+		<addForeignKeyConstraint baseTableName="${table.resource}" baseColumnNames="client_id"
+		                         constraintName="fk_oauth_crsrc_clnt_id"
+		                         referencedTableName="${table.client}"
+		                         referencedColumnNames="id"/>
+	</changeSet>
+
+	<changeSet id="201406251618" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.grant_type}"/>
+			</not>
+		</preConditions>
+
+		<comment>Create OAuth2 granttype table</comment>
+
+		<createTable tableName="${table.grant_type}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_grnt_tp"/>
+			</column>
+			<column name="grant_type" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="client_id" type="java.sql.Types.BIGINT"/>
+		</createTable>
+
+		<addForeignKeyConstraint baseTableName="${table.grant_type}" baseColumnNames="client_id"
+		                         constraintName="fk_oauth_cgt_clnt_id"
+		                         referencedTableName="${table.client}"
+		                         referencedColumnNames="id"/>
+	</changeSet>
+
+	<changeSet id="201406251619" author="asm">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="${table.redirect_uri}"/>
+			</not>
+		</preConditions>
+
+		<comment>Create OAuth2 redirect uri table</comment>
+
+		<createTable tableName="${table.redirect_uri}">
+			<column name="id" type="java.sql.Types.BIGINT">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_oauth_redir_uri"/>
+			</column>
+			<column name="redirect_uri" type="java.sql.Types.VARCHAR(255)"/>
+			<column name="client_id" type="java.sql.Types.BIGINT"/>
+		</createTable>
+
+		<addForeignKeyConstraint baseTableName="${table.redirect_uri}" baseColumnNames="client_id"
+		                         constraintName="fk_oauth_cru_clnt_id"
+		                         referencedTableName="${table.client}"
+		                         referencedColumnNames="id"/>
+	</changeSet>
+
+	<changeSet id="201407071447" author="asm">
+		<addColumn tableName="${table.client}">
+			<column name="client_id" type="java.sql.Types.VARCHAR(255)"/>
+		</addColumn>
+
+		<addNotNullConstraint tableName="${table.client}" columnName="client_id"
+		                      columnDataType="java.sql.Types.VARCHAR(255)"/>
+
+	</changeSet>
+
+	<changeSet id="201407080837" author="asm">
+		<dropPrimaryKey tableName="${table.redirect_uri}"/>
+		<dropPrimaryKey tableName="${table.grant_type}"/>
+		<dropPrimaryKey tableName="${table.resource}"/>
+		<dropColumn tableName="${table.redirect_uri}" columnName="id"/>
+		<dropColumn tableName="${table.grant_type}" columnName="id"/>
+		<dropColumn tableName="${table.resource}" columnName="id"/>
+	</changeSet>
+	
+	<changeSet id="201408291124" author="marc">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="oauth_client_role"/>
+		</preConditions>
+		<comment>This table has been remove in favour of principal_role</comment>
+		<dropTable tableName="oauth_client_role"/>
+	</changeSet>
+</databaseChangeLog>

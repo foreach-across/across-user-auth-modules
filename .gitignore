@@ -3,9 +3,12 @@ target
 .idea/excludeFromValidation
 .idea/libraries
 *.iml
+
+db
 local-data
-.flattened-pom.xml
+
 # Maven:
+.flattened-pom.xml
 .effective-pom.xml
 .dependency-tree.txt
 .foreach-deps.txt
