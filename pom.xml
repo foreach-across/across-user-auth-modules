@@ -70,8 +70,6 @@
 		<module>user-module-test-web</module>
 		<module>ldap-module</module>
 		<module>ldap-module-test-web</module>
-		<module>oauth2-module</module>
-		<module>oauth2-module-test-website</module>
 	</modules>
 
 	<dependencyManagement>
@@ -82,12 +80,6 @@
 				<artifactId>javax.el-api</artifactId>
 				<version>3.0.1-b06</version>
 				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework.security.oauth</groupId>
-				<artifactId>spring-security-oauth2</artifactId>
-				<version>2.5.0.RELEASE</version>
 			</dependency>
 
 			<dependency>
