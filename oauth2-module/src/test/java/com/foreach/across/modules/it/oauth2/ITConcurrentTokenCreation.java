@@ -35,6 +35,10 @@ import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.zaxxer.hikari.HikariDataSource;
+import liquibase.Scope;
+import liquibase.SingletonScopeManager;
+import liquibase.ThreadLocalScopeManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,6 +94,8 @@ public class ITConcurrentTokenCreation
 
 	@BeforeEach
 	public void before() {
+		Scope.setScopeManager( new ThreadLocalScopeManager() );
+
 		dataSource.getHikariConfigMXBean().setMaximumPoolSize( MAX_THREADS * 2 );
 
 		OAuth2Scope scope = new OAuth2Scope();
@@ -118,6 +124,11 @@ public class ITConcurrentTokenCreation
 		dto.setRefreshTokenValiditySeconds( 86400 );
 
 		oAuth2Service.saveClient( dto );
+	}
+
+	@AfterEach
+	void after() {
+		Scope.setScopeManager( new SingletonScopeManager() );
 	}
 
 	@Test
