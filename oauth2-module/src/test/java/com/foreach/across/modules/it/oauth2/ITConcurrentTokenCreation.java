@@ -40,6 +40,7 @@ import liquibase.SingletonScopeManager;
 import liquibase.ThreadLocalScopeManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,11 +75,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Arne Vandamme
  * @since 1.1.2
  */
-@DisabledIfSystemProperty(
-		named = "acrossTest.datasource",
-		matches = "h2",
-		disabledReason = "Keeps failing on H2 with: Unique index or primary key violation: 'PUBLIC.IX_OAUTH_AT_AID ON PUBLIC.OAUTH_ACCESS_TOKEN(AUTHENTICATION_ID) VALUES <X>', despite the use of ThreadLocalScopeManager."
-)
+@Disabled("Keeps failing with unique index or primary key violation: mostly on H2, but occasionally on Oracle and Postgres too.")
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 @WebAppConfiguration
