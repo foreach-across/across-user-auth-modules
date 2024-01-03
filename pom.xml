@@ -141,7 +141,7 @@
 	</dependencyManagement>
 
 	<scm>
-		<url>https://bitbucket.org/beforeach/spring-security-acl-module</url>
+		<url>https://github.com/foreachos/across-user-auth-modules</url>
 	</scm>
 
 </project>
