@@ -27,6 +27,8 @@
 	</parent>
 
 	<artifactId>ldap-module</artifactId>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>LDAP Module</description>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>

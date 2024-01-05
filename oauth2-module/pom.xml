@@ -24,6 +24,8 @@
 	</parent>
 
 	<artifactId>oauth2-module</artifactId>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>OAuth2 Module</description>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>

@@ -25,6 +25,8 @@
 	</parent>
 
 	<artifactId>spring-security-acl-module</artifactId>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Spring Security ACL Module</description>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>

@@ -25,6 +25,8 @@
 	</parent>
 
 	<artifactId>user-module</artifactId>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>User Module</description>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>
