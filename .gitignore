@@ -12,6 +12,8 @@ local-data
 .effective-pom.xml
 .dependency-tree.txt
 .foreach-deps.txt
+pom.xml.versionsBackup
+versions.properties
 
 # Emacs:
 *~
