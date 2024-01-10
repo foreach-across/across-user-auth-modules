@@ -36,6 +36,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,7 @@ import org.springframework.validation.Errors;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class UserServiceImpl implements UserService
@@ -268,5 +270,10 @@ public class UserServiceImpl implements UserService
 	@Override
 	public boolean exists( Predicate predicate ) {
 		return userRepository.exists( predicate );
+	}
+
+	@Override
+	public <S extends User, R> R findBy( Predicate predicate, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction ) {
+		return userRepository.findBy( predicate, queryFunction );
 	}
 }

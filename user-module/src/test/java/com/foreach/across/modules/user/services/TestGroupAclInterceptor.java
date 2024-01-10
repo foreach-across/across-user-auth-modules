@@ -85,7 +85,7 @@ public class TestGroupAclInterceptor
 
 		groupAclInterceptor.afterCreate( group );
 
-		verifyZeroInteractions( aclSecurityService, aclSecurityEntityService );
+		verifyNoInteractions( aclSecurityService, aclSecurityEntityService );
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class TestGroupAclInterceptor
 
 		groupAclInterceptor.afterDelete( group );
 
-		verifyZeroInteractions( aclSecurityService, aclSecurityEntityService );
+		verifyNoInteractions( aclSecurityService, aclSecurityEntityService );
 	}
 
 	@Configuration
