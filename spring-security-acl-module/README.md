@@ -10,7 +10,7 @@ The source can be built using [Maven][] with JDK 8.
 ### License
 Licensed under version 2.0 of the [Apache License][].
 
-[module wiki]: https://across.dev/modules/access-control-module
-[contributor guidelines]: https://across.dev/contributing
+[module wiki]: https://foreach-across.github.io/modules/spring-security-acl-module
+[contributor guidelines]: https://foreach-across.github.io/contributing
 [Maven]: https://maven.apache.org
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0
