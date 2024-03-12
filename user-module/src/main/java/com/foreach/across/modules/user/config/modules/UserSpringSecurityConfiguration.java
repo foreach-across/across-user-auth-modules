@@ -110,8 +110,8 @@ public class UserSpringSecurityConfiguration implements EntityConfigurer
 	}
 
 	@Bean
-	public UserDetailsService userDetailsServiceImpl( SecurityPrincipalService securityPrincipalService,
-	                                                  UserDirectoryService userDirectoryService ) {
+	public UserDetailsService userDetailsService( SecurityPrincipalService securityPrincipalService,
+	                                              UserDirectoryService userDirectoryService ) {
 		return new UserDetailsServiceImpl( securityPrincipalService, userDirectoryService );
 	}
 

@@ -91,7 +91,7 @@ public class ITSpringSecurityAclModule
 
 	@Configuration
 	@AcrossTestConfiguration
-	protected static class Config implements AcrossWebSecurityConfigurer, AcrossContextConfigurer
+	protected static class Config implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {

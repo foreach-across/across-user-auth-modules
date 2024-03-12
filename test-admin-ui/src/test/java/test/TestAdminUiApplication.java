@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import test.acl.AdminUiApplication;
 import test.acl.application.domain.customer.Customer;
@@ -36,12 +37,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 3.0.0
  */
 @ExtendWith(SpringExtension.class)
+@EnableWebSecurity
 @SpringBootTest(
 		webEnvironment = SpringBootTest.WebEnvironment.MOCK,
 		classes = AdminUiApplication.class,
 		properties = {
 				"acrossHibernate.generate-ddl=true",
-				"spring.datasource.url=jdbc:h2:mem:test-admin-ui"
+				// MODE=LEGACY added to fix org.h2.jdbc.JdbcSQLSyntaxErrorException: Function "IDENTITY" not found; SQL statement:
+				// https://stackoverflow.com/questions/73067624/function-identity-not-found-when-inserting-audited-revision-using-hibernate-en
+				"spring.datasource.url=jdbc:h2:mem:test-admin-ui;MODE=LEGACY;"
 		}
 )
 public class TestAdminUiApplication
