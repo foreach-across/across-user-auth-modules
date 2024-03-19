@@ -65,10 +65,6 @@
 	</properties>
 
 	<modules>
-		<!--
-		<module>spring-security-acl-module</module>
-		<module>test-admin-ui</module>
-		-->
 		<module>user-module</module>
 		<module>user-module-test-web</module>
 		<module>ldap-module</module>

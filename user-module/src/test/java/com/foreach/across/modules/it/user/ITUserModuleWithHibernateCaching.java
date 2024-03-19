@@ -19,7 +19,6 @@ package com.foreach.across.modules.it.user;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.context.info.AcrossContextInfo;
-import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
@@ -28,7 +27,6 @@ import com.foreach.across.modules.user.business.BasicSecurityPrincipal;
 import com.foreach.across.modules.user.business.MachinePrincipal;
 import com.foreach.across.modules.user.business.User;
 import com.foreach.across.modules.user.business.UserRestriction;
-import com.foreach.across.modules.user.services.GroupAclInterceptor;
 import com.foreach.across.modules.user.services.MachinePrincipalService;
 import com.foreach.across.modules.user.services.UserService;
 import com.foreach.across.test.AcrossTestConfiguration;
@@ -36,7 +34,6 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
@@ -45,7 +42,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.EnumSet;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
@@ -78,15 +76,6 @@ public class ITUserModuleWithHibernateCaching
 
 		MachinePrincipal machine = machinePrincipalService.getMachinePrincipalByName( "system" ).orElse( null );
 		assertNotNull( machine );
-
-		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( UserModule.NAME );
-
-		try {
-			assertNull( moduleInfo.getApplicationContext().getBean( GroupAclInterceptor.class ) );
-		}
-		catch ( NoSuchBeanDefinitionException e ) {
-			assertTrue( true ); //If we get this exception, the desired result has been achieved.
-		}
 
 		// todo: getting a cachemanager by name has been removed in ehcache version, refactor to a more robust approach?
 		CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get( 0 );

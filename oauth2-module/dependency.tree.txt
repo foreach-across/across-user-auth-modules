@@ -68,7 +68,8 @@ com.foreach.across.modules:oauth2-module:jar:4.5-SNAPSHOT
 +- com.foreach.across.modules:user-module:jar:4.5-SNAPSHOT:compile
 |  +- org.hibernate.validator:hibernate-validator:jar:6.2.5.Final:compile
 |  |  \- jakarta.validation:jakarta.validation-api:jar:2.0.2:compile
-|  \- org.apache.commons:commons-collections4:jar:4.4:compile
+|  +- org.apache.commons:commons-collections4:jar:4.4:compile
+|  \- org.aspectj:aspectjrt:jar:1.9.7:compile
 +- com.foreach.across.modules:properties-module:jar:4.5-SNAPSHOT:compile
 |  \- com.foreach.libs:common-spring:jar:1.1:compile
 |     \- javax.mail:mail:jar:1.4.1:compile
