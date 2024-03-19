@@ -15,9 +15,11 @@
  */
 package com.foreach.across.modules.oauth2.config.security;
 
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -57,6 +59,8 @@ public class CustomTokenEndpointsConfiguration
 	@Autowired
 	private AcrossContextBeanRegistry contextBeanRegistry;
 
+	@Exposed
+	@Bean
 	public SecurityFilterChain configure( HttpSecurity http ) throws Exception {
 		HttpSecurity.RequestMatcherConfigurer requests = http.requestMatchers();
 

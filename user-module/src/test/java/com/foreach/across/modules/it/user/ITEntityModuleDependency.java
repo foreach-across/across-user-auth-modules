@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -48,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * This test verifies that QueryDSL is used by default for building Entity queries.  Favour QueryDSL
  * instead of JPA due to Hibernate integration bugs: see https://hibernate.atlassian.net/browse/HHH-5948.
  */
+@EnableWebSecurity
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 @WebAppConfiguration

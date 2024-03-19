@@ -69,8 +69,10 @@
 		<module>user-module-test-web</module>
 		<module>ldap-module</module>
 		<module>ldap-module-test-web</module>
+		<!--
 		<module>oauth2-module</module>
 		<module>oauth2-module-test-website</module>
+		-->
 	</modules>
 
 	<dependencyManagement>

@@ -11,11 +11,11 @@
         <module name="user-module" />
         <module name="ldap-module" />
         <module name="user-module-test-web" />
-        <module name="oauth2-module" />
-        <module name="oauth2-module-test-website" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="oauth2-module" target="1.8" />
+      <module name="oauth2-module-test-website" target="1.8" />
       <module name="spring-security-acl-module" target="1.8" />
       <module name="test-admin-ui" target="1.8" />
     </bytecodeTargetLevel>

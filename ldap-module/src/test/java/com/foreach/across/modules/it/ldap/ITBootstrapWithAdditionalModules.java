@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.AbstractEnvironment;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ActiveProfilesResolver;
@@ -49,6 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Arne Vandamme
  * @since 1.0.0
  */
+@EnableWebSecurity
 @AcrossWebAppConfiguration
 @RunWith(Parameterized.class)
 @ActiveProfiles(resolver = ITBootstrapWithAdditionalModules.CustomProfilesResolver.class)
