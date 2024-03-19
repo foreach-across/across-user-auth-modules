@@ -71,6 +71,7 @@ org.apache.tomcat.embed:tomcat-embed-core:jar:9.0.86:test
 org.apache.tomcat.embed:tomcat-embed-el:jar:9.0.86:test
 org.apache.tomcat.embed:tomcat-embed-websocket:jar:9.0.86:test
 org.apiguardian:apiguardian-api:jar:1.1.2:test
+org.aspectj:aspectjrt:jar:1.9.7:compile
 org.assertj:assertj-core:jar:3.22.0:test
 org.atteo:evo-inflector:jar:1.2.2:compile
 org.attoparser:attoparser:jar:2.0.5.RELEASE:compile

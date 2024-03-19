@@ -73,9 +73,6 @@ com.foreach.across.modules:user-module:jar:4.5-SNAPSHOT
 |  +- org.springframework.security:spring-security-web:jar:5.7.11:compile
 |  |  \- org.springframework:spring-web:jar:5.3.32:compile
 |  \- org.springframework.security:spring-security-config:jar:5.7.11:compile
-+- com.foreach.across.modules:spring-security-acl-module:jar:4.5-SNAPSHOT:compile
-|  +- org.springframework.security:spring-security-acl:jar:5.7.11:compile
-|  \- org.aspectj:aspectjrt:jar:1.9.7:compile
 +- com.foreach.across.modules:admin-web-module:jar:4.5-SNAPSHOT:compile
 |  +- com.foreach.across.modules:bootstrap-ui-module:jar:4.5-SNAPSHOT:compile
 |  |  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:4.5-SNAPSHOT:compile
@@ -167,6 +164,7 @@ com.foreach.across.modules:user-module:jar:4.5-SNAPSHOT
 |  \- org.checkerframework:checker-qual:jar:3.42.0:test
 +- com.h2database:h2:jar:2.1.214:test
 +- com.microsoft.sqlserver:mssql-jdbc:jar:10.2.3.jre8:test
++- org.aspectj:aspectjrt:jar:1.9.7:compile
 +- org.springframework.boot:spring-boot-configuration-processor:jar:2.7.18:compile
 +- org.projectlombok:lombok:jar:1.18.30:provided
 \- org.assertj:assertj-core:jar:3.22.0:test

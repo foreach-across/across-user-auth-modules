@@ -16,7 +16,6 @@ com.foreach.across.modules:ehcache-module:jar:4.5-SNAPSHOT:compile
 com.foreach.across.modules:entity-module:jar:4.5-SNAPSHOT:compile
 com.foreach.across.modules:logging-module:jar:4.5-SNAPSHOT:compile
 com.foreach.across.modules:properties-module:jar:4.5-SNAPSHOT:compile
-com.foreach.across.modules:spring-security-acl-module:jar:4.5-SNAPSHOT:compile
 com.foreach.across.modules:spring-security-module:jar:4.5-SNAPSHOT:compile
 com.foreach.across:across-autoconfigure:jar:2.5-SNAPSHOT:compile
 com.foreach.across:across-core:jar:5.5-SNAPSHOT:compile
@@ -119,7 +118,6 @@ org.springframework.boot:spring-boot-test:jar:2.7.18:test
 org.springframework.boot:spring-boot:jar:2.7.18:compile
 org.springframework.data:spring-data-commons:jar:2.7.18:compile
 org.springframework.data:spring-data-jpa:jar:2.7.18:compile
-org.springframework.security:spring-security-acl:jar:5.7.11:compile
 org.springframework.security:spring-security-config:jar:5.7.11:compile
 org.springframework.security:spring-security-core:jar:5.7.11:compile
 org.springframework.security:spring-security-crypto:jar:5.7.11:compile

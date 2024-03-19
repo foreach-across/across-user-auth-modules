@@ -7,15 +7,17 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="test-admin-ui" />
         <module name="ldap-module-test-web" />
         <module name="user-module" />
         <module name="ldap-module" />
         <module name="user-module-test-web" />
         <module name="oauth2-module" />
-        <module name="spring-security-acl-module" />
         <module name="oauth2-module-test-website" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="spring-security-acl-module" target="1.8" />
+      <module name="test-admin-ui" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
