@@ -17,7 +17,6 @@ package com.foreach.across.modules.oauth2.config.security;
 
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
-import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +28,7 @@ import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHand
 import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.util.Collection;
@@ -41,7 +41,7 @@ import java.util.Collection;
  */
 @Configuration
 @OrderInModule(2)
-public class CustomTokenEndpointsConfiguration implements AcrossWebSecurityConfigurer
+public class CustomTokenEndpointsConfiguration
 {
 	@Autowired(required = false)
 	private TokenStore tokenStore;
@@ -57,8 +57,7 @@ public class CustomTokenEndpointsConfiguration implements AcrossWebSecurityConfi
 	@Autowired
 	private AcrossContextBeanRegistry contextBeanRegistry;
 
-	@Override
-	public void configure( HttpSecurity http ) throws Exception {
+	public SecurityFilterChain configure( HttpSecurity http ) throws Exception {
 		HttpSecurity.RequestMatcherConfigurer requests = http.requestMatchers();
 
 		String userTokenPath = endpoints.oauth2EndpointHandlerMapping().getPath( "/oauth/user_token" );
@@ -98,5 +97,6 @@ public class CustomTokenEndpointsConfiguration implements AcrossWebSecurityConfi
 		for ( ResourceServerConfigurer configurer : configurers ) {
 			configurer.configure( resources );
 		}
+		return http.build();
 	}
 }

@@ -16,7 +16,6 @@
 package com.foreach.across.modules.oauth2.config.security;
 
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
-import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -26,6 +25,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
+import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Collection;
 
@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 @Configuration
 @Import({ AuthorizationServerEndpointsConfiguration.class, AuthorizationServerConfiguration.class })
-public class AuthorizationServerSecurityConfiguration implements AcrossWebSecurityConfigurer
+public class AuthorizationServerSecurityConfiguration
 {
 	@Autowired
 	private ClientDetailsService clientDetailsService;
@@ -45,8 +45,7 @@ public class AuthorizationServerSecurityConfiguration implements AcrossWebSecuri
 	@Autowired
 	private AcrossContextBeanRegistry contextBeanRegistry;
 
-	@Override
-	public void configure( HttpSecurity http ) throws Exception {
+	public SecurityFilterChain configure( HttpSecurity http ) throws Exception {
 		AuthorizationServerSecurityConfigurer configurer = new AuthorizationServerSecurityConfigurer();
 		FrameworkEndpointHandlerMapping handlerMapping = endpoints.oauth2EndpointHandlerMapping();
 		http.setSharedObject( FrameworkEndpointHandlerMapping.class, handlerMapping );
@@ -67,6 +66,7 @@ public class AuthorizationServerSecurityConfiguration implements AcrossWebSecuri
 				.antMatchers( tokenEndpointPath, tokenKeyPath, checkTokenPath );
 		// @formatter:on
 		http.setSharedObject( ClientDetailsService.class, clientDetailsService );
+		return http.build();
 	}
 
 	protected void configure( AuthorizationServerSecurityConfigurer oauthServer ) throws Exception {

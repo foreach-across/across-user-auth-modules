@@ -24,7 +24,6 @@ import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
-import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.user.UserModule;
 import com.foreach.across.modules.user.business.*;
@@ -392,7 +391,7 @@ public class ITUserModule
 
 	@Configuration
 	@AcrossTestConfiguration
-	static class Config implements AcrossWebSecurityConfigurer, AcrossContextConfigurer
+	static class Config implements AcrossContextConfigurer
 	{
 		@Override
 		public void configure( AcrossContext context ) {
