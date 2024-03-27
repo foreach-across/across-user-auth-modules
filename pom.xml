@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>across-standard-module-parent</artifactId>
-		<version>5.5-SNAPSHOT</version>
+		<version>dev-SNAPSHOT</version>
 		<relativePath/>
 	</parent>
 
@@ -50,7 +50,7 @@
 		<repository>
 			<id>across</id>
 			<name>Across Repository</name>
-			<url>https://repository.foreach.be/nexus/repository/public/</url>
+			<url>https://repository.antwerpen.io-external.com/nexus/repository/public/</url>
 		</repository>
 	</repositories>
 
@@ -58,10 +58,10 @@
 		<project.build.outputTimestamp>2024-01-01T00:00:00Z</project.build.outputTimestamp>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<revision>4.5-SNAPSHOT</revision>
-		<across-autoconfigure.version>2.5-SNAPSHOT</across-autoconfigure.version>
-		<across-base-modules.version>4.5-SNAPSHOT</across-base-modules.version>
-		<across-entity-admin-modules.version>4.5-SNAPSHOT</across-entity-admin-modules.version>
+		<revision>dev-SNAPSHOT</revision>
+		<across-autoconfigure.version>dev-SNAPSHOT</across-autoconfigure.version>
+		<across-base-modules.version>dev-SNAPSHOT</across-base-modules.version>
+		<across-entity-admin-modules.version>dev-SNAPSHOT</across-entity-admin-modules.version>
 	</properties>
 
 	<modules>
