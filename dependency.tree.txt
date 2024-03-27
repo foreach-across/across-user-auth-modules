@@ -1,3 +1,3 @@
-com.foreach.across.modules:across-user-auth-modules:pom:4.4.2
+com.foreach.across.modules:across-user-auth-modules:pom:dev-SNAPSHOT
 +- org.projectlombok:lombok:jar:1.18.26:provided
 \- org.assertj:assertj-core:jar:3.21.0:test
