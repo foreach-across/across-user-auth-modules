@@ -42,8 +42,8 @@ com.foreach.across.modules:ldap-module:jar:dev-SNAPSHOT
 |        \- javax.activation:activation:jar:1.1:compile
 +- com.foreach.across.modules:entity-module:jar:dev-SNAPSHOT:compile
 |  +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
-|  |  +- org.springframework.security:spring-security-web:jar:5.7.11:compile
-|  |  \- org.springframework.security:spring-security-config:jar:5.7.11:compile
+|  |  +- org.springframework.security:spring-security-web:jar:5.8.11:compile
+|  |  \- org.springframework.security:spring-security-config:jar:5.8.11:compile
 |  +- org.hibernate.validator:hibernate-validator:jar:6.2.5.Final:compile
 |  |  +- jakarta.validation:jakarta.validation-api:jar:2.0.2:compile
 |  |  +- org.jboss.logging:jboss-logging:jar:3.4.3.Final:compile
@@ -157,9 +157,9 @@ com.foreach.across.modules:ldap-module:jar:dev-SNAPSHOT
 |  |  \- org.springframework:spring-jcl:jar:5.3.33:compile
 |  +- org.springframework:spring-beans:jar:5.3.33:compile
 |  \- org.springframework:spring-tx:jar:5.3.33:compile
-+- org.springframework.security:spring-security-ldap:jar:5.7.11:compile
-|  +- org.springframework.security:spring-security-core:jar:5.7.11:compile
-|  |  \- org.springframework.security:spring-security-crypto:jar:5.7.11:compile
++- org.springframework.security:spring-security-ldap:jar:5.8.11:compile
+|  +- org.springframework.security:spring-security-core:jar:5.8.11:compile
+|  |  \- org.springframework.security:spring-security-crypto:jar:5.8.11:compile
 |  \- org.springframework:spring-context:jar:5.3.33:compile
 +- com.unboundid:unboundid-ldapsdk:jar:6.0.10:test
 +- org.junit.jupiter:junit-jupiter-params:jar:5.8.2:test
