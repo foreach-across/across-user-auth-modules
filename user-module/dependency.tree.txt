@@ -67,12 +67,12 @@ com.foreach.across.modules:user-module:jar:dev-SNAPSHOT
 |  +- org.atteo:evo-inflector:jar:1.2.2:compile
 |  \- org.webjars:lodash:jar:4.17.4:compile
 +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
-|  +- org.springframework.security:spring-security-core:jar:5.7.11:compile
-|  |  +- org.springframework.security:spring-security-crypto:jar:5.7.11:compile
+|  +- org.springframework.security:spring-security-core:jar:5.8.11:compile
+|  |  +- org.springframework.security:spring-security-crypto:jar:5.8.11:compile
 |  |  \- org.springframework:spring-expression:jar:5.3.33:compile
-|  +- org.springframework.security:spring-security-web:jar:5.7.11:compile
+|  +- org.springframework.security:spring-security-web:jar:5.8.11:compile
 |  |  \- org.springframework:spring-web:jar:5.3.33:compile
-|  \- org.springframework.security:spring-security-config:jar:5.7.11:compile
+|  \- org.springframework.security:spring-security-config:jar:5.8.11:compile
 +- com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT:compile
 |  +- com.foreach.across.modules:bootstrap-ui-module:jar:dev-SNAPSHOT:compile
 |  |  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:dev-SNAPSHOT:compile

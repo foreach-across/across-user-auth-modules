@@ -66,10 +66,10 @@ com.foreach.across.modules:oauth2-module-test-website:jar:dev-SNAPSHOT
 |  |     \- javax.mail:mail:jar:1.4.1:compile
 |  |        \- javax.activation:activation:jar:1.1:compile
 |  +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
-|  |  +- org.springframework.security:spring-security-core:jar:5.7.11:compile
-|  |  |  \- org.springframework.security:spring-security-crypto:jar:5.7.11:compile
-|  |  +- org.springframework.security:spring-security-web:jar:5.7.11:compile
-|  |  \- org.springframework.security:spring-security-config:jar:5.7.11:compile
+|  |  +- org.springframework.security:spring-security-core:jar:5.8.11:compile
+|  |  |  \- org.springframework.security:spring-security-crypto:jar:5.8.11:compile
+|  |  +- org.springframework.security:spring-security-web:jar:5.8.11:compile
+|  |  \- org.springframework.security:spring-security-config:jar:5.8.11:compile
 |  +- org.springframework.security.oauth:spring-security-oauth2:jar:2.5.0.RELEASE:compile
 |  |  +- org.springframework:spring-beans:jar:5.3.33:compile
 |  |  +- org.springframework:spring-context:jar:5.3.33:compile
