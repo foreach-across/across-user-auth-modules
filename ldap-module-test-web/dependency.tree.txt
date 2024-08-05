@@ -116,11 +116,11 @@ com.foreach.across.modules:ldap-module-test-web:jar:dev-SNAPSHOT
 |  |     \- io.github.classgraph:classgraph:jar:4.8.108:compile
 |  \- org.aspectj:aspectjrt:jar:1.9.7:compile
 +- com.foreach.across.modules:properties-module:jar:dev-SNAPSHOT:compile
-|  \- com.foreach.libs:common-spring:jar:1.1:compile
-|     +- com.foreach.libs:common-concurrent:jar:1.1:compile
+|  \- com.foreach.libs:common-spring:jar:2.0.0-beta-1:compile
+|     +- com.foreach.libs:common-concurrent:jar:2.0.0-beta-1:compile
+|     +- javax.mail:javax.mail-api:jar:1.6.2:compile
 |     +- org.apache.commons:commons-lang3:jar:3.12.0:compile
-|     \- javax.mail:mail:jar:1.4.1:compile
-|        \- javax.activation:activation:jar:1.1:compile
+|     \- org.springframework:spring-context-support:jar:5.3.34:compile
 +- javax.servlet:javax.servlet-api:jar:4.0.1:provided
 +- org.hsqldb:hsqldb:jar:2.5.2:compile
 +- org.projectlombok:lombok:jar:1.18.30:provided
