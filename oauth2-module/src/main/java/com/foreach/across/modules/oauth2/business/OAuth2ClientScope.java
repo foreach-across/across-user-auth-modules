@@ -19,7 +19,7 @@ import com.foreach.across.modules.oauth2.config.OAuth2SchemaConfiguration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 

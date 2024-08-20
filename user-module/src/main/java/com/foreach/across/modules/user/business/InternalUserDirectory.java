@@ -17,8 +17,8 @@
 package com.foreach.across.modules.user.business;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
  * Represents a standard internal {@link UserDirectory}.

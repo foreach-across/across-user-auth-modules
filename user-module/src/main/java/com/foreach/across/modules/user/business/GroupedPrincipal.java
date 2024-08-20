@@ -25,7 +25,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.*;
 
 /**

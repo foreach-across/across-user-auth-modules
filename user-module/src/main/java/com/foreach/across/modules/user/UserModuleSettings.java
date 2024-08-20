@@ -26,7 +26,6 @@ public class UserModuleSettings
 	public static final String PASSWORD_ENCODER = "userModule.passwordEncoder";
 	public static final String USE_EMAIL_AS_USERNAME = "userModule.useEmailAsUsername";
 	public static final String REQUIRE_EMAIL_UNIQUE = "userModule.requireEmailUnique";
-	public static final String ENABLE_DEFAULT_ACLS = "userModule.enableDefaultAcls";
 
 	/**
 	 * Optional PasswordEncoder instance to be used.
@@ -42,11 +41,6 @@ public class UserModuleSettings
 	 * Specifies whether the email field is unique, must be true when useEmailAsUsername is true.
 	 */
 	private boolean requireEmailUnique;
-
-	/**
-	 * Specifies whether default ACLs should be created via interceptors, such as for Groups.
-	 */
-	private boolean enableDefaultAcls;
 
 	/**
 	 * Default SpEL expression (eg. property) for the display label of a User entity.
@@ -75,14 +69,6 @@ public class UserModuleSettings
 
 	public void setRequireEmailUnique( boolean requireEmailUnique ) {
 		this.requireEmailUnique = requireEmailUnique;
-	}
-
-	public boolean isEnableDefaultAcls() {
-		return enableDefaultAcls;
-	}
-
-	public void setEnableDefaultAcls( boolean enableDefaultAcls ) {
-		this.enableDefaultAcls = enableDefaultAcls;
 	}
 
 	public String getUserLabelExpression() {

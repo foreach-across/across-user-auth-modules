@@ -67,25 +67,17 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-ehcache</artifactId>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-jcache</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>javax.el</groupId>-->
-		<!--			<artifactId>javax.el-api</artifactId>-->
-		<!--		</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.glassfish.web</groupId>-->
-		<!--<artifactId>javax.el</artifactId>-->
-		<!--</dependency>-->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -95,6 +87,7 @@
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
+			<classifier>jakarta</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across</groupId>
@@ -144,10 +137,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>com.mysema.maven</groupId>
-				<artifactId>apt-maven-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<!-- This defines how a specific module will be flattened -->
 				<groupId>org.codehaus.mojo</groupId>

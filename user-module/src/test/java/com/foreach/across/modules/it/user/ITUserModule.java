@@ -28,10 +28,6 @@ import com.foreach.across.modules.user.business.*;
 import com.foreach.across.modules.user.services.*;
 import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.cfg.AvailableSettings;
-import org.hibernate.dialect.Oracle10gDialect;
-import org.hibernate.dialect.SQLServer2008Dialect;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -375,6 +371,7 @@ public class ITUserModule
 		public void configure( AcrossContext context ) {
 			AcrossHibernateJpaModule module = new AcrossHibernateJpaModule();
 
+			/*
 			String testDataSource = StringUtils.defaultString( System.getProperty( "acrossTest.datasource" ) );
 
 			switch ( testDataSource ) {
@@ -385,6 +382,7 @@ public class ITUserModule
 					module.setHibernateProperty( AvailableSettings.DIALECT, Oracle10gDialect.class.getName() );
 					break;
 			}
+			*/
 
 			context.addModule( module );
 			context.addModule( userModule() );

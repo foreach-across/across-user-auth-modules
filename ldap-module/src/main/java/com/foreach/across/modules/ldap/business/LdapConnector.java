@@ -25,8 +25,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 /**
  * Represents a connection to an Ldap service
@@ -72,7 +72,7 @@ public class LdapConnector extends SettableIdAuditableEntity<LdapConnector>
 
 	@Column(name = "connector_type")
 	@NotNull
-	@Type(type = HibernateLdapConnectorType.CLASS_NAME)
+	@Type(HibernateLdapConnectorType.class)
 	private LdapConnectorType ldapConnectorType;
 
 	@Column(name = "read_timeout")

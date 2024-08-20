@@ -25,9 +25,7 @@ import com.foreach.across.modules.ldap.business.LdapConnectorType;
  */
 public class HibernateLdapConnectorType extends HibernateIdLookup<LdapConnectorType, Integer>
 {
-	public static final String CLASS_NAME = "com.foreach.across.modules.ldap.repositories.HibernateLdapConnectorType";
-
 	public HibernateLdapConnectorType() {
-		super( LdapConnectorType.class );
+		super( LdapConnectorType.class, java.sql.Types.INTEGER );
 	}
 }

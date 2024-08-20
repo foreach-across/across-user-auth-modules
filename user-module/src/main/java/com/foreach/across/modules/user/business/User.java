@@ -23,13 +23,13 @@ import org.hibernate.annotations.Type;
 import org.springframework.beans.BeanUtils;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
@@ -75,7 +75,7 @@ public class User extends GroupedPrincipal<User> implements Undeletable
 	private boolean deleted;
 
 	@Column(name = "restrictions", nullable = true)
-	@Type(type = HibernateUserRestriction.CLASS_NAME)
+	@Type(HibernateUserRestriction.class)
 	private Set<UserRestriction> restrictions = EnumSet.noneOf( UserRestriction.class );
 
 	public String getUsername() {
