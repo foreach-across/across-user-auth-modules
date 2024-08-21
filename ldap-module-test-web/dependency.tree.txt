@@ -19,7 +19,6 @@ com.foreach.across.modules:ldap-module-test-web:jar:dev-SNAPSHOT
 |  |  |     \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
 |  |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
 |  |  |  +- org.springframework:spring-jdbc:jar:6.1.11:compile
-|  |  |  +- org.slf4j:jcl-over-slf4j:jar:2.0.13:compile
 |  |  |  \- org.liquibase:liquibase-core:jar:4.27.0:compile
 |  |  |     +- com.opencsv:opencsv:jar:5.9:compile
 |  |  |     +- org.apache.commons:commons-text:jar:1.11.0:compile
@@ -48,8 +47,7 @@ com.foreach.across.modules:ldap-module-test-web:jar:dev-SNAPSHOT
 |  +- org.apache.tomcat.embed:tomcat-embed-el:jar:10.1.26:compile
 |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:10.1.26:compile
 +- com.foreach.across.modules:debug-web-module:jar:dev-SNAPSHOT:compile
-|  +- commons-io:commons-io:jar:2.16.1:compile
-|  \- org.slf4j:log4j-over-slf4j:jar:2.0.13:compile
+|  \- commons-io:commons-io:jar:2.16.1:compile
 +- com.foreach.across.modules:entity-module:jar:dev-SNAPSHOT:compile
 |  +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
 |  |  +- org.springframework.security:spring-security-web:jar:6.2.5:compile

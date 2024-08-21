@@ -100,7 +100,6 @@ com.foreach.across.modules:user-module:jar:dev-SNAPSHOT
 |  \- org.springframework:spring-context-support:jar:6.1.11:compile
 +- com.foreach.across.modules:logging-module:jar:dev-SNAPSHOT:compile
 |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
-|  |  +- org.slf4j:jcl-over-slf4j:jar:2.0.13:compile
 |  |  \- org.liquibase:liquibase-core:jar:4.27.0:compile
 |  |     +- com.opencsv:opencsv:jar:5.9:compile
 |  |     +- org.apache.commons:commons-text:jar:1.11.0:compile
