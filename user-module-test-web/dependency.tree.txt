@@ -1,6 +1,6 @@
-com.foreach.across.modules:user-module-test-web:jar:dev-SNAPSHOT
-+- com.foreach.across.modules:user-module:jar:dev-SNAPSHOT:compile
-|  +- com.foreach.across.modules:across-hibernate-module:jar:dev-SNAPSHOT:compile
+com.foreach.across.modules:user-module-test-web:jar:6.0.0
++- com.foreach.across.modules:user-module:jar:6.0.0:compile
+|  +- com.foreach.across.modules:across-hibernate-module:jar:6.0.0:compile
 |  |  +- org.springframework.data:spring-data-jpa:jar:3.2.12:compile
 |  |  |  \- org.antlr:antlr4-runtime:jar:4.13.0:compile
 |  |  +- org.springframework:spring-orm:jar:6.1.15:compile
@@ -20,9 +20,9 @@ com.foreach.across.modules:user-module-test-web:jar:dev-SNAPSHOT
 |  |  +- com.querydsl:querydsl-jpa:jar:jakarta:5.0.0:compile
 |  |  |  \- com.querydsl:querydsl-core:jar:5.0.0:compile
 |  |  |     \- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
-|  |  \- com.foreach.across:across-autoconfigure:jar:dev-SNAPSHOT:compile
-|  +- com.foreach.across.modules:properties-module:jar:dev-SNAPSHOT:compile
-|  +- com.foreach.across.modules:entity-module:jar:dev-SNAPSHOT:compile
+|  |  \- com.foreach.across:across-autoconfigure:jar:6.0.0:compile
+|  +- com.foreach.across.modules:properties-module:jar:6.0.0:compile
+|  +- com.foreach.across.modules:entity-module:jar:6.0.0:compile
 |  |  +- org.springframework.data:spring-data-commons:jar:3.2.12:compile
 |  |  +- com.fasterxml.jackson.core:jackson-core:jar:2.15.4:compile
 |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.15.4:compile
@@ -42,8 +42,8 @@ com.foreach.across.modules:user-module-test-web:jar:dev-SNAPSHOT
 |  |     +- javax.inject:javax.inject:jar:1:compile
 |  |     \- io.github.classgraph:classgraph:jar:4.8.108:compile
 |  \- org.aspectj:aspectjrt:jar:1.9.22.1:compile
-+- com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT:compile
-|  +- com.foreach.across:across-web:jar:dev-SNAPSHOT:compile
++- com.foreach.across.modules:admin-web-module:jar:6.0.0:compile
+|  +- com.foreach.across:across-web:jar:6.0.0:compile
 |  |  +- org.springframework.boot:spring-boot-starter-web:jar:3.2.12:compile
 |  |  |  +- org.springframework.boot:spring-boot-starter-json:jar:3.2.12:compile
 |  |  |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.15.4:compile
@@ -57,15 +57,15 @@ com.foreach.across.modules:user-module-test-web:jar:dev-SNAPSHOT
 |  |  |  \- org.springframework:spring-expression:jar:6.1.15:compile
 |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.15.4:compile
 |  |  \- org.yaml:snakeyaml:jar:2.2:compile
-|  +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
+|  +- com.foreach.across.modules:spring-security-module:jar:6.0.0:compile
 |  |  +- org.springframework.security:spring-security-core:jar:6.2.8:compile
 |  |  |  +- org.springframework.security:spring-security-crypto:jar:6.2.8:compile
 |  |  |  \- io.micrometer:micrometer-observation:jar:1.12.13:compile
 |  |  |     \- io.micrometer:micrometer-commons:jar:1.12.13:compile
 |  |  +- org.springframework.security:spring-security-web:jar:6.2.8:compile
 |  |  \- org.springframework.security:spring-security-config:jar:6.2.8:compile
-|  +- com.foreach.across.modules:bootstrap-ui-module:jar:dev-SNAPSHOT:compile
-|  |  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:dev-SNAPSHOT:compile
+|  +- com.foreach.across.modules:bootstrap-ui-module:jar:6.0.0:compile
+|  |  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:6.0.0:compile
 |  |  +- org.webjars:jquery:jar:3.4.1:compile
 |  |  +- org.webjars:bootstrap:jar:4.3.1:compile
 |  |  |  \- org.webjars:popper.js:jar:1.14.3:compile
@@ -84,8 +84,8 @@ com.foreach.across.modules:user-module-test-web:jar:dev-SNAPSHOT
 |  +- org.thymeleaf.extras:thymeleaf-extras-springsecurity6:jar:3.1.2.RELEASE:compile
 |  |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
 |  \- org.webjars.bower:toastr:jar:2.1.2:compile
-+- com.foreach.across.modules:logging-module:jar:dev-SNAPSHOT:compile
-|  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
++- com.foreach.across.modules:logging-module:jar:6.0.0:compile
+|  +- com.foreach.across:across-core:jar:6.0.0:compile
 |  |  +- com.foreach.libs:common-concurrent:jar:3.0.0:compile
 |  |  +- org.springframework:spring-context:jar:6.1.15:compile
 |  |  +- org.apache.commons:commons-lang3:jar:3.13.0:compile
