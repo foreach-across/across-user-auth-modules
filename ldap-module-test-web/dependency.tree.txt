@@ -12,35 +12,35 @@ com.foreach.across.modules:ldap-module-test-web:jar:dev-SNAPSHOT
 |  |  |  +- org.springframework.boot:spring-boot-starter-json:jar:3.2.12:compile
 |  |  |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.15.4:compile
 |  |  |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.15.4:compile
-|  |  |  \- org.springframework:spring-web:jar:6.1.15:compile
+|  |  |  \- org.springframework:spring-web:jar:6.1.16:compile
 |  |  +- org.thymeleaf:thymeleaf-spring6:jar:3.1.2.RELEASE:compile
 |  |  |  \- org.thymeleaf:thymeleaf:jar:3.1.2.RELEASE:compile
 |  |  |     +- org.attoparser:attoparser:jar:2.0.7.RELEASE:compile
 |  |  |     \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
 |  |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
-|  |  |  +- org.springframework:spring-jdbc:jar:6.1.15:compile
+|  |  |  +- org.springframework:spring-jdbc:jar:6.1.16:compile
 |  |  |  \- org.liquibase:liquibase-core:jar:4.30.0:compile
 |  |  |     +- com.opencsv:opencsv:jar:5.9:compile
 |  |  |     +- javax.xml.bind:jaxb-api:jar:2.3.1:compile
 |  |  |     \- org.apache.commons:commons-text:jar:1.12.0:compile
-|  |  +- org.springframework:spring-webmvc:jar:6.1.15:compile
-|  |  |  \- org.springframework:spring-expression:jar:6.1.15:compile
+|  |  +- org.springframework:spring-webmvc:jar:6.1.16:compile
+|  |  |  \- org.springframework:spring-expression:jar:6.1.16:compile
 |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.15.4:compile
 |  |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.2.12:compile
 |  |  |  \- org.springframework.boot:spring-boot:jar:3.2.12:compile
 |  |  \- org.yaml:snakeyaml:jar:2.2:compile
 |  +- org.springframework.ldap:spring-ldap-core:jar:3.2.8:compile
-|  |  +- org.springframework:spring-core:jar:6.1.15:compile
-|  |  |  \- org.springframework:spring-jcl:jar:6.1.15:compile
-|  |  +- org.springframework:spring-beans:jar:6.1.15:compile
-|  |  +- org.springframework:spring-tx:jar:6.1.15:compile
+|  |  +- org.springframework:spring-core:jar:6.1.16:compile
+|  |  |  \- org.springframework:spring-jcl:jar:6.1.16:compile
+|  |  +- org.springframework:spring-beans:jar:6.1.16:compile
+|  |  +- org.springframework:spring-tx:jar:6.1.16:compile
 |  |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
 |  \- org.springframework.security:spring-security-ldap:jar:6.2.8:compile
 |     +- org.springframework.security:spring-security-core:jar:6.2.8:compile
 |     |  +- org.springframework.security:spring-security-crypto:jar:6.2.8:compile
 |     |  \- io.micrometer:micrometer-observation:jar:1.12.13:compile
 |     |     \- io.micrometer:micrometer-commons:jar:1.12.13:compile
-|     \- org.springframework:spring-context:jar:6.1.15:compile
+|     \- org.springframework:spring-context:jar:6.1.16:compile
 +- org.springframework.boot:spring-boot-starter-tomcat:jar:3.2.12:compile
 |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
 |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:10.1.33:compile
@@ -87,8 +87,8 @@ com.foreach.across.modules:ldap-module-test-web:jar:dev-SNAPSHOT
 |  +- com.foreach.across.modules:across-hibernate-module:jar:dev-SNAPSHOT:compile (optional)
 |  |  +- org.springframework.data:spring-data-jpa:jar:3.2.12:compile (optional)
 |  |  |  \- org.antlr:antlr4-runtime:jar:4.13.0:compile (optional)
-|  |  +- org.springframework:spring-orm:jar:6.1.15:compile (optional)
-|  |  +- org.springframework:spring-aop:jar:6.1.15:compile
+|  |  +- org.springframework:spring-orm:jar:6.1.16:compile (optional)
+|  |  +- org.springframework:spring-aop:jar:6.1.16:compile
 |  |  +- org.hibernate.orm:hibernate-core:jar:6.4.10.Final:compile (optional)
 |  |  |  +- jakarta.persistence:jakarta.persistence-api:jar:3.1.0:compile (optional)
 |  |  |  +- jakarta.transaction:jakarta.transaction-api:jar:2.0.1:compile (optional)
@@ -119,7 +119,7 @@ com.foreach.across.modules:ldap-module-test-web:jar:dev-SNAPSHOT
 |     +- jakarta.mail:jakarta.mail-api:jar:2.1.3:compile
 |     |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:compile
 |     +- org.apache.commons:commons-lang3:jar:3.13.0:compile
-|     \- org.springframework:spring-context-support:jar:6.1.15:compile
+|     \- org.springframework:spring-context-support:jar:6.1.16:compile
 +- jakarta.servlet:jakarta.servlet-api:jar:6.0.0:provided
 +- org.hsqldb:hsqldb:jar:2.7.3:compile
 +- org.projectlombok:lombok:jar:1.18.36:provided
