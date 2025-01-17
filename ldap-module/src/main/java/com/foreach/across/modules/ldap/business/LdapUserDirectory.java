@@ -20,7 +20,6 @@ import com.foreach.across.modules.user.business.UserDirectory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -33,7 +32,7 @@ import jakarta.validation.constraints.NotNull;
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
-@NotThreadSafe
+
 @Entity
 @DiscriminatorValue("ldap")
 @Data

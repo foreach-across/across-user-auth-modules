@@ -22,7 +22,7 @@ import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 
-import javax.annotation.concurrent.NotThreadSafe;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -33,7 +33,7 @@ import jakarta.validation.constraints.NotBlank;
  * @see InternalUserDirectory
  * @since 2.0.0
  */
-@NotThreadSafe
+
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_USER_DIRECTORY)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

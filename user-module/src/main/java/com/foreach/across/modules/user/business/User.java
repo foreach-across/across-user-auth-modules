@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.springframework.beans.BeanUtils;
 
-import javax.annotation.concurrent.NotThreadSafe;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-@NotThreadSafe
+
 @Entity
 @DiscriminatorValue("user")
 @Table(name = UserSchemaConfiguration.TABLE_USER)

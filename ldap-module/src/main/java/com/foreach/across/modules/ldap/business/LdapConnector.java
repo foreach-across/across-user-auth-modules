@@ -24,7 +24,6 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
@@ -34,7 +33,7 @@ import jakarta.validation.constraints.*;
  * @author Marc Vanbrabant
  * @since 1.0.0
  */
-@NotThreadSafe
+
 @Entity
 @Table(name = "ldap_connector")
 @Data

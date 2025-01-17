@@ -37,7 +37,6 @@ import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +63,7 @@ import static com.foreach.across.modules.web.ui.elements.TextViewElement.html;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@NotThreadSafe
+
 @RequiredArgsConstructor
 final class AclPermissionsFormViewElementBuilder implements ViewElementBuilder<ContainerViewElement>
 {

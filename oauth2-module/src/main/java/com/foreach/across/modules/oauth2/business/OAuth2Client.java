@@ -24,12 +24,11 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.util.*;
 
-@NotThreadSafe
+
 @Entity
 @DiscriminatorValue("oauth2client")
 @Table(name = OAuth2SchemaConfiguration.TABLE_CLIENT)

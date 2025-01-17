@@ -24,7 +24,6 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -33,7 +32,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@NotThreadSafe
+
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_PERMISSION_GROUP)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

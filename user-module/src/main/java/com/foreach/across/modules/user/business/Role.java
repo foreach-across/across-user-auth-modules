@@ -27,7 +27,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
-import javax.annotation.concurrent.NotThreadSafe;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -41,7 +41,7 @@ import java.util.Set;
  * A role represents a number of permissions that can be applied for a principal.
  * The role is by itself also a {@link GrantedAuthority} that can be used for security checking.
  */
-@NotThreadSafe
+
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_ROLE)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

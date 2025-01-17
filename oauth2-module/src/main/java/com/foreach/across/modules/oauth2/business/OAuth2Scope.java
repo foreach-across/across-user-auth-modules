@@ -23,12 +23,11 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
 
-@NotThreadSafe
+
 @Entity
 @Table(name = OAuth2SchemaConfiguration.TABLE_SCOPE)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

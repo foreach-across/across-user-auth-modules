@@ -24,7 +24,6 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -34,7 +33,7 @@ import java.util.*;
  *
  * @author Arne Vandamme
  */
-@NotThreadSafe
+
 @MappedSuperclass
 @Access(AccessType.FIELD)
 public abstract class GroupedPrincipal<T extends SettableIdBasedEntity<?>>

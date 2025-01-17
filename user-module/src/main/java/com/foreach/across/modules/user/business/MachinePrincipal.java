@@ -18,7 +18,6 @@ package com.foreach.across.modules.user.business;
 import com.foreach.across.modules.user.config.UserSchemaConfiguration;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -31,7 +30,7 @@ import jakarta.validation.constraints.Size;
  *
  * @author Arne Vandamme
  */
-@NotThreadSafe
+
 @Entity
 @DiscriminatorValue("machine")
 @Table(name = UserSchemaConfiguration.TABLE_MACHINE_PRINCIPAL)

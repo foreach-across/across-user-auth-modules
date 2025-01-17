@@ -27,7 +27,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.util.*;
@@ -38,7 +37,7 @@ import java.util.regex.Pattern;
  *
  * @author Arne Vandamme
  */
-@NotThreadSafe
+
 @Entity
 @Table(name = UserSchemaConfiguration.TABLE_PRINCIPAL)
 @Inheritance(strategy = InheritanceType.JOINED)

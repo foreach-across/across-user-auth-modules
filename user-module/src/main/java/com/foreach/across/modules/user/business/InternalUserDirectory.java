@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.user.business;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
@@ -26,7 +25,7 @@ import jakarta.persistence.Entity;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@NotThreadSafe
+
 @Entity
 @DiscriminatorValue("internal")
 public class InternalUserDirectory extends UserDirectory
